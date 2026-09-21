@@ -1,0 +1,20 @@
+{
+  "evidence_id": "example-only",
+  "source": "Replace with allowlisted reviewed source",
+  "locator": "Exact page/table/figure/section required",
+  "population": "",
+  "condition_definition": "",
+  "outcome": "",
+  "effect_or_parameter": null,
+  "uncertainty": null,
+  "system_boundary": "",
+  "pathway_step": null,
+  "target_mechanism": null,
+  "geography": "",
+  "payer": "",
+  "year": 0,
+  "limitations": [],
+  "reviewer_status": "draft",
+  "admissibility_status": "insufficient",
+  "allowed_use": "None until human review"
+}
