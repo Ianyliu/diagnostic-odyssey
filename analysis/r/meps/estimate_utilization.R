@@ -1,6 +1,7 @@
 source(file.path("analysis", "r", "lib", "meps_values.R"))
 source(file.path("analysis", "r", "lib", "survey_helpers.R"))
 source(file.path("analysis", "r", "lib", "result_helpers.R"))
+source(file.path("analysis", "r", "meps", "cohort_long_covid.R"))
 source(file.path("analysis", "r", "meps", "survey_designs.R"))
 
 utilization_any <- function(x) {
@@ -65,6 +66,7 @@ estimate_utilization <- function(designs, artifact_version) {
       source_locator = source_url,
       weight_variable = "PERWT24F",
       artifact_version = artifact_version,
+      cohort_definition = cohort_definition_text(),
       allowed_interpretation = paste0(
         "Mean annual all-cause ", tolower(spec$label),
         " among adults meeting the operational current Long COVID definition."
@@ -92,6 +94,7 @@ estimate_utilization <- function(designs, artifact_version) {
       source_locator = source_url,
       weight_variable = "PERWT24F",
       artifact_version = artifact_version,
+      cohort_definition = cohort_definition_text(),
       allowed_interpretation = paste0(
         "Share of the cohort with at least one ", spec$event, " in 2024."
       ),

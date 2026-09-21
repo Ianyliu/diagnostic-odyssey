@@ -1,6 +1,7 @@
 source(file.path("analysis", "r", "lib", "meps_values.R"))
 source(file.path("analysis", "r", "lib", "survey_helpers.R"))
 source(file.path("analysis", "r", "lib", "result_helpers.R"))
+source(file.path("analysis", "r", "meps", "cohort_long_covid.R"))
 
 estimate_represented_population <- function(designs, artifact_version) {
   result <- survey_total_result(
@@ -28,6 +29,7 @@ estimate_represented_population <- function(designs, artifact_version) {
     ),
     weight_variable = "PERWT24F",
     artifact_version = artifact_version,
+      cohort_definition = cohort_definition_text(),
     allowed_interpretation = paste(
       "Survey-weighted number of U.S. civilian noninstitutionalized adults age 18-64",
       "meeting the documented operational current-Long-COVID rule."

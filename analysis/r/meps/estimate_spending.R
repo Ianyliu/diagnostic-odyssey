@@ -1,6 +1,7 @@
 source(file.path("analysis", "r", "lib", "meps_values.R"))
 source(file.path("analysis", "r", "lib", "survey_helpers.R"))
 source(file.path("analysis", "r", "lib", "result_helpers.R"))
+source(file.path("analysis", "r", "meps", "cohort_long_covid.R"))
 source(file.path("analysis", "r", "meps", "survey_designs.R"))
 
 estimate_spending <- function(designs, artifact_version) {
@@ -34,6 +35,7 @@ estimate_spending <- function(designs, artifact_version) {
       source_locator = total_url,
       weight_variable = "PERWT24F",
       artifact_version = artifact_version,
+      cohort_definition = cohort_definition_text(),
       allowed_interpretation = "Gross annual all-cause health care spending among adults meeting the operational current Long COVID definition.",
       prohibited_interpretation = common_prohibited,
       limitations = c("Descriptive gross spending; no counterfactual comparator or attributable-cost design.")
@@ -50,6 +52,7 @@ estimate_spending <- function(designs, artifact_version) {
       source_locator = total_url,
       weight_variable = "PERWT24F",
       artifact_version = artifact_version,
+      cohort_definition = cohort_definition_text(),
       allowed_interpretation = "Mean annual all-cause health care spending per cohort member.",
       prohibited_interpretation = common_prohibited,
       limitations = c("Descriptive gross spending; no counterfactual comparator or attributable-cost design.")
@@ -66,6 +69,7 @@ estimate_spending <- function(designs, artifact_version) {
       source_locator = oop_url,
       weight_variable = "PERWT24F",
       artifact_version = artifact_version,
+      cohort_definition = cohort_definition_text(),
       allowed_interpretation = "Self/family-paid component of gross annual all-cause spending in the cohort.",
       prohibited_interpretation = c(common_prohibited, "additional spending to add to TOTEXP24"),
       limitations = c("TOTSLF24 is nested within total expenditures and must never be re-added to TOTEXP24."),
@@ -83,6 +87,7 @@ estimate_spending <- function(designs, artifact_version) {
       source_locator = oop_url,
       weight_variable = "PERWT24F",
       artifact_version = artifact_version,
+      cohort_definition = cohort_definition_text(),
       allowed_interpretation = "Mean self/family-paid component per cohort member.",
       prohibited_interpretation = c(common_prohibited, "additional spending to add to mean TOTEXP24"),
       limitations = c("TOTSLF24 is a component of total expenditures, not an additive burden category."),

@@ -1,6 +1,7 @@
 source(file.path("analysis", "r", "lib", "meps_values.R"))
 source(file.path("analysis", "r", "lib", "survey_helpers.R"))
 source(file.path("analysis", "r", "lib", "result_helpers.R"))
+source(file.path("analysis", "r", "meps", "cohort_long_covid.R"))
 source(file.path("analysis", "r", "meps", "survey_designs.R"))
 
 k6_valid <- function(x) meps_bounded_score(x, 0, 24)
@@ -41,6 +42,7 @@ estimate_mental_health <- function(designs, artifact_version) {
       source_locator = k6_url,
       weight_variable = "SAQWT24F",
       artifact_version = artifact_version,
+      cohort_definition = cohort_definition_text(),
       allowed_interpretation = "Mean official K6 nonspecific psychological distress score in the stated PSAQ response universe.",
       prohibited_interpretation = c(
         "psychiatric diagnosis",
@@ -66,6 +68,7 @@ estimate_mental_health <- function(designs, artifact_version) {
       ),
       weight_variable = "SAQWT24F",
       artifact_version = artifact_version,
+      cohort_definition = cohort_definition_text(),
       allowed_interpretation = "Proportion meeting AHRQ's published K6 >=13 serious-distress category in the stated PSAQ response universe.",
       prohibited_interpretation = c(
         "psychiatric diagnosis",
@@ -87,6 +90,7 @@ estimate_mental_health <- function(designs, artifact_version) {
       source_locator = phq_url,
       weight_variable = "SAQWT24F",
       artifact_version = artifact_version,
+      cohort_definition = cohort_definition_text(),
       allowed_interpretation = "Mean official PHQ-2 depressive-symptom screening score in the stated PSAQ response universe.",
       prohibited_interpretation = c(
         "depression diagnosis",
@@ -111,6 +115,7 @@ estimate_mental_health <- function(designs, artifact_version) {
       ),
       weight_variable = "SAQWT24F",
       artifact_version = artifact_version,
+      cohort_definition = cohort_definition_text(),
       allowed_interpretation = "Proportion with PHQ-2 score >=3 in the stated PSAQ response universe.",
       prohibited_interpretation = c(
         "depression diagnosis",

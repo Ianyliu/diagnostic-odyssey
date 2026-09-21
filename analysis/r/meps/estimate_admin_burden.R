@@ -1,6 +1,7 @@
 source(file.path("analysis", "r", "lib", "meps_values.R"))
 source(file.path("analysis", "r", "lib", "survey_helpers.R"))
 source(file.path("analysis", "r", "lib", "result_helpers.R"))
+source(file.path("analysis", "r", "meps", "cohort_long_covid.R"))
 source(file.path("analysis", "r", "meps", "survey_designs.R"))
 
 estimate_admin_burden <- function(designs, artifact_version) {
@@ -55,6 +56,7 @@ estimate_admin_burden <- function(designs, artifact_version) {
       ),
       weight_variable = "ESAQWT24F",
       artifact_version = artifact_version,
+      cohort_definition = cohort_definition_text(),
       allowed_interpretation = paste0(
         "Survey-weighted mean annualized hours spent on ", spec$detail,
         " among the stated ESAQ response universe."
@@ -97,6 +99,7 @@ estimate_admin_burden <- function(designs, artifact_version) {
     ),
     weight_variable = "ESAQWT24F",
     artifact_version = artifact_version,
+      cohort_definition = cohort_definition_text(),
     allowed_interpretation = paste(
       "Proportion reporting that health insurance denied or delayed prior approval",
       "among ESAQ respondents in the cohort who supplied a substantive Yes/No response."

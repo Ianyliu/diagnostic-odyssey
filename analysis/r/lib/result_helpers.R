@@ -21,6 +21,7 @@ make_estimate_record <- function(
   source_locator,
   weight_variable,
   artifact_version,
+  cohort_definition,
   allowed_interpretation,
   prohibited_interpretation,
   limitations = character(),
@@ -56,7 +57,7 @@ make_estimate_record <- function(
       weight_variable = weight_variable,
       source_locator = source_locator,
       statistics_method = result$interval_type,
-      cohort_definition = cohort_definition_text()
+      cohort_definition = cohort_definition
     )
   )
   if (!is.null(result$unweighted_numerator_n)) {
