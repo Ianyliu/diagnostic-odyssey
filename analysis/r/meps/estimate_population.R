@@ -4,13 +4,19 @@ source(file.path("analysis", "r", "lib", "result_helpers.R"))
 source(file.path("analysis", "r", "meps", "cohort_long_covid.R"))
 
 estimate_represented_population <- function(designs, artifact_version) {
-  result <- survey_total_result(
+  # Domain estimation keeps the full MEPS survey design and then restricts to
+  # age-eligible adults whose Long COVID/current-symptom status is classifiable.
+  known_age_domain <- survey::subset(
     designs$person,
+    do_age_18_64 & do_current_long_covid_known
+  )
+  result <- survey_total_result(
+    known_age_domain,
     "do_current_long_covid_indicator",
     cleaner = function(x) as.numeric(x)
   )
   result$unweighted_numerator_n <- sum(
-    designs$person$variables$do_current_long_covid_indicator == 1,
+    known_age_domain$variables$do_current_long_covid_indicator == 1,
     na.rm = TRUE
   )
 
