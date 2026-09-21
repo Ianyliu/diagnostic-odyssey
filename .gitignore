@@ -1,0 +1,27 @@
+node_modules/
+dist/
+.vite/
+coverage/
+.env
+.env.*
+!.env.example
+
+# Raw and large analytical data
+data/raw/
+data/intermediate/
+data/derived/
+analysis/r/data/
+analysis/r/output/
+*.rds
+*.RData
+*.parquet
+*.feather
+
+# Generated artifacts are reviewed before promotion
+artifacts/generated/
+
+# Local tooling
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
