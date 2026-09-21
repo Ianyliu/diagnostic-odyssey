@@ -25,9 +25,15 @@
 5. Export deterministic JSON companion.
 
 ## P4 — Analytical data ingestion
-1. Create source manifests and raw-data placement rules.
-2. Implement R survey-aware MEPS/NHIS workflow skeletons.
-3. Promote only reviewed outputs into runtime artifacts.
+
+**2024 MEPS HC-256 national Long COVID pipeline: implemented in code; awaiting execution/review with the real public-use file.**
+
+1. Source manifests and pipeline-specific raw-data requirements are separated.
+2. HC-256 acquisition/loader and frozen variable/estimand map are implemented.
+3. Survey-aware person/ESAQ/PSAQ designs and Tier 1-3 estimators are implemented.
+4. Candidate artifact generation, provenance validation, synthetic tests, and candidate→review→release boundary are implemented.
+5. Remaining P4 work is to execute against HC-256, inspect diagnostics/estimates, complete methods review, and explicitly promote an approved artifact.
+6. NHIS remains supplementary/compatibility work and is not a dependency for the primary MEPS cohort.
 
 ## P5 — Evidence and provenance
 1. Structured evidence ledger.

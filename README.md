@@ -14,6 +14,8 @@ The first working vertical slice is:
 
 ### Working now
 
+- Survey-aware 2024 MEPS HC-256 Long COVID analytical pipeline code: reviewed variable map, cohort construction, weight-specific survey designs, Tier 1 spending/utilization, Tier 2 ESAQ administrative burden, Tier 3 K6/PHQ-2, candidate-artifact generation, and candidate/release gates.
+
 - React + TypeScript + Vite application shell and all major product routes.
 - Versioned fixture artifact loading with runtime validation and explicit loading/error behavior.
 - Typed scientific contracts and status vocabulary.
@@ -29,7 +31,7 @@ The first working vertical slice is:
 
 ### Scaffolded / intentionally incomplete
 
-- Real MEPS/NHIS burden estimation.
+- Execution of the real MEPS HC-256 estimator against raw HC-256 data. The survey-aware pipeline is implemented, but no raw public-use file or generated estimates are committed.
 - HRSA/ACS/PLACES/CMS local-context ingestion.
 - Reviewed external literature ledger and source extraction workflow.
 - Evidence-backed bounded scenario parameters.
@@ -103,6 +105,23 @@ docs/
 ```
 
 ## Development
+
+Requires Node 22+ for the application/contracts and R for the offline analytical pipeline.
+
+### First real MEPS candidate
+
+From the repository root:
+
+```bash
+Rscript analysis/r/install_dependencies.R
+Rscript analysis/r/meps/run_meps_2024.R --download
+```
+
+The second command uses the official AHRQ HC-256 Stata download when the raw file is absent. If automatic download is unavailable in your environment, manually place the official HC-256 Stata ZIP at `data/raw/meps/2024/meps_hc256_2024_stata.zip` and run the command without `--download`.
+
+Generated candidates are written under `artifacts/generated/meps-2024-long-covid-candidate/` and remain gitignored and `release_status=preliminary` until explicit methods review.
+
+### Web development
 
 Requires Node 22+.
 

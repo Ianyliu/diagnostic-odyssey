@@ -1,0 +1,54 @@
+{
+  "schema_version": "1.0",
+  "artifact_version": "REPLACE_WITH_CANDIDATE_VERSION",
+  "candidate_bundle": "bundle.json",
+  "release_decision": "pending",
+  "automatic_release": false,
+  "reviewer": null,
+  "reviewed_at": null,
+  "checks": [
+    {
+      "id": "methods_review",
+      "status": "pending",
+      "notes": "Confirm estimator/variable map and survey design."
+    },
+    {
+      "id": "cohort_review",
+      "status": "pending",
+      "notes": "Review round-resolution, missingness, and history-conflict diagnostics."
+    },
+    {
+      "id": "weighted_unweighted_n_review",
+      "status": "pending",
+      "notes": "Review valid-response N and weighted denominator by survey universe."
+    },
+    {
+      "id": "interval_review",
+      "status": "pending",
+      "notes": "Review SE/CI behavior and design degrees of freedom."
+    },
+    {
+      "id": "denominator_universe_review",
+      "status": "pending",
+      "notes": "Verify labels for core person, ESAQ, PSAQ, and EQDENY yes/no universes."
+    },
+    {
+      "id": "plausibility_review",
+      "status": "pending",
+      "notes": "Compare candidate estimates against justified external/published benchmarks."
+    },
+    {
+      "id": "provenance_review",
+      "status": "pending",
+      "notes": "Verify source locator, release, commit, checksum, weights, and variance variables."
+    },
+    {
+      "id": "interpretation_review",
+      "status": "pending",
+      "notes": "Check gross/attributable, nested OOP, admin-time separation, K6/PHQ semantics."
+    }
+  ],
+  "approved_estimate_ids": [],
+  "suppressed_estimate_ids": [],
+  "notes": "No status is changed automatically by this manifest."
+}
