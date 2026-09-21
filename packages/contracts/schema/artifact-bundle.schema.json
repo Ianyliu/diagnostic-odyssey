@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://diagnostic-odyssey.local/schema/artifact-bundle.schema.json",
+  "title": "Diagnostic Odyssey Artifact Bundle",
+  "type": "object",
+  "required": [
+    "manifest", "context", "burden_domains", "evidence", "local_context",
+    "qualitative_evidence", "scenario_examples", "data_requests", "sources"
+  ],
+  "properties": {
+    "manifest": {
+      "type": "object",
+      "required": ["artifact_version", "generated_at", "code_commit", "run_id", "dataset_releases", "display_status"],
+      "properties": {
+        "artifact_version": {"type": "string", "minLength": 1},
+        "generated_at": {"type": "string", "minLength": 1},
+        "code_commit": {"type": "string", "minLength": 1},
+        "run_id": {"type": "string", "minLength": 1},
+        "dataset_releases": {"type": "array", "items": {"type": "string"}},
+        "display_status": {"enum": ["illustrative", "analytical_artifact"]}
+      },
+      "additionalProperties": false
+    },
+    "context": {"type": "object"},
+    "burden_domains": {"type": "array"},
+    "evidence": {"type": "array"},
+    "local_context": {"type": "array"},
+    "qualitative_evidence": {"type": "array"},
+    "scenario_examples": {"type": "array"},
+    "data_requests": {"type": "array"},
+    "sources": {"type": "array"}
+  },
+  "additionalProperties": false
+}
