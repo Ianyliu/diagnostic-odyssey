@@ -5,7 +5,11 @@ missing <- required[!vapply(required, requireNamespace, logical(1), quietly = TR
 
 if (length(missing)) {
   message("Installing missing R packages: ", paste(missing, collapse = ", "))
-  install.packages(missing, repos = "https://cloud.r-project.org")
+  repos <- getOption("repos")
+  if (is.null(repos) || !length(repos) || identical(unname(repos[["CRAN"]]), "@CRAN@")) {
+    repos <- c(CRAN = "https://cloud.r-project.org")
+  }
+  install.packages(missing, repos = repos)
 }
 
 still_missing <- required[!vapply(required, requireNamespace, logical(1), quietly = TRUE)]

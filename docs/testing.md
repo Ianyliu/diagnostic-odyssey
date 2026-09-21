@@ -40,3 +40,19 @@ Each push/PR runs TypeScript checks, unit tests, ESLint, and the Vite production
 - optional AI extraction benchmark if/when AI is enabled.
 
 Passing software CI does **not** constitute scientific release approval.
+
+
+## MEPS analytical synthetic tests
+
+GitHub Actions also runs an R job that installs the declared offline-analysis dependencies and executes synthetic MEPS tests. These do **not** require or download HC-256.
+
+Current R coverage includes:
+- Long COVID round-resolution and reserved-code behavior;
+- person vs ESAQ vs PSAQ weight separation;
+- weighted totals, means, proportions, and interval serialization;
+- weighted/unweighted denominator propagation;
+- out-of-pocket component metadata to prevent double counting;
+- prohibition on a combined administrative-time burden score;
+- required analytical provenance before a candidate artifact can validate.
+
+Real-data plausibility and methods review remain separate from software CI.
