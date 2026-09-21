@@ -6,8 +6,11 @@ import {
 } from "@diagnostic-odyssey/contracts";
 
 export class InvalidScenarioError extends Error {
-  constructor(public readonly issues: ReturnType<typeof validateScenario>) {
+  readonly issues: ReturnType<typeof validateScenario>;
+
+  constructor(issues: ReturnType<typeof validateScenario>) {
     super(issues.map(issue => `${issue.path}: ${issue.message}`).join("; "));
+    this.issues = issues;
     this.name = "InvalidScenarioError";
   }
 }
