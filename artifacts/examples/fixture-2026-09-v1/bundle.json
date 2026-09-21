@@ -1,0 +1,398 @@
+{
+  "manifest": {
+    "artifact_version": "fixture-2026-09-v1",
+    "generated_at": "2026-09-21T00:00:00Z",
+    "code_commit": "development-fixture",
+    "run_id": "synthetic-fixture",
+    "dataset_releases": [],
+    "display_status": "illustrative"
+  },
+  "context": {
+    "condition_id": "long-covid-current",
+    "cohort_id": "current-long-covid-adults-18-64",
+    "age_range": "18–64",
+    "evidence_year": 2024,
+    "geography_scope": "United States national evidence",
+    "local_context_id": "wv-working-context",
+    "severity_filter": null,
+    "artifact_version": "fixture-2026-09-v1"
+  },
+  "burden_domains": [
+    {
+      "domain_id": "economic-healthcare",
+      "label": "Economic / healthcare burden",
+      "availability_state": "partial",
+      "limitations": [
+        "All displayed values are illustrative development fixtures, not analytical outputs."
+      ],
+      "measures": [
+        {
+          "estimate_id": "fixture-population",
+          "measure_id": "represented-population",
+          "label": "Represented population",
+          "value": 6800000,
+          "unit": "people",
+          "interval_low": 5800000,
+          "interval_high": 7800000,
+          "interval_type": "illustrative range",
+          "denominator": "Adults 18–64 reporting current Long COVID",
+          "universe": "US civilian noninstitutionalized population",
+          "system_boundary": "National descriptive burden",
+          "evidence_type": "survey_estimate",
+          "release_status": "preliminary",
+          "display_status": "illustrative",
+          "source_ref": "synthetic-fixture",
+          "artifact_version": "fixture-2026-09-v1",
+          "allowed_interpretation": "Illustrative UI fixture only.",
+          "prohibited_interpretation": [
+            "analytical finding",
+            "state prevalence"
+          ],
+          "limitations": [
+            "Not generated from survey microdata."
+          ]
+        },
+        {
+          "estimate_id": "fixture-gross-spending",
+          "measure_id": "gross-all-cause-spending",
+          "label": "Gross annual all-cause spending",
+          "value": 34000000000,
+          "unit": "USD/year",
+          "interval_low": 28000000000,
+          "interval_high": 40000000000,
+          "interval_type": "illustrative range",
+          "denominator": "Adults 18–64 reporting current Long COVID",
+          "universe": "US civilian noninstitutionalized population",
+          "system_boundary": "National all-cause medical spending",
+          "evidence_type": "survey_estimate",
+          "release_status": "preliminary",
+          "display_status": "illustrative",
+          "source_ref": "synthetic-fixture",
+          "artifact_version": "fixture-2026-09-v1",
+          "allowed_interpretation": "Illustrative gross burden fixture.",
+          "prohibited_interpretation": [
+            "attributable cost",
+            "diagnostic-delay cost",
+            "savings",
+            "local spending"
+          ],
+          "limitations": [
+            "Not generated from MEPS."
+          ]
+        },
+        {
+          "estimate_id": "fixture-mean-spending",
+          "measure_id": "mean-medical-spending",
+          "label": "Mean annual medical spending",
+          "value": 5000,
+          "unit": "USD/person/year",
+          "interval_low": 4200,
+          "interval_high": 5800,
+          "interval_type": "illustrative range",
+          "denominator": "Represented population",
+          "universe": "US adults 18–64 with current Long COVID",
+          "system_boundary": "National all-cause medical spending",
+          "evidence_type": "survey_estimate",
+          "release_status": "preliminary",
+          "display_status": "illustrative",
+          "source_ref": "synthetic-fixture",
+          "artifact_version": "fixture-2026-09-v1",
+          "allowed_interpretation": "Illustrative UI fixture only.",
+          "prohibited_interpretation": [
+            "causal cost",
+            "payer savings"
+          ],
+          "limitations": [
+            "Not generated from MEPS."
+          ]
+        }
+      ]
+    },
+    {
+      "domain_id": "healthcare-work-admin",
+      "label": "Healthcare-work / administrative burden",
+      "availability_state": "partial",
+      "limitations": [
+        "Measures remain separate and must not be summed."
+      ],
+      "measures": [
+        {
+          "estimate_id": "fixture-visit-time",
+          "measure_id": "own-medical-visit-time",
+          "label": "Own medical-visit time",
+          "value": 42,
+          "unit": "hours/person/year",
+          "interval_low": null,
+          "interval_high": null,
+          "interval_type": null,
+          "denominator": "Applicable adults",
+          "universe": "Reference cohort",
+          "system_boundary": "Healthcare work",
+          "evidence_type": "survey_estimate",
+          "release_status": "preliminary",
+          "display_status": "illustrative",
+          "source_ref": "synthetic-fixture",
+          "artifact_version": "fixture-2026-09-v1",
+          "allowed_interpretation": "Illustrative native-unit fixture.",
+          "prohibited_interpretation": [
+            "diagnostic delay caused time",
+            "monetized burden"
+          ],
+          "limitations": [
+            "Synthetic."
+          ]
+        },
+        {
+          "estimate_id": "fixture-paperwork",
+          "measure_id": "paperwork-time",
+          "label": "Healthcare paperwork time",
+          "value": 12,
+          "unit": "hours/person/year",
+          "interval_low": null,
+          "interval_high": null,
+          "interval_type": null,
+          "denominator": "Applicable adults",
+          "universe": "Reference cohort",
+          "system_boundary": "Administrative healthcare work",
+          "evidence_type": "survey_estimate",
+          "release_status": "preliminary",
+          "display_status": "illustrative",
+          "source_ref": "synthetic-fixture",
+          "artifact_version": "fixture-2026-09-v1",
+          "allowed_interpretation": "Illustrative native-unit fixture.",
+          "prohibited_interpretation": [
+            "combined navigation score"
+          ],
+          "limitations": [
+            "Synthetic."
+          ]
+        },
+        {
+          "estimate_id": "fixture-bills",
+          "measure_id": "bills-insurance-time",
+          "label": "Bills / insurance time",
+          "value": 10,
+          "unit": "hours/person/year",
+          "interval_low": null,
+          "interval_high": null,
+          "interval_type": null,
+          "denominator": "Applicable adults",
+          "universe": "Reference cohort",
+          "system_boundary": "Administrative healthcare work",
+          "evidence_type": "survey_estimate",
+          "release_status": "preliminary",
+          "display_status": "illustrative",
+          "source_ref": "synthetic-fixture",
+          "artifact_version": "fixture-2026-09-v1",
+          "allowed_interpretation": "Illustrative native-unit fixture.",
+          "prohibited_interpretation": [
+            "combined navigation score"
+          ],
+          "limitations": [
+            "Synthetic."
+          ]
+        }
+      ]
+    },
+    {
+      "domain_id": "mental-human",
+      "label": "Mental-health / human burden",
+      "availability_state": "partial",
+      "limitations": [
+        "PHQ-2/K6 are screens/distress measures, not diagnoses."
+      ],
+      "measures": [
+        {
+          "estimate_id": "phq2-not-released",
+          "measure_id": "phq2",
+          "label": "Depressive-symptom screen (PHQ-2)",
+          "value": null,
+          "unit": "proportion",
+          "interval_low": null,
+          "interval_high": null,
+          "interval_type": null,
+          "denominator": "Applicable respondents",
+          "universe": "Reference cohort",
+          "system_boundary": "Mental-health screening",
+          "evidence_type": "survey_estimate",
+          "release_status": "not_released",
+          "display_status": "analytical_artifact",
+          "source_ref": "pending-analysis",
+          "artifact_version": "fixture-2026-09-v1",
+          "allowed_interpretation": "No numeric interpretation until released.",
+          "prohibited_interpretation": [
+            "psychiatric diagnosis",
+            "causal effect",
+            "monetization"
+          ],
+          "limitations": [
+            "Analysis not released."
+          ]
+        },
+        {
+          "estimate_id": "k6-not-released",
+          "measure_id": "k6",
+          "label": "Psychological distress (K6)",
+          "value": null,
+          "unit": "proportion",
+          "interval_low": null,
+          "interval_high": null,
+          "interval_type": null,
+          "denominator": "Applicable respondents",
+          "universe": "Reference cohort",
+          "system_boundary": "Nonspecific psychological distress",
+          "evidence_type": "survey_estimate",
+          "release_status": "not_released",
+          "display_status": "analytical_artifact",
+          "source_ref": "pending-analysis",
+          "artifact_version": "fixture-2026-09-v1",
+          "allowed_interpretation": "No numeric interpretation until released.",
+          "prohibited_interpretation": [
+            "psychiatric diagnosis",
+            "causal effect",
+            "monetization"
+          ],
+          "limitations": [
+            "Analysis not released."
+          ]
+        }
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "evidence_id": "fixture-evidence-insufficient",
+      "source": "Synthetic development record — not external evidence",
+      "locator": "development fixture",
+      "population": "not applicable",
+      "condition_definition": "not applicable",
+      "outcome": "causal savings",
+      "effect_or_parameter": null,
+      "uncertainty": null,
+      "system_boundary": "scenario claim",
+      "geography": "not applicable",
+      "payer": "not applicable",
+      "year": 2026,
+      "limitations": [
+        "This record demonstrates a principled no state only."
+      ],
+      "reviewer_status": "approved",
+      "admissibility_status": "insufficient",
+      "allowed_use": "Demonstrate that unsupported causal savings claims are blocked."
+    }
+  ],
+  "local_context": [
+    {
+      "indicator": "Primary-care capacity context",
+      "geography": "West Virginia working demonstration context",
+      "year": 2026,
+      "value": "Illustrative constraint state",
+      "unit": null,
+      "source": "synthetic-development-fixture",
+      "context_type": "implementation_context",
+      "state": "partial",
+      "limitations": [
+        "Not an HRSA-derived value; replacement required before analytical release."
+      ]
+    },
+    {
+      "indicator": "Travel/access context",
+      "geography": "West Virginia working demonstration context",
+      "year": 2026,
+      "value": null,
+      "unit": null,
+      "source": "synthetic-development-fixture",
+      "context_type": "implementation_context",
+      "state": "empty",
+      "limitations": [
+        "Missing is not zero and does not imply no access barrier."
+      ]
+    }
+  ],
+  "qualitative_evidence": [],
+  "scenario_examples": [
+    {
+      "scenario_id": "long-covid-recognition-demo",
+      "eligible_population": 12000,
+      "reach": 0.25,
+      "capacity": 3000,
+      "baseline_window_months": 12,
+      "alternative_window_months": 6,
+      "horizon_months": 12,
+      "fixed_cost": 300000,
+      "per_participant_cost": 300,
+      "target_pathway_step": "recognition-to-referral",
+      "mechanism": "navigation-support",
+      "assumption_refs": [
+        "synthetic-planning-assumptions"
+      ],
+      "artifact_version": "fixture-2026-09-v1"
+    }
+  ],
+  "data_requests": [
+    {
+      "request_id": "request-referral-timing",
+      "target_question": "Where does recognition-to-referral delay occur?",
+      "pathway_step": "recognition-to-referral",
+      "fields_needed": [
+        "recognition date",
+        "referral order date",
+        "referral completion date"
+      ],
+      "likely_source_owner": "pilot operations / health system",
+      "granularity_time_window": "event-level over pilot horizon",
+      "rationale": "Measure timing at the pathway step targeted by the scenario.",
+      "feasibility_privacy_notes": "Use minimum necessary operational fields; no patient-facing upload surface."
+    },
+    {
+      "request_id": "request-scheduling",
+      "target_question": "Which scheduling events constrain referral completion?",
+      "pathway_step": "referral-completion",
+      "fields_needed": [
+        "appointment offered date",
+        "scheduled date",
+        "completed/cancelled/no-show status"
+      ],
+      "likely_source_owner": "health system scheduling",
+      "granularity_time_window": "event-level over pilot horizon",
+      "rationale": "Separate navigation reach from downstream scheduling capacity.",
+      "feasibility_privacy_notes": "Operational analysis requires governance before person-level linkage."
+    },
+    {
+      "request_id": "request-access",
+      "target_question": "What travel/access constraints affect implementation?",
+      "pathway_step": "recognition-to-referral",
+      "fields_needed": [
+        "travel time/distance",
+        "transport availability",
+        "provider capacity"
+      ],
+      "likely_source_owner": "pilot survey + public local context",
+      "granularity_time_window": "participant/pilot-area",
+      "rationale": "Characterize implementation barriers without multiplying them into national burden.",
+      "feasibility_privacy_notes": "Report aggregates; do not create an individual vulnerability score."
+    }
+  ],
+  "sources": [
+    {
+      "source_ref": "synthetic-fixture",
+      "source_name": "Synthetic development fixture — not evidence",
+      "official_url": "",
+      "release_year": 2026,
+      "locator": "artifacts/examples/fixture-2026-09-v1/bundle.json",
+      "limitations": [
+        "Illustrative UI/testing values only."
+      ]
+    },
+    {
+      "source_ref": "pending-analysis",
+      "source_name": "Pending analytical artifact",
+      "official_url": "",
+      "release_year": 2026,
+      "locator": "not yet available",
+      "limitations": [
+        "No value may be displayed until released."
+      ]
+    }
+  ]
+}

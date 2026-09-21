@@ -3,7 +3,6 @@ import react from "@vitejs/plugin-react";
 
 export default defineConfig({
   plugins: [react()],
-  server: {
-    port: 5173
-  }
+  publicDir: "../../artifacts/examples",
+  server: { port: 5173 }
 });
