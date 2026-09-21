@@ -1,6 +1,8 @@
 #!/usr/bin/env Rscript
 
-`%||%` <- function(x, y) if (is.null(x)) y else x\n\nargs <- commandArgs(trailingOnly = TRUE)
+`%||%` <- function(x, y) if (is.null(x)) y else x
+
+args <- commandArgs(trailingOnly = TRUE)
 pipeline_arg <- grep("^--pipeline=", args, value = TRUE)
 pipeline <- if (length(pipeline_arg)) sub("^--pipeline=", "", pipeline_arg[[1]]) else "meps-national-burden"
 
@@ -68,5 +70,3 @@ if (length(missing_required) || !one_of_ok) {
 
 cat("\nInput requirements for this pipeline are satisfied.\n")
 cat("This check does NOT imply methods review or scientific release approval.\n")
-
-`%||%` <- function(x, y) if (is.null(x)) y else x
