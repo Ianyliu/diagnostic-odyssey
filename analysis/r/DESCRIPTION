@@ -1,0 +1,14 @@
+Package: diagnosticodysseyanalysis
+Type: Project
+Title: Diagnostic Odyssey Offline Analysis Dependencies
+Version: 0.1.0
+Authors@R: person("Diagnostic Odyssey", role = c("aut", "cre"), email = "noreply@example.invalid")
+Description: Dependency declaration for offline public-use survey analysis. Not an R package release.
+License: MIT
+Encoding: UTF-8
+Imports:
+    haven,
+    jsonlite,
+    survey
+Suggests:
+    testthat

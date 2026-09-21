@@ -20,67 +20,34 @@ data/
 
 The checked-in `data/manifests/sources.json` is the source-of-truth inventory. Never replace a missing source with a fabricated fixture in the analytical pipeline.
 
-## Manual downloads required now
+## Current P4 requirement: MEPS HC-256 only
 
-### AHRQ MEPS 2024 Full-Year Consolidated — HC-256
+The 2024 MEPS national Long COVID burden pipeline is intentionally independent of NHIS and local-context sources.
 
-- Official dataset: **MEPS HC-256: 2024 Full Year Consolidated Data File**
-- Official page: https://meps.ahrq.gov/data_stats/download_data_files_detail.jsp?cboPufNumber=HC-256
-- Recommended format for this project: Stata ZIP (official page reports approximately **5.5 MB**)
-- Canonical local filename after download: `data/raw/meps/2024/meps_hc256_2024_stata.zip`
-- Registration/application: none for the public-use file; comply with the AHRQ public-use data agreement.
-- After download: run `Rscript analysis/r/01_check_inputs.R`, then the future `analysis/r/10_meps_burden.R` once variable mapping is methods-approved.
+Preferred acquisition:
 
-HC-256 is the required person-level starting point. Do not interpret it as state Medicaid claims.
+```bash
+Rscript analysis/r/install_dependencies.R
+Rscript pipelines/data/download_meps_hc256.R
+```
 
-### MEPS 2024 event files
+The helper downloads the official AHRQ HC-256 Stata ZIP, verifies that it is a readable archive containing a Stata file, extracts it, checks core HC-256 variables, and writes local source metadata. Raw files remain gitignored.
 
-The 2024 event family is HC-254A through HC-254H, plus HC-254I (appendix). The current first-pass implementation does **not** require every event file. Add only files justified by the approved estimand/variable map.
+If automated acquisition fails, manually download **Data File, Stata format** from:
 
-Likely early files:
+https://meps.ahrq.gov/data_stats/download_data_files_detail.jsp?cboPufNumber=HC-256
 
-- **HC-254G — Office-Based Medical Provider Visits**, official page:
-  https://meps.ahrq.gov/mepsweb/data_stats/download_data_files_detail.jsp?cboPufNumber=HC-254G
-  - Stata ZIP is approximately **2.6 MB**
-  - canonical local filename: `data/raw/meps/2024/meps_hc254g_2024_office_visits_stata.zip`
-- **HC-254F — Outpatient Visits**
-- **HC-254E — Emergency Room Visits**
-- **HC-254D — Hospital Inpatient Stays**
-- **HC-254A — Prescribed Medicines**
+Place the ZIP exactly at:
 
-Official 2024 PUF index:
-https://meps.ahrq.gov/mepsweb/data_stats/download_data_files_results.jsp?buttonYearandDataType=Search&cboDataYear=All&sortBy=year_for_display_D
+`data/raw/meps/2024/meps_hc256_2024_stata.zip`
 
-Do not download event files merely to populate the repository. Final selection should follow the estimands.
+No other dataset is required for the primary 2024 national burden pipeline.
 
-### CDC/NCHS NHIS 2024 sample adult
+### Deferred / separate pipelines
 
-- Official dataset page:
-  https://www.cdc.gov/nchs/nhis/documentation/2024-nhis.html
-- Public-use sample-adult CSV link resolves to:
-  https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/NHIS/2024/adult24csv.zip
-- Publisher filename: `adult24csv.zip`
-- Local path: `data/raw/nhis/2024/adult24csv.zip`
-- Registration/application: none for public-use sample-adult data.
-- After download: `Rscript analysis/r/01_check_inputs.R`; NHIS analysis remains disabled until the condition/function variable map is reviewed.
-
-Restricted geography is **not** required for this sprint architecture.
-
-### HRSA HPSA
-
-Use the HRSA Data Downloads page:
-https://data.hrsa.gov/data/download?data=AHRF
-
-For the first local-context implementation, manually download both:
-
-1. **HPSA – Primary Care → All HPSAs → CSV** (approximately **35 MB** on the 2026-08-26 listing)
-   - save as `data/raw/hrsa/hpsa_primary_care_all.csv`
-2. **HPSA – Mental Health → All HPSAs → CSV** (approximately **14 MB** on the 2026-08-26 listing)
-   - save as `data/raw/hrsa/hpsa_mental_health_all.csv`
-
-Registration/application: none indicated for these HRSA public data downloads; the listing reports no usage limitation for HPSA data.
-
-Because HRSA refreshes these data frequently, the eventual ingestion manifest must record download date/source refresh date. Missing HPSA rows must not be interpreted as “no shortage.”
+- MEPS HC-254 event files: optional only when a future event-level estimand requires them.
+- NHIS 2024: supplementary / compatibility analyses; not needed to identify the primary MEPS Long COVID cohort.
+- HRSA / ACS / PLACES / CMS: local implementation context; downstream of this phase.
 
 ## Script/API acquisition rather than manual large downloads
 

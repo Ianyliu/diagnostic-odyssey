@@ -1,0 +1,12 @@
+{
+  "schema_version": "1.0",
+  "required": [
+    "haven",
+    "jsonlite",
+    "survey"
+  ],
+  "test": [
+    "testthat"
+  ],
+  "note": "Package versions are recorded at candidate-artifact generation time. CI installs from CRAN on a clean runner."
+}
