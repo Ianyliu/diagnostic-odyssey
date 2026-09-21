@@ -95,7 +95,7 @@
       "official_url": "https://www.cdc.gov/places/tools/data-portal.html",
       "acquisition": "api_or_manual_subset_after_measure_map",
       "expected_local_filename": "places_context_subset.csv",
-      "local_path": "data/raw/places/2025/places_context_subset.csv",
+      "local_path": "data/raw/places/current/places_context_subset.csv",
       "registration_required": false,
       "present_in_repository": false,
       "role": "contextual health/access/distress indicators only"

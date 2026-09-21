@@ -11,7 +11,7 @@ data/
     nhis/2024/
     hrsa/
     acs/2024/
-    places/2025/
+    places/current/
     cms/
   intermediate/
   derived/
