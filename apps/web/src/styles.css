@@ -1,0 +1,43 @@
+* { box-sizing: border-box; }
+html { font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: var(--do-color-ink); background: var(--do-color-bg); }
+body { margin: 0; min-width: 320px; }
+a { color: inherit; }
+button, input, select { font: inherit; }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid #63b7bd; outline-offset: 3px; }
+.site-header { min-height: 80px; display: grid; grid-template-columns: 285px 1fr auto; align-items: stretch; gap: 20px; padding: 0 32px; background: var(--do-color-navy); color: white; }
+.brand { align-self: center; display: flex; flex-direction: column; }
+.brand strong { font-size: 23px; line-height: 30px; }
+.brand span { font-size: 12px; letter-spacing: 2.2px; opacity: .75; font-weight: 700; }
+.primary-nav { display: flex; align-items: stretch; }
+.primary-nav a { display: grid; place-items: center; min-width: 92px; padding: 0 14px; text-decoration: none; font-weight: 600; font-size: 14px; opacity: .76; border-bottom: 4px solid transparent; }
+.primary-nav a.active { opacity: 1; border-bottom-color: var(--do-color-teal); }
+.header-meta { align-self: center; font-size: 14px; opacity: .82; white-space: nowrap; }
+.prototype-strip { min-height: 44px; display: flex; justify-content: space-between; gap: 24px; align-items: center; padding: 10px 32px; background: var(--do-color-soft-blue); color: var(--do-color-navy); font-size: 14px; }
+main { min-height: calc(100vh - 180px); }
+.page { width: min(1376px, calc(100% - 48px)); margin: 0 auto; padding: 16px 0 56px; }
+.page-stack { display: grid; gap: 24px; }
+.context-bar { min-height: 58px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; padding: 10px 18px; background: white; border: 1px solid var(--do-color-line); border-radius: var(--do-radius-card); font-size: 13px; }
+.context-bar strong { color: var(--do-color-navy); margin-right: 4px; }
+.chip { padding: 8px 14px; border-radius: 999px; background: var(--do-color-soft-blue); border: 1px solid var(--do-color-line); color: var(--do-color-navy); font-weight: 600; }
+.page-heading h1 { color: var(--do-color-navy); font-size: clamp(2rem, 4vw, 2.4rem); line-height: 1.2; margin: 4px 0 6px; }
+.page-heading p { color: var(--do-color-muted); max-width: 850px; margin: 0; font-size: 17px; line-height: 1.55; }
+.eyebrow { font-size: 12px !important; letter-spacing: .12em; text-transform: uppercase; font-weight: 800; color: var(--do-color-teal) !important; }
+.card { background: white; border: 1px solid var(--do-color-line); border-radius: var(--do-radius-card); padding: 20px; }
+.placeholder-card { display: flex; justify-content: space-between; gap: 24px; align-items: flex-start; }
+.placeholder-card h2 { margin: 0 0 8px; color: var(--do-color-navy); }
+.placeholder-card p { margin: 0; color: var(--do-color-muted); max-width: 760px; line-height: 1.55; }
+.status { display: inline-flex; align-items: center; min-height: 28px; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; white-space: nowrap; }
+.status-scaffold { color: var(--do-color-amber); background: var(--do-color-soft-amber); }
+.guardrail { padding: 18px 20px; border-left: 4px solid var(--do-color-teal); background: var(--do-color-soft-teal); border-radius: 0 var(--do-radius-control) var(--do-radius-control) 0; }
+.guardrail strong { color: var(--do-color-navy); }
+.guardrail p { margin: 6px 0 0; color: var(--do-color-muted); line-height: 1.5; }
+.button { display: inline-flex; width: fit-content; padding: 12px 18px; border-radius: var(--do-radius-control); background: var(--do-color-navy); color: white; text-decoration: none; font-weight: 700; border: 0; cursor: pointer; }
+footer { display: flex; justify-content: space-between; gap: 20px; padding: 20px 32px; border-top: 1px solid var(--do-color-line); color: var(--do-color-muted); font-size: 12px; background: white; }
+@media (max-width: 980px) {
+  .site-header { grid-template-columns: 1fr; padding: 14px 20px; }
+  .primary-nav { overflow-x: auto; }
+  .primary-nav a { min-height: 48px; }
+  .header-meta { display: none; }
+  .prototype-strip { align-items: flex-start; flex-direction: column; padding-inline: 20px; }
+  .page { width: min(100% - 32px, 1376px); }
+}
