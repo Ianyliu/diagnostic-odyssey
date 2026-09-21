@@ -5,9 +5,9 @@ testthat::test_that("person, ESAQ, and PSAQ designs use different reviewed weigh
   testthat::expect_equal(attr(designs$psaq, "do_weight_variable"), "SAQWT24F")
   testthat::expect_equal(designs$metadata$joint_weight_status, "not_used_in_current_pipeline")
 
-  testthat::expect_equal(sum(survey::weights(designs$person)), 12)
-  testthat::expect_equal(sum(survey::weights(designs$esaq)), 24)
-  testthat::expect_equal(sum(survey::weights(designs$psaq)), 36)
+  testthat::expect_equal(sum(stats::weights(designs$person)), 12)
+  testthat::expect_equal(sum(stats::weights(designs$esaq)), 24)
+  testthat::expect_equal(sum(stats::weights(designs$psaq)), 36)
 })
 
 testthat::test_that("survey helpers preserve weighted totals, means, proportions, and intervals", {
@@ -24,8 +24,8 @@ testthat::test_that("survey helpers preserve weighted totals, means, proportions
     }
   )
 
-  expected_weighted_total <- sum(c(1,2,1,2,1,2,1,2)[1:6] * c(0,1,2,3,4,5))
-  expected_weighted_n <- sum(c(1,2,1,2,1,2,1,2)[1:6])
+  expected_weighted_total <- sum(c(1,2,1,2,1,2,2) * c(0,1,2,3,4,5,7))
+  expected_weighted_n <- sum(c(1,2,1,2,1,2,2))
   testthat::expect_equal(total$value, expected_weighted_total, tolerance = 1e-10)
   testthat::expect_equal(mean$value, expected_weighted_total / expected_weighted_n, tolerance = 1e-10)
   testthat::expect_equal(total$weighted_denominator, expected_weighted_n, tolerance = 1e-10)

@@ -1,3 +1,5 @@
+`%||%` <- function(x, y) if (is.null(x)) y else x
+
 source(file.path("analysis", "r", "lib", "paths.R"))
 
 candidate_domain <- function(domain_id, label, measures, limitations = character()) {
@@ -66,7 +68,6 @@ build_candidate_bundle <- function(
   code_commit,
   run_id
 ) {
-  `%||%` <- function(x, y) if (is.null(x)) y else x
   all_measures <- c(economic_measures, admin_measures, mental_measures)
   validate_candidate_records(all_measures)
 
