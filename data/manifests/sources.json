@@ -1,5 +1,5 @@
 {
-  "manifest_version": "2026-09-21.1",
+  "manifest_version": "2026-09-21.2",
   "sources": [
     {
       "source_id": "meps-hc256-2024",
@@ -7,18 +7,24 @@
       "name": "MEPS HC-256: 2024 Full Year Consolidated Data File",
       "agency": "AHRQ",
       "official_url": "https://meps.ahrq.gov/data_stats/download_data_files_detail.jsp?cboPufNumber=HC-256",
-      "acquisition": "manual_download",
+      "acquisition": "programmatic_or_manual",
       "recommended_format": "Stata ZIP",
       "expected_local_filename": "meps_hc256_2024_stata.zip",
       "local_path": "data/raw/meps/2024/meps_hc256_2024_stata.zip",
       "approx_size": "5.5 MB",
       "registration_required": false,
       "present_in_repository": false,
-      "role": "national economic, utilization, administrative, mental-health, work and source-of-payment analysis"
+      "role": "primary and sufficient source for 2024 national Long COVID burden, utilization, ESAQ, and PSAQ analyses",
+      "download_url": "https://meps.ahrq.gov/data_files/pufs/h256/h256dta.zip",
+      "expected_extracted_filename": "h256.dta",
+      "extracted_local_path": "data/raw/meps/2024/h256.dta",
+      "required_for": [
+        "meps-national-burden"
+      ]
     },
     {
       "source_id": "meps-hc254g-2024",
-      "priority": "P0/P1",
+      "priority": "P2",
       "name": "MEPS HC-254G: 2024 Office-Based Medical Provider Visits File",
       "agency": "AHRQ",
       "official_url": "https://meps.ahrq.gov/mepsweb/data_stats/download_data_files_detail.jsp?cboPufNumber=HC-254G",
@@ -29,11 +35,14 @@
       "approx_size": "2.6 MB",
       "registration_required": false,
       "present_in_repository": false,
-      "role": "office-based utilization/expenditure event detail"
+      "role": "optional office-based event detail; not required for primary HC-256 estimands",
+      "required_for": [
+        "meps-event-detail-only"
+      ]
     },
     {
       "source_id": "nhis-sample-adult-2024",
-      "priority": "P0",
+      "priority": "P2",
       "name": "NHIS 2024 Sample Adult Public-Use CSV",
       "agency": "CDC/NCHS",
       "official_url": "https://www.cdc.gov/nchs/nhis/documentation/2024-nhis.html",
@@ -44,11 +53,15 @@
       "approx_size": "not recorded; verify on download",
       "registration_required": false,
       "present_in_repository": false,
-      "role": "condition/function evidence and ME/CFS compatibility proof"
+      "role": "supplementary/compatibility analyses only; not required for primary 2024 MEPS Long COVID cohort",
+      "required_for": [
+        "nhis-supplementary",
+        "mecfs-compatibility"
+      ]
     },
     {
       "source_id": "hrsa-hpsa-primary-care-current",
-      "priority": "P0",
+      "priority": "P2",
       "name": "HRSA HPSA - Primary Care - All HPSAs CSV",
       "agency": "HRSA",
       "official_url": "https://data.hrsa.gov/data/download?data=AHRF",
@@ -58,11 +71,14 @@
       "approx_size": "35 MB as listed 2026-08-26",
       "registration_required": false,
       "present_in_repository": false,
-      "role": "local implementation/provider-shortage context"
+      "role": "local implementation/provider-shortage context",
+      "required_for": [
+        "local-context-hrsa"
+      ]
     },
     {
       "source_id": "hrsa-hpsa-mental-health-current",
-      "priority": "P0",
+      "priority": "P2",
       "name": "HRSA HPSA - Mental Health - All HPSAs CSV",
       "agency": "HRSA",
       "official_url": "https://data.hrsa.gov/data/download?data=AHRF",
@@ -72,11 +88,14 @@
       "approx_size": "14 MB as listed 2026-08-26",
       "registration_required": false,
       "present_in_repository": false,
-      "role": "local mental-health provider-shortage context"
+      "role": "local mental-health provider-shortage context",
+      "required_for": [
+        "local-context-hrsa"
+      ]
     },
     {
       "source_id": "acs-2024-5year",
-      "priority": "P0/P1",
+      "priority": "P2",
       "name": "American Community Survey 2024 5-year estimates",
       "agency": "US Census Bureau",
       "official_url": "https://www.census.gov/data/developers/data-sets/acs-5year/2024.html",
@@ -85,11 +104,14 @@
       "local_path": "data/raw/acs/2024/acs_2024_5year_context.csv",
       "registration_required": "API key required",
       "present_in_repository": false,
-      "role": "population, employment, insurance, transportation and rural/access context"
+      "role": "population, employment, insurance, transportation and rural/access context",
+      "required_for": [
+        "local-context-acs"
+      ]
     },
     {
       "source_id": "cdc-places-current",
-      "priority": "P1",
+      "priority": "P3",
       "name": "CDC PLACES current release",
       "agency": "CDC",
       "official_url": "https://www.cdc.gov/places/tools/data-portal.html",
@@ -98,11 +120,14 @@
       "local_path": "data/raw/places/current/places_context_subset.csv",
       "registration_required": false,
       "present_in_repository": false,
-      "role": "contextual health/access/distress indicators only"
+      "role": "contextual health/access/distress indicators only",
+      "required_for": [
+        "local-context-places"
+      ]
     },
     {
       "source_id": "cms-provider-summary",
-      "priority": "P1",
+      "priority": "P3",
       "name": "CMS Provider Summary by Type of Service",
       "agency": "CMS",
       "official_url": "https://data.cms.gov/provider-summary-by-type-of-service",
@@ -111,7 +136,10 @@
       "local_path": "data/raw/cms/",
       "registration_required": false,
       "present_in_repository": false,
-      "role": "possible geographic/provider utilization context; not a substitute for state Medicaid claims"
+      "role": "possible geographic/provider utilization context; not a substitute for state Medicaid claims",
+      "required_for": [
+        "local-context-cms"
+      ]
     }
   ]
 }

@@ -1,0 +1,49 @@
+{
+  "schema_version": "1.0",
+  "pipelines": {
+    "meps-national-burden": {
+      "description": "2024 HC-256 national Long COVID burden pipeline",
+      "one_of": [
+        "data/raw/meps/2024/h256.dta",
+        "data/raw/meps/2024/meps_hc256_2024_stata.zip"
+      ],
+      "required": [],
+      "optional": [
+        "data/raw/meps/2024/hc256_source_metadata.json"
+      ]
+    },
+    "nhis-supplementary": {
+      "description": "NHIS supplementary / compatibility analyses",
+      "required": [
+        "data/raw/nhis/2024/adult24csv.zip"
+      ],
+      "one_of": [],
+      "optional": []
+    },
+    "local-context-hrsa": {
+      "description": "HRSA local-context pipeline",
+      "required": [
+        "data/raw/hrsa/hpsa_primary_care_all.csv",
+        "data/raw/hrsa/hpsa_mental_health_all.csv"
+      ],
+      "one_of": [],
+      "optional": []
+    },
+    "local-context-acs": {
+      "description": "ACS local-context pipeline",
+      "required": [
+        "data/raw/acs/2024/acs_2024_5year_context.csv"
+      ],
+      "one_of": [],
+      "optional": []
+    },
+    "meps-event-detail": {
+      "description": "Optional MEPS event-level office-visit detail",
+      "required": [
+        "data/raw/meps/2024/meps_hc254g_2024_office_visits_stata.zip"
+      ],
+      "one_of": [],
+      "optional": []
+    }
+  }
+}
