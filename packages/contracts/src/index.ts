@@ -73,6 +73,17 @@ export interface Estimate {
   allowed_interpretation: string;
   prohibited_interpretation: string[];
   limitations: string[];
+  standard_error?: number | null;
+  weighted_denominator?: number | null;
+  unweighted_n?: number | null;
+  unweighted_numerator_n?: number | null;
+  weight_variable?: string | null;
+  variance_stratum_variable?: string | null;
+  variance_psu_variable?: string | null;
+  source_locator?: string | null;
+  cohort_definition?: string | null;
+  statistics_method?: string | null;
+  component_of_measure_id?: string | null;
 }
 
 export interface BurdenDomain {
@@ -268,6 +279,48 @@ export function validateEstimate(value: unknown, path = "estimate"): ValidationI
       typeof value.interval_low === "number" && typeof value.interval_high === "number" &&
       value.interval_low > value.interval_high) {
     issues.push({ path, message: "interval_low cannot exceed interval_high" });
+  }
+
+  const isNumericAnalyticalArtifact =
+    value.display_status === "analytical_artifact" &&
+    typeof value.value === "number" &&
+    Number.isFinite(value.value);
+
+  if (isNumericAnalyticalArtifact) {
+    const provenanceStrings = [
+      "weight_variable",
+      "variance_stratum_variable",
+      "variance_psu_variable",
+      "source_locator",
+      "cohort_definition",
+      "statistics_method"
+    ];
+    for (const key of provenanceStrings) {
+      if (!isNonEmptyString(value[key])) {
+        issues.push({
+          path: `${path}.${key}`,
+          message: "is required for a numeric analytical artifact"
+        });
+      }
+    }
+
+    for (const key of ["standard_error", "weighted_denominator", "unweighted_n"]) {
+      const candidate = value[key];
+      if (typeof candidate !== "number" || !Number.isFinite(candidate) || candidate < 0) {
+        issues.push({
+          path: `${path}.${key}`,
+          message: "must be a non-negative finite number for a numeric analytical artifact"
+        });
+      }
+    }
+  }
+
+  if (typeof value.component_of_measure_id === "string" &&
+      value.component_of_measure_id === value.measure_id) {
+    issues.push({
+      path: `${path}.component_of_measure_id`,
+      message: "cannot refer to the same measure_id"
+    });
   }
 
   return issues;

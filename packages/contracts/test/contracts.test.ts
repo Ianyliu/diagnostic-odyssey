@@ -76,3 +76,66 @@ test("only reviewed analytical estimates are exportable", () => {
   assert.equal(canExportEstimate(base), true);
   assert.equal(canExportEstimate({ ...base, display_status: "illustrative" }), false);
 });
+
+
+test("numeric analytical artifacts require survey provenance", () => {
+  const issues = validateEstimate({
+    estimate_id: "candidate",
+    measure_id: "gross-spending",
+    label: "Candidate",
+    value: 123,
+    unit: "USD/year",
+    interval_low: 100,
+    interval_high: 150,
+    interval_type: "95% CI",
+    denominator: "cohort",
+    universe: "national",
+    system_boundary: "gross all-cause spending",
+    evidence_type: "survey_estimate",
+    release_status: "preliminary",
+    display_status: "analytical_artifact",
+    source_ref: "meps-hc256-2024",
+    artifact_version: "candidate-v1",
+    allowed_interpretation: "descriptive",
+    prohibited_interpretation: [],
+    limitations: []
+  });
+  assert.ok(issues.some(issue => issue.path.endsWith(".weight_variable")));
+  assert.ok(issues.some(issue => issue.path.endsWith(".source_locator")));
+  assert.ok(issues.some(issue => issue.path.endsWith(".unweighted_n")));
+});
+
+test("preliminary analytical estimate with provenance validates but is not exportable", () => {
+  const estimate: Estimate = {
+    estimate_id: "candidate",
+    measure_id: "gross-spending",
+    label: "Candidate",
+    value: 123,
+    unit: "USD/year",
+    interval_low: 100,
+    interval_high: 150,
+    interval_type: "95% t CI",
+    denominator: "cohort",
+    universe: "national",
+    system_boundary: "gross all-cause spending",
+    evidence_type: "survey_estimate",
+    release_status: "preliminary",
+    display_status: "analytical_artifact",
+    source_ref: "meps-hc256-2024",
+    artifact_version: "candidate-v1",
+    allowed_interpretation: "descriptive",
+    prohibited_interpretation: [],
+    limitations: [],
+    standard_error: 10,
+    weighted_denominator: 1000,
+    unweighted_n: 100,
+    weight_variable: "PERWT24F",
+    variance_stratum_variable: "VARSTR",
+    variance_psu_variable: "VARPSU",
+    source_locator: "HC-256 codebook",
+    cohort_definition: "reviewed operational cohort",
+    statistics_method: "Taylor linearization"
+  };
+  assert.deepEqual(validateEstimate(estimate), []);
+  assert.equal(canExportEstimate(estimate), false);
+});
