@@ -26,8 +26,19 @@ design_with_clean_value <- function(design, source_variable, cleaner, target = "
   set_design_variable(design, target, cleaner(design$variables[[source_variable]]))
 }
 
-survey_df <- function(design) {
-  max(1, survey::degf(design))
+survey_df <- function(design, label = "survey design") {
+  df <- survey::degf(design)
+  if (length(df) != 1L || !is.finite(df) || df <= 0) {
+    stop(
+      sprintf(
+        "Invalid survey design degrees of freedom for %s: %s. Analytical estimation cannot continue.",
+        label,
+        paste(df, collapse = ", ")
+      ),
+      call. = FALSE
+    )
+  }
+  unname(df)
 }
 
 t_interval <- function(estimate, standard_error, design, level = 0.95) {

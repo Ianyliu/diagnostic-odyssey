@@ -39,3 +39,29 @@ testthat::test_that("survey helpers preserve weighted totals, means, proportions
   testthat::expect_true(prop$value >= 0 && prop$value <= 1)
   testthat::expect_true(prop$interval_low >= 0 && prop$interval_high <= 1)
 })
+
+
+testthat::test_that("nonpositive survey degrees of freedom fail explicitly", {
+  one_row <- data.frame(VARSTR = 1, VARPSU = 1, w = 1, x = 1)
+  design <- survey::svydesign(
+    ids = ~VARPSU,
+    strata = ~VARSTR,
+    weights = ~w,
+    data = one_row,
+    nest = TRUE
+  )
+
+  testthat::expect_lte(survey::degf(design), 0)
+  testthat::expect_error(
+    survey_df(design, "synthetic singleton design"),
+    "Invalid survey design degrees of freedom"
+  )
+})
+
+testthat::test_that("finite positive survey degrees of freedom are preserved exactly", {
+  designs <- build_meps_designs(synthetic_design_data())
+  expected <- survey::degf(designs$person)
+
+  testthat::expect_true(is.finite(expected) && expected > 0)
+  testthat::expect_equal(survey_df(designs$person, "synthetic person design"), expected)
+})
