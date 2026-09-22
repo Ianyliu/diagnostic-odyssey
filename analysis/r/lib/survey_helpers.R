@@ -1,7 +1,7 @@
 configure_meps_survey_options <- function() {
   options(
     survey.lonely.psu = "adjust",
-    survey.adjust.domain.lonely = TRUE
+    survey.adjust.domain.lonely = FALSE
   )
 }
 

@@ -60,7 +60,10 @@ build_meps_designs <- function(data) {
       variance_stratum = "VARSTR",
       variance_psu = "VARPSU",
       variance_method = "Taylor series linearization; with-replacement design",
-      lonely_psu_policy = "survey.lonely.psu='adjust'; survey.adjust.domain.lonely=TRUE"
+      lonely_psu_policy = paste(
+        "survey.lonely.psu='adjust' for any actual full-design lonely PSU;",
+        "survey.adjust.domain.lonely=FALSE for ordinary full-design domain variance"
+      )
     )
   )
 }
