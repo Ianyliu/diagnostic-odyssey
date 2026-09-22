@@ -40,6 +40,17 @@ AHRQ documents that `AGE31X` is age relevant to Panel 28 Round 3 / Panel 29 Roun
 
 `AGE24X` instead represents age as of December 31, 2024. Using it for a Round-3/1 point-in-time cohort could incorrectly include people who were still 17 at the status interview but turned 18 later in 2024; AHRQ also notes that Long-COVID responses for children under 18 are coded Inapplicable on the public-use file for confidentiality. The primary cohort therefore requires `18 <= AGE31X <= 64`.
 
+### Age-transition diagnostic cleanup
+
+The primary age anchor remains `AGE31X`; only the audit diagnostic was cleaned. Review of the real HC-256 file found 414 records with different 18–64 eligibility under `AGE31X` versus `AGE24X`. After treating only 0–85 as valid diagnostic ages and excluding negative reserved codes from genuine-age labels, the differences partition as:
+
+- 211: valid `AGE31X` 18–64 → valid `AGE24X` 65+;
+- 148: valid `AGE31X` under 18 → valid `AGE24X` 18–64;
+- 49: valid `AGE31X` 18–64 → `AGE24X` reserved/missing;
+- 6: `AGE31X` reserved/missing → valid `AGE24X` 18–64.
+
+The categories reconcile exactly to 414. Negative reserved age codes are never labeled as genuine under-18 ages.
+
 ### Route-aware COVID / Long-COVID classification
 
 The 2024 PE instrument routes the COVID sequence as follows:
@@ -91,9 +102,36 @@ AHRQ identifies `VARSTR` and `VARPSU` for Taylor-series variance estimation and 
 
 The full weight-specific design is constructed before cohort domain estimation. Raw rows are not pre-filtered to cases.
 
-Software policy: `survey.lonely.psu="adjust"` and `survey.adjust.domain.lonely=TRUE`. Candidate artifacts record this choice. Intervals are 95% t intervals using finite positive survey-design degrees of freedom; zero, negative, or nonfinite design degrees of freedom are an analytical failure rather than being replaced with an artificial value.
+Software policy: `survey.lonely.psu="adjust"` remains explicit for any actual lonely PSU in a full weight-specific design, while `survey.adjust.domain.lonely=FALSE` uses ordinary full-design domain variance without the additional domain-singleton heuristic. The full design is always constructed before domain restriction.
+
+For confidence intervals, the point estimate and Taylor-linearized standard error come from the correct analytical domain, but the t critical value uses the degrees of freedom from the relevant **full weight-specific design**: PERSON/`PERWT24F`, ESAQ/`ESAQWT24F`, or PSAQ/`SAQWT24F`. The df is computed at runtime and is never hard-coded. Zero, negative, or nonfinite reference-design df cause analytical failure.
 
 For binary proportions, the current implementation uses a Taylor-linearized t interval and post-hoc bounds it to [0,1]. This is retained for this correction pass to avoid bundling an unrelated interval-method change. It is a documented follow-up limitation for later methods review.
+
+## Variance-policy adjudication
+
+Before changing the domain-singleton policy, a review-only real HC-256 run (GitHub Actions run `35730539778`) compared the existing additional domain adjustment with ordinary full-design domain variance while holding the cohort, weights, Taylor estimator, and `subset(survey.design, domain)` path fixed.
+
+All three full weight-specific designs had the same variance topology:
+
+- 105 variance strata;
+- 264 unique `VARSTR`/`VARPSU` combinations;
+- minimum 2 and maximum 5 PSUs per stratum;
+- PSU distribution: 64 strata with 2 PSUs, 30 with 3, 9 with 4, and 2 with 5;
+- **zero true singleton full-design strata**;
+- `survey::degf() = 159`.
+
+The current-case domains were much smaller and consequently had one-PSU **representation within the domain** in 33 PERSON strata, 42 ESAQ strata, and 40 PSAQ strata. These are not true full-design singleton strata.
+
+Sensitivity analysis across all 21 candidate estimates found identical point estimates under `survey.adjust.domain.lonely=TRUE` versus `FALSE` (maximum relative point-estimate difference 0). Under ordinary domain variance, standard errors changed by 0% to approximately -13% relative to the extra adjusted-domain heuristic. The 1,454 repeated domain-singleton warnings produced with the heuristic enabled disappeared when it was disabled. Warning disappearance is an observed software consequence, **not** the methodological justification.
+
+The primary policy is therefore:
+
+- retain `survey.lonely.psu="adjust"` for a genuine full-design lonely-PSU situation;
+- use `survey.adjust.domain.lonely=FALSE` for this MEPS domain analysis;
+- continue estimating domains from the full survey design, never from raw-prefiltered records.
+
+This decision follows AHRQ's domain-analysis guidance to retain the full MEPS design and the R `survey` package distinction between actual lonely PSUs and one-PSU representation inside a domain. The package's additional domain-lonely adjustment is a separate heuristic rather than the ordinary domain variance calculation.
 
 ## Tier 1 estimands
 
@@ -101,6 +139,8 @@ For binary proportions, the current implementation uses a Taylor-linearized t in
 Survey-weighted total number of adults 18–64 meeting the operational current-Long-COVID definition.
 
 ### Gross all-cause spending
+These are **calendar-year 2024** expenditures among adults who met the operational current-Long-COVID definition at their Round 3/1 interview in 2024. The point-in-time classification does not imply symptoms persisted throughout 2024, and annual expenditures may occur before or after the status interview.
+
 Using `TOTEXP24` with `PERWT24F`:
 
 - total annual all-cause health-care expenditure;
@@ -113,6 +153,8 @@ Using `TOTSLF24`:
 `TOTSLF24` is a **source-of-payment component** of total expenditure and is never added back to `TOTEXP24`. All spending is labeled gross/all-cause, not attributable, preventable, diagnostic-delay cost, or savings.
 
 ### Utilization
+These are **calendar-year 2024** all-cause utilization measures among adults classified operational-current at the Round 3/1 2024 interview. They do not imply that Long COVID persisted throughout the year or caused any visit.
+
 HC-256 annual person-level fields are sufficient for the first pass; event PUFs are not required:
 
 - `OBTOTV24`: office-based provider visits;
@@ -124,7 +166,7 @@ For each, report the survey-weighted annual mean count and the proportion with a
 
 ## Tier 2 — ESAQ healthcare-work / administrative burden
 
-Use `ESAQWT24F` among `ESAQELIG=1`, then estimate the Long COVID domain.
+Use `ESAQWT24F` among `ESAQELIG=1`, then estimate the domain of respondents who had been classified operational-current at the **earlier Round 3/1 2024 anchor**. The later ESAQ response does not demonstrate that current Long COVID persisted through supplement administration.
 
 Report separately:
 
@@ -138,7 +180,7 @@ For `EQDENY53`, the initial proportion denominator is deliberately narrow: curre
 
 ## Tier 3 — PSAQ mental/human burden
 
-Use `SAQWT24F` among `SAQELIG=1`.
+Use `SAQWT24F` among `SAQELIG=1` for respondents previously classified operational-current at the **earlier Round 3/1 2024 anchor**. Later PSAQ distress/screening outcomes do not demonstrate continued current Long COVID at supplement administration and are not interpreted causally.
 
 - `K6SUM42`: official constructed K6 score, range 0–24. Report mean score and serious nonspecific psychological distress prevalence at >=13, following AHRQ's published classification.
 - `PHQ242`: official constructed PHQ-2 score, range 0–6. Report mean score and screen-positive prevalence at >=3; HC-256 documentation describes 3 as a screening cut point.

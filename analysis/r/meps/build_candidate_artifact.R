@@ -97,6 +97,7 @@ build_candidate_bundle <- function(
         economic_measures,
         c(
           "All spending and utilization estimates are gross/all-cause descriptive burden.",
+          "The cohort is classified at the Round 3/1 2024 interview; annual 2024 spending/utilization may occur before or after that point and does not imply year-long symptom persistence.",
           "Out-of-pocket spending is nested within total spending and is not additive."
         )
       ),
@@ -106,6 +107,7 @@ build_candidate_bundle <- function(
         admin_measures,
         c(
           "ESAQ native time domains are reported separately and are not summed.",
+          "ESAQ respondents were classified operational-current at the earlier Round 3/1 2024 anchor; later ESAQ responses do not prove continued current status.",
           "ESAQ time measures are top-coded by AHRQ and have item-response limitations."
         )
       ),
@@ -115,6 +117,7 @@ build_candidate_bundle <- function(
         mental_measures,
         c(
           "K6 measures nonspecific psychological distress; PHQ-2 is a depressive-symptom screen.",
+          "PSAQ respondents were classified operational-current at the earlier Round 3/1 2024 anchor; later PSAQ outcomes do not prove continued current status.",
           "Neither is a psychiatric diagnosis, monetized burden, or causal Long COVID effect."
         )
       )

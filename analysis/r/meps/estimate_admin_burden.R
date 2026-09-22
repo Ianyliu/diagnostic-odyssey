@@ -47,7 +47,7 @@ estimate_admin_burden <- function(designs, artifact_version) {
       label = spec$label,
       unit = "hours/person/year",
       denominator = paste0(
-        "Current-Long-COVID adults age 18-64 with ESAQELIG=1, positive ESAQWT24F, ",
+        "Adults age 18-64 classified operational-current at the earlier Round 3/1 2024 anchor, with ESAQELIG=1, positive ESAQWT24F, ",
         "and valid ", spec$variable
       ),
       universe = "U.S. civilian noninstitutionalized adult ESAQ respondent population",
@@ -61,7 +61,7 @@ estimate_admin_burden <- function(designs, artifact_version) {
       cohort_definition = cohort_definition_text(),
       allowed_interpretation = paste0(
         "Survey-weighted mean annualized hours spent on ", spec$detail,
-        " among the stated ESAQ response universe."
+        " among later ESAQ respondents who had been classified operational-current at the Round 3/1 2024 anchor."
       ),
       prohibited_interpretation = c(
         "diagnostic-delay time",
@@ -72,7 +72,8 @@ estimate_admin_burden <- function(designs, artifact_version) {
       limitations = c(
         paste0("AHRQ top-codes ", spec$variable, " at ", spec$maximum, " annualized hours."),
         "AHRQ reports substantial item nonresponse for the ESAQ time-cost questions, especially on paper forms.",
-        "This time domain is reported separately and is not added to the other ESAQ time measures."
+        "This time domain is reported separately and is not added to the other ESAQ time measures.",
+        "Operational-current status was measured at the earlier Round 3/1 2024 interview; the later ESAQ response does not establish continued current Long COVID at supplement administration."
       )
     )
   }
@@ -91,7 +92,7 @@ estimate_admin_burden <- function(designs, artifact_version) {
     label = "Prior approval denied or delayed — yes/no response universe",
     unit = "proportion",
     denominator = paste(
-      "Current-Long-COVID adults age 18-64 with ESAQELIG=1, positive ESAQWT24F,",
+      "Adults age 18-64 classified operational-current at the earlier Round 3/1 2024 anchor, with ESAQELIG=1, positive ESAQWT24F,",
       "and EQDENY53 equal to Yes (1) or No (2)"
     ),
     universe = "U.S. civilian noninstitutionalized adult ESAQ respondent population",
@@ -106,7 +107,7 @@ estimate_admin_burden <- function(designs, artifact_version) {
       cohort_definition = cohort_definition_text(),
     allowed_interpretation = paste(
       "Proportion reporting that health insurance denied or delayed prior approval",
-      "among ESAQ respondents in the cohort who supplied a substantive Yes/No response."
+      "among later ESAQ respondents previously classified operational-current at the Round 3/1 2024 anchor who supplied a substantive Yes/No response."
     ),
     prohibited_interpretation = c(
       "percent of all Long COVID patients",
@@ -115,7 +116,8 @@ estimate_admin_burden <- function(designs, artifact_version) {
     ),
     limitations = c(
       "EQDENY53 codes 3 (never insured in past year) and 4 (not applicable/have not used services) are excluded from the proportion denominator.",
-      "Reserved negative codes are missing and are not converted to No."
+      "Reserved negative codes are missing and are not converted to No.",
+      "Operational-current status was measured at the earlier Round 3/1 2024 interview; EQDENY53 does not establish continued current Long COVID at supplement administration."
     )
   )
 

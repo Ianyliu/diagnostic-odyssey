@@ -38,21 +38,22 @@ estimate_mental_health <- function(designs, artifact_version) {
       measure_id = "k6-score-mean",
       label = "Mean K6 nonspecific psychological distress score",
       unit = "score (0-24)",
-      denominator = "Current-Long-COVID adults age 18-64 with SAQELIG=1, positive SAQWT24F, and valid K6SUM42",
+      denominator = "Adults age 18-64 classified operational-current at the earlier Round 3/1 2024 anchor, with SAQELIG=1, positive SAQWT24F, and valid K6SUM42",
       universe = common_universe,
       system_boundary = "National PSAQ nonspecific psychological distress",
       source_locator = k6_url,
       weight_variable = "SAQWT24F",
       artifact_version = artifact_version,
       cohort_definition = cohort_definition_text(),
-      allowed_interpretation = "Mean official K6 nonspecific psychological distress score in the stated PSAQ response universe.",
+      allowed_interpretation = "Mean official K6 nonspecific psychological distress score among later PSAQ respondents previously classified operational-current at the Round 3/1 2024 anchor.",
       prohibited_interpretation = c(
         "psychiatric diagnosis",
         "distress caused by Long COVID",
         "distress caused by diagnostic delay",
         "monetized human burden"
       ),
-      limitations = c("K6 is a nonspecific psychological distress measure, not a disorder diagnosis.")
+      limitations = c("K6 is a nonspecific psychological distress measure, not a disorder diagnosis.",
+        "Operational-current status was measured at the earlier Round 3/1 2024 interview; the later PSAQ score does not establish continued current Long COVID at supplement administration.")
     ),
     make_estimate_record(
       k6_serious,
@@ -60,7 +61,7 @@ estimate_mental_health <- function(designs, artifact_version) {
       measure_id = "k6-serious-distress",
       label = "Serious nonspecific psychological distress (K6 >=13)",
       unit = "proportion",
-      denominator = "Current-Long-COVID adults age 18-64 with SAQELIG=1, positive SAQWT24F, and valid K6SUM42",
+      denominator = "Adults age 18-64 classified operational-current at the earlier Round 3/1 2024 anchor, with SAQELIG=1, positive SAQWT24F, and valid K6SUM42",
       universe = common_universe,
       system_boundary = "National PSAQ nonspecific psychological distress",
       source_locator = paste(
@@ -71,14 +72,15 @@ estimate_mental_health <- function(designs, artifact_version) {
       weight_variable = "SAQWT24F",
       artifact_version = artifact_version,
       cohort_definition = cohort_definition_text(),
-      allowed_interpretation = "Proportion meeting AHRQ's published K6 >=13 serious-distress category in the stated PSAQ response universe.",
+      allowed_interpretation = "Proportion meeting AHRQ's published K6 >=13 serious-distress category among later PSAQ respondents previously classified operational-current at the Round 3/1 2024 anchor.",
       prohibited_interpretation = c(
         "psychiatric diagnosis",
         "mental illness prevalence",
         "causal effect of Long COVID or diagnostic delay",
         "monetized human burden"
       ),
-      limitations = c("Threshold is a distress classification, not a psychiatric diagnosis.")
+      limitations = c("Threshold is a distress classification, not a psychiatric diagnosis.",
+        "Operational-current status was measured at the earlier Round 3/1 2024 interview; the later PSAQ outcome does not establish continued current Long COVID at supplement administration.")
     ),
     make_estimate_record(
       phq_mean,
@@ -86,20 +88,21 @@ estimate_mental_health <- function(designs, artifact_version) {
       measure_id = "phq2-score-mean",
       label = "Mean PHQ-2 depressive-symptom screen score",
       unit = "score (0-6)",
-      denominator = "Current-Long-COVID adults age 18-64 with SAQELIG=1, positive SAQWT24F, and valid PHQ242",
+      denominator = "Adults age 18-64 classified operational-current at the earlier Round 3/1 2024 anchor, with SAQELIG=1, positive SAQWT24F, and valid PHQ242",
       universe = common_universe,
       system_boundary = "National PSAQ depressive-symptom screening",
       source_locator = phq_url,
       weight_variable = "SAQWT24F",
       artifact_version = artifact_version,
       cohort_definition = cohort_definition_text(),
-      allowed_interpretation = "Mean official PHQ-2 depressive-symptom screening score in the stated PSAQ response universe.",
+      allowed_interpretation = "Mean official PHQ-2 depressive-symptom screening score among later PSAQ respondents previously classified operational-current at the Round 3/1 2024 anchor.",
       prohibited_interpretation = c(
         "depression diagnosis",
         "causal effect of Long COVID or diagnostic delay",
         "monetized human burden"
       ),
-      limitations = c("PHQ-2 is a screening measure, not a DSM-V diagnosis.")
+      limitations = c("PHQ-2 is a screening measure, not a DSM-V diagnosis.",
+        "Operational-current status was measured at the earlier Round 3/1 2024 interview; the later PSAQ score does not establish continued current Long COVID at supplement administration.")
     ),
     make_estimate_record(
       phq_positive,
@@ -107,7 +110,7 @@ estimate_mental_health <- function(designs, artifact_version) {
       measure_id = "phq2-screen-positive",
       label = "PHQ-2 screen-positive (score >=3)",
       unit = "proportion",
-      denominator = "Current-Long-COVID adults age 18-64 with SAQELIG=1, positive SAQWT24F, and valid PHQ242",
+      denominator = "Adults age 18-64 classified operational-current at the earlier Round 3/1 2024 anchor, with SAQELIG=1, positive SAQWT24F, and valid PHQ242",
       universe = common_universe,
       system_boundary = "National PSAQ depressive-symptom screening",
       source_locator = paste(
@@ -118,14 +121,15 @@ estimate_mental_health <- function(designs, artifact_version) {
       weight_variable = "SAQWT24F",
       artifact_version = artifact_version,
       cohort_definition = cohort_definition_text(),
-      allowed_interpretation = "Proportion with PHQ-2 score >=3 in the stated PSAQ response universe.",
+      allowed_interpretation = "Proportion with PHQ-2 score >=3 among later PSAQ respondents previously classified operational-current at the Round 3/1 2024 anchor.",
       prohibited_interpretation = c(
         "depression diagnosis",
         "DSM-V depression prevalence",
         "causal effect of Long COVID or diagnostic delay",
         "monetized human burden"
       ),
-      limitations = c("PHQ-2 >=3 is a screening threshold, not a clinical diagnosis.")
+      limitations = c("PHQ-2 >=3 is a screening threshold, not a clinical diagnosis.",
+        "Operational-current status was measured at the earlier Round 3/1 2024 interview; the later PSAQ outcome does not establish continued current Long COVID at supplement administration.")
     )
   )
 }

@@ -78,9 +78,37 @@
     "joint_psaq_esaq_weight": "PESAQWT24F",
     "joint_weight_use": "Not used in current pipeline; only for future analyses that jointly use PSAQ and ESAQ variables.",
     "subpopulation_method": "Create the full weight-specific survey design first, then use survey-domain/subpopulation estimation; do not pre-filter the raw file to the Long COVID cohort.",
-    "lonely_psu_policy": "R survey options survey.lonely.psu='adjust' and survey.adjust.domain.lonely=TRUE; record this software policy in artifact provenance.",
-    "ci_method": "95% t-based confidence interval using survey design degrees of freedom for totals/means/proportions.",
-    "missingness": "MEPS negative reserved codes are NA for analytical outcomes unless a code is a substantive category explicitly retained. Missing outcome responses are not coerced to zero."
+    "lonely_psu_policy": "survey.lonely.psu='adjust' remains explicit for any actual full-design lonely PSU; survey.adjust.domain.lonely=FALSE for ordinary full-design domain variance. Real HC-256 review found zero true singleton strata in PERSON/ESAQ/PSAQ full designs.",
+    "ci_method": "95% t-based confidence intervals: Taylor point estimate/SE from the correct survey domain, with t critical-value degrees of freedom from the relevant FULL weight-specific survey design (PERSON, ESAQ, or PSAQ).",
+    "missingness": "MEPS negative reserved codes are NA for analytical outcomes unless a code is a substantive category explicitly retained. Missing outcome responses are not coerced to zero.",
+    "full_design_review": {
+      "review_run": 35730539778,
+      "person": {
+        "variance_strata": 105,
+        "unique_varstr_varpsu": 264,
+        "min_psus_per_stratum": 2,
+        "max_psus_per_stratum": 5,
+        "true_singleton_strata": 0,
+        "survey_degf": 159
+      },
+      "esaq": {
+        "variance_strata": 105,
+        "unique_varstr_varpsu": 264,
+        "min_psus_per_stratum": 2,
+        "max_psus_per_stratum": 5,
+        "true_singleton_strata": 0,
+        "survey_degf": 159
+      },
+      "psaq": {
+        "variance_strata": 105,
+        "unique_varstr_varpsu": 264,
+        "min_psus_per_stratum": 2,
+        "max_psus_per_stratum": 5,
+        "true_singleton_strata": 0,
+        "survey_degf": 159
+      },
+      "note": "Observed HC-256 diagnostics, not a hard-coded inference constant."
+    }
   },
   "measures": [
     {

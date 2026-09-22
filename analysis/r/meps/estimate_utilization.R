@@ -64,7 +64,7 @@ estimate_utilization <- function(designs, artifact_version) {
       label = paste("Mean annual", tolower(spec$label)),
       unit = spec$unit,
       denominator = paste0(
-        "Adults age 18-64 meeting operational current Long COVID definition with valid ",
+        "Adults age 18-64 who met the operational current-Long-COVID definition at their Round 3/1 2024 interview, with valid ",
         spec$variable
       ),
       universe = "U.S. civilian noninstitutionalized population, adults age 18-64",
@@ -74,15 +74,15 @@ estimate_utilization <- function(designs, artifact_version) {
       artifact_version = artifact_version,
       cohort_definition = cohort_definition_text(),
       allowed_interpretation = paste0(
-        "Mean annual all-cause ", tolower(spec$label),
-        " among adults meeting the operational current Long COVID definition."
+        "Mean calendar-year 2024 all-cause ", tolower(spec$label),
+        " among adults classified operational-current at their Round 3/1 interview in 2024."
       ),
       prohibited_interpretation = c(
         "utilization caused by Long COVID",
         "utilization caused by diagnostic delay",
         "avoidable utilization"
       ),
-      limitations = c("Person-level annual utilization from HC-256; no event-level attribution.")
+      limitations = c("Current-Long-COVID classification is point-in-time at the Round 3/1 2024 interview; calendar-year utilization may occur before or after that anchor and does not establish symptom persistence or event attribution.")
     )
 
     records[[length(records) + 1L]] <- make_estimate_record(
@@ -102,14 +102,15 @@ estimate_utilization <- function(designs, artifact_version) {
       artifact_version = artifact_version,
       cohort_definition = cohort_definition_text(),
       allowed_interpretation = paste0(
-        "Share of the cohort with at least one ", spec$event, " in 2024."
+        "Share with at least one ", spec$event,
+        " during calendar-year 2024 among adults classified operational-current at their Round 3/1 2024 interview."
       ),
       prohibited_interpretation = c(
         "utilization caused by Long COVID",
         "utilization caused by diagnostic delay",
         "avoidable utilization"
       ),
-      limitations = c("Person-level annual utilization from HC-256; no event-level attribution.")
+      limitations = c("Current-Long-COVID classification is point-in-time at the Round 3/1 2024 interview; calendar-year utilization may occur before or after that anchor and does not establish symptom persistence or event attribution.")
     )
   }
   records
