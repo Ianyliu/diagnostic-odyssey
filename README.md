@@ -101,7 +101,9 @@ docs/
   testing.md
 
 .github/
-  workflows/ci.yml
+  workflows/
+    ci.yml
+    meps-candidate.yml
 ```
 
 ## Development
@@ -110,7 +112,13 @@ Requires Node 22+ for the application/contracts and R for the offline analytical
 
 ### First real MEPS candidate
 
-From the repository root:
+Preferred reproducible execution is the manual GitHub Actions workflow:
+
+`Actions → MEPS 2024 Long COVID Candidate → Run workflow`
+
+Select `main` (or an explicitly reviewed commit/ref). The workflow has no custom inputs. It downloads HC-256 from the official AHRQ source, reruns TypeScript and synthetic R checks, generates a **preliminary** candidate, and uploads aggregate review files only. It does not commit the candidate or change runtime artifact selection.
+
+For local execution instead, from the repository root:
 
 ```bash
 Rscript analysis/r/install_dependencies.R

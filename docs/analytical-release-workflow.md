@@ -11,6 +11,35 @@ raw public-use input
 
 The MEPS runner stops at **candidate analytical artifact**.
 
+## Execution layers
+
+Diagnostic Odyssey deliberately separates four different mechanisms:
+
+1. **Ordinary CI** (`.github/workflows/ci.yml`) — runs on pushes/PRs and checks TypeScript correctness, build/lint/tests, and synthetic R scientific invariants. It does not touch real HC-256 microdata.
+2. **Manual real-data candidate workflow** (`.github/workflows/meps-candidate.yml`) — runs only through `workflow_dispatch`, downloads the official public AHRQ HC-256 Stata file on an ephemeral GitHub-hosted runner, reruns synthetic checks, generates a preliminary candidate, validates it, and uploads only aggregate review files.
+3. **Methods review** — a human/scientific assessment of cohort behavior, precision, denominators, plausibility, provenance, and interpretation.
+4. **Release** — an explicit later promotion of only reviewed estimates to `reviewed_released`.
+
+A green CI run or successful real-data workflow is therefore **not** a scientific release decision.
+
+## GitHub Actions candidate generation
+
+Workflow: **MEPS 2024 Long COVID Candidate**
+
+The workflow checks out the exact `github.sha` selected by the manual dispatch and records repository/ref, run ID, run attempt, SHA, and timestamp. It uses Node 22 and R 4.6.1, reruns TypeScript and synthetic R checks, then invokes the maintained HC-256 downloader and MEPS runner.
+
+The workflow artifact contains only:
+
+- `bundle.json`
+- `diagnostics.json`
+- `review-manifest.json`
+- `hc256-source-metadata.json`
+- `github-actions-run-manifest.json`
+
+The raw ZIP, `h256.dta`, person-level rows, and intermediate microdata are never uploaded. Raw files exist only ephemerally on the GitHub-hosted runner.
+
+Workflow artifacts are retained for 14 days and are named `meps-2024-long-covid-candidate-<run-id>`.
+
 ## Candidate generation
 
 The runner writes:
