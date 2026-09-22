@@ -39,8 +39,10 @@ load_variable_map <- function() {
 
 required_hc256_variables <- function(variable_map = load_variable_map()) {
   measure_variables <- unique(vapply(variable_map$measures, function(x) x$variable, character(1)))
+  cohort_variables <- unlist(variable_map$cohort$required_variables, use.names = FALSE)
   unique(c(
     "DUPERSID",
+    cohort_variables,
     measure_variables,
     variable_map$design$variance_stratum,
     variable_map$design$variance_psu,

@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "dataset": {
     "source_id": "meps-hc256-2024",
     "label": "MEPS HC-256: 2024 Full Year Consolidated Data File",
@@ -9,10 +9,18 @@
     "codebook": "https://meps.ahrq.gov/mepsweb/data_stats/download_data_files_codebook.jsp?PUFId=H256"
   },
   "cohort": {
-    "id": "current-long-covid-adults-18-64-meps-2024",
-    "label": "Operational current Long COVID, adults 18-64, MEPS 2024",
-    "age_variable": "AGE24X",
-    "history_variables": [
+    "id": "current-long-covid-adults-18-64-meps-2024-r31-anchor",
+    "label": "Operational current Long COVID at the Round 3/1 2024 interview, adults 18-64",
+    "temporal_estimand": "Common Round 3/1 point-in-time status at a 2024 interview for both panels",
+    "primary_round_suffix": "31",
+    "panel_variable": "PANEL",
+    "age_variable": "AGE31X",
+    "calendar_end_age_diagnostic_variable": "AGE24X",
+    "covid_history_variables": [
+      "COVIDEVER31",
+      "COVIDEVER53"
+    ],
+    "long_covid_history_variables": [
       "LCEVER31",
       "LCEVER53"
     ],
@@ -20,17 +28,45 @@
       "COVSYMNOW31",
       "COVSYMNOW53"
     ],
-    "rule": [
-      "Require AGE24X 18-64 and positive relevant survey weight.",
-      "Long COVID history is established by any valid LCEVER31/LCEVER53 Yes (1); prior Yes is not erased by a later No because AHRQ preserves prior Yes responses for eligible respondents.",
-      "Among history-positive persons, current status uses the latest valid COVSYMNOW response: COVSYMNOW53 if 1/2, otherwise COVSYMNOW31 if 1/2.",
-      "Current Long COVID case = documented Long COVID history plus latest valid current-symptom response Yes (1).",
-      "History-positive plus latest valid current-symptom No (2) = non-current.",
-      "No valid Long COVID history = unknown unless at least one valid LCEVER response is No and neither round is Yes; COVSYMNOW alone never creates a case.",
-      "All negative reserved codes remain missing/unknown and are never converted to No.",
-      "Conflicting history values (earlier Yes/later No) retain history-positive status and are flagged for diagnostics."
+    "primary_routing_variables": [
+      "PANEL",
+      "AGE31X",
+      "AGE24X",
+      "COVIDEVER31",
+      "LCEVER31",
+      "COVSYMNOW31"
     ],
-    "wording_caveat": "COVSYMNOW asks whether the person has COVID-19 or Long COVID-19 symptoms now. The artifact therefore describes an operational current-Long-COVID cohort: respondents with documented Long COVID history whose latest valid current-symptom assessment is Yes."
+    "diagnostic_only_round53_variables": [
+      "COVIDEVER53",
+      "LCEVER53",
+      "COVSYMNOW53"
+    ],
+    "required_variables": [
+      "PANEL",
+      "AGE31X",
+      "AGE24X",
+      "COVIDEVER31",
+      "COVIDEVER53",
+      "LCEVER31",
+      "LCEVER53",
+      "COVSYMNOW31",
+      "COVSYMNOW53"
+    ],
+    "rule": [
+      "Primary temporal anchor is suffix 31 for both panels: Panel 28 Round 3 and Panel 29 Round 1, both interviewed in 2024.",
+      "AGE31X 18-64 defines age eligibility at the same Round 3/1 interview; AGE24X is diagnostic only.",
+      "Interpret COVIDEVER31, LCEVER31, and COVSYMNOW31 using the 2024 PE questionnaire routing rather than treating every -1 as generic missingness.",
+      "COVIDEVER31=No followed by structurally inapplicable downstream Long-COVID items is a known operational noncase.",
+      "COVIDEVER31=Refused/Don't Know with no downstream resolution is unresolved.",
+      "LCEVER31=No is a known Long-COVID-history noncase; LCEVER31=Refused/Don't Know is unresolved.",
+      "A substantive or RF/DK COVSYMNOW31 response implies the current-status question was reached after Long-COVID history was established, unless contradictory upstream responses create a routing conflict.",
+      "Established Long-COVID history + COVSYMNOW31=Yes is an operational current case; COVSYMNOW31=No is known non-current.",
+      "Established Long-COVID history + COVSYMNOW31 RF/DK or unexpected -1 is unresolved current status.",
+      "COVSYMNOW31=-1 among people with known no Long-COVID history is an expected structural skip, not current-status nonresponse.",
+      "Round-53 variables are diagnostic only and never overwrite the primary Round-31 classification.",
+      "Routing contradictions are flagged and left unresolved rather than silently coerced."
+    ],
+    "wording_caveat": "COVSYMNOW31 asks whether the person has COVID-19 or Long COVID-19 symptoms now. 'Current Long COVID' is an operational label conditional on established Long-COVID history at the common Round 3/1 2024 interview."
   },
   "design": {
     "method": "Taylor series linearization, with-replacement MEPS design",
@@ -48,22 +84,94 @@
   },
   "measures": [
     {
-      "id": "age_2024",
-      "variable": "AGE24X",
-      "module": "Demographics",
-      "conceptual_measure": "Age as of 12/31/2024 (edited/imputed)",
+      "id": "panel",
+      "variable": "PANEL",
+      "module": "Survey administration",
+      "conceptual_measure": "MEPS panel number",
       "universe": "All HC-256 persons",
+      "valid_values": "28 Panel 28; 29 Panel 29",
+      "missing_reserved_values": "none expected",
+      "survey_weight": "PERWT24F",
+      "variance_stratum": "VARSTR",
+      "variance_psu": "VARPSU",
+      "unit": "panel",
+      "denominator": "All HC-256 persons",
+      "analytical_transformation": "Use for temporal diagnostics and panel-specific cohort composition",
+      "interpretation": "Distinguishes Panel 28 from Panel 29; primary cohort still uses common suffix 31.",
+      "prohibited_interpretation": "Do not use Panel 29 suffix 53 as a 2024 current-status measurement.",
+      "source_locator": "https://meps.ahrq.gov/mepsweb/data_stats/download_data_files_codebook.jsp?PUFId=H256&varName=PANEL"
+    },
+    {
+      "id": "age_anchor_r31",
+      "variable": "AGE31X",
+      "module": "Demographics",
+      "conceptual_measure": "Age at Round 3/1 interview (edited/imputed)",
+      "universe": "HC-256 persons with Round 3/1 age information",
       "valid_values": "0-85",
-      "missing_reserved_values": "-1",
+      "missing_reserved_values": "-1 Inapplicable",
       "survey_weight": "PERWT24F",
       "variance_stratum": "VARSTR",
       "variance_psu": "VARPSU",
       "unit": "years",
-      "denominator": "Adults age 18-64",
-      "analytical_transformation": "Filter 18 <= AGE24X <= 64",
-      "interpretation": "Defines reference age range; not an outcome.",
-      "prohibited_interpretation": "Do not infer age at PSAQ/ESAQ administration from AGE24X alone.",
+      "denominator": "Adults age 18-64 at Round 3/1 interview",
+      "analytical_transformation": "Primary age filter: 18 <= AGE31X <= 64",
+      "interpretation": "Defines age eligibility at the same 2024 interview as COVSYMNOW31.",
+      "prohibited_interpretation": "Do not substitute AGE24X when describing age at the Round 3/1 status assessment.",
+      "source_locator": "https://meps.ahrq.gov/mepsweb/data_stats/download_data_files_codebook.jsp?PUFId=H256&varName=AGE31X"
+    },
+    {
+      "id": "age_calendar_end_2024_diagnostic",
+      "variable": "AGE24X",
+      "module": "Demographics",
+      "conceptual_measure": "Age as of December 31, 2024 (edited/imputed)",
+      "universe": "All HC-256 persons",
+      "valid_values": "0-85",
+      "missing_reserved_values": "-1 Inapplicable",
+      "survey_weight": "PERWT24F",
+      "variance_stratum": "VARSTR",
+      "variance_psu": "VARPSU",
+      "unit": "years",
+      "denominator": "Diagnostic comparison only",
+      "analytical_transformation": "Do not use for primary cohort; compare with AGE31X to quantify age-boundary differences",
+      "interpretation": "Calendar-year-end age diagnostic.",
+      "prohibited_interpretation": "Not the primary age-at-assessment anchor.",
       "source_locator": "https://meps.ahrq.gov/mepsweb/data_stats/download_data_files_codebook.jsp?PUFId=H256&varName=AGE24X"
+    },
+    {
+      "id": "covid_history_r31",
+      "variable": "COVIDEVER31",
+      "module": "Priority Conditions Enumeration PE350",
+      "conceptual_measure": "Ever had COVID-19, Round 3/1",
+      "universe": "Persons routed to PE350 or carrying preserved prior Yes status",
+      "valid_values": "1 Yes; 2 No",
+      "missing_reserved_values": "-8 Don't Know; -7 Refused; -1 Inapplicable/structural",
+      "survey_weight": "PERWT24F",
+      "variance_stratum": "VARSTR",
+      "variance_psu": "VARPSU",
+      "unit": "routing/binary",
+      "denominator": "Round 3/1 route-aware cohort construction",
+      "analytical_transformation": "Interpret with LCEVER31/COVSYMNOW31 routing; No + downstream structural skip is known noncase; RF/DK unresolved",
+      "interpretation": "Antecedent COVID-history/routing field for primary cohort.",
+      "prohibited_interpretation": "Do not treat every -1 as No or every -1 as generic nonresponse.",
+      "source_locator": "https://meps.ahrq.gov/mepsweb/data_stats/download_data_files_codebook.jsp?PUFId=H256&varName=COVIDEVER31"
+    },
+    {
+      "id": "covid_history_r53",
+      "variable": "COVIDEVER53",
+      "module": "Priority Conditions Enumeration PE350",
+      "conceptual_measure": "Ever had COVID-19, Round 5/3",
+      "universe": "Persons routed to PE350 or carrying preserved prior Yes status",
+      "valid_values": "1 Yes; 2 No",
+      "missing_reserved_values": "-8 Don't Know; -7 Refused; -1 Inapplicable/structural",
+      "survey_weight": "PERWT24F",
+      "variance_stratum": "VARSTR",
+      "variance_psu": "VARPSU",
+      "unit": "routing/binary",
+      "denominator": "Diagnostic only",
+      "analytical_transformation": "Retain for diagnostics only; never determines primary Round-31 cohort membership",
+      "interpretation": "Secondary routing diagnostic.",
+      "prohibited_interpretation": "For Panel 29, suffix 53 is Round 3 with interview in 2025 and is not a 2024 current-status anchor.",
+      "source_locator": "https://meps.ahrq.gov/mepsweb/data_stats/download_data_files_codebook.jsp?PUFId=H256&varName=COVIDEVER53"
     },
     {
       "id": "long_covid_history_r31",
@@ -77,10 +185,10 @@
       "variance_stratum": "VARSTR",
       "variance_psu": "VARPSU",
       "unit": "binary",
-      "denominator": "Adults 18-64 with valid Long COVID history classification",
-      "analytical_transformation": "Preserve Yes as history; never coerce reserved values to No",
-      "interpretation": "Part of cohort construction.",
-      "prohibited_interpretation": "Not a current-symptom measure by itself.",
+      "denominator": "Adults 18-64 at AGE31X with route-aware Long-COVID-history classification",
+      "analytical_transformation": "Primary route-aware history field at Round 3/1; interpret with COVIDEVER31 and COVSYMNOW31",
+      "interpretation": "Primary Long-COVID-history routing field.",
+      "prohibited_interpretation": "Do not combine with LCEVER53 to create a generic latest-ever primary cohort.",
       "source_locator": "https://meps.ahrq.gov/mepsweb/data_stats/download_data_files_codebook.jsp?PUFId=H256&varName=LCEVER31"
     },
     {
@@ -95,10 +203,10 @@
       "variance_stratum": "VARSTR",
       "variance_psu": "VARPSU",
       "unit": "binary",
-      "denominator": "Adults 18-64 with valid Long COVID history classification",
-      "analytical_transformation": "Any valid Yes establishes history; AHRQ preserves prior Yes responses for eligible respondents",
-      "interpretation": "Part of cohort construction.",
-      "prohibited_interpretation": "A later No cannot erase an earlier documented Yes; conflicting histories are flagged.",
+      "denominator": "Diagnostic only",
+      "analytical_transformation": "Diagnostic only; never determines primary Round-31 cohort membership",
+      "interpretation": "Secondary Long-COVID-history diagnostic.",
+      "prohibited_interpretation": "Do not use Panel 29 Round-3/2025 information to redefine the 2024 primary cohort.",
       "source_locator": "https://meps.ahrq.gov/mepsweb/data_stats/download_data_files_codebook.jsp?PUFId=H256&varName=LCEVER53"
     },
     {
@@ -113,10 +221,10 @@
       "variance_stratum": "VARSTR",
       "variance_psu": "VARPSU",
       "unit": "binary",
-      "denominator": "Long COVID-history-positive adults with valid current-symptom response",
-      "analytical_transformation": "Used only when no valid later COVSYMNOW53 response exists",
-      "interpretation": "Fallback current-status assessment.",
-      "prohibited_interpretation": "Cannot establish Long COVID history by itself.",
+      "denominator": "Adults 18-64 at AGE31X with established Long-COVID history",
+      "analytical_transformation": "Primary current-status anchor; use only after route-aware Long-COVID history is established",
+      "interpretation": "Primary 2024 point-in-time current-status assessment.",
+      "prohibited_interpretation": "Cannot establish Long-COVID history by itself; structural -1 after a known noncase is not item nonresponse.",
       "source_locator": "https://meps.ahrq.gov/mepsweb/data_stats/download_data_files_codebook.jsp?PUFId=H256&varName=COVSYMNOW31"
     },
     {
@@ -131,10 +239,10 @@
       "variance_stratum": "VARSTR",
       "variance_psu": "VARPSU",
       "unit": "binary",
-      "denominator": "Long COVID-history-positive adults with valid current-symptom response",
-      "analytical_transformation": "Latest valid assessment; supersedes COVSYMNOW31 for current status",
-      "interpretation": "Primary current-status assessment.",
-      "prohibited_interpretation": "Wording is COVID-19 or Long COVID-19 symptoms now; interpret only conditional on documented Long COVID history.",
+      "denominator": "Diagnostic only",
+      "analytical_transformation": "Diagnostic only; never supersedes COVSYMNOW31 in the primary cohort",
+      "interpretation": "Secondary temporal diagnostic.",
+      "prohibited_interpretation": "Panel 29 COVSYMNOW53 is a Round-3 interview occurring in 2025 and must not be labeled 2024 current status.",
       "source_locator": "https://meps.ahrq.gov/mepsweb/data_stats/download_data_files_codebook.jsp?PUFId=H256&varName=COVSYMNOW53"
     },
     {

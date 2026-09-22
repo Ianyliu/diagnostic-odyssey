@@ -1,68 +1,132 @@
 source(file.path("analysis", "r", "lib", "meps_values.R"))
 
-resolve_history_status <- function(lcever31, lcever53) {
-  r31 <- meps_binary_12(lcever31)
-  r53 <- meps_binary_12(lcever53)
-  out <- rep(NA, length(r31))
+pe_raw <- function(x) as.numeric(x)
+pe_is <- function(x, code) !is.na(pe_raw(x)) & pe_raw(x) == code
+pe_is_response <- function(x) pe_raw(x) %in% c(1, 2, -7, -8)
 
-  any_yes <- (!is.na(r31) & r31) | (!is.na(r53) & r53)
-  any_valid <- !is.na(r31) | !is.na(r53)
-  out[any_yes] <- TRUE
-  out[!any_yes & any_valid] <- FALSE
-  as.logical(out)
-}
+resolve_round31_routing <- function(covidever31, lcever31, covsymnow31) {
+  covid <- pe_raw(covidever31)
+  lc <- pe_raw(lcever31)
+  current <- pe_raw(covsymnow31)
+  n <- length(covid)
 
-resolve_latest_current_symptoms <- function(covsymnow31, covsymnow53) {
-  r31 <- meps_binary_12(covsymnow31)
-  r53 <- meps_binary_12(covsymnow53)
-  latest <- ifelse(!is.na(r53), r53, r31)
-  round_used <- ifelse(!is.na(r53), "53", ifelse(!is.na(r31), "31", NA_character_))
-  list(status = as.logical(latest), round_used = round_used, r31 = r31, r53 = r53)
+  history_state <- rep("unresolved_structural", n)
+  routing_conflict <- rep(FALSE, n)
+
+  covid_no <- covid == 2
+  covid_nonresponse <- covid %in% c(-7, -8)
+  covid_yes <- covid == 1
+  lc_yes <- lc == 1
+  lc_no <- lc == 2
+  lc_nonresponse <- lc %in% c(-7, -8)
+  current_reached <- current %in% c(1, 2, -7, -8)
+
+  # Questionnaire routing contradictions are review-blocking for individual classification.
+  routing_conflict <- routing_conflict |
+    (covid_no & (lc != -1 | current != -1)) |
+    (covid_nonresponse & (lc != -1 | current != -1)) |
+    (lc_no & current_reached) |
+    (lc_nonresponse & current_reached)
+
+  # A reached current-status question implies Long-COVID history was established
+  # in the current or a prior round, unless upstream public-use fields contradict routing.
+  history_state[current_reached & !routing_conflict] <- "yes"
+  history_state[lc_yes & !routing_conflict] <- "yes"
+  history_state[lc_no & !routing_conflict] <- "no_long_covid"
+  history_state[covid_no & lc == -1 & current == -1 & !routing_conflict] <- "no_covid"
+  history_state[covid_nonresponse & lc == -1 & current == -1 & !routing_conflict] <-
+    "unresolved_covid_nonresponse"
+  history_state[lc_nonresponse & !current_reached & !routing_conflict] <-
+    "unresolved_long_covid_nonresponse"
+  history_state[covid_yes & lc == -1 & current == -1 & !routing_conflict] <-
+    "unresolved_unexpected_downstream_inapplicable"
+  history_state[routing_conflict] <- "routing_conflict"
+
+  history_positive <- rep(NA, n)
+  history_positive[history_state == "yes"] <- TRUE
+  history_positive[history_state %in% c("no_covid", "no_long_covid")] <- FALSE
+
+  current_state <- rep("not_reached_unresolved_history", n)
+  current_state[history_state %in% c("no_covid", "no_long_covid") & current == -1] <-
+    "structural_not_applicable_no_history"
+  current_state[history_state == "yes" & current == 1] <- "yes"
+  current_state[history_state == "yes" & current == 2] <- "no"
+  current_state[history_state == "yes" & current %in% c(-7, -8)] <-
+    "unresolved_current_nonresponse"
+  current_state[history_state == "yes" & current == -1] <-
+    "unresolved_unexpected_current_inapplicable"
+  current_state[routing_conflict] <- "routing_conflict"
+
+  classification <- rep(NA, n)
+  classification[history_state %in% c("no_covid", "no_long_covid")] <- FALSE
+  classification[history_state == "yes" & current_state == "yes"] <- TRUE
+  classification[history_state == "yes" & current_state == "no"] <- FALSE
+
+  list(
+    history_state = history_state,
+    history_positive = as.logical(history_positive),
+    current_state = current_state,
+    classification = as.logical(classification),
+    routing_conflict = routing_conflict
+  )
 }
 
 construct_long_covid_cohort <- function(data) {
   required <- c(
-    "AGE24X", "LCEVER31", "LCEVER53", "COVSYMNOW31", "COVSYMNOW53", "PERWT24F"
+    "PANEL", "AGE31X", "AGE24X", "COVIDEVER31", "COVIDEVER53",
+    "LCEVER31", "LCEVER53", "COVSYMNOW31", "COVSYMNOW53", "PERWT24F"
   )
   missing <- setdiff(required, names(data))
   if (length(missing)) {
     stop("Cannot construct Long COVID cohort; missing: ", paste(missing, collapse = ", "), call. = FALSE)
   }
 
-  age <- as.numeric(data$AGE24X)
-  age_18_64 <- !is.na(age) & age >= 18 & age <= 64
+  age31 <- pe_raw(data$AGE31X)
+  age24 <- pe_raw(data$AGE24X)
+  age_18_64 <- !is.na(age31) & age31 >= 18 & age31 <= 64
+  year_end_age_18_64 <- !is.na(age24) & age24 >= 18 & age24 <= 64
   positive_person_weight <- !is.na(data$PERWT24F) & as.numeric(data$PERWT24F) > 0
 
-  history31 <- meps_binary_12(data$LCEVER31)
-  history53 <- meps_binary_12(data$LCEVER53)
-  history <- resolve_history_status(data$LCEVER31, data$LCEVER53)
-  current <- resolve_latest_current_symptoms(data$COVSYMNOW31, data$COVSYMNOW53)
-
-  classification <- rep(NA, nrow(data))
-  classification[!is.na(history) & !history] <- FALSE
-  classification[!is.na(history) & history & !is.na(current$status)] <- current$status[
-    !is.na(history) & history & !is.na(current$status)
-  ]
+  route <- resolve_round31_routing(
+    data$COVIDEVER31,
+    data$LCEVER31,
+    data$COVSYMNOW31
+  )
 
   target_eligible <- age_18_64 & positive_person_weight
   target_current <- rep(NA, nrow(data))
-  known_in_target <- target_eligible & !is.na(classification)
-  target_current[known_in_target] <- classification[known_in_target]
+  known_in_target <- target_eligible & !is.na(route$classification)
+  target_current[known_in_target] <- route$classification[known_in_target]
   target_current[!target_eligible] <- NA
 
+  current31 <- meps_binary_12(data$COVSYMNOW31)
+  current53 <- meps_binary_12(data$COVSYMNOW53)
+
+  data$do_age_anchor <- age31
   data$do_age_18_64 <- age_18_64
+  data$do_age24_18_64_diagnostic <- year_end_age_18_64
+  data$do_age_anchor_differs_from_year_end_eligibility <-
+    !is.na(age31) & !is.na(age24) & xor(age_18_64, year_end_age_18_64)
   data$do_positive_person_weight <- positive_person_weight
-  data$do_lc_history_r31 <- history31
-  data$do_lc_history_r53 <- history53
-  data$do_lc_history_positive <- history
-  data$do_current_symptoms_r31 <- current$r31
-  data$do_current_symptoms_r53 <- current$r53
-  data$do_current_symptoms_latest <- current$status
-  data$do_current_symptoms_round <- current$round_used
-  data$do_lc_history_conflict <- !is.na(history31) & !is.na(history53) & history31 & !history53
-  data$do_current_symptoms_without_history <- !is.na(current$status) & current$status &
-    (is.na(history) | !history)
-  data$do_current_long_covid_classification <- classification
+
+  data$do_covid_history_r31_raw <- pe_raw(data$COVIDEVER31)
+  data$do_covid_history_r53_raw <- pe_raw(data$COVIDEVER53)
+  data$do_lc_history_r31_raw <- pe_raw(data$LCEVER31)
+  data$do_lc_history_r53_raw <- pe_raw(data$LCEVER53)
+  data$do_current_symptoms_r31_raw <- pe_raw(data$COVSYMNOW31)
+  data$do_current_symptoms_r53_raw <- pe_raw(data$COVSYMNOW53)
+
+  data$do_lc_history_state <- route$history_state
+  data$do_lc_history_positive <- route$history_positive
+  data$do_current_status_state <- route$current_state
+  data$do_routing_conflict <- route$routing_conflict
+  data$do_current_symptoms_r31 <- current31
+  data$do_current_symptoms_r53 <- current53
+  data$do_temporal_31_53_disagreement <-
+    !is.na(current31) & !is.na(current53) & current31 != current53
+
+  # Primary classification is anchored exclusively to Round 3/1 (suffix 31).
+  data$do_current_long_covid_classification <- route$classification
   data$do_current_long_covid <- as.logical(target_current)
   data$do_current_long_covid_indicator <- ifelse(
     is.na(target_current), NA_real_, ifelse(target_current, 1, 0)
@@ -73,9 +137,11 @@ construct_long_covid_cohort <- function(data) {
 
 cohort_definition_text <- function() {
   paste(
-    "Adults age 18-64 with positive MEPS person weight, documented Long COVID history",
-    "(any valid LCEVER31/LCEVER53 Yes), and latest valid current-symptom assessment",
-    "(COVSYMNOW53 preferred; otherwise COVSYMNOW31) equal to Yes.",
-    "Reserved negative codes are unknown, never No; COVSYMNOW alone cannot establish history."
+    "Operational current Long COVID at the common Round 3/1 2024 interview:",
+    "adults age 18-64 by AGE31X with positive MEPS person weight, route-aware",
+    "established Long-COVID history from COVIDEVER31/LCEVER31 questionnaire routing,",
+    "and COVSYMNOW31 equal to Yes. Structural -1 values are interpreted by routing;",
+    "RF/DK and unexpected downstream inapplicability remain unresolved.",
+    "Round-53 status is diagnostic only and never overwrites the primary 2024 anchor."
   )
 }
