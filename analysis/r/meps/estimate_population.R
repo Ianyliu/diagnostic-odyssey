@@ -6,7 +6,7 @@ source(file.path("analysis", "r", "meps", "cohort_long_covid.R"))
 estimate_represented_population <- function(designs, artifact_version) {
   # Domain estimation keeps the full MEPS survey design and then restricts to
   # age-eligible adults whose Long COVID/current-symptom status is classifiable.
-  known_age_domain <- survey::subset(
+  known_age_domain <- base::subset(
     designs$person,
     do_age_18_64 & do_current_long_covid_known
   )

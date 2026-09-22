@@ -66,7 +66,7 @@ build_meps_designs <- function(data) {
 }
 
 current_long_covid_domain <- function(design) {
-  survey::subset(
+  base::subset(
     design,
     do_age_18_64 & !is.na(do_current_long_covid) & do_current_long_covid
   )
