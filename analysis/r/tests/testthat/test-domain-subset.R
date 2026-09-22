@@ -103,10 +103,24 @@ testthat::test_that("production domain path is not a raw-data-prefiltered survey
 
   proper_point <- unname(stats::coef(survey::svymean(~x, proper_domain))[[1]])
   raw_point <- unname(stats::coef(survey::svymean(~x, raw_prefiltered_design))[[1]])
-  proper_se <- sqrt(unname(stats::vcov(survey::svymean(~x, proper_domain))[1, 1]))
-  raw_se <- sqrt(unname(stats::vcov(survey::svymean(~x, raw_prefiltered_design))[1, 1]))
+
+  full_topology <- survey_design_psu_diagnostics(
+    full_design, "full synthetic design"
+  )
+  domain_topology <- survey_design_psu_diagnostics(
+    proper_domain, "proper synthetic domain"
+  )
+  raw_topology <- survey_design_psu_diagnostics(
+    raw_prefiltered_design, "raw-prefiltered rebuilt design"
+  )
 
   testthat::expect_equal(proper_point, raw_point)
-  testthat::expect_false(isTRUE(all.equal(proper_se, raw_se)))
+  testthat::expect_equal(full_topology$true_or_represented_singleton_strata_n, 0L)
+  testthat::expect_gt(domain_topology$true_or_represented_singleton_strata_n, 0L)
+  testthat::expect_gt(raw_topology$true_or_represented_singleton_strata_n, 0L)
+  testthat::expect_lt(
+    raw_topology$unique_varstr_varpsu_n,
+    full_topology$unique_varstr_varpsu_n
+  )
   testthat::expect_equal(attr(proper_domain, "do_weight_variable"), "PERWT24F")
 })
