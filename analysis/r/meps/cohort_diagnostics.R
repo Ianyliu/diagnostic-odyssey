@@ -1,5 +1,74 @@
 source(file.path("analysis", "r", "lib", "survey_helpers.R"))
+source(file.path("analysis", "r", "lib", "meps_values.R"))
 source(file.path("analysis", "r", "meps", "survey_designs.R"))
+
+age_transition_diagnostics <- function(data) {
+  age31 <- meps_bounded_score(data$AGE31X, 0, 85)
+  age24 <- meps_bounded_score(data$AGE24X, 0, 85)
+  raw31 <- as.numeric(data$AGE31X)
+  raw24 <- as.numeric(data$AGE24X)
+  positive <- !is.na(data$PERWT24F) & as.numeric(data$PERWT24F) > 0
+
+  eligible31 <- !is.na(age31) & age31 >= 18 & age31 <= 64
+  eligible24 <- !is.na(age24) & age24 >= 18 & age24 <= 64
+  differs <- positive & xor(eligible31, eligible24)
+
+  category <- rep(NA_character_, nrow(data))
+  category[differs & !is.na(age31) & age31 < 18 & eligible24] <-
+    "valid_AGE31X_under18_to_AGE24X_18_64"
+  category[differs & eligible31 & !is.na(age24) & age24 >= 65] <-
+    "valid_AGE31X_18_64_to_AGE24X_65plus"
+  category[differs & eligible31 & !is.na(age24) & age24 < 18] <-
+    "valid_AGE31X_18_64_to_AGE24X_under18"
+  category[differs & !is.na(age31) & age31 >= 65 & eligible24] <-
+    "valid_AGE31X_65plus_to_AGE24X_18_64"
+  category[differs & is.na(age31) & eligible24] <-
+    "AGE31X_reserved_or_missing_to_valid_AGE24X_18_64"
+  category[differs & eligible31 & is.na(age24)] <-
+    "valid_AGE31X_18_64_to_AGE24X_reserved_or_missing"
+  category[differs & is.na(category)] <- "other_eligibility_difference"
+
+  levels <- c(
+    "valid_AGE31X_under18_to_AGE24X_18_64",
+    "valid_AGE31X_18_64_to_AGE24X_65plus",
+    "valid_AGE31X_18_64_to_AGE24X_under18",
+    "valid_AGE31X_65plus_to_AGE24X_18_64",
+    "AGE31X_reserved_or_missing_to_valid_AGE24X_18_64",
+    "valid_AGE31X_18_64_to_AGE24X_reserved_or_missing",
+    "other_eligibility_difference"
+  )
+  counts <- stats::setNames(
+    vapply(levels, function(level) sum(category == level, na.rm = TRUE), integer(1)),
+    levels
+  )
+
+  total <- sum(differs, na.rm = TRUE)
+  reconciliation <- sum(counts)
+  if (!identical(as.integer(reconciliation), as.integer(total))) {
+    stop(
+      "AGE31X/AGE24X transition categories do not reconcile: ",
+      reconciliation, " categorized versus ", total, " total differences.",
+      call. = FALSE
+    )
+  }
+
+  list(
+    cleaning_rule = paste(
+      "Diagnostic ages are valid only from 0 through 85;",
+      "negative reserved codes and missing values are not genuine ages."
+    ),
+    total_eligibility_differences = total,
+    categories = as.list(counts),
+    reconciliation_total = reconciliation,
+    reconciles = TRUE,
+    raw_reserved_or_missing = list(
+      AGE31X_negative_reserved_n = sum(positive & !is.na(raw31) & raw31 < 0),
+      AGE31X_missing_n = sum(positive & is.na(raw31)),
+      AGE24X_negative_reserved_n = sum(positive & !is.na(raw24) & raw24 < 0),
+      AGE24X_missing_n = sum(positive & is.na(raw24))
+    )
+  )
+}
 
 count_code <- function(x, code, scope) {
   raw <- as.numeric(x)
@@ -34,26 +103,10 @@ build_corrected_cohort_diagnostics <- function(data, designs, population_record)
       total_hc256_rows = nrow(data),
       target_age_eligible_unweighted_n = sum(scope, na.rm = TRUE),
       target_age_eligible_weighted_population = weighted_scope_total(data, scope),
-      age_anchor_vs_year_end_eligibility_difference_n = sum(
-        data$do_positive_person_weight &
-          data$do_age_anchor_differs_from_year_end_eligibility,
-        na.rm = TRUE
-      ),
-      age31_under18_age24_adult_n = sum(
-        data$do_positive_person_weight &
-          !is.na(data$AGE31X) & !is.na(data$AGE24X) &
-          as.numeric(data$AGE31X) < 18 &
-          as.numeric(data$AGE24X) >= 18 & as.numeric(data$AGE24X) <= 64,
-        na.rm = TRUE
-      ),
-      age31_adult_age24_65plus_n = sum(
-        data$do_positive_person_weight &
-          !is.na(data$AGE31X) & !is.na(data$AGE24X) &
-          as.numeric(data$AGE31X) >= 18 & as.numeric(data$AGE31X) <= 64 &
-          as.numeric(data$AGE24X) >= 65,
-        na.rm = TRUE
-      )
+      age_anchor_vs_year_end_eligibility_difference_n =
+        age_transition_diagnostics(data)$total_eligibility_differences
     ),
+    age_transition_review = age_transition_diagnostics(data),
     covid_ever_31 = list(
       yes_n = count_code(data$COVIDEVER31, 1, scope),
       no_n = count_code(data$COVIDEVER31, 2, scope),
