@@ -1,0 +1,71 @@
+name: MEPS Variance Policy Review
+
+on:
+  push:
+    branches:
+      - methods-variance-review
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  review:
+    name: Review MEPS variance policy on real HC-256
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      OUTPUT_DIR: artifacts/generated/meps-variance-review-${{ github.run_id }}
+
+    steps:
+      - name: Checkout review revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+
+      - name: Set up R 4.6.1
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: '4.6.1'
+          use-public-rspm: true
+
+      - name: Install R analytical dependencies
+        run: Rscript analysis/r/install_dependencies.R
+
+      - name: Run synthetic MEPS tests
+        run: Rscript analysis/r/tests/run_tests.R
+
+      - name: Run real-data variance policy review
+        shell: bash
+        run: |
+          set -euo pipefail
+          Rscript analysis/r/meps/review_variance_policy.R             --download             --output="$OUTPUT_DIR"
+
+      - name: Copy source metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp data/raw/meps/2024/hc256_source_metadata.json             "$OUTPUT_DIR/hc256-source-metadata.json"
+
+      - name: Verify aggregate-only review output
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s "$OUTPUT_DIR/variance-review.json"
+          test -s "$OUTPUT_DIR/hc256-source-metadata.json"
+
+          if find "$OUTPUT_DIR" -type f \(             -name '*.dta' -o -name '*.zip' -o -name '*.csv' -o             -name '*.rds' -o -name '*.RData' -o -name '*.parquet' -o             -name '*.feather'           \) | grep -q .; then
+            echo "Refusing upload: respondent-level or raw data-like file found."
+            exit 1
+          fi
+
+      - name: Upload aggregate variance review
+        uses: actions/upload-artifact@v4
+        with:
+          name: meps-variance-policy-review-${{ github.run_id }}
+          path: |
+            ${{ env.OUTPUT_DIR }}/variance-review.json
+            ${{ env.OUTPUT_DIR }}/hc256-source-metadata.json
+          if-no-files-found: error
+          retention-days: 7
