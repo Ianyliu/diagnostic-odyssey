@@ -11,6 +11,7 @@ source(file.path("analysis", "r", "meps", "estimate_admin_burden.R"))
 source(file.path("analysis", "r", "meps", "estimate_mental_health.R"))
 source(file.path("analysis", "r", "meps", "build_candidate_artifact.R"))
 source(file.path("analysis", "r", "meps", "cohort_diagnostics.R"))
+source(file.path("analysis", "r", "lib", "survey_design_diagnostics.R"))
 source(file.path("analysis", "r", "lib", "warning_capture.R"))
 
 required_packages <- c("haven", "jsonlite", "survey")
@@ -111,6 +112,9 @@ source_metadata <- if (file.exists(source_metadata_path)) {
   NULL
 }
 
+all_estimate_records <- c(list(population), spending, utilization, admin, mental)
+variance_design_diagnostics <- build_variance_design_diagnostics(designs)
+
 diagnostics <- list(
   run_id = run_id,
   generated_at = generated_at,
@@ -120,6 +124,8 @@ diagnostics <- list(
   input_md5 = unname(tools::md5sum(input_path)),
   source_metadata = source_metadata,
   cohort = cohort_diagnostics,
+  variance = variance_design_diagnostics,
+  estimate_ci_degrees_of_freedom = ci_df_diagnostics(all_estimate_records),
   analytical_warnings = warning_registry_records(warning_registry),
   design = designs$metadata,
   package_versions = as.list(vapply(
