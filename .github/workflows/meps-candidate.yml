@@ -1,0 +1,144 @@
+name: MEPS 2024 Long COVID Candidate
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  generate-candidate:
+    name: Generate preliminary MEPS candidate
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    env:
+      OUTPUT_DIR: artifacts/generated/meps-2024-long-covid-candidate-${{ github.run_id }}
+      CANDIDATE_ARTIFACT_NAME: meps-2024-long-covid-candidate-${{ github.run_id }}
+
+    steps:
+      - name: Checkout exact requested revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+
+      - name: Record GitHub Actions provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUTPUT_DIR"
+          RUN_TIMESTAMP="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          jq -n             --arg repository "$GITHUB_REPOSITORY"             --arg sha "$GITHUB_SHA"             --arg ref "$GITHUB_REF"             --arg ref_name "$GITHUB_REF_NAME"             --arg run_id "$GITHUB_RUN_ID"             --arg run_attempt "$GITHUB_RUN_ATTEMPT"             --arg workflow "$GITHUB_WORKFLOW"             --arg timestamp "$RUN_TIMESTAMP"             '{
+              repository: $repository,
+              github_sha: $sha,
+              github_ref: $ref,
+              github_ref_name: $ref_name,
+              workflow: $workflow,
+              workflow_run_id: $run_id,
+              workflow_run_attempt: $run_attempt,
+              started_at_utc: $timestamp
+            }' > "$OUTPUT_DIR/github-actions-run-manifest.json"
+
+          echo "Repository: $GITHUB_REPOSITORY"
+          echo "Revision:   $GITHUB_SHA"
+          echo "Ref:        $GITHUB_REF"
+          echo "Run ID:     $GITHUB_RUN_ID"
+          echo "Attempt:    $GITHUB_RUN_ATTEMPT"
+          echo "Timestamp:  $RUN_TIMESTAMP"
+
+      - name: Set up Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install JavaScript dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Re-run TypeScript checks before real data
+        run: |
+          npm run typecheck
+          npm test
+
+      - name: Set up R 4.6.1
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: '4.6.1'
+          use-public-rspm: true
+
+      - name: Install R analytical dependencies
+        run: Rscript analysis/r/install_dependencies.R
+
+      - name: Re-run synthetic MEPS tests before real data
+        run: Rscript analysis/r/tests/run_tests.R
+
+      - name: Generate real preliminary HC-256 candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          Rscript analysis/r/meps/run_meps_2024.R             --download             --output="$OUTPUT_DIR"
+
+      - name: Copy safe source metadata into candidate package
+        shell: bash
+        run: |
+          set -euo pipefail
+          SOURCE_METADATA="data/raw/meps/2024/hc256_source_metadata.json"
+          test -s "$SOURCE_METADATA"
+          cp "$SOURCE_METADATA" "$OUTPUT_DIR/hc256-source-metadata.json"
+
+      - name: Revalidate generated artifact contract
+        run: |
+          node --experimental-strip-types             packages/contracts/src/validate-artifact-cli.ts             "$OUTPUT_DIR/bundle.json"
+
+      - name: Enforce preliminary-only release state
+        shell: bash
+        run: |
+          set -euo pipefail
+          jq -e '
+            [
+              .burden_domains[].measures[]
+              | select(
+                  .display_status != "analytical_artifact"
+                  or .release_status != "preliminary"
+                )
+            ] | length == 0
+          ' "$OUTPUT_DIR/bundle.json" >/dev/null
+
+          jq -e '
+            .release_status == "candidate_pending_review"
+            and .automatic_release == false
+            and ([.checks[].status] | all(. == "pending"))
+          ' "$OUTPUT_DIR/review-manifest.json" >/dev/null
+
+      - name: Verify workflow artifact contains aggregate outputs only
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          for required in             bundle.json             diagnostics.json             review-manifest.json             hc256-source-metadata.json             github-actions-run-manifest.json
+          do
+            test -s "$OUTPUT_DIR/$required"
+          done
+
+          if find "$OUTPUT_DIR" -type f \(               -name '*.dta' -o               -name '*.zip' -o               -name '*.csv' -o               -name '*.rds' -o               -name '*.RData' -o               -name '*.parquet' -o               -name '*.feather'             \) | grep -q .; then
+            echo "Refusing upload: raw/intermediate data-like file found in candidate output."
+            find "$OUTPUT_DIR" -type f -maxdepth 2 -print
+            exit 1
+          fi
+
+          echo "Safe aggregate candidate files:"
+          find "$OUTPUT_DIR" -maxdepth 1 -type f -printf '%f\n' | sort
+
+      - name: Upload preliminary candidate for methods review
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.CANDIDATE_ARTIFACT_NAME }}
+          path: |
+            ${{ env.OUTPUT_DIR }}/bundle.json
+            ${{ env.OUTPUT_DIR }}/diagnostics.json
+            ${{ env.OUTPUT_DIR }}/review-manifest.json
+            ${{ env.OUTPUT_DIR }}/hc256-source-metadata.json
+            ${{ env.OUTPUT_DIR }}/github-actions-run-manifest.json
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 6
