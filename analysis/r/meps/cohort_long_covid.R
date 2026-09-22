@@ -1,8 +1,15 @@
 source(file.path("analysis", "r", "lib", "meps_values.R"))
 
 pe_raw <- function(x) as.numeric(x)
-pe_is <- function(x, code) !is.na(pe_raw(x)) & pe_raw(x) == code
-pe_is_response <- function(x) pe_raw(x) %in% c(1, 2, -7, -8)
+pe_is <- function(x, code) {
+  raw <- pe_raw(x)
+  !is.na(raw) & raw == code
+}
+pe_in <- function(x, codes) {
+  raw <- pe_raw(x)
+  !is.na(raw) & raw %in% codes
+}
+pe_is_response <- function(x) pe_in(x, c(1, 2, -7, -8))
 
 resolve_round31_routing <- function(covidever31, lcever31, covsymnow31) {
   covid <- pe_raw(covidever31)
@@ -13,18 +20,18 @@ resolve_round31_routing <- function(covidever31, lcever31, covsymnow31) {
   history_state <- rep("unresolved_structural", n)
   routing_conflict <- rep(FALSE, n)
 
-  covid_no <- covid == 2
-  covid_nonresponse <- covid %in% c(-7, -8)
-  covid_yes <- covid == 1
-  lc_yes <- lc == 1
-  lc_no <- lc == 2
-  lc_nonresponse <- lc %in% c(-7, -8)
-  current_reached <- current %in% c(1, 2, -7, -8)
+  covid_no <- pe_is(covid, 2)
+  covid_nonresponse <- pe_in(covid, c(-7, -8))
+  covid_yes <- pe_is(covid, 1)
+  lc_yes <- pe_is(lc, 1)
+  lc_no <- pe_is(lc, 2)
+  lc_nonresponse <- pe_in(lc, c(-7, -8))
+  current_reached <- pe_in(current, c(1, 2, -7, -8))
 
   # Questionnaire routing contradictions are review-blocking for individual classification.
   routing_conflict <- routing_conflict |
-    (covid_no & (lc != -1 | current != -1)) |
-    (covid_nonresponse & (lc != -1 | current != -1)) |
+    (covid_no & (pe_in(lc, c(1, 2, -7, -8)) | pe_in(current, c(1, 2, -7, -8)))) |
+    (covid_nonresponse & (pe_in(lc, c(1, 2, -7, -8)) | pe_in(current, c(1, 2, -7, -8)))) |
     (lc_no & current_reached) |
     (lc_nonresponse & current_reached)
 
@@ -33,12 +40,12 @@ resolve_round31_routing <- function(covidever31, lcever31, covsymnow31) {
   history_state[current_reached & !routing_conflict] <- "yes"
   history_state[lc_yes & !routing_conflict] <- "yes"
   history_state[lc_no & !routing_conflict] <- "no_long_covid"
-  history_state[covid_no & lc == -1 & current == -1 & !routing_conflict] <- "no_covid"
-  history_state[covid_nonresponse & lc == -1 & current == -1 & !routing_conflict] <-
+  history_state[covid_no & pe_is(lc, -1) & pe_is(current, -1) & !routing_conflict] <- "no_covid"
+  history_state[covid_nonresponse & pe_is(lc, -1) & pe_is(current, -1) & !routing_conflict] <-
     "unresolved_covid_nonresponse"
   history_state[lc_nonresponse & !current_reached & !routing_conflict] <-
     "unresolved_long_covid_nonresponse"
-  history_state[covid_yes & lc == -1 & current == -1 & !routing_conflict] <-
+  history_state[covid_yes & pe_is(lc, -1) & pe_is(current, -1) & !routing_conflict] <-
     "unresolved_unexpected_downstream_inapplicable"
   history_state[routing_conflict] <- "routing_conflict"
 
@@ -47,13 +54,13 @@ resolve_round31_routing <- function(covidever31, lcever31, covsymnow31) {
   history_positive[history_state %in% c("no_covid", "no_long_covid")] <- FALSE
 
   current_state <- rep("not_reached_unresolved_history", n)
-  current_state[history_state %in% c("no_covid", "no_long_covid") & current == -1] <-
+  current_state[history_state %in% c("no_covid", "no_long_covid") & pe_is(current, -1)] <-
     "structural_not_applicable_no_history"
-  current_state[history_state == "yes" & current == 1] <- "yes"
-  current_state[history_state == "yes" & current == 2] <- "no"
-  current_state[history_state == "yes" & current %in% c(-7, -8)] <-
+  current_state[history_state == "yes" & pe_is(current, 1)] <- "yes"
+  current_state[history_state == "yes" & pe_is(current, 2)] <- "no"
+  current_state[history_state == "yes" & pe_in(current, c(-7, -8))] <-
     "unresolved_current_nonresponse"
-  current_state[history_state == "yes" & current == -1] <-
+  current_state[history_state == "yes" & pe_is(current, -1)] <-
     "unresolved_unexpected_current_inapplicable"
   current_state[routing_conflict] <- "routing_conflict"
 

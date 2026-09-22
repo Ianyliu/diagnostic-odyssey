@@ -19,6 +19,13 @@ make_cohort_fixture <- function() {
     AGE31X = c(40,40,40,40,40,40,40,40,40,40,17,64,40),
     AGE24X = c(40,40,40,40,40,40,40,40,40,40,18,65,40),
     PERWT24F = rep(1, 13),
+    ESAQWT24F = rep(1, 13),
+    SAQWT24F = rep(1, 13),
+    PESAQWT24F = rep(1, 13),
+    ESAQELIG = rep(1, 13),
+    SAQELIG = rep(1, 13),
+    VARSTR = rep(1, 13),
+    VARPSU = seq_len(13),
     COVIDEVER31 = c(2,-8,-7,1,1,1,1,1,1,1,1,1,2),
     COVIDEVER53 = c(2,-8,-7,1,1,1,1,1,1,1,1,1,2),
     LCEVER31 = c(-1,-1,-1,2,1,1,1,1,1,1,1,1,1),
@@ -166,4 +173,34 @@ testthat::test_that("generic negative-code helpers still preserve reserved value
     c(NA, NA, NA, NA, 0, 2)
   )
   testthat::expect_true(all(is.na(meps_binary_12(c(-15, -8, -7, -1)))))
+})
+
+
+testthat::test_that("corrected cohort diagnostics separate structural skips and true unresolved states", {
+  out <- construct_long_covid_cohort(make_cohort_fixture())
+  designs <- build_meps_designs(out)
+  population <- estimate_represented_population(
+    designs,
+    artifact_version = "synthetic-corrected-diagnostics"
+  )
+  d <- build_corrected_cohort_diagnostics(out, designs, population)
+
+  testthat::expect_gt(d$long_covid_history_31$lcever_structural_inapplicable_n, 0)
+  testthat::expect_equal(
+    d$current_status_31$structural_not_applicable_no_history_n,
+    2L
+  )
+  testthat::expect_equal(
+    d$current_status_31$true_unresolved_current_status_with_history_n,
+    2L
+  )
+  testthat::expect_equal(d$final_cohort$panel29_case_unweighted_n, 1L)
+  testthat::expect_equal(
+    d$final_cohort$classifiable_unweighted_n +
+      d$final_cohort$unresolved_unweighted_n,
+    d$scope$target_age_eligible_unweighted_n
+  )
+  testthat::expect_true(all(
+    unlist(d$survey_design_degrees_of_freedom, use.names = FALSE) > 0
+  ))
 })

@@ -82,7 +82,7 @@ build_candidate_bundle <- function(
     ),
     context = list(
       condition_id = "long-covid-current",
-      cohort_id = "current-long-covid-adults-18-64-meps-2024",
+      cohort_id = "current-long-covid-adults-18-64-meps-2024-r31-anchor",
       age_range = "18-64",
       evidence_year = 2024,
       geography_scope = "United States national evidence",

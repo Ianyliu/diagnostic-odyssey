@@ -10,6 +10,7 @@ source(file.path("analysis", "r", "meps", "estimate_utilization.R"))
 source(file.path("analysis", "r", "meps", "estimate_admin_burden.R"))
 source(file.path("analysis", "r", "meps", "estimate_mental_health.R"))
 source(file.path("analysis", "r", "meps", "build_candidate_artifact.R"))
+source(file.path("analysis", "r", "meps", "cohort_diagnostics.R"))
 source(file.path("analysis", "r", "lib", "warning_capture.R"))
 
 required_packages <- c("haven", "jsonlite", "survey")
@@ -95,43 +96,37 @@ bundle <- build_candidate_bundle(
 )
 bundle_path <- write_candidate_bundle(bundle, output_dir)
 
-esaq_case_domain <- current_long_covid_domain(designs$esaq)
-psaq_case_domain <- current_long_covid_domain(designs$psaq)
+cohort_diagnostics <- build_corrected_cohort_diagnostics(
+  data,
+  designs,
+  population
+)
+
+source_metadata_path <- repo_path(
+  "data", "raw", "meps", "2024", "hc256_source_metadata.json"
+)
+source_metadata <- if (file.exists(source_metadata_path)) {
+  jsonlite::fromJSON(source_metadata_path, simplifyVector = FALSE)
+} else {
+  NULL
+}
 
 diagnostics <- list(
   run_id = run_id,
   generated_at = generated_at,
+  code_commit = code_commit,
+  dataset_release = "AHRQ MEPS HC-256: 2024 Full Year Consolidated Data File (August 2026)",
   input_path = input_path,
   input_md5 = unname(tools::md5sum(input_path)),
-  rows_hc256 = nrow(data),
-  age_18_64_positive_person_weight_n = sum(data$do_age_18_64 & data$do_positive_person_weight, na.rm = TRUE),
-  current_long_covid_known_n = sum(data$do_current_long_covid_known, na.rm = TRUE),
-  current_long_covid_unclassified_n = sum(
-    data$do_age_18_64 & data$do_positive_person_weight &
-      is.na(data$do_current_long_covid_classification),
-    na.rm = TRUE
-  ),
-  current_long_covid_case_n = sum(data$do_current_long_covid %in% TRUE, na.rm = TRUE),
-  current_long_covid_weighted_population = unname(population$value),
-  long_covid_history_conflict_n = sum(data$do_lc_history_conflict, na.rm = TRUE),
-  current_symptoms_without_history_n = sum(data$do_current_symptoms_without_history, na.rm = TRUE),
-  current_status_fallback_round31_case_n = sum(
-    data$do_current_long_covid %in% TRUE & data$do_current_symptoms_round == "31",
-    na.rm = TRUE
-  ),
-  history_positive_missing_current_status_n = sum(
-    data$do_age_18_64 & data$do_positive_person_weight &
-      data$do_lc_history_positive %in% TRUE &
-      is.na(data$do_current_symptoms_latest),
-    na.rm = TRUE
-  ),
-  esaq_current_long_covid_unweighted_n = nrow(esaq_case_domain$variables),
-  esaq_current_long_covid_weighted_n = sum(stats::weights(esaq_case_domain)),
-  psaq_current_long_covid_unweighted_n = nrow(psaq_case_domain$variables),
-  psaq_current_long_covid_weighted_n = sum(stats::weights(psaq_case_domain)),
+  source_metadata = source_metadata,
+  cohort = cohort_diagnostics,
   analytical_warnings = warning_registry_records(warning_registry),
   design = designs$metadata,
-  package_versions = as.list(vapply(required_packages, function(x) as.character(utils::packageVersion(x)), character(1))),
+  package_versions = as.list(vapply(
+    required_packages,
+    function(x) as.character(utils::packageVersion(x)),
+    character(1)
+  )),
   r_version = R.version.string
 )
 jsonlite::write_json(
