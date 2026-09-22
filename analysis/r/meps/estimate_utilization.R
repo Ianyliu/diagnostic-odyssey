@@ -48,8 +48,14 @@ estimate_utilization <- function(designs, artifact_version) {
       "https://meps.ahrq.gov/mepsweb/data_stats/download_data_files_codebook.jsp?",
       "PUFId=H256&varName=", spec$variable
     )
-    mean_result <- survey_mean_result(domain, spec$variable, meps_nonnegative)
-    any_result <- survey_proportion_result(domain, spec$variable, utilization_any)
+    mean_result <- survey_mean_result(
+      domain, spec$variable, meps_nonnegative,
+      designs$person, "full PERSON / PERWT24F survey design"
+    )
+    any_result <- survey_proportion_result(
+      domain, spec$variable, utilization_any,
+      designs$person, "full PERSON / PERWT24F survey design"
+    )
 
     records[[length(records) + 1L]] <- make_estimate_record(
       mean_result,

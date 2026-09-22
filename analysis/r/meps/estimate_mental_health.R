@@ -20,10 +20,12 @@ phq2_positive_indicator <- function(x) {
 estimate_mental_health <- function(designs, artifact_version) {
   domain <- current_long_covid_domain(designs$psaq)
 
-  k6_mean <- survey_mean_result(domain, "K6SUM42", k6_valid)
-  k6_serious <- survey_proportion_result(domain, "K6SUM42", k6_serious_indicator)
-  phq_mean <- survey_mean_result(domain, "PHQ242", phq2_valid)
-  phq_positive <- survey_proportion_result(domain, "PHQ242", phq2_positive_indicator)
+  ci_ref <- designs$psaq
+  ci_source <- "full PSAQ / SAQWT24F survey design"
+  k6_mean <- survey_mean_result(domain, "K6SUM42", k6_valid, ci_ref, ci_source)
+  k6_serious <- survey_proportion_result(domain, "K6SUM42", k6_serious_indicator, ci_ref, ci_source)
+  phq_mean <- survey_mean_result(domain, "PHQ242", phq2_valid, ci_ref, ci_source)
+  phq_positive <- survey_proportion_result(domain, "PHQ242", phq2_positive_indicator, ci_ref, ci_source)
 
   common_universe <- "U.S. civilian noninstitutionalized adult PSAQ respondent population"
   k6_url <- "https://meps.ahrq.gov/mepsweb/data_stats/download_data_files_codebook.jsp?PUFId=H256&varName=K6SUM42"

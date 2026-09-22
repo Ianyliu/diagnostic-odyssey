@@ -9,10 +9,12 @@ estimate_spending <- function(designs, artifact_version) {
   total_url <- "https://meps.ahrq.gov/mepsweb/data_stats/download_data_files_codebook.jsp?PUFId=H256&varName=TOTEXP24"
   oop_url <- "https://meps.ahrq.gov/mepsweb/data_stats/download_data_files_codebook.jsp?PUFId=H256&varName=TOTSLF24"
 
-  total_spend <- survey_total_result(domain, "TOTEXP24", meps_nonnegative)
-  mean_spend <- survey_mean_result(domain, "TOTEXP24", meps_nonnegative)
-  total_oop <- survey_total_result(domain, "TOTSLF24", meps_nonnegative)
-  mean_oop <- survey_mean_result(domain, "TOTSLF24", meps_nonnegative)
+  ci_ref <- designs$person
+  ci_source <- "full PERSON / PERWT24F survey design"
+  total_spend <- survey_total_result(domain, "TOTEXP24", meps_nonnegative, ci_ref, ci_source)
+  mean_spend <- survey_mean_result(domain, "TOTEXP24", meps_nonnegative, ci_ref, ci_source)
+  total_oop <- survey_total_result(domain, "TOTSLF24", meps_nonnegative, ci_ref, ci_source)
+  mean_oop <- survey_mean_result(domain, "TOTSLF24", meps_nonnegative, ci_ref, ci_source)
 
   common_prohibited <- c(
     "cost caused by Long COVID",

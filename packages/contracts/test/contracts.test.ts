@@ -104,6 +104,8 @@ test("numeric analytical artifacts require survey provenance", () => {
   assert.ok(issues.some(issue => issue.path.endsWith(".weight_variable")));
   assert.ok(issues.some(issue => issue.path.endsWith(".source_locator")));
   assert.ok(issues.some(issue => issue.path.endsWith(".unweighted_n")));
+  assert.ok(issues.some(issue => issue.path.endsWith(".ci_df_source")));
+  assert.ok(issues.some(issue => issue.path.endsWith(".ci_degrees_of_freedom")));
 });
 
 test("preliminary analytical estimate with provenance validates but is not exportable", () => {
@@ -128,6 +130,8 @@ test("preliminary analytical estimate with provenance validates but is not expor
     prohibited_interpretation: [],
     limitations: [],
     standard_error: 10,
+    ci_degrees_of_freedom: 159,
+    ci_df_source: "full PERSON / PERWT24F survey design",
     weighted_denominator: 1000,
     unweighted_n: 100,
     weight_variable: "PERWT24F",

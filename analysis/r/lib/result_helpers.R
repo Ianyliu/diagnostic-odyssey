@@ -51,6 +51,8 @@ make_estimate_record <- function(
       unweighted_n = as.integer(result$unweighted_n),
       weighted_denominator = unname(result$weighted_denominator),
       standard_error = unname(result$standard_error),
+      ci_degrees_of_freedom = unname(result$ci_degrees_of_freedom),
+      ci_df_source = result$ci_df_source,
       relative_standard_error = if (!is.null(result$relative_standard_error)) unname(result$relative_standard_error) else NULL,
       interval_width = if (!is.null(result$interval_width)) unname(result$interval_width) else NULL,
       unweighted_excluded_or_missing_n = if (!is.null(result$unweighted_excluded_or_missing_n)) {

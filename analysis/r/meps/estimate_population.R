@@ -13,7 +13,9 @@ estimate_represented_population <- function(designs, artifact_version) {
   result <- survey_total_result(
     known_age_domain,
     "do_current_long_covid_indicator",
-    cleaner = function(x) as.numeric(x)
+    cleaner = function(x) as.numeric(x),
+    ci_reference_design = designs$person,
+    ci_df_source = "full PERSON / PERWT24F survey design"
   )
   result$unweighted_numerator_n <- sum(
     known_age_domain$variables$do_current_long_covid_indicator == 1,

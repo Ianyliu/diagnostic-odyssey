@@ -19,7 +19,7 @@ validate_candidate_records <- function(measures) {
     "evidence_type", "release_status", "display_status", "source_ref",
     "artifact_version", "allowed_interpretation", "prohibited_interpretation",
     "limitations", "standard_error", "weighted_denominator", "unweighted_n",
-    "weight_variable", "variance_stratum_variable", "variance_psu_variable",
+    "ci_degrees_of_freedom", "ci_df_source", "weight_variable", "variance_stratum_variable", "variance_psu_variable",
     "source_locator", "cohort_definition", "statistics_method"
   )
   for (record in measures) {

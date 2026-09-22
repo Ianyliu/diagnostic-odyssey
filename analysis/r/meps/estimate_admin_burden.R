@@ -36,7 +36,9 @@ estimate_admin_burden <- function(designs, artifact_version) {
     result <- survey_mean_result(
       domain,
       spec$variable,
-      cleaner = function(x) meps_bounded_score(x, 0, spec$maximum)
+      cleaner = function(x) meps_bounded_score(x, 0, spec$maximum),
+      ci_reference_design = designs$esaq,
+      ci_df_source = "full ESAQ / ESAQWT24F survey design"
     )
     records[[length(records) + 1L]] <- make_estimate_record(
       result,
@@ -78,7 +80,9 @@ estimate_admin_burden <- function(designs, artifact_version) {
   deny <- survey_proportion_result(
     domain,
     "EQDENY53",
-    cleaner = meps_yes_no_response
+    cleaner = meps_yes_no_response,
+    ci_reference_design = designs$esaq,
+    ci_df_source = "full ESAQ / ESAQWT24F survey design"
   )
   records[[length(records) + 1L]] <- make_estimate_record(
     deny,

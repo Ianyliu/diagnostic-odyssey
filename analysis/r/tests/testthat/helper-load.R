@@ -15,6 +15,8 @@ source(file.path("analysis", "r", "meps", "cohort_long_covid.R"))
 source(file.path("analysis", "r", "meps", "survey_designs.R"))
 source(file.path("analysis", "r", "meps", "cohort_diagnostics.R"))
 source(file.path("analysis", "r", "meps", "estimate_population.R"))
+source(file.path("analysis", "r", "meps", "estimate_admin_burden.R"))
+source(file.path("analysis", "r", "meps", "estimate_mental_health.R"))
 source(file.path("analysis", "r", "meps", "build_candidate_artifact.R"))
 
 setwd(old_wd)
@@ -63,6 +65,8 @@ valid_candidate_record <- function(
     prohibited_interpretation = list("causal claim"),
     limitations = list("Synthetic"),
     standard_error = 0.1,
+    ci_degrees_of_freedom = 159,
+    ci_df_source = "synthetic full survey design",
     weighted_denominator = 100,
     unweighted_n = 8L,
     weight_variable = "PERWT24F",

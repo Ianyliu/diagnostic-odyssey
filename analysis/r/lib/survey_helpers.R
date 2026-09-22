@@ -41,9 +41,23 @@ survey_df <- function(design, label = "survey design") {
   unname(df)
 }
 
-t_interval <- function(estimate, standard_error, design, level = 0.95) {
+validate_ci_df <- function(ci_df, ci_df_source) {
+  if (length(ci_df) != 1L || !is.finite(ci_df) || ci_df <= 0) {
+    stop(
+      sprintf(
+        "Invalid confidence-interval degrees of freedom from %s: %s.",
+        ci_df_source,
+        paste(ci_df, collapse = ", ")
+      ),
+      call. = FALSE
+    )
+  }
+  unname(ci_df)
+}
+
+t_interval <- function(estimate, standard_error, ci_df, level = 0.95) {
   alpha <- 1 - level
-  critical <- stats::qt(1 - alpha / 2, df = survey_df(design))
+  critical <- stats::qt(1 - alpha / 2, df = ci_df)
   c(
     low = estimate - critical * standard_error,
     high = estimate + critical * standard_error
@@ -67,7 +81,16 @@ survey_unweighted_valid_n <- function(design, variable = ".do_value") {
   sum(!is.na(design$variables[[variable]]))
 }
 
-survey_precision_metadata <- function(design, variable, estimate, standard_error, interval_low, interval_high) {
+survey_precision_metadata <- function(
+  design,
+  variable,
+  estimate,
+  standard_error,
+  interval_low,
+  interval_high,
+  ci_degrees_of_freedom,
+  ci_df_source
+) {
   valid_n <- survey_unweighted_valid_n(design, variable)
   total_n <- nrow(design$variables)
   list(
@@ -83,58 +106,90 @@ survey_precision_metadata <- function(design, variable, estimate, standard_error
     } else {
       NA_real_
     },
-    unweighted_excluded_or_missing_n = as.integer(total_n - valid_n)
+    unweighted_excluded_or_missing_n = as.integer(total_n - valid_n),
+    ci_degrees_of_freedom = ci_degrees_of_freedom,
+    ci_df_source = ci_df_source
   )
 }
 
-survey_total_result <- function(design, source_variable, cleaner, level = 0.95) {
+survey_total_result <- function(
+  design,
+  source_variable,
+  cleaner,
+  ci_reference_design,
+  ci_df_source,
+  level = 0.95
+) {
   assert_survey_available()
   tmp <- design_with_clean_value(design, source_variable, cleaner)
   stat <- survey::svytotal(~.do_value, tmp, na.rm = TRUE)
   point <- stat_point_se(stat)
-  ci <- t_interval(point[["estimate"]], point[["standard_error"]], tmp, level)
+  ci_df <- validate_ci_df(survey_df(ci_reference_design, ci_df_source), ci_df_source)
+  ci <- t_interval(point[["estimate"]], point[["standard_error"]], ci_df, level)
   c(
     list(
       value = point[["estimate"]],
       standard_error = point[["standard_error"]],
       interval_low = ci[["low"]],
       interval_high = ci[["high"]],
-      interval_type = sprintf("%d%% t CI (Taylor linearization)", round(level * 100))
+      interval_type = sprintf(
+        "%d%% t CI (Taylor linearization; df=%g from %s)",
+        round(level * 100), ci_df, ci_df_source
+      )
     ),
     survey_precision_metadata(
       tmp, ".do_value", point[["estimate"]], point[["standard_error"]],
-      ci[["low"]], ci[["high"]]
+      ci[["low"]], ci[["high"]], ci_df, ci_df_source
     )
   )
 }
 
-survey_mean_result <- function(design, source_variable, cleaner, level = 0.95) {
+survey_mean_result <- function(
+  design,
+  source_variable,
+  cleaner,
+  ci_reference_design,
+  ci_df_source,
+  level = 0.95
+) {
   assert_survey_available()
   tmp <- design_with_clean_value(design, source_variable, cleaner)
   stat <- survey::svymean(~.do_value, tmp, na.rm = TRUE)
   point <- stat_point_se(stat)
-  ci <- t_interval(point[["estimate"]], point[["standard_error"]], tmp, level)
+  ci_df <- validate_ci_df(survey_df(ci_reference_design, ci_df_source), ci_df_source)
+  ci <- t_interval(point[["estimate"]], point[["standard_error"]], ci_df, level)
   c(
     list(
       value = point[["estimate"]],
       standard_error = point[["standard_error"]],
       interval_low = ci[["low"]],
       interval_high = ci[["high"]],
-      interval_type = sprintf("%d%% t CI (Taylor linearization)", round(level * 100))
+      interval_type = sprintf(
+        "%d%% t CI (Taylor linearization; df=%g from %s)",
+        round(level * 100), ci_df, ci_df_source
+      )
     ),
     survey_precision_metadata(
       tmp, ".do_value", point[["estimate"]], point[["standard_error"]],
-      ci[["low"]], ci[["high"]]
+      ci[["low"]], ci[["high"]], ci_df, ci_df_source
     )
   )
 }
 
-survey_proportion_result <- function(design, source_variable, cleaner, level = 0.95) {
+survey_proportion_result <- function(
+  design,
+  source_variable,
+  cleaner,
+  ci_reference_design,
+  ci_df_source,
+  level = 0.95
+) {
   assert_survey_available()
   tmp <- design_with_clean_value(design, source_variable, cleaner)
   stat <- survey::svymean(~.do_value, tmp, na.rm = TRUE)
   point <- stat_point_se(stat)
-  ci <- t_interval(point[["estimate"]], point[["standard_error"]], tmp, level)
+  ci_df <- validate_ci_df(survey_df(ci_reference_design, ci_df_source), ci_df_source)
+  ci <- t_interval(point[["estimate"]], point[["standard_error"]], ci_df, level)
   bounded_low <- max(0, ci[["low"]])
   bounded_high <- min(1, ci[["high"]])
   c(
@@ -143,12 +198,15 @@ survey_proportion_result <- function(design, source_variable, cleaner, level = 0
       standard_error = point[["standard_error"]],
       interval_low = bounded_low,
       interval_high = bounded_high,
-      interval_type = sprintf("%d%% t CI, bounded [0,1] (Taylor linearization)", round(level * 100)),
+      interval_type = sprintf(
+        "%d%% t CI, bounded [0,1] (Taylor linearization; df=%g from %s)",
+        round(level * 100), ci_df, ci_df_source
+      ),
       unweighted_numerator_n = sum(tmp$variables$.do_value == 1, na.rm = TRUE)
     ),
     survey_precision_metadata(
       tmp, ".do_value", point[["estimate"]], point[["standard_error"]],
-      bounded_low, bounded_high
+      bounded_low, bounded_high, ci_df, ci_df_source
     )
   )
 }

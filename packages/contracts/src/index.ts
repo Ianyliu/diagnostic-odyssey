@@ -74,6 +74,8 @@ export interface Estimate {
   prohibited_interpretation: string[];
   limitations: string[];
   standard_error?: number | null;
+  ci_degrees_of_freedom?: number | null;
+  ci_df_source?: string | null;
   weighted_denominator?: number | null;
   unweighted_n?: number | null;
   unweighted_numerator_n?: number | null;
@@ -296,7 +298,8 @@ export function validateEstimate(value: unknown, path = "estimate"): ValidationI
       "variance_psu_variable",
       "source_locator",
       "cohort_definition",
-      "statistics_method"
+      "statistics_method",
+      "ci_df_source"
     ];
     for (const key of provenanceStrings) {
       if (!isNonEmptyString(value[key])) {
@@ -315,6 +318,14 @@ export function validateEstimate(value: unknown, path = "estimate"): ValidationI
           message: "must be a non-negative finite number for a numeric analytical artifact"
         });
       }
+    }
+
+    const ciDf = value.ci_degrees_of_freedom;
+    if (typeof ciDf !== "number" || !Number.isFinite(ciDf) || ciDf <= 0) {
+      issues.push({
+        path: `${path}.ci_degrees_of_freedom`,
+        message: "must be a positive finite number for a numeric analytical artifact"
+      });
     }
   }
 
