@@ -10,6 +10,7 @@ source(file.path("analysis", "r", "meps", "estimate_utilization.R"))
 source(file.path("analysis", "r", "meps", "estimate_admin_burden.R"))
 source(file.path("analysis", "r", "meps", "estimate_mental_health.R"))
 source(file.path("analysis", "r", "meps", "build_candidate_artifact.R"))
+source(file.path("analysis", "r", "lib", "warning_capture.R"))
 
 required_packages <- c("haven", "jsonlite", "survey")
 missing_packages <- required_packages[!vapply(required_packages, requireNamespace, logical(1), quietly = TRUE)]
@@ -55,11 +56,33 @@ code_commit <- tryCatch(
 )
 run_id <- paste0("meps24-", run_stamp)
 
-population <- estimate_represented_population(designs, artifact_version)
-spending <- estimate_spending(designs, artifact_version)
-utilization <- estimate_utilization(designs, artifact_version)
-admin <- estimate_admin_burden(designs, artifact_version)
-mental <- estimate_mental_health(designs, artifact_version)
+warning_registry <- new_warning_registry()
+
+population <- run_stage_with_warning_capture(
+  "represented_population",
+  estimate_represented_population(designs, artifact_version),
+  warning_registry
+)
+spending <- run_stage_with_warning_capture(
+  "spending",
+  estimate_spending(designs, artifact_version),
+  warning_registry
+)
+utilization <- run_stage_with_warning_capture(
+  "utilization",
+  estimate_utilization(designs, artifact_version),
+  warning_registry
+)
+admin <- run_stage_with_warning_capture(
+  "esaq",
+  estimate_admin_burden(designs, artifact_version),
+  warning_registry
+)
+mental <- run_stage_with_warning_capture(
+  "psaq",
+  estimate_mental_health(designs, artifact_version),
+  warning_registry
+)
 
 bundle <- build_candidate_bundle(
   economic_measures = c(list(population), spending, utilization),
@@ -106,6 +129,7 @@ diagnostics <- list(
   esaq_current_long_covid_weighted_n = sum(stats::weights(esaq_case_domain)),
   psaq_current_long_covid_unweighted_n = nrow(psaq_case_domain$variables),
   psaq_current_long_covid_weighted_n = sum(stats::weights(psaq_case_domain)),
+  analytical_warnings = warning_registry_records(warning_registry),
   design = designs$metadata,
   package_versions = as.list(vapply(required_packages, function(x) as.character(utils::packageVersion(x)), character(1))),
   r_version = R.version.string
