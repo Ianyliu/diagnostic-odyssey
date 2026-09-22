@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   canExportEstimate,
+  validateArtifactBundle,
   validateEstimate,
   validateScenario,
   type Estimate
@@ -138,4 +139,39 @@ test("preliminary analytical estimate with provenance validates but is not expor
   };
   assert.deepEqual(validateEstimate(estimate), []);
   assert.equal(canExportEstimate(estimate), false);
+});
+
+
+test("artifact runtime validation requires bundle-level provenance", () => {
+  const issues = validateArtifactBundle({
+    manifest: {
+      artifact_version: "candidate-v1",
+      generated_at: "",
+      code_commit: "",
+      run_id: "",
+      dataset_releases: [],
+      display_status: "analytical_artifact"
+    },
+    context: {
+      condition_id: "long-covid-current",
+      cohort_id: "current-long-covid-adults-18-64-meps-2024",
+      age_range: "18-64",
+      evidence_year: 2024,
+      geography_scope: "United States",
+      local_context_id: null,
+      severity_filter: null,
+      artifact_version: "candidate-v1"
+    },
+    burden_domains: [],
+    evidence: [],
+    local_context: [],
+    qualitative_evidence: [],
+    scenario_examples: [],
+    data_requests: [],
+    sources: []
+  });
+  assert.ok(issues.some(issue => issue.path === "artifact.manifest.generated_at"));
+  assert.ok(issues.some(issue => issue.path === "artifact.manifest.code_commit"));
+  assert.ok(issues.some(issue => issue.path === "artifact.manifest.dataset_releases"));
+  assert.ok(issues.some(issue => issue.path === "artifact.sources"));
 });
