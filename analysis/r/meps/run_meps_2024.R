@@ -39,6 +39,10 @@ if (!file.exists(hc256_dta_path()) && !file.exists(hc256_zip_path()) && download
 }
 
 data <- load_hc256()
+input_path <- attr(data, "hc256_path")
+if (is.null(input_path) || !nzchar(input_path) || !file.exists(input_path)) {
+  stop("HC-256 loader did not preserve a valid input path for provenance.", call. = FALSE)
+}
 data <- construct_long_covid_cohort(data)
 designs <- build_meps_designs(data)
 
@@ -68,17 +72,40 @@ bundle <- build_candidate_bundle(
 )
 bundle_path <- write_candidate_bundle(bundle, output_dir)
 
+esaq_case_domain <- current_long_covid_domain(designs$esaq)
+psaq_case_domain <- current_long_covid_domain(designs$psaq)
+
 diagnostics <- list(
   run_id = run_id,
   generated_at = generated_at,
-  input_path = attr(data, "hc256_path"),
-  input_md5 = unname(tools::md5sum(attr(data, "hc256_path"))),
+  input_path = input_path,
+  input_md5 = unname(tools::md5sum(input_path)),
   rows_hc256 = nrow(data),
   age_18_64_positive_person_weight_n = sum(data$do_age_18_64 & data$do_positive_person_weight, na.rm = TRUE),
   current_long_covid_known_n = sum(data$do_current_long_covid_known, na.rm = TRUE),
+  current_long_covid_unclassified_n = sum(
+    data$do_age_18_64 & data$do_positive_person_weight &
+      is.na(data$do_current_long_covid_classification),
+    na.rm = TRUE
+  ),
   current_long_covid_case_n = sum(data$do_current_long_covid %in% TRUE, na.rm = TRUE),
+  current_long_covid_weighted_population = unname(population$value),
   long_covid_history_conflict_n = sum(data$do_lc_history_conflict, na.rm = TRUE),
   current_symptoms_without_history_n = sum(data$do_current_symptoms_without_history, na.rm = TRUE),
+  current_status_fallback_round31_case_n = sum(
+    data$do_current_long_covid %in% TRUE & data$do_current_symptoms_round == "31",
+    na.rm = TRUE
+  ),
+  history_positive_missing_current_status_n = sum(
+    data$do_age_18_64 & data$do_positive_person_weight &
+      data$do_lc_history_positive %in% TRUE &
+      is.na(data$do_current_symptoms_latest),
+    na.rm = TRUE
+  ),
+  esaq_current_long_covid_unweighted_n = nrow(esaq_case_domain$variables),
+  esaq_current_long_covid_weighted_n = sum(stats::weights(esaq_case_domain)),
+  psaq_current_long_covid_unweighted_n = nrow(psaq_case_domain$variables),
+  psaq_current_long_covid_weighted_n = sum(stats::weights(psaq_case_domain)),
   design = designs$metadata,
   package_versions = as.list(vapply(required_packages, function(x) as.character(utils::packageVersion(x)), character(1))),
   r_version = R.version.string

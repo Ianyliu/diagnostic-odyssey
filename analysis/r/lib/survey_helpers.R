@@ -56,20 +56,44 @@ survey_unweighted_valid_n <- function(design, variable = ".do_value") {
   sum(!is.na(design$variables[[variable]]))
 }
 
+survey_precision_metadata <- function(design, variable, estimate, standard_error, interval_low, interval_high) {
+  valid_n <- survey_unweighted_valid_n(design, variable)
+  total_n <- nrow(design$variables)
+  list(
+    unweighted_n = valid_n,
+    weighted_denominator = survey_weighted_valid_n(design, variable),
+    relative_standard_error = if (is.finite(estimate) && estimate != 0) {
+      abs(standard_error / estimate)
+    } else {
+      NA_real_
+    },
+    interval_width = if (is.finite(interval_low) && is.finite(interval_high)) {
+      interval_high - interval_low
+    } else {
+      NA_real_
+    },
+    unweighted_excluded_or_missing_n = as.integer(total_n - valid_n)
+  )
+}
+
 survey_total_result <- function(design, source_variable, cleaner, level = 0.95) {
   assert_survey_available()
   tmp <- design_with_clean_value(design, source_variable, cleaner)
   stat <- survey::svytotal(~.do_value, tmp, na.rm = TRUE)
   point <- stat_point_se(stat)
   ci <- t_interval(point[["estimate"]], point[["standard_error"]], tmp, level)
-  list(
-    value = point[["estimate"]],
-    standard_error = point[["standard_error"]],
-    interval_low = ci[["low"]],
-    interval_high = ci[["high"]],
-    interval_type = sprintf("%d%% t CI (Taylor linearization)", round(level * 100)),
-    unweighted_n = survey_unweighted_valid_n(tmp),
-    weighted_denominator = survey_weighted_valid_n(tmp)
+  c(
+    list(
+      value = point[["estimate"]],
+      standard_error = point[["standard_error"]],
+      interval_low = ci[["low"]],
+      interval_high = ci[["high"]],
+      interval_type = sprintf("%d%% t CI (Taylor linearization)", round(level * 100))
+    ),
+    survey_precision_metadata(
+      tmp, ".do_value", point[["estimate"]], point[["standard_error"]],
+      ci[["low"]], ci[["high"]]
+    )
   )
 }
 
@@ -79,14 +103,18 @@ survey_mean_result <- function(design, source_variable, cleaner, level = 0.95) {
   stat <- survey::svymean(~.do_value, tmp, na.rm = TRUE)
   point <- stat_point_se(stat)
   ci <- t_interval(point[["estimate"]], point[["standard_error"]], tmp, level)
-  list(
-    value = point[["estimate"]],
-    standard_error = point[["standard_error"]],
-    interval_low = ci[["low"]],
-    interval_high = ci[["high"]],
-    interval_type = sprintf("%d%% t CI (Taylor linearization)", round(level * 100)),
-    unweighted_n = survey_unweighted_valid_n(tmp),
-    weighted_denominator = survey_weighted_valid_n(tmp)
+  c(
+    list(
+      value = point[["estimate"]],
+      standard_error = point[["standard_error"]],
+      interval_low = ci[["low"]],
+      interval_high = ci[["high"]],
+      interval_type = sprintf("%d%% t CI (Taylor linearization)", round(level * 100))
+    ),
+    survey_precision_metadata(
+      tmp, ".do_value", point[["estimate"]], point[["standard_error"]],
+      ci[["low"]], ci[["high"]]
+    )
   )
 }
 
@@ -96,14 +124,20 @@ survey_proportion_result <- function(design, source_variable, cleaner, level = 0
   stat <- survey::svymean(~.do_value, tmp, na.rm = TRUE)
   point <- stat_point_se(stat)
   ci <- t_interval(point[["estimate"]], point[["standard_error"]], tmp, level)
-  list(
-    value = point[["estimate"]],
-    standard_error = point[["standard_error"]],
-    interval_low = max(0, ci[["low"]]),
-    interval_high = min(1, ci[["high"]]),
-    interval_type = sprintf("%d%% t CI, bounded [0,1] (Taylor linearization)", round(level * 100)),
-    unweighted_n = survey_unweighted_valid_n(tmp),
-    weighted_denominator = survey_weighted_valid_n(tmp),
-    unweighted_numerator_n = sum(tmp$variables$.do_value == 1, na.rm = TRUE)
+  bounded_low <- max(0, ci[["low"]])
+  bounded_high <- min(1, ci[["high"]])
+  c(
+    list(
+      value = point[["estimate"]],
+      standard_error = point[["standard_error"]],
+      interval_low = bounded_low,
+      interval_high = bounded_high,
+      interval_type = sprintf("%d%% t CI, bounded [0,1] (Taylor linearization)", round(level * 100)),
+      unweighted_numerator_n = sum(tmp$variables$.do_value == 1, na.rm = TRUE)
+    ),
+    survey_precision_metadata(
+      tmp, ".do_value", point[["estimate"]], point[["standard_error"]],
+      bounded_low, bounded_high
+    )
   )
 }

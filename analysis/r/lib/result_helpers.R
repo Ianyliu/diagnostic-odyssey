@@ -51,6 +51,13 @@ make_estimate_record <- function(
       unweighted_n = as.integer(result$unweighted_n),
       weighted_denominator = unname(result$weighted_denominator),
       standard_error = unname(result$standard_error),
+      relative_standard_error = if (!is.null(result$relative_standard_error)) unname(result$relative_standard_error) else NULL,
+      interval_width = if (!is.null(result$interval_width)) unname(result$interval_width) else NULL,
+      unweighted_excluded_or_missing_n = if (!is.null(result$unweighted_excluded_or_missing_n)) {
+        as.integer(result$unweighted_excluded_or_missing_n)
+      } else {
+        NULL
+      },
       component_of_measure_id = component_of_measure_id
     ),
     analysis_provenance(
