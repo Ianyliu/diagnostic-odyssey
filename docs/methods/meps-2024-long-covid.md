@@ -151,6 +151,59 @@ Constructed nonnegative spending/utilization values retain zero as a real value.
 
 Every measure reports the valid-response unweighted N and weighted analytic denominator. Candidate review must inspect missingness before release.
 
+## Corrected candidate diagnostics and observability
+
+The next real-data candidate is intended for independent methods review, not release. Its `diagnostics.json` records enough information to reconstruct the primary cohort routing and identify unstable computational behavior without exposing respondent-level records.
+
+### Cohort diagnostics
+
+Counts are reported within the primary target scope (`AGE31X` 18–64 with positive `PERWT24F`) unless explicitly stated otherwise:
+
+- total HC-256 rows;
+- target age-eligible unweighted N and weighted population;
+- discrepancies between `AGE31X` eligibility and calendar-year-end `AGE24X` eligibility;
+- `COVIDEVER31` Yes / No / Refused / Don't Know / structural-Inapplicable counts;
+- `LCEVER31` Yes / No / Refused / Don't Know / structural-Inapplicable counts;
+- known no-COVID and no-Long-COVID routing counts;
+- true unresolved Long-COVID-history count and routing-conflict count;
+- `COVSYMNOW31` Yes / No / Refused / Don't Know / Inapplicable counts;
+- expected structural current-status skips among people without established Long-COVID history;
+- true unresolved current status among people with established Long-COVID history;
+- valid Round-31/Round-53 current-status disagreements as a temporal diagnostic only;
+- classifiable, unresolved, and current-case N;
+- Panel 28 and Panel 29 current-case N and weighted totals;
+- ESAQ and PSAQ current-case unweighted and weighted totals.
+
+The Round-53 diagnostic fields are never used to change primary cohort membership.
+
+### Warning observability
+
+Each major estimation stage is wrapped by a warning observer:
+
+- represented population;
+- spending;
+- utilization;
+- ESAQ;
+- PSAQ.
+
+Warnings are **not suppressed** and are not globally converted to errors. The original warning remains visible in GitHub Actions, while `diagnostics.json` also stores each unique warning's analytical stage, condition class, message, and repetition count. This is specifically intended to diagnose the repeated warning summaries observed in the previous preliminary candidate run.
+
+### Survey design degrees of freedom
+
+The pipeline records design degrees of freedom for:
+
+- the full person design;
+- the represented-population classifiable domain;
+- the current-case person domain;
+- the ESAQ current-case domain;
+- the PSAQ current-case domain.
+
+Only finite positive design degrees of freedom are accepted. The pipeline no longer replaces zero, negative, or nonfinite values with an artificial df of 1; such a condition causes explicit analytical failure before candidate generation completes.
+
+### Prior candidate baseline
+
+Workflow run `35705520659` / artifact `10683963312` is retained only as a preliminary comparison baseline. It must not be promoted, overwritten, or selected by the runtime. A corrected candidate must be generated as a new workflow artifact tied to the corrected commit and then independently reviewed.
+
 ## Release semantics
 
 A successful run produces `display_status="analytical_artifact"` but `release_status="preliminary"`. Script execution is not scientific approval. The candidate must pass the review checklist before any status is changed to `reviewed_released`.
