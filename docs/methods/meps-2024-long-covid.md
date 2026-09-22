@@ -10,22 +10,73 @@ The machine-readable source of truth is `analysis/r/config/meps_2024_variable_ma
 
 ## Cohort definition
 
-AHRQ states that `LCEVER31` and `LCEVER53` identify symptoms lasting at least three months that were not present before COVID-19, and that prior **Yes** responses are preserved for respondents who remain eligible. AHRQ asks `COVSYMNOW31/53` when Long COVID was reported in the current or an earlier round.
+### Temporal estimand: common Round 3/1 2024 point-in-time anchor
 
-The operational cohort is therefore:
+The primary estimand is **operational current Long COVID at the Round 3/1 interview in 2024**, among adults age 18–64 at that same interview.
 
-1. `AGE24X` is 18 through 64.
-2. Long COVID history is positive if **either** valid `LCEVER31` or `LCEVER53` is 1 (Yes).
-3. Among history-positive adults, current symptoms are taken from the **latest valid assessment**: use `COVSYMNOW53` when it is 1/2; otherwise fall back to `COVSYMNOW31` when it is 1/2.
-4. A current case requires positive Long COVID history **and** latest valid current-symptom response = 1.
-5. A history-positive respondent with latest valid current-symptom response = 2 is classified non-current.
-6. A respondent with no Long COVID-history Yes cannot enter solely because `COVSYMNOW` is Yes. If valid history responses are only No, classify noncase; if history is unresolved because only reserved/missing codes are available, classify unknown.
-7. Negative reserved values (including Don't Know, Refused, Inapplicable, Cannot Be Computed) are missing/unknown, never No.
-8. A logically inconsistent earlier-Yes/later-No history remains history-positive and is flagged for diagnostic review because the HC-256 documentation says prior Yes values are preserved.
+This deliberately uses the `31` variables for **both panels**:
 
-**Wording caveat:** `COVSYMNOW` is labeled “Has COVID-19 or Long COVID-19 symptoms now.” Therefore “current Long COVID” in this project is shorthand for this operational combination, not a claim that the current-symptom item alone uniquely identifies Long COVID.
+- Panel 28: Round 3 interview, occurring in 2024;
+- Panel 29: Round 1 interview, occurring in 2024.
 
-`COVREDABIL31/53` is retained in the reviewed variable map for future severity work but is not used to define the primary cohort.
+It does **not** use a generic “latest valid `53`” rule. AHRQ documents that the two digits in round-specific variable names refer to Panel 28 / Panel 29 rounds respectively. For the 2024 PUF, Panel 29 Round 3 is a cross-year round whose interview occurs in **2025**, whereas Panel 28 Round 5 is the 2024 terminal round. Therefore `COVSYMNOW53` is not a common 2024 point-in-time measure across panels and cannot overwrite `COVSYMNOW31` in the primary 2024 cohort.
+
+A panel-specific Panel-28-`53` / Panel-29-`31` rule was considered and rejected for the primary estimand because it would mix a later/end-of-year status for Panel 28 with an earlier Round-1 status for Panel 29. That is a different, panel-heterogeneous temporal estimand rather than a common interview-time anchor.
+
+The `53` COVID/Long-COVID fields remain available only for diagnostics or future explicitly defined secondary analyses. They never determine primary cohort membership.
+
+Authoritative AHRQ sources:
+
+- HC-256 variable naming and Long-COVID documentation:
+  https://meps.ahrq.gov/data_stats/download_data/pufs/h256/h256doc.shtml
+- 2024 Priority Conditions Enumeration questionnaire:
+  https://meps.ahrq.gov/survey_comp/hc_survey/2024/PE_2024.htm
+
+### Age anchor
+
+The age eligibility variable is **`AGE31X`**, not `AGE24X`.
+
+AHRQ documents that `AGE31X` is age relevant to Panel 28 Round 3 / Panel 29 Round 1 and is calculated from date of birth relative to the interview date (or otherwise edited/imputed). That aligns the 18–64 age restriction with the same interview at which `COVSYMNOW31` is interpreted.
+
+`AGE24X` instead represents age as of December 31, 2024. Using it for a Round-3/1 point-in-time cohort could incorrectly include people who were still 17 at the status interview but turned 18 later in 2024; AHRQ also notes that Long-COVID responses for children under 18 are coded Inapplicable on the public-use file for confidentiality. The primary cohort therefore requires `18 <= AGE31X <= 64`.
+
+### Route-aware COVID / Long-COVID classification
+
+The 2024 PE instrument routes the COVID sequence as follows:
+
+1. If both COVID-19 and Long COVID are already on the PE medical-conditions roster, route directly to `COVSYMNOW` (PE364).
+2. If COVID-19 is already on the roster but Long COVID is not, route to `LCEVER` (PE362).
+3. Otherwise ask `COVIDEVER` (PE350).
+4. `COVIDEVER = Yes` routes to `LCEVER`.
+5. `COVIDEVER = No / Refused / Don't Know` exits the Long-COVID sequence.
+6. `LCEVER = Yes` routes to `COVSYMNOW`.
+7. `LCEVER = No / Refused / Don't Know` exits that portion of the sequence.
+8. `COVSYMNOW` is therefore applicable only after Long-COVID history has been established in the current or a prior round.
+
+AHRQ further documents that prior **Yes** values for `COVIDEVER` and `LCEVER` are preserved for respondents who remain eligible.
+
+The primary Round-3/1 classifier therefore interprets public-use `-1 Inapplicable` **in routing context** rather than globally:
+
+- `COVIDEVER31 = 2` with structurally inapplicable downstream `LCEVER31/COVSYMNOW31` is a **known noncase**, not missing Long-COVID history.
+- `COVIDEVER31 = -7/-8` with no downstream answer is **unresolved antecedent status**, not a noncase.
+- `LCEVER31 = 2` is a **known Long-COVID-history noncase**.
+- `LCEVER31 = -7/-8` is **unresolved Long-COVID history**.
+- A substantive `COVSYMNOW31` response implies the respondent reached the current-status question and therefore had established Long-COVID history through current/prior routing; routing contradictions are flagged rather than silently coerced.
+- For established Long-COVID history, `COVSYMNOW31 = 1` is an operational current case and `2` is known non-current.
+- For established Long-COVID history, `COVSYMNOW31 = -7/-8` or an unexpected `-1` is **genuine unresolved current status**.
+- For people with known no Long-COVID history, `COVSYMNOW31 = -1` is an expected structural skip and is **not** counted as current-status item nonresponse.
+- Negative reserved values are never globally converted to No; their interpretation depends on the PE route.
+
+The primary cohort is:
+
+1. positive `PERWT24F`;
+2. `AGE31X` 18–64;
+3. route-aware established Long-COVID history at Round 3/1; and
+4. `COVSYMNOW31 = 1`.
+
+**Wording caveat:** `COVSYMNOW31` asks whether the person has COVID-19 or Long COVID-19 symptoms “now.” The project therefore describes this as an **operational current-Long-COVID cohort at the Round 3/1 2024 interview**, conditional on established Long-COVID history. It is not a claim that `COVSYMNOW31` alone uniquely diagnoses Long COVID.
+
+`COVREDABIL31/53` remains mapped for future severity work but is not used in the primary cohort.
 
 ## Survey design
 
@@ -40,7 +91,9 @@ AHRQ identifies `VARSTR` and `VARPSU` for Taylor-series variance estimation and 
 
 The full weight-specific design is constructed before cohort domain estimation. Raw rows are not pre-filtered to cases.
 
-Software policy: `survey.lonely.psu="adjust"` and `survey.adjust.domain.lonely=TRUE`. Candidate artifacts record this choice. Intervals are 95% t intervals using survey design degrees of freedom.
+Software policy: `survey.lonely.psu="adjust"` and `survey.adjust.domain.lonely=TRUE`. Candidate artifacts record this choice. Intervals are 95% t intervals using finite positive survey-design degrees of freedom; zero, negative, or nonfinite design degrees of freedom are an analytical failure rather than being replaced with an artificial value.
+
+For binary proportions, the current implementation uses a Taylor-linearized t interval and post-hoc bounds it to [0,1]. This is retained for this correction pass to avoid bundling an unrelated interval-method change. It is a documented follow-up limitation for later methods review.
 
 ## Tier 1 estimands
 
