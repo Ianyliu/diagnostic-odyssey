@@ -142,7 +142,9 @@ test("context bar does not claim West Virginia evidence when local context is em
   const context = readSource("../src/components/ContextBar.tsx");
   assert.doesNotMatch(context, /West Virginia|WV working context/);
   assert.match(context, /Local context not yet loaded/);
-  assert.match(context, /national evidence/);
+  assert.match(context, /bundle\.context\.geography_scope/);
+  assert.doesNotMatch(context, /geography_scope\} national evidence/);
+  assert.equal(reviewedBundle.context.geography_scope, "United States national evidence");
 });
 
 test("local context and intervention-effect routes have principled empty states", () => {

@@ -17,7 +17,7 @@ export function ContextBar() {
     <strong>Analytical context</strong>
     <span className="chip">{conditionLabel}</span>
     <span className="chip">Adults {bundle.context.age_range}</span>
-    <span className="chip">{bundle.context.geography_scope} national evidence</span>
+    <span className="chip">{bundle.context.geography_scope}</span>
     <span className="chip">
       {bundle.local_context.length > 0 ? "Local context loaded" : "Local context not yet loaded"}
     </span>
