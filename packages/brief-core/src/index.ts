@@ -40,6 +40,24 @@ export function buildPlanningBrief(input: BriefInput): PlanningBrief {
     "Scenario outputs are deterministic planning quantities, not savings, ROI, causal benefit, or observed improvement."
   ];
 
+  if (burdenFindings.some(estimate => estimate.component_of_measure_id)) {
+    warnings.push(
+      "Out-of-pocket/self-family-paid spending is nested within total spending and must not be added to it."
+    );
+  }
+
+  if (burdenFindings.some(estimate => /k6|phq2/i.test(estimate.measure_id))) {
+    warnings.push(
+      "K6 measures nonspecific psychological distress and PHQ-2 is a depressive-symptom screen; neither is a psychiatric diagnosis."
+    );
+  }
+
+  if (burdenFindings.some(estimate => estimate.weight_variable === "ESAQWT24F")) {
+    warnings.push(
+      "ESAQ time measures are AHRQ annualized hours-per-year measures; later ESAQ responses do not establish continued current Long COVID after the earlier Round 3/1 status anchor."
+    );
+  }
+
   return {
     title: "Diagnostic Odyssey planning brief",
     context: input.context,

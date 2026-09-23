@@ -27,15 +27,15 @@ export function AppShell() {
         <span className="header-meta">Federal data · public evidence</span>
       </header>
       <div className="prototype-strip" role="note">
-        <strong>Prototype · illustrative fixtures until validated analytical artifacts are promoted</strong>
-        <span>Burden evidence stays national; local context informs implementation only.</span>
+        <strong>Reviewed national MEPS burden loaded · planning assumptions remain analyst-editable</strong>
+        <span>Local implementation context and intervention-effect evidence are not yet loaded.</span>
       </div>
       <main>
         <Outlet />
       </main>
       <footer>
         <span>Diagnostic Odyssey</span>
-        <span>No PHI · no county-specific Long COVID cost · no causal ROI claim</span>
+        <span>No PHI · no state-specific Long COVID cost · no causal ROI claim</span>
       </footer>
     </div>
   );
