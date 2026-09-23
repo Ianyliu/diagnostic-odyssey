@@ -120,7 +120,7 @@ jobs:
 
           (
             cd "$OUTPUT_DIR"
-            sha256sum               bundle.json               diagnostics.json               review-manifest.json               hc256-source-metadata.json               github-actions-run-manifest.json             SHA256SUMS               > SHA256SUMS
+            sha256sum               bundle.json               diagnostics.json               review-manifest.json               hc256-source-metadata.json               github-actions-run-manifest.json               > SHA256SUMS
           )
 
       - name: Enforce preliminary-only release state
@@ -148,7 +148,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          for required in             bundle.json             diagnostics.json             review-manifest.json             hc256-source-metadata.json             github-actions-run-manifest.json
+          for required in             bundle.json             diagnostics.json             review-manifest.json             hc256-source-metadata.json             github-actions-run-manifest.json             SHA256SUMS
           do
             test -s "$OUTPUT_DIR/$required"
           done

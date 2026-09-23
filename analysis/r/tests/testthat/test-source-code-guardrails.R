@@ -46,8 +46,18 @@ testthat::test_that("NA source codes fail reviewed code-set validation", {
 })
 
 testthat::test_that("cohort construction itself invokes fail-fast code validation", {
-  data <- make_cohort_fixture()
-  data$COVSYMNOW31[1] <- -7
+  data <- data.frame(
+    PANEL = c(28, 29),
+    AGE31X = c(40, 40),
+    AGE24X = c(40, 40),
+    COVIDEVER31 = c(1, 1),
+    COVIDEVER53 = c(1, 1),
+    LCEVER31 = c(1, 1),
+    LCEVER53 = c(1, 1),
+    COVSYMNOW31 = c(-7, 1),
+    COVSYMNOW53 = c(1, 1),
+    PERWT24F = c(1, 1)
+  )
 
   testthat::expect_error(
     construct_long_covid_cohort(data),
