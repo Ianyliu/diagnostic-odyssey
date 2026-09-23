@@ -80,14 +80,14 @@ def git_head() -> str:
 
 def sanitize_url(url: str) -> str:
     """Redact Census-style API keys from URLs before surfacing errors."""
-    return re.sub(r"([?&]key=)[^&\\s]+", r"\\1[REDACTED]", url, flags=re.IGNORECASE)
+    return re.sub(r"([?&]key=)[^&\s]+", r"\1[REDACTED]", url, flags=re.IGNORECASE)
 
 
 def sanitize_error_text(value: object) -> str:
     """Redact API keys that may be embedded in exception text."""
     return re.sub(
-        r"([?&]key=)[^&\\s'\\\"]+",
-        r"\\1[REDACTED]",
+        r"([?&]key=)[^&\s'\"]+",
+        r"\1[REDACTED]",
         str(value),
         flags=re.IGNORECASE,
     )
