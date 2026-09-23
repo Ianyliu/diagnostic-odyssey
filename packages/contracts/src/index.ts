@@ -425,7 +425,7 @@ export function validateLocalContextRecord(
   if (value.geography_type !== "state" && value.geography_type !== "county") {
     issues.push({ path: `${path}.geography_type`, message: "must be state or county" });
   }
-  if (typeof value.state_fips !== "string" || !/^\\d{2}$/.test(value.state_fips)) {
+  if (typeof value.state_fips !== "string" || !/^\d{2}$/.test(value.state_fips)) {
     issues.push({ path: `${path}.state_fips`, message: "must be a two-digit FIPS code" });
   }
 
@@ -434,7 +434,7 @@ export function validateLocalContextRecord(
     issues.push({ path: `${path}.county_fips`, message: "must be null for state geography" });
   }
   if (value.geography_type === "county") {
-    if (typeof countyFips !== "string" || !/^\\d{5}$/.test(countyFips)) {
+    if (typeof countyFips !== "string" || !/^\d{5}$/.test(countyFips)) {
       issues.push({ path: `${path}.county_fips`, message: "must be a five-digit FIPS code for county geography" });
     } else if (typeof value.state_fips === "string" && !countyFips.startsWith(value.state_fips)) {
       issues.push({ path: `${path}.county_fips`, message: "must begin with state_fips" });
@@ -536,14 +536,14 @@ export function validateLocalContextArtifact(value: unknown): ValidationIssue[] 
     if (geography.geography_type !== "state" && geography.geography_type !== "county") {
       issues.push({ path: "local_artifact.geography.geography_type", message: "must be state or county" });
     }
-    if (typeof geography.state_fips !== "string" || !/^\\d{2}$/.test(geography.state_fips)) {
+    if (typeof geography.state_fips !== "string" || !/^\d{2}$/.test(geography.state_fips)) {
       issues.push({ path: "local_artifact.geography.state_fips", message: "must be a two-digit FIPS code" });
     }
     if (geography.geography_type === "state" && geography.county_fips !== null) {
       issues.push({ path: "local_artifact.geography.county_fips", message: "must be null for state geography" });
     }
     if (geography.geography_type === "county" &&
-        (typeof geography.county_fips !== "string" || !/^\\d{5}$/.test(geography.county_fips))) {
+        (typeof geography.county_fips !== "string" || !/^\d{5}$/.test(geography.county_fips))) {
       issues.push({ path: "local_artifact.geography.county_fips", message: "must be a five-digit FIPS code" });
     }
   }
