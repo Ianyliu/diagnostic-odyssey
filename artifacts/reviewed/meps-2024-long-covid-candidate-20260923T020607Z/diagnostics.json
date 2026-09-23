@@ -1,0 +1,740 @@
+{
+  "run_id": "meps24-20260923T020607Z",
+  "generated_at": "2026-09-23T02:06:07Z",
+  "code_commit": "8952bb7446b7b0461e41f1794146ab5e612ebf40",
+  "github_sha": "8952bb7446b7b0461e41f1794146ab5e612ebf40",
+  "code_commit_matches_github_sha": true,
+  "dataset_release": "AHRQ MEPS HC-256: 2024 Full Year Consolidated Data File (August 2026)",
+  "input_path": "/home/runner/work/diagnostic-odyssey/diagnostic-odyssey/data/raw/meps/2024/h256.dta",
+  "input_md5": "7e7a043c9744361d1c08ac8eef7d19cd",
+  "input_sha256": "b4bde859b39f626345561c05570292bb7264dd92eb76ce0c1a14d6b89076aed5",
+  "expected_input_sha256": "b4bde859b39f626345561c05570292bb7264dd92eb76ce0c1a14d6b89076aed5",
+  "input_sha256_match": true,
+  "source_metadata": {
+    "source_id": "meps-hc256-2024",
+    "dataset": "MEPS HC-256: 2024 Full Year Consolidated Data File",
+    "release": "August 2026",
+    "official_page": "https://meps.ahrq.gov/data_stats/download_data_files_detail.jsp?cboPufNumber=HC-256",
+    "download_url": "https://meps.ahrq.gov/data_files/pufs/h256/h256dta.zip",
+    "downloaded_at_utc": "2026-09-23 02:06:01 UTC",
+    "zip_path": "data/raw/meps/2024/meps_hc256_2024_stata.zip",
+    "zip_bytes": 5803860,
+    "zip_md5": "e95b643ce1177ad48fa3c0b70261d97a",
+    "zip_sha256": "653891861ec18574b07f576915e6f9e423263fc947610dc34e1bd176feff7b40",
+    "expected_zip_sha256": "653891861ec18574b07f576915e6f9e423263fc947610dc34e1bd176feff7b40",
+    "zip_sha256_match": true,
+    "extracted_path": "data/raw/meps/2024/h256.dta",
+    "extracted_bytes": 57816386,
+    "extracted_sha256": "b4bde859b39f626345561c05570292bb7264dd92eb76ce0c1a14d6b89076aed5",
+    "expected_extracted_sha256": "b4bde859b39f626345561c05570292bb7264dd92eb76ce0c1a14d6b89076aed5",
+    "extracted_sha256_match": true,
+    "source_integrity_review": {
+      "candidate_run_id": "35745589631",
+      "artifact_id": "10702872683",
+      "reviewed_code_commit": "e4c1b9832cd3c4ec7cff69b4f2bd0572a142c970",
+      "review_note": "Expected hashes were independently preserved from the successful third-candidate source metadata before the metadata/provenance hardening pass."
+    },
+    "source_integrity_change_policy": "Any mismatch is fail-fast. Do not update an expected hash merely to make a run pass; first review the official AHRQ release/source metadata and document why the source bytes changed.",
+    "verified_variable_count": 32,
+    "verification": "Readable ZIP; exactly one Stata file extracted and opened; all variables required by the reviewed MEPS 2024 map were present."
+  },
+  "cohort": {
+    "reviewed_round31_source_codes": {
+      "COVIDEVER31": {
+        "variable": "COVIDEVER31",
+        "allowable_codes": [
+          -8,
+          -7,
+          -1,
+          1,
+          2
+        ],
+        "observed_codes": [
+          -8,
+          -7,
+          -1,
+          1,
+          2
+        ],
+        "observed_counts": {
+          "code_-8": 150,
+          "code_-7": 25,
+          "code_-1": 389,
+          "code_1": 10512,
+          "code_2": 8064
+        },
+        "missing_na_n": 0,
+        "unexpected_codes": []
+      },
+      "LCEVER31": {
+        "variable": "LCEVER31",
+        "allowable_codes": [
+          -8,
+          -7,
+          -1,
+          1,
+          2
+        ],
+        "observed_codes": [
+          -8,
+          -7,
+          -1,
+          1,
+          2
+        ],
+        "observed_counts": {
+          "code_-8": 68,
+          "code_-7": 5,
+          "code_-1": 10247,
+          "code_1": 1400,
+          "code_2": 7420
+        },
+        "missing_na_n": 0,
+        "unexpected_codes": []
+      },
+      "COVSYMNOW31": {
+        "variable": "COVSYMNOW31",
+        "allowable_codes": [
+          -8,
+          -1,
+          1,
+          2
+        ],
+        "observed_codes": [
+          -8,
+          -1,
+          1,
+          2
+        ],
+        "observed_counts": {
+          "code_-8": 16,
+          "code_-1": 17740,
+          "code_1": 550,
+          "code_2": 834
+        },
+        "missing_na_n": 0,
+        "unexpected_codes": []
+      }
+    },
+    "scope": {
+      "definition": "AGE31X 18-64 and positive PERWT24F",
+      "total_hc256_rows": 19140,
+      "target_age_eligible_unweighted_n": 10234,
+      "target_age_eligible_weighted_population": 202866029.9307,
+      "age_anchor_vs_year_end_eligibility_difference_n": 414
+    },
+    "age_transition_review": {
+      "cleaning_rule": "Diagnostic ages are valid only from 0 through 85; negative reserved codes and missing values are not genuine ages.",
+      "total_eligibility_differences": 414,
+      "categories": {
+        "valid_AGE31X_under18_to_AGE24X_18_64": 148,
+        "valid_AGE31X_18_64_to_AGE24X_65plus": 211,
+        "valid_AGE31X_18_64_to_AGE24X_under18": 0,
+        "valid_AGE31X_65plus_to_AGE24X_18_64": 0,
+        "AGE31X_reserved_or_missing_to_valid_AGE24X_18_64": 6,
+        "valid_AGE31X_18_64_to_AGE24X_reserved_or_missing": 49,
+        "other_eligibility_difference": 0
+      },
+      "reconciliation_total": 414,
+      "reconciles": true,
+      "raw_reserved_or_missing": {
+        "AGE31X_negative_reserved_n": 96,
+        "AGE31X_missing_n": 0,
+        "AGE24X_negative_reserved_n": 157,
+        "AGE24X_missing_n": 0
+      }
+    },
+    "covid_ever_31": {
+      "yes_n": 6489,
+      "no_n": 3648,
+      "refused_n": 9,
+      "dont_know_n": 74,
+      "structural_inapplicable_n": 14
+    },
+    "long_covid_history_31": {
+      "lcever_yes_n": 1039,
+      "lcever_no_n": 5393,
+      "lcever_refused_n": 3,
+      "lcever_dont_know_n": 54,
+      "lcever_structural_inapplicable_n": 3745,
+      "known_no_covid_n": 3648,
+      "known_no_long_covid_n": 5393,
+      "true_unresolved_history_n": 154,
+      "routing_conflict_n": 0
+    },
+    "current_status_31": {
+      "covsymnow_yes_n": 380,
+      "covsymnow_no_n": 649,
+      "covsymnow_refused_n": 0,
+      "covsymnow_dont_know_n": 10,
+      "covsymnow_inapplicable_n": 9195,
+      "structural_not_applicable_no_history_n": 9041,
+      "true_unresolved_current_status_with_history_n": 10
+    },
+    "temporal_diagnostics": {
+      "round31_round53_valid_disagreement_n": 253,
+      "panel29_valid_covsymnow53_n": 585,
+      "note": "Round-53 fields are diagnostic only and never determine primary membership."
+    },
+    "final_cohort": {
+      "classifiable_unweighted_n": 10070,
+      "unresolved_unweighted_n": 164,
+      "current_case_unweighted_n": 380,
+      "represented_population": 6831165.1075,
+      "panel28_case_unweighted_n": 176,
+      "panel28_case_weighted_total": 2993210.4386,
+      "panel29_case_unweighted_n": 204,
+      "panel29_case_weighted_total": 3837954.6689
+    },
+    "questionnaire_domains": {
+      "esaq_current_case_unweighted_n": 306,
+      "esaq_current_case_weighted_total": 7050540.7939,
+      "psaq_current_case_unweighted_n": 304,
+      "psaq_current_case_weighted_total": 6896354.2062
+    },
+    "survey_design_degrees_of_freedom": {
+      "person_design": 159,
+      "represented_population_classifiable_domain": 159,
+      "current_case_person_domain": 86,
+      "esaq_current_case_domain": 70,
+      "psaq_current_case_domain": 72
+    }
+  },
+  "variance": {
+    "variance_policy": {
+      "estimator": "Taylor series linearization on full weight-specific survey design with survey-domain restriction",
+      "survey_lonely_psu": "adjust",
+      "survey_adjust_domain_lonely": false,
+      "full_design_lonely_psu_role": "Reserved for an actual one-PSU stratum in a full weight-specific design.",
+      "domain_singleton_role": "No additional domain-singleton heuristic adjustment; variance is computed by ordinary full-design domain estimation."
+    },
+    "full_designs": {
+      "person": {
+        "label": "full PERSON / PERWT24F survey design",
+        "weight_variable": "PERWT24F",
+        "unweighted_design_n": 18683,
+        "variance_strata_n": 105,
+        "unique_varstr_varpsu_n": 264,
+        "minimum_psus_per_stratum": 2,
+        "maximum_psus_per_stratum": 5,
+        "psus_per_stratum_distribution": {
+          "n_psu_2": 64,
+          "n_psu_3": 30,
+          "n_psu_4": 9,
+          "n_psu_5": 2
+        },
+        "true_or_represented_singleton_strata_n": 0,
+        "singleton_strata": [],
+        "survey_degf": 159,
+        "true_full_design_singleton_strata_n": 0,
+        "true_full_design_singleton_strata": []
+      },
+      "esaq": {
+        "label": "full ESAQ / ESAQWT24F survey design",
+        "weight_variable": "ESAQWT24F",
+        "unweighted_design_n": 11604,
+        "variance_strata_n": 105,
+        "unique_varstr_varpsu_n": 264,
+        "minimum_psus_per_stratum": 2,
+        "maximum_psus_per_stratum": 5,
+        "psus_per_stratum_distribution": {
+          "n_psu_2": 64,
+          "n_psu_3": 30,
+          "n_psu_4": 9,
+          "n_psu_5": 2
+        },
+        "true_or_represented_singleton_strata_n": 0,
+        "singleton_strata": [],
+        "survey_degf": 159,
+        "true_full_design_singleton_strata_n": 0,
+        "true_full_design_singleton_strata": []
+      },
+      "psaq": {
+        "label": "full PSAQ / SAQWT24F survey design",
+        "weight_variable": "SAQWT24F",
+        "unweighted_design_n": 11608,
+        "variance_strata_n": 105,
+        "unique_varstr_varpsu_n": 264,
+        "minimum_psus_per_stratum": 2,
+        "maximum_psus_per_stratum": 5,
+        "psus_per_stratum_distribution": {
+          "n_psu_2": 64,
+          "n_psu_3": 30,
+          "n_psu_4": 9,
+          "n_psu_5": 2
+        },
+        "true_or_represented_singleton_strata_n": 0,
+        "singleton_strata": [],
+        "survey_degf": 159,
+        "true_full_design_singleton_strata_n": 0,
+        "true_full_design_singleton_strata": []
+      }
+    },
+    "current_case_domains": {
+      "person_current_case": {
+        "label": "current-case PERSON domain",
+        "weight_variable": "PERWT24F",
+        "unweighted_design_n": 380,
+        "variance_strata_n": 99,
+        "unique_varstr_varpsu_n": 185,
+        "minimum_psus_per_stratum": 1,
+        "maximum_psus_per_stratum": 4,
+        "psus_per_stratum_distribution": {
+          "n_psu_1": 33,
+          "n_psu_2": 50,
+          "n_psu_3": 12,
+          "n_psu_4": 4
+        },
+        "true_or_represented_singleton_strata_n": 33,
+        "singleton_strata": [
+          2004,
+          2016,
+          2021,
+          2022,
+          2029,
+          2031,
+          2032,
+          2033,
+          2035,
+          2038,
+          2039,
+          2040,
+          2042,
+          2045,
+          2048,
+          2051,
+          2057,
+          2059,
+          2068,
+          2069,
+          2070,
+          2071,
+          2074,
+          2076,
+          2084,
+          2087,
+          2089,
+          2091,
+          2093,
+          2098,
+          2101,
+          2109,
+          2110
+        ],
+        "survey_degf": 86,
+        "domain_singleton_strata_n": 33,
+        "domain_singleton_strata": [
+          2004,
+          2016,
+          2021,
+          2022,
+          2029,
+          2031,
+          2032,
+          2033,
+          2035,
+          2038,
+          2039,
+          2040,
+          2042,
+          2045,
+          2048,
+          2051,
+          2057,
+          2059,
+          2068,
+          2069,
+          2070,
+          2071,
+          2074,
+          2076,
+          2084,
+          2087,
+          2089,
+          2091,
+          2093,
+          2098,
+          2101,
+          2109,
+          2110
+        ]
+      },
+      "esaq_current_case": {
+        "label": "current-case ESAQ domain",
+        "weight_variable": "ESAQWT24F",
+        "unweighted_design_n": 306,
+        "variance_strata_n": 96,
+        "unique_varstr_varpsu_n": 166,
+        "minimum_psus_per_stratum": 1,
+        "maximum_psus_per_stratum": 4,
+        "psus_per_stratum_distribution": {
+          "n_psu_1": 42,
+          "n_psu_2": 41,
+          "n_psu_3": 10,
+          "n_psu_4": 3
+        },
+        "true_or_represented_singleton_strata_n": 42,
+        "singleton_strata": [
+          2004,
+          2010,
+          2013,
+          2021,
+          2022,
+          2026,
+          2028,
+          2029,
+          2031,
+          2032,
+          2033,
+          2035,
+          2037,
+          2038,
+          2039,
+          2040,
+          2042,
+          2048,
+          2051,
+          2057,
+          2059,
+          2069,
+          2070,
+          2071,
+          2072,
+          2073,
+          2074,
+          2076,
+          2079,
+          2084,
+          2087,
+          2088,
+          2089,
+          2091,
+          2093,
+          2098,
+          2100,
+          2101,
+          2106,
+          2109,
+          2110,
+          2116
+        ],
+        "survey_degf": 70,
+        "domain_singleton_strata_n": 42,
+        "domain_singleton_strata": [
+          2004,
+          2010,
+          2013,
+          2021,
+          2022,
+          2026,
+          2028,
+          2029,
+          2031,
+          2032,
+          2033,
+          2035,
+          2037,
+          2038,
+          2039,
+          2040,
+          2042,
+          2048,
+          2051,
+          2057,
+          2059,
+          2069,
+          2070,
+          2071,
+          2072,
+          2073,
+          2074,
+          2076,
+          2079,
+          2084,
+          2087,
+          2088,
+          2089,
+          2091,
+          2093,
+          2098,
+          2100,
+          2101,
+          2106,
+          2109,
+          2110,
+          2116
+        ]
+      },
+      "psaq_current_case": {
+        "label": "current-case PSAQ domain",
+        "weight_variable": "SAQWT24F",
+        "unweighted_design_n": 304,
+        "variance_strata_n": 97,
+        "unique_varstr_varpsu_n": 169,
+        "minimum_psus_per_stratum": 1,
+        "maximum_psus_per_stratum": 4,
+        "psus_per_stratum_distribution": {
+          "n_psu_1": 40,
+          "n_psu_2": 45,
+          "n_psu_3": 9,
+          "n_psu_4": 3
+        },
+        "true_or_represented_singleton_strata_n": 40,
+        "singleton_strata": [
+          2002,
+          2004,
+          2010,
+          2021,
+          2022,
+          2026,
+          2028,
+          2029,
+          2031,
+          2032,
+          2033,
+          2035,
+          2037,
+          2038,
+          2039,
+          2040,
+          2042,
+          2048,
+          2051,
+          2057,
+          2059,
+          2068,
+          2069,
+          2070,
+          2071,
+          2072,
+          2073,
+          2074,
+          2076,
+          2084,
+          2087,
+          2089,
+          2091,
+          2093,
+          2098,
+          2100,
+          2101,
+          2109,
+          2110,
+          2116
+        ],
+        "survey_degf": 72,
+        "domain_singleton_strata_n": 40,
+        "domain_singleton_strata": [
+          2002,
+          2004,
+          2010,
+          2021,
+          2022,
+          2026,
+          2028,
+          2029,
+          2031,
+          2032,
+          2033,
+          2035,
+          2037,
+          2038,
+          2039,
+          2040,
+          2042,
+          2048,
+          2051,
+          2057,
+          2059,
+          2068,
+          2069,
+          2070,
+          2071,
+          2072,
+          2073,
+          2074,
+          2076,
+          2084,
+          2087,
+          2089,
+          2091,
+          2093,
+          2098,
+          2100,
+          2101,
+          2109,
+          2110,
+          2116
+        ]
+      }
+    },
+    "any_true_full_design_singleton": false
+  },
+  "estimate_ci_degrees_of_freedom": [
+    {
+      "estimate_id": "meps24-current-long-covid-population",
+      "measure_id": "represented-population",
+      "weight_variable": "PERWT24F",
+      "ci_degrees_of_freedom": 159,
+      "ci_df_source": "full PERSON / PERWT24F survey design"
+    },
+    {
+      "estimate_id": "meps24-gross-all-cause-spending-total",
+      "measure_id": "gross-all-cause-spending-total",
+      "weight_variable": "PERWT24F",
+      "ci_degrees_of_freedom": 159,
+      "ci_df_source": "full PERSON / PERWT24F survey design"
+    },
+    {
+      "estimate_id": "meps24-gross-all-cause-spending-mean",
+      "measure_id": "gross-all-cause-spending-mean",
+      "weight_variable": "PERWT24F",
+      "ci_degrees_of_freedom": 159,
+      "ci_df_source": "full PERSON / PERWT24F survey design"
+    },
+    {
+      "estimate_id": "meps24-out-of-pocket-spending-total",
+      "measure_id": "out-of-pocket-spending-total",
+      "weight_variable": "PERWT24F",
+      "ci_degrees_of_freedom": 159,
+      "ci_df_source": "full PERSON / PERWT24F survey design"
+    },
+    {
+      "estimate_id": "meps24-out-of-pocket-spending-mean",
+      "measure_id": "out-of-pocket-spending-mean",
+      "weight_variable": "PERWT24F",
+      "ci_degrees_of_freedom": 159,
+      "ci_df_source": "full PERSON / PERWT24F survey design"
+    },
+    {
+      "estimate_id": "meps24-office-based-provider-visits-mean",
+      "measure_id": "office-based-provider-visits-mean",
+      "weight_variable": "PERWT24F",
+      "ci_degrees_of_freedom": 159,
+      "ci_df_source": "full PERSON / PERWT24F survey design"
+    },
+    {
+      "estimate_id": "meps24-office-based-provider-visits-any",
+      "measure_id": "office-based-provider-visits-any",
+      "weight_variable": "PERWT24F",
+      "ci_degrees_of_freedom": 159,
+      "ci_df_source": "full PERSON / PERWT24F survey design"
+    },
+    {
+      "estimate_id": "meps24-outpatient-provider-visits-mean",
+      "measure_id": "outpatient-provider-visits-mean",
+      "weight_variable": "PERWT24F",
+      "ci_degrees_of_freedom": 159,
+      "ci_df_source": "full PERSON / PERWT24F survey design"
+    },
+    {
+      "estimate_id": "meps24-outpatient-provider-visits-any",
+      "measure_id": "outpatient-provider-visits-any",
+      "weight_variable": "PERWT24F",
+      "ci_degrees_of_freedom": 159,
+      "ci_df_source": "full PERSON / PERWT24F survey design"
+    },
+    {
+      "estimate_id": "meps24-emergency-room-visits-mean",
+      "measure_id": "emergency-room-visits-mean",
+      "weight_variable": "PERWT24F",
+      "ci_degrees_of_freedom": 159,
+      "ci_df_source": "full PERSON / PERWT24F survey design"
+    },
+    {
+      "estimate_id": "meps24-emergency-room-visits-any",
+      "measure_id": "emergency-room-visits-any",
+      "weight_variable": "PERWT24F",
+      "ci_degrees_of_freedom": 159,
+      "ci_df_source": "full PERSON / PERWT24F survey design"
+    },
+    {
+      "estimate_id": "meps24-hospital-discharges-mean",
+      "measure_id": "hospital-discharges-mean",
+      "weight_variable": "PERWT24F",
+      "ci_degrees_of_freedom": 159,
+      "ci_df_source": "full PERSON / PERWT24F survey design"
+    },
+    {
+      "estimate_id": "meps24-hospital-discharges-any",
+      "measure_id": "hospital-discharges-any",
+      "weight_variable": "PERWT24F",
+      "ci_degrees_of_freedom": 159,
+      "ci_df_source": "full PERSON / PERWT24F survey design"
+    },
+    {
+      "estimate_id": "meps24-own-medical-visit-time-mean",
+      "measure_id": "own-medical-visit-time",
+      "weight_variable": "ESAQWT24F",
+      "ci_degrees_of_freedom": 159,
+      "ci_df_source": "full ESAQ / ESAQWT24F survey design"
+    },
+    {
+      "estimate_id": "meps24-medical-bills-insurance-time-mean",
+      "measure_id": "medical-bills-insurance-time",
+      "weight_variable": "ESAQWT24F",
+      "ci_degrees_of_freedom": 159,
+      "ci_df_source": "full ESAQ / ESAQWT24F survey design"
+    },
+    {
+      "estimate_id": "meps24-healthcare-paperwork-time-mean",
+      "measure_id": "healthcare-paperwork-time",
+      "weight_variable": "ESAQWT24F",
+      "ci_degrees_of_freedom": 159,
+      "ci_df_source": "full ESAQ / ESAQWT24F survey design"
+    },
+    {
+      "estimate_id": "meps24-prior-approval-denied-delayed",
+      "measure_id": "prior-approval-denied-delayed",
+      "weight_variable": "ESAQWT24F",
+      "ci_degrees_of_freedom": 159,
+      "ci_df_source": "full ESAQ / ESAQWT24F survey design"
+    },
+    {
+      "estimate_id": "meps24-k6-score-mean",
+      "measure_id": "k6-score-mean",
+      "weight_variable": "SAQWT24F",
+      "ci_degrees_of_freedom": 159,
+      "ci_df_source": "full PSAQ / SAQWT24F survey design"
+    },
+    {
+      "estimate_id": "meps24-k6-serious-distress",
+      "measure_id": "k6-serious-distress",
+      "weight_variable": "SAQWT24F",
+      "ci_degrees_of_freedom": 159,
+      "ci_df_source": "full PSAQ / SAQWT24F survey design"
+    },
+    {
+      "estimate_id": "meps24-phq2-score-mean",
+      "measure_id": "phq2-score-mean",
+      "weight_variable": "SAQWT24F",
+      "ci_degrees_of_freedom": 159,
+      "ci_df_source": "full PSAQ / SAQWT24F survey design"
+    },
+    {
+      "estimate_id": "meps24-phq2-screen-positive",
+      "measure_id": "phq2-screen-positive",
+      "weight_variable": "SAQWT24F",
+      "ci_degrees_of_freedom": 159,
+      "ci_df_source": "full PSAQ / SAQWT24F survey design"
+    }
+  ],
+  "analytical_warnings": [],
+  "design": {
+    "person_weight": "PERWT24F",
+    "esaq_weight": "ESAQWT24F",
+    "psaq_weight": "SAQWT24F",
+    "joint_psaq_esaq_weight": "PESAQWT24F",
+    "joint_weight_status": "not_used_in_current_pipeline",
+    "variance_stratum": "VARSTR",
+    "variance_psu": "VARPSU",
+    "variance_method": "Taylor series linearization; with-replacement design",
+    "lonely_psu_policy": "survey.lonely.psu='adjust' for any actual full-design lonely PSU; survey.adjust.domain.lonely=FALSE for ordinary full-design domain variance"
+  },
+  "package_versions": {
+    "haven": "2.5.5",
+    "jsonlite": "2.0.0",
+    "survey": "4.5"
+  },
+  "r_version": "R version 4.6.1 (2026-06-24)"
+}

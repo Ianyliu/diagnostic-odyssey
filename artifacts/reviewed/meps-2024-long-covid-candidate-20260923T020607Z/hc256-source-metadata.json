@@ -1,0 +1,28 @@
+{
+  "source_id": "meps-hc256-2024",
+  "dataset": "MEPS HC-256: 2024 Full Year Consolidated Data File",
+  "release": "August 2026",
+  "official_page": "https://meps.ahrq.gov/data_stats/download_data_files_detail.jsp?cboPufNumber=HC-256",
+  "download_url": "https://meps.ahrq.gov/data_files/pufs/h256/h256dta.zip",
+  "downloaded_at_utc": "2026-09-23 02:06:01 UTC",
+  "zip_path": "data/raw/meps/2024/meps_hc256_2024_stata.zip",
+  "zip_bytes": 5803860,
+  "zip_md5": "e95b643ce1177ad48fa3c0b70261d97a",
+  "zip_sha256": "653891861ec18574b07f576915e6f9e423263fc947610dc34e1bd176feff7b40",
+  "expected_zip_sha256": "653891861ec18574b07f576915e6f9e423263fc947610dc34e1bd176feff7b40",
+  "zip_sha256_match": true,
+  "extracted_path": "data/raw/meps/2024/h256.dta",
+  "extracted_bytes": 57816386,
+  "extracted_sha256": "b4bde859b39f626345561c05570292bb7264dd92eb76ce0c1a14d6b89076aed5",
+  "expected_extracted_sha256": "b4bde859b39f626345561c05570292bb7264dd92eb76ce0c1a14d6b89076aed5",
+  "extracted_sha256_match": true,
+  "source_integrity_review": {
+    "candidate_run_id": "35745589631",
+    "artifact_id": "10702872683",
+    "reviewed_code_commit": "e4c1b9832cd3c4ec7cff69b4f2bd0572a142c970",
+    "review_note": "Expected hashes were independently preserved from the successful third-candidate source metadata before the metadata/provenance hardening pass."
+  },
+  "source_integrity_change_policy": "Any mismatch is fail-fast. Do not update an expected hash merely to make a run pass; first review the official AHRQ release/source metadata and document why the source bytes changed.",
+  "verified_variable_count": 32,
+  "verification": "Readable ZIP; exactly one Stata file extracted and opened; all variables required by the reviewed MEPS 2024 map were present."
+}
