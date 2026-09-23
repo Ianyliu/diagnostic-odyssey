@@ -133,3 +133,21 @@ Promotion convention for this reviewed package:
 The promotion followed completed methods, cohort, weighted/unweighted N,
 interval, denominator/universe, plausibility, provenance, interpretation,
 and final promotion-gate review. No reviewer credentials are asserted.
+
+
+## Separate local-context release path — HRSA + ACS
+
+Local implementation context has an independent artifact family and does not alter the reviewed MEPS package.
+
+```text
+official HRSA/ACS source
+→ validated source snapshot / label contract
+→ preliminary local-context candidate
+→ independent local-context review
+→ reviewed_released local-context artifact
+→ later runtime composition with the unchanged reviewed MEPS artifact
+```
+
+The manual workflow is `.github/workflows/local-context-candidate.yml` (**Local Context Candidate — WV HRSA + ACS**). It requires the repository Actions secret `CENSUS_API_KEY`, checks out the exact dispatched SHA, acquires the current HRSA Primary Care and Mental Health All-HPSAs CSVs plus the 2024 ACS 5-year Data Profile state query for West Virginia (FIPS 54), verifies source contracts, and uploads aggregate-only review files.
+
+Candidate HRSA/ACS indicators use `release_status="preliminary"` and `context_type="contextual_indicator"`. They are not selected by the web runtime, do not populate Local Context, and cannot modify MEPS estimates or scenario arithmetic. Promotion remains an explicit later action after independent review.

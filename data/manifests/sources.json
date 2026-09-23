@@ -1,5 +1,5 @@
 {
-  "manifest_version": "2026-09-21.2",
+  "manifest_version": "2026-09-23.1",
   "sources": [
     {
       "source_id": "meps-hc256-2024",
@@ -64,47 +64,49 @@
       "priority": "P2",
       "name": "HRSA HPSA - Primary Care - All HPSAs CSV",
       "agency": "HRSA",
-      "official_url": "https://data.hrsa.gov/data/download?data=AHRF",
-      "acquisition": "manual_download",
-      "expected_local_filename": "hpsa_primary_care_all.csv",
-      "local_path": "data/raw/hrsa/hpsa_primary_care_all.csv",
+      "official_url": "https://data.hrsa.gov/data/download",
+      "acquisition": "programmatic_current_snapshot",
+      "expected_local_filename": "primary_care.csv",
+      "local_path": "data/raw/hrsa/current/primary_care.csv",
       "approx_size": "35 MB as listed 2026-08-26",
       "registration_required": false,
       "present_in_repository": false,
-      "role": "local implementation/provider-shortage context",
+      "role": "state/county-capable contextual HPSA designation descriptors only; not a calibrated access score",
       "required_for": [
         "local-context-hrsa"
-      ]
+      ],
+      "download_url": "https://data.hrsa.gov/DataDownload/DD_Files/BCD_HPSA_FCT_DET_PC.csv"
     },
     {
       "source_id": "hrsa-hpsa-mental-health-current",
       "priority": "P2",
       "name": "HRSA HPSA - Mental Health - All HPSAs CSV",
       "agency": "HRSA",
-      "official_url": "https://data.hrsa.gov/data/download?data=AHRF",
-      "acquisition": "manual_download",
-      "expected_local_filename": "hpsa_mental_health_all.csv",
-      "local_path": "data/raw/hrsa/hpsa_mental_health_all.csv",
+      "official_url": "https://data.hrsa.gov/data/download",
+      "acquisition": "programmatic_current_snapshot",
+      "expected_local_filename": "mental_health.csv",
+      "local_path": "data/raw/hrsa/current/mental_health.csv",
       "approx_size": "14 MB as listed 2026-08-26",
       "registration_required": false,
       "present_in_repository": false,
-      "role": "local mental-health provider-shortage context",
+      "role": "state/county-capable contextual mental-health HPSA designation descriptors only; not a calibrated access score",
       "required_for": [
         "local-context-hrsa"
-      ]
+      ],
+      "download_url": "https://data.hrsa.gov/DataDownload/DD_Files/BCD_HPSA_FCT_DET_MH.csv"
     },
     {
-      "source_id": "acs-2024-5year",
+      "source_id": "acs-2024-5year-profile",
       "priority": "P2",
       "name": "American Community Survey 2024 5-year estimates",
       "agency": "US Census Bureau",
       "official_url": "https://www.census.gov/data/developers/data-sets/acs-5year/2024.html",
-      "acquisition": "api_after_variable_map",
-      "expected_local_filename": "acs_2024_5year_context.csv",
-      "local_path": "data/raw/acs/2024/acs_2024_5year_context.csv",
+      "acquisition": "official_census_api_frozen_variable_map",
+      "expected_local_filename": null,
+      "local_path": null,
       "registration_required": "API key required",
       "present_in_repository": false,
-      "role": "population, employment, insurance, transportation and rural/access context",
+      "role": "four frozen implementation-context percentages with source-specific universes and published 90% margins of error",
       "required_for": [
         "local-context-acs"
       ]
