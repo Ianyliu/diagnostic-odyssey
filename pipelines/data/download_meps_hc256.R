@@ -2,6 +2,7 @@
 
 source(file.path("analysis", "r", "lib", "paths.R"))
 source(file.path("analysis", "r", "meps", "load_hc256.R"))
+source(file.path("analysis", "r", "lib", "file_integrity.R"))
 
 if (!requireNamespace("haven", quietly = TRUE) || !requireNamespace("jsonlite", quietly = TRUE)) {
   stop("Run Rscript analysis/r/install_dependencies.R first.", call. = FALSE)
@@ -97,25 +98,19 @@ download_official_hc256 <- function(destination) {
   }
 }
 
-sha256_file <- function(path) {
-  sha256sum <- Sys.which("sha256sum")
-  if (nzchar(sha256sum)) {
-    line <- system2(sha256sum, path, stdout = TRUE)
-    return(strsplit(line[[1]], "[[:space:]]+")[[1]][[1]])
-  }
-  shasum <- Sys.which("shasum")
-  if (nzchar(shasum)) {
-    line <- system2(shasum, c("-a", "256", path), stdout = TRUE)
-    return(strsplit(line[[1]], "[[:space:]]+")[[1]][[1]])
-  }
-  NA_character_
-}
+integrity_policy <- read_hc256_source_integrity()
 
 if (!file.exists(zip_path) || force) {
   download_official_hc256(zip_path)
 } else {
   message("Using existing HC-256 ZIP: ", zip_path)
 }
+
+observed_zip_sha256 <- assert_sha256_matches(
+  zip_path,
+  integrity_policy$expected_zip_sha256,
+  "MEPS HC-256 official Stata ZIP"
+)
 
 listing <- tryCatch(
   utils::unzip(zip_path, list = TRUE),
@@ -138,6 +133,11 @@ if (length(dta_entries) != 1L) {
 }
 
 extract_hc256_zip(zip_path, dta_path)
+observed_dta_sha256 <- assert_sha256_matches(
+  dta_path,
+  integrity_policy$expected_extracted_dta_sha256,
+  "MEPS HC-256 extracted Stata file"
+)
 probe <- tryCatch(
   haven::read_dta(dta_path, n_max = 5),
   error = function(e) {
@@ -165,10 +165,16 @@ metadata <- list(
   zip_path = "data/raw/meps/2024/meps_hc256_2024_stata.zip",
   zip_bytes = unname(file.info(zip_path)$size),
   zip_md5 = unname(tools::md5sum(zip_path)),
-  zip_sha256 = sha256_file(zip_path),
+  zip_sha256 = observed_zip_sha256,
+  expected_zip_sha256 = integrity_policy$expected_zip_sha256,
+  zip_sha256_match = TRUE,
   extracted_path = "data/raw/meps/2024/h256.dta",
   extracted_bytes = unname(file.info(dta_path)$size),
-  extracted_sha256 = sha256_file(dta_path),
+  extracted_sha256 = observed_dta_sha256,
+  expected_extracted_sha256 = integrity_policy$expected_extracted_dta_sha256,
+  extracted_sha256_match = TRUE,
+  source_integrity_review = integrity_policy$reviewed_reference,
+  source_integrity_change_policy = integrity_policy$change_policy,
   verified_variable_count = length(required_probe),
   verification = paste(
     "Readable ZIP; exactly one Stata file extracted and opened;",

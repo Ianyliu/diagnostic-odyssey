@@ -23,6 +23,16 @@ jobs:
           ref: ${{ github.sha }}
           fetch-depth: 1
 
+      - name: Assert checkout matches dispatched GitHub SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          ACTUAL_SHA="$(git rev-parse HEAD)"
+          test "$ACTUAL_SHA" = "$GITHUB_SHA" || {
+            echo "Checkout SHA mismatch: HEAD=$ACTUAL_SHA GITHUB_SHA=$GITHUB_SHA"
+            exit 1
+          }
+
       - name: Record GitHub Actions provenance
         shell: bash
         run: |
@@ -90,6 +100,29 @@ jobs:
         run: |
           node --experimental-strip-types             packages/contracts/src/validate-artifact-cli.ts             "$OUTPUT_DIR/bundle.json"
 
+      - name: Assert generated code provenance matches GitHub SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          jq -e --arg sha "$GITHUB_SHA" '.manifest.code_commit == $sha'             "$OUTPUT_DIR/bundle.json" >/dev/null
+          jq -e --arg sha "$GITHUB_SHA"             '.code_commit == $sha and .github_sha == $sha and .code_commit_matches_github_sha == true'             "$OUTPUT_DIR/diagnostics.json" >/dev/null
+          jq -e --arg sha "$GITHUB_SHA"             '.code_commit == $sha and .github_sha == $sha and .code_commit_matches_github_sha == true'             "$OUTPUT_DIR/review-manifest.json" >/dev/null
+
+      - name: Verify candidate checksums
+        shell: bash
+        run: |
+          set -euo pipefail
+          BUNDLE_SHA="$(sha256sum "$OUTPUT_DIR/bundle.json" | awk '{print $1}')"
+          DIAGNOSTICS_SHA="$(sha256sum "$OUTPUT_DIR/diagnostics.json" | awk '{print $1}')"
+
+          jq -e --arg sha "$BUNDLE_SHA" '.candidate_bundle_sha256 == $sha'             "$OUTPUT_DIR/review-manifest.json" >/dev/null
+          jq -e --arg sha "$DIAGNOSTICS_SHA" '.diagnostics_sha256 == $sha'             "$OUTPUT_DIR/review-manifest.json" >/dev/null
+
+          (
+            cd "$OUTPUT_DIR"
+            sha256sum               bundle.json               diagnostics.json               review-manifest.json               hc256-source-metadata.json               github-actions-run-manifest.json             SHA256SUMS               > SHA256SUMS
+          )
+
       - name: Enforce preliminary-only release state
         shell: bash
         run: |
@@ -139,6 +172,7 @@ jobs:
             ${{ env.OUTPUT_DIR }}/review-manifest.json
             ${{ env.OUTPUT_DIR }}/hc256-source-metadata.json
             ${{ env.OUTPUT_DIR }}/github-actions-run-manifest.json
+            ${{ env.OUTPUT_DIR }}/SHA256SUMS
           if-no-files-found: error
           retention-days: 14
           compression-level: 6

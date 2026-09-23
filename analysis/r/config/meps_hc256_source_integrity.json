@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.0",
+  "source_id": "meps-hc256-2024",
+  "dataset": "MEPS HC-256: 2024 Full Year Consolidated Data File",
+  "official_download_url": "https://meps.ahrq.gov/data_files/pufs/h256/h256dta.zip",
+  "reviewed_reference": {
+    "candidate_run_id": "35745589631",
+    "artifact_id": "10702872683",
+    "reviewed_code_commit": "e4c1b9832cd3c4ec7cff69b4f2bd0572a142c970",
+    "review_note": "Expected hashes were independently preserved from the successful third-candidate source metadata before the metadata/provenance hardening pass."
+  },
+  "expected_zip_sha256": "653891861ec18574b07f576915e6f9e423263fc947610dc34e1bd176feff7b40",
+  "expected_extracted_dta_sha256": "b4bde859b39f626345561c05570292bb7264dd92eb76ce0c1a14d6b89076aed5",
+  "change_policy": "Any mismatch is fail-fast. Do not update an expected hash merely to make a run pass; first review the official AHRQ release/source metadata and document why the source bytes changed."
+}

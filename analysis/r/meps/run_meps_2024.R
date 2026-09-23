@@ -1,6 +1,7 @@
 #!/usr/bin/env Rscript
 
 source(file.path("analysis", "r", "lib", "paths.R"))
+source(file.path("analysis", "r", "lib", "file_integrity.R"))
 source(file.path("analysis", "r", "meps", "load_hc256.R"))
 source(file.path("analysis", "r", "meps", "cohort_long_covid.R"))
 source(file.path("analysis", "r", "meps", "survey_designs.R"))
@@ -56,6 +57,16 @@ code_commit <- tryCatch(
   trimws(system("git rev-parse HEAD", intern = TRUE, ignore.stderr = TRUE)[[1]]),
   error = function(e) "unknown"
 )
+github_sha <- Sys.getenv("GITHUB_SHA", unset = "")
+assert_code_commit_matches_github_sha(code_commit, github_sha)
+
+source_integrity_policy <- read_hc256_source_integrity()
+input_sha256 <- assert_sha256_matches(
+  input_path,
+  source_integrity_policy$expected_extracted_dta_sha256,
+  "MEPS HC-256 analytical input"
+)
+
 run_id <- paste0("meps24-", run_stamp)
 
 warning_registry <- new_warning_registry()
@@ -119,9 +130,14 @@ diagnostics <- list(
   run_id = run_id,
   generated_at = generated_at,
   code_commit = code_commit,
+  github_sha = if (nzchar(github_sha)) github_sha else NULL,
+  code_commit_matches_github_sha = if (nzchar(github_sha)) TRUE else NULL,
   dataset_release = "AHRQ MEPS HC-256: 2024 Full Year Consolidated Data File (August 2026)",
   input_path = input_path,
   input_md5 = unname(tools::md5sum(input_path)),
+  input_sha256 = input_sha256,
+  expected_input_sha256 = source_integrity_policy$expected_extracted_dta_sha256,
+  input_sha256_match = TRUE,
   source_metadata = source_metadata,
   cohort = cohort_diagnostics,
   variance = variance_design_diagnostics,
@@ -141,10 +157,23 @@ jsonlite::write_json(
   pretty = TRUE, auto_unbox = TRUE, null = "null", na = "null"
 )
 
+diagnostics_path <- file.path(output_dir, "diagnostics.json")
+bundle_sha256 <- sha256_file(bundle_path)
+diagnostics_sha256 <- sha256_file(diagnostics_path)
+
 review_manifest <- list(
   artifact_version = artifact_version,
   candidate_bundle = "bundle.json",
   candidate_bundle_md5 = unname(tools::md5sum(bundle_path)),
+  candidate_bundle_sha256 = bundle_sha256,
+  diagnostics = "diagnostics.json",
+  diagnostics_sha256 = diagnostics_sha256,
+  code_commit = code_commit,
+  github_sha = if (nzchar(github_sha)) github_sha else NULL,
+  code_commit_matches_github_sha = if (nzchar(github_sha)) TRUE else NULL,
+  source_input_sha256 = input_sha256,
+  expected_source_input_sha256 = source_integrity_policy$expected_extracted_dta_sha256,
+  source_input_sha256_match = TRUE,
   release_status = "candidate_pending_review",
   automatic_release = FALSE,
   checks = list(
