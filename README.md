@@ -6,44 +6,37 @@ The full product workflow is:
 
 **Overview → Burden → Local Context → Pilot Planner → Evidence / Data Requests → Planning Brief**
 
-The first working vertical slice is:
+The current presentation-ready vertical slice is:
 
 **Burden → Pilot Planner → Planning Brief**
 
-## First-pass implementation status
+## Implementation status
 
 ### Working now
 
-- Survey-aware 2024 MEPS HC-256 Long COVID analytical pipeline code: reviewed variable map, cohort construction, weight-specific survey designs, Tier 1 spending/utilization, Tier 2 ESAQ administrative burden, Tier 3 K6/PHQ-2, candidate-artifact generation, and candidate/release gates.
-
-- React + TypeScript + Vite application shell and all major product routes.
-- Versioned fixture artifact loading with runtime validation and explicit loading/error behavior.
-- Typed scientific contracts and status vocabulary.
-- Deterministic TypeScript scenario engine with reach, capacity, person-month exposure, and program-resource calculations.
-- Interactive Burden → Pilot Planner → Planning Brief vertical slice.
-- JSON planning-brief companion export and browser print/HTML path.
-- Export filtering that prevents illustrative/unreleased estimates from appearing as released burden findings.
-- Deterministic evidence admissibility gates.
+- Reviewed 2024 AHRQ MEPS HC-256 Long COVID analytical artifact, stored under `artifacts/reviewed/` and loaded directly by the web runtime with contract validation.
+- **21 `reviewed_released` national analytical estimates** spanning represented population, spending, healthcare utilization, ESAQ administrative burden, K6, and PHQ-2 outputs.
+- Completed **candidate → methods review → explicit promotion/release** workflow. Candidate generation remains preliminary until an explicit review decision promotes approved estimates.
+- React + TypeScript + Vite application shell and the major product routes.
+- Interactive **Burden → Pilot Planner → Planning Brief** flow using the reviewed national artifact.
+- Deterministic scenario assumptions and arithmetic kept explicitly separate from observed evidence.
+- Scenario outputs for reach, capacity, person-month exposure, and program-resource requirements, with guardrails against interpreting planning quantities as savings or ROI.
+- Planning Brief with reviewed burden findings, scenario assumptions, local-context/evidence empty states, JSON companion export, and browser print / save-PDF support.
+- Explicit scientific status vocabulary, runtime validation, release/display gates, and export filtering.
 - Long COVID reference condition adapter and ME/CFS compatibility skeleton.
-- Figma-derived design tokens and coarse responsive presentation.
-- Dataset source manifest, raw-data placement policy, and fail-closed R pipeline entry points.
-- GitHub Actions CI for install, strict typecheck, unit tests, lint, and production build.
+- Dataset source manifest, raw-data placement policy, and fail-closed analytical entry points.
+- GitHub Actions CI for install, strict typecheck, unit tests, lint, production build, and synthetic R analysis tests.
 
-### Scaffolded / intentionally incomplete
+### In progress
 
-- Execution of the real MEPS HC-256 estimator against raw HC-256 data. The survey-aware pipeline is implemented, but no raw public-use file or generated estimates are committed.
-- HRSA/ACS/PLACES/CMS local-context ingestion.
-- Reviewed external literature ledger and source extraction workflow.
-- Evidence-backed bounded scenario parameters.
-- Rich provenance drawer/interactions.
-- Sensitivity UI (the engine API exists).
-- Real analytical-artifact release workflow.
+- **HRSA + ACS local-context candidate:** implementation/hardening is complete on its review branch, but the real-data workflow has **not** been run or reviewed and is not promoted into runtime.
+- Reviewed local-context promotion and runtime integration.
+- Intervention-effect evidence suitable for bounded scenario parameters.
+- External evidence ledger and source-extraction/review workflow.
+- Richer sensitivity and provenance UI.
 - ME/CFS analytical estimates.
-- Rich HTML/PDF/Markdown export formatting.
-- Pixel-level Figma parity, chart polish, and full accessibility QA.
-- Optional grounded AI. The core product does not require AI.
 
-The checked-in artifact under `artifacts/examples/fixture-2026-09-v1/` is **illustrative development data only**. It is deliberately barred from analytical export by the release/display gates.
+The illustrative fixture under `artifacts/examples/fixture-2026-09-v1/` is retained for development and test purposes only. It is **not** the runtime analytical source and remains barred from analytical export by the release/display gates.
 
 ## Scientific boundaries
 
@@ -92,9 +85,11 @@ data/
   derived/                   local only; gitignored
 
 artifacts/
-  examples/                  small versioned illustrative fixtures
+  reviewed/                  promoted aggregate analytical artifacts used by runtime
+  examples/                  retained illustrative development/test fixtures
 
 docs/
+  analytical-release-workflow.md
   architecture.md
   implementation-plan.md
   scientific-guardrails.md
@@ -110,15 +105,17 @@ docs/
 
 Requires Node 22+ for the application/contracts and R for the offline analytical pipeline.
 
-### First real MEPS candidate
+### MEPS candidate maintenance / regeneration
 
-Preferred reproducible execution is the manual GitHub Actions workflow:
+The reviewed analytical pipeline is already released to runtime. The manual candidate workflow is retained for reproducible maintenance and future regeneration:
 
 `Actions → MEPS 2024 Long COVID Candidate → Run workflow`
 
-Select `main` (or an explicitly reviewed commit/ref). The workflow has no custom inputs. It downloads HC-256 from the official AHRQ source, reruns TypeScript and synthetic R checks, generates a **preliminary** candidate, and uploads aggregate review files only. It does not commit the candidate or change runtime artifact selection.
+Select `main` (or an explicitly reviewed commit/ref). The workflow has no custom inputs. It downloads HC-256 from the official AHRQ source, reruns TypeScript and synthetic R checks, generates a **preliminary** candidate, and uploads aggregate review files only.
 
-For local execution instead, from the repository root:
+Running the candidate workflow does **not** overwrite the reviewed runtime artifact and does **not** promote estimates automatically. A regenerated candidate must pass methods review and explicit promotion before it can become `reviewed_released`.
+
+For local regeneration instead, from the repository root:
 
 ```bash
 Rscript analysis/r/install_dependencies.R
@@ -127,7 +124,9 @@ Rscript analysis/r/meps/run_meps_2024.R --download
 
 The second command uses the official AHRQ HC-256 Stata download when the raw file is absent. If automatic download is unavailable in your environment, manually place the official HC-256 Stata ZIP at `data/raw/meps/2024/meps_hc256_2024_stata.zip` and run the command without `--download`.
 
-Generated candidates are written under `artifacts/generated/meps-2024-long-covid-candidate/` and remain gitignored and `release_status=preliminary` until explicit methods review.
+Generated candidates are written under `artifacts/generated/meps-2024-long-covid-candidate/` and remain gitignored and `release_status=preliminary` until explicit methods review and promotion.
+
+See `docs/analytical-release-workflow.md` for the release contract.
 
 ### Web development
 
@@ -149,7 +148,9 @@ npm run build
 
 ## Data policy
 
-Do not commit raw public-use microdata, large intermediate files, or large generated analytical outputs.
+Do not commit raw public-use microdata, large intermediate files, or unreviewed generated analytical outputs.
+
+The repository **does contain a reviewed aggregate MEPS analytical artifact** under `artifacts/reviewed/` for runtime use. It does not contain the underlying HC-256 respondent-level microdata.
 
 See `data/README.md` and `data/manifests/sources.json` for:
 
@@ -160,7 +161,7 @@ See `data/README.md` and `data/manifests/sources.json` for:
 - registration/API-key requirements;
 - downstream script entry points.
 
-The current repository contains no real MEPS, NHIS, HRSA, ACS, PLACES, or CMS analytical data.
+No reviewed HRSA/ACS local-context artifact is currently promoted into runtime.
 
 ## AI boundary
 

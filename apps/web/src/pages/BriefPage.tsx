@@ -89,7 +89,7 @@ export function BriefPage() {
         <div className="readiness"><strong>Evidence parameter</strong><span className="status status-scaffold">Not loaded</span></div>
         <div className="readiness"><strong>Local context</strong><span className="status status-scaffold">Not loaded</span></div>
         <button className="button" onClick={exportJson}>Export JSON companion</button>
-        <button className="button secondary" onClick={()=>window.print()}>Print / save HTML</button>
+        <button className="button secondary" onClick={()=>window.print()}>Print / save PDF</button>
       </aside>
     </div>
   </section>;
