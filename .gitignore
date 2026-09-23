@@ -20,6 +20,10 @@ analysis/r/output/
 # Generated artifacts are reviewed before promotion
 artifacts/generated/
 
+# Python bytecode
+__pycache__/
+*.pyc
+
 # Local tooling
 .DS_Store
 Thumbs.db

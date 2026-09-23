@@ -14,7 +14,9 @@ The first working vertical slice is:
 
 ### Working now
 
-- Survey-aware 2024 MEPS HC-256 Long COVID analytical pipeline code: reviewed variable map, cohort construction, weight-specific survey designs, Tier 1 spending/utilization, Tier 2 ESAQ administrative burden, Tier 3 K6/PHQ-2, candidate-artifact generation, and candidate/release gates.
+- Reviewed national 2024 MEPS HC-256 Long COVID analytical artifact with 21 reviewed_released estimates, loaded at runtime from `artifacts/reviewed/meps-2024-long-covid-candidate-20260923T020607Z/`.
+- Survey-aware MEPS analytical pipeline and explicit candidate → methods review → promotion gates.
+- Separate HRSA + 2024 ACS 5-year local-context candidate pipeline for implementation/access evidence; candidate output is not runtime-loaded before independent review and promotion.
 
 - React + TypeScript + Vite application shell and all major product routes.
 - Versioned fixture artifact loading with runtime validation and explicit loading/error behavior.
@@ -31,8 +33,8 @@ The first working vertical slice is:
 
 ### Scaffolded / intentionally incomplete
 
-- Execution of the real MEPS HC-256 estimator against raw HC-256 data. The survey-aware pipeline is implemented, but no raw public-use file or generated estimates are committed.
-- HRSA/ACS/PLACES/CMS local-context ingestion.
+- Reviewed HRSA/ACS local-context artifact and runtime integration; the current implementation stops at a preliminary, independently reviewable candidate.
+- PLACES/CMS local-context ingestion.
 - Reviewed external literature ledger and source extraction workflow.
 - Evidence-backed bounded scenario parameters.
 - Rich provenance drawer/interactions.
@@ -76,6 +78,7 @@ packages/
 
 analysis/
   r/                         offline survey-analysis entry points
+  local_context/             HRSA + ACS local-context candidate pipeline/config/tests
 
 pipelines/
   data/                      source acquisition helpers/boundaries
@@ -104,6 +107,7 @@ docs/
   workflows/
     ci.yml
     meps-candidate.yml
+    local-context-candidate.yml
 ```
 
 ## Development
@@ -160,7 +164,7 @@ See `data/README.md` and `data/manifests/sources.json` for:
 - registration/API-key requirements;
 - downstream script entry points.
 
-The current repository contains no real MEPS, NHIS, HRSA, ACS, PLACES, or CMS analytical data.
+The repository contains the reviewed aggregate MEPS national artifact. Raw MEPS/HRSA files remain excluded. HRSA/ACS local-context values are generated only by the manual candidate workflow and are not runtime-visible until independently reviewed and promoted.
 
 ## AI boundary
 

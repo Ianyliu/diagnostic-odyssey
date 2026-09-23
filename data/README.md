@@ -1,6 +1,6 @@
 # Data acquisition and local layout
 
-Large raw, intermediate, and derived analytical files are intentionally excluded from Git. This repository currently contains **no real analytical microdata and no released burden estimates**.
+Large raw, intermediate, and derived analytical files are intentionally excluded from Git. The repository contains the reviewed **aggregate** national MEPS artifact, but no respondent-level microdata. HRSA/ACS local-context evidence is a separate candidate/review/release layer.
 
 Use this layout locally:
 
@@ -47,7 +47,8 @@ No other dataset is required for the primary 2024 national burden pipeline.
 
 - MEPS HC-254 event files: optional only when a future event-level estimand requires them.
 - NHIS 2024: supplementary / compatibility analyses; not needed to identify the primary MEPS Long COVID cohort.
-- HRSA / ACS / PLACES / CMS: local implementation context; downstream of this phase.
+- HRSA + ACS: separate local implementation-context candidate pipeline; no runtime integration until independent review and promotion.
+- PLACES / CMS: deferred local implementation-context sources.
 
 ## Script/API acquisition rather than manual large downloads
 
@@ -56,9 +57,9 @@ No other dataset is required for the primary 2024 national burden pipeline.
 Official API documentation:
 https://www.census.gov/data/developers/data-sets/acs-5year/2024.html
 
-The Census Data API now requires an API key. Put it in `CENSUS_API_KEY` (never commit it). The planned local-context pipeline will query only approved tables/variables rather than commit the entire Summary File.
+The Census Data API key is supplied only through `CENSUS_API_KEY` (never commit or print it). The manual workflow queries only the frozen 2024 ACS 5-year Data Profile variables in `analysis/local_context/config/acs_2024_5year_variables.v1.json`, preserves the published 90% MOEs, and fails on label drift, annotations/sentinels, or a geography mismatch.
 
-No ACS data are currently present.
+Raw ACS data are not committed; only a safe aggregate candidate may be uploaded for review.
 
 ### CDC PLACES
 

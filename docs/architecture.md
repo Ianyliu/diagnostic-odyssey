@@ -63,6 +63,9 @@ Design tokens and reusable accessible primitives aligned with current Figma. It 
 ### `analysis/r`
 Offline survey-aware analysis entry points for MEPS/NHIS and related validation. Large source data and generated analytical outputs remain outside Git.
 
+### `analysis/local_context`
+Fail-closed acquisition, source-contract verification, aggregation, and diagnostics for the separate HRSA + ACS implementation-context artifact family. It does not import, rescale, or mutate national MEPS burden estimates.
+
 ### `pipelines/evidence`
 Literature/source ingestion and structured evidence-review helpers. Any future LLM-assisted extraction is optional and human-reviewed.
 
@@ -89,7 +92,7 @@ The early vertical slice is `/burden → /pilot → /brief`.
 
 ## Data boundaries
 
-National disease-burden artifacts and local implementation-context records are different object types and are never multiplied together at runtime. Changing a local context must not mutate national estimates.
+National disease-burden artifacts and local implementation-context records are different object types. The reviewed national MEPS artifact and any future reviewed local-context artifact are independently versioned and are composed only after review; local indicators are never used to rescale or mutate national estimates.
 
 All numeric analytical claims carry:
 - denominator/universe;

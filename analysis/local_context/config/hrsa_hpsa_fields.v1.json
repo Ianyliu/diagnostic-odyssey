@@ -1,0 +1,51 @@
+{
+  "config_version": "1.0.0",
+  "source_page": "https://data.hrsa.gov/data/download",
+  "refresh_semantics": "current live snapshot; HRSA shortage-area downloads are refreshed daily",
+  "datasets": {
+    "primary_care": {
+      "source_ref": "hrsa-hpsa-primary-care-current",
+      "name": "HPSA - Primary Care - All HPSAs",
+      "download_url": "https://data.hrsa.gov/DataDownload/DD_Files/BCD_HPSA_FCT_DET_PC.csv",
+      "expected_discipline": "Primary Care"
+    },
+    "mental_health": {
+      "source_ref": "hrsa-hpsa-mental-health-current",
+      "name": "HPSA - Mental Health - All HPSAs",
+      "download_url": "https://data.hrsa.gov/DataDownload/DD_Files/BCD_HPSA_FCT_DET_MH.csv",
+      "expected_discipline": "Mental Health"
+    }
+  },
+  "field_map": {
+    "hpsa_id": "HPSA ID",
+    "discipline": "HPSA Discipline Class",
+    "designation_type": "Designation Type",
+    "state_name": "Common State Name",
+    "state_fips": "Common State FIPS Code",
+    "county_name": "Common County Name",
+    "county_fips": "Common State County FIPS Code",
+    "status": "HPSA Status",
+    "score": "HPSA Score",
+    "rural_status": "Rural Status",
+    "designation_date": "HPSA Designation Date",
+    "designation_update_date": "HPSA Designation Last Update Date",
+    "warehouse_record_create_date": "Data Warehouse Record Create Date"
+  },
+  "required_fields": [
+    "HPSA ID",
+    "HPSA Discipline Class",
+    "Designation Type",
+    "Common State Name",
+    "Common State FIPS Code",
+    "Common County Name",
+    "Common State County FIPS Code",
+    "HPSA Status",
+    "HPSA Score",
+    "Rural Status",
+    "HPSA Designation Date",
+    "HPSA Designation Last Update Date",
+    "Data Warehouse Record Create Date"
+  ],
+  "designated_status": "Designated",
+  "rural_status_categories": ["Rural", "Partially Rural", "Non-Rural", "Unknown"]
+}

@@ -1,0 +1,61 @@
+{
+  "config_version": "1.0.0",
+  "dataset": "2024 ACS 5-year Data Profiles",
+  "base_url": "https://api.census.gov/data/2024/acs/acs5/profile",
+  "metadata_url": "https://api.census.gov/data/2024/acs/acs5/profile/variables.json",
+  "vintage": "2020-2024 ACS 5-year estimates / 2024 release",
+  "confidence_level": 0.90,
+  "geography": {
+    "name": "West Virginia",
+    "type": "state",
+    "state_fips": "54",
+    "county_fips": null,
+    "api_for": "state:54"
+  },
+  "variables": [
+    {
+      "indicator_id": "wv.acs.uninsured_pct",
+      "label": "No health insurance coverage",
+      "estimate": "DP03_0099PE",
+      "moe": "DP03_0099PM",
+      "estimate_annotation": "DP03_0099PEA",
+      "moe_annotation": "DP03_0099PMA",
+      "expected_estimate_label": "Percent!!HEALTH INSURANCE COVERAGE!!Civilian noninstitutionalized population!!No health insurance coverage",
+      "expected_moe_label": "Percent Margin of Error!!HEALTH INSURANCE COVERAGE!!Civilian noninstitutionalized population!!No health insurance coverage",
+      "universe": "Civilian noninstitutionalized population"
+    },
+    {
+      "indicator_id": "wv.acs.no_vehicle_pct",
+      "label": "No vehicles available",
+      "estimate": "DP04_0058PE",
+      "moe": "DP04_0058PM",
+      "estimate_annotation": "DP04_0058PEA",
+      "moe_annotation": "DP04_0058PMA",
+      "expected_estimate_label": "Percent!!VEHICLES AVAILABLE!!Occupied housing units!!No vehicles available",
+      "expected_moe_label": "Percent Margin of Error!!VEHICLES AVAILABLE!!Occupied housing units!!No vehicles available",
+      "universe": "Occupied housing units"
+    },
+    {
+      "indicator_id": "wv.acs.broadband_pct",
+      "label": "Broadband Internet subscription",
+      "estimate": "DP02_0154PE",
+      "moe": "DP02_0154PM",
+      "estimate_annotation": "DP02_0154PEA",
+      "moe_annotation": "DP02_0154PMA",
+      "expected_estimate_label": "Percent!!COMPUTERS AND INTERNET USE!!Total households!!With a broadband Internet subscription",
+      "expected_moe_label": "Percent Margin of Error!!COMPUTERS AND INTERNET USE!!Total households!!With a broadband Internet subscription",
+      "universe": "Households"
+    },
+    {
+      "indicator_id": "wv.acs.poverty_pct",
+      "label": "People below the poverty level",
+      "estimate": "DP03_0128PE",
+      "moe": "DP03_0128PM",
+      "estimate_annotation": "DP03_0128PEA",
+      "moe_annotation": "DP03_0128PMA",
+      "expected_estimate_label": "Percent!!PERCENTAGE OF FAMILIES AND PEOPLE WHOSE INCOME IN THE PAST 12 MONTHS IS BELOW THE POVERTY LEVEL!!All people",
+      "expected_moe_label": "Percent Margin of Error!!PERCENTAGE OF FAMILIES AND PEOPLE WHOSE INCOME IN THE PAST 12 MONTHS IS BELOW THE POVERTY LEVEL!!All people",
+      "universe": "All people"
+    }
+  ]
+}
