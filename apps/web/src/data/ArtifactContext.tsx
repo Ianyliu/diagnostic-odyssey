@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { type ArtifactBundle, type Scenario, type ScenarioResult } from "@diagnostic-odyssey/contracts";
 import { calculateScenario } from "@diagnostic-odyssey/scenario-engine";
+import { createPlanningScenarioDefaults } from "./planningScenarioDefaults";
 import { loadReviewedMepsArtifact } from "./reviewedArtifact";
 
 interface ArtifactState {
@@ -24,7 +25,7 @@ export function ArtifactProvider({children}: {children: ReactNode}) {
     try {
       const candidate = loadReviewedMepsArtifact();
       setBundle(candidate);
-      setScenario(candidate.scenario_examples[0] ?? null);
+      setScenario(createPlanningScenarioDefaults());
       setError(null);
       setStatus("loaded");
     } catch (cause) {

@@ -2,6 +2,10 @@ import { Link } from "react-router-dom";
 import type { Scenario } from "@diagnostic-odyssey/contracts";
 import { ContextBar } from "../components/ContextBar";
 import { useArtifact } from "../data/ArtifactContext";
+import {
+  PLANNING_DEFAULTS_DESCRIPTION,
+  PLANNING_DEFAULTS_LABEL
+} from "../data/planningScenarioDefaults";
 
 type NumericField = "eligible_population"|"reach"|"capacity"|"baseline_window_months"|"alternative_window_months"|"horizon_months"|"fixed_cost"|"per_participant_cost";
 
@@ -18,12 +22,28 @@ const fields: Array<{key:NumericField;label:string;step?:number;scale?:number;su
 
 export function PilotPage() {
   const {scenario,scenarioResult,setScenario} = useArtifact();
-  if (!scenario || !scenarioResult) return null;
+
+  if (!scenario || !scenarioResult) {
+    return <section className="page page-stack">
+      <ContextBar />
+      <header className="page-heading">
+        <p className="eyebrow">PILOT PLANNER</p>
+        <h1>Scope a feasible pilot</h1>
+        <p>Planning assumptions are currently unavailable or invalid. Reviewed national burden remains available; no causal effect or savings estimate is inferred.</p>
+      </header>
+      <div className="empty-state">
+        <strong>No valid planning scenario result is available.</strong>
+        <p>Planning inputs are separate from reviewed analytical evidence and can be restored without changing the MEPS burden artifact.</p>
+      </div>
+    </section>;
+  }
+
   const update = (key: NumericField, raw: string, scale = 1) => {
     const n = Number(raw);
     if (!Number.isFinite(n)) return;
     setScenario({...scenario,[key]:n/scale} as Scenario);
   };
+
   return <section className="page page-stack">
     <ContextBar />
     <div className="heading-row">
@@ -32,12 +52,13 @@ export function PilotPage() {
     </div>
     <div className="pilot-grid">
       <form className="card assumption-card" onSubmit={e=>e.preventDefault()}>
-        <h2>Planning assumptions</h2><p className="subtle">Analyst-supplied inputs</p>
+        <h2>Planning assumptions</h2>
+        <p className="subtle"><strong>{PLANNING_DEFAULTS_LABEL}</strong><br />{PLANNING_DEFAULTS_DESCRIPTION}</p>
         {fields.map(field => <label key={field.key}><span>{field.label}</span><span className="input-wrap"><input type="number" min="0" step={field.step ?? 1} value={(scenario[field.key] as number)*(field.scale ?? 1)} onChange={e=>update(field.key,e.target.value,field.scale ?? 1)} /><small>{field.suffix}</small></span></label>)}
       </form>
       <article className="card result-card">
         <h2>Baseline vs recognition/navigation scenario</h2>
-        <p className="subtle">Deterministic arithmetic · not observed effects</p>
+        <p className="subtle">Deterministic planning arithmetic · not observed evidence or an evidence-derived effect</p>
         <dl className="result-list">
           <div><dt>Intended reach</dt><dd>{scenarioResult.intended_reach.toLocaleString()}</dd></div>
           <div><dt>Reached participants</dt><dd>{scenarioResult.reached_participants.toLocaleString()}</dd></div>
