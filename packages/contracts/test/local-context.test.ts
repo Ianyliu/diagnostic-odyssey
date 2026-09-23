@@ -96,6 +96,30 @@ test("local-context artifact is independently validated and preliminary is not r
   assert.equal(canLoadReviewedLocalContextArtifact(reviewed), true);
 });
 
+test("reviewed-artifact load gate fails closed on invalid reviewed-looking objects", () => {
+  const reviewed: LocalContextArtifact = {
+    ...preliminaryArtifact,
+    manifest: {...preliminaryArtifact.manifest, release_status: "reviewed_released"},
+    indicators: preliminaryArtifact.indicators.map(record => ({
+      ...record,
+      release_status: "reviewed_released"
+    }))
+  };
+
+  const changedBurden = structuredClone(reviewed) as unknown as Record<string, unknown>;
+  (changedBurden.manifest as Record<string, unknown>).national_meps_burden_unchanged = false;
+  assert.equal(canLoadReviewedLocalContextArtifact(changedBurden), false);
+
+  const invalidFips = structuredClone(reviewed) as unknown as Record<string, unknown>;
+  (invalidFips.geography as Record<string, unknown>).state_fips = "5X";
+  ((invalidFips.indicators as unknown[])[0] as Record<string, unknown>).state_fips = "5X";
+  assert.equal(canLoadReviewedLocalContextArtifact(invalidFips), false);
+
+  const badSourceRef = structuredClone(reviewed) as unknown as Record<string, unknown>;
+  ((badSourceRef.indicators as unknown[])[0] as Record<string, unknown>).source_ref = "missing-source";
+  assert.equal(canLoadReviewedLocalContextArtifact(badSourceRef), false);
+});
+
 test("state records fail closed on county FIPS and national-burden mutation semantics", () => {
   const badCounty = validateLocalContextRecord({...baseRecord, county_fips: "54001"});
   assert.ok(badCounty.some(issue => issue.path.endsWith(".county_fips")));

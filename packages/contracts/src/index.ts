@@ -616,10 +616,15 @@ export function assertValidLocalContextArtifact(value: unknown): asserts value i
   }
 }
 
-export const canLoadReviewedLocalContextArtifact = (artifact: LocalContextArtifact): boolean =>
-  artifact.manifest.release_status === "reviewed_released" &&
-  artifact.indicators.length > 0 &&
-  artifact.indicators.every(record => record.release_status === "reviewed_released");
+export function canLoadReviewedLocalContextArtifact(
+  artifact: unknown
+): artifact is LocalContextArtifact {
+  if (validateLocalContextArtifact(artifact).length > 0) return false;
+  const reviewed = artifact as LocalContextArtifact;
+  return reviewed.manifest.release_status === "reviewed_released" &&
+    reviewed.indicators.length > 0 &&
+    reviewed.indicators.every(record => record.release_status === "reviewed_released");
+}
 
 export function validateScenario(value: unknown, path = "scenario"): ValidationIssue[] {
   if (!isRecord(value)) return [{ path, message: "must be an object" }];
