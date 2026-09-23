@@ -1,5 +1,6 @@
 source(file.path("analysis", "r", "lib", "survey_helpers.R"))
 source(file.path("analysis", "r", "lib", "meps_values.R"))
+source(file.path("analysis", "r", "lib", "meps_source_guardrails.R"))
 source(file.path("analysis", "r", "meps", "survey_designs.R"))
 
 age_transition_diagnostics <- function(data) {
@@ -98,6 +99,7 @@ build_corrected_cohort_diagnostics <- function(data, designs, population_record)
   )
 
   list(
+    reviewed_round31_source_codes = validate_reviewed_round31_code_sets(data),
     scope = list(
       definition = "AGE31X 18-64 and positive PERWT24F",
       total_hc256_rows = nrow(data),

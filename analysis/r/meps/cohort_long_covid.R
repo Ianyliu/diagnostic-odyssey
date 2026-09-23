@@ -1,4 +1,5 @@
 source(file.path("analysis", "r", "lib", "meps_values.R"))
+source(file.path("analysis", "r", "lib", "meps_source_guardrails.R"))
 
 pe_raw <- function(x) as.numeric(x)
 pe_is <- function(x, code) {
@@ -87,6 +88,10 @@ construct_long_covid_cohort <- function(data) {
   if (length(missing)) {
     stop("Cannot construct Long COVID cohort; missing: ", paste(missing, collapse = ", "), call. = FALSE)
   }
+
+  # Fail before routing/classification if the public-use source contains any
+  # unreviewed Round-31 code. This is a source-contract guard, not a recode.
+  validate_reviewed_round31_code_sets(data)
 
   age31 <- pe_raw(data$AGE31X)
   age24 <- pe_raw(data$AGE24X)

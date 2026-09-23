@@ -8,6 +8,7 @@ setwd(repo_root)
 on.exit(setwd(old_wd), add = TRUE)
 
 source(file.path("analysis", "r", "lib", "meps_values.R"))
+source(file.path("analysis", "r", "lib", "meps_source_guardrails.R"))
 source(file.path("analysis", "r", "lib", "survey_helpers.R"))
 source(file.path("analysis", "r", "lib", "result_helpers.R"))
 source(file.path("analysis", "r", "lib", "warning_capture.R"))
