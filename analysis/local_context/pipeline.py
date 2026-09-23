@@ -13,8 +13,11 @@ import hashlib
 import json
 import os
 import re
+import socket
 import subprocess
 import sys
+import time
+import urllib.error
 import urllib.parse
 import urllib.request
 from collections import Counter, defaultdict
@@ -75,6 +78,30 @@ def git_head() -> str:
     return actual
 
 
+def sanitize_url(url: str) -> str:
+    """Redact Census-style API keys from URLs before surfacing errors."""
+    return re.sub(r"([?&]key=)[^&\\s]+", r"\\1[REDACTED]", url, flags=re.IGNORECASE)
+
+
+def sanitize_error_text(value: object) -> str:
+    """Redact API keys that may be embedded in exception text."""
+    return re.sub(
+        r"([?&]key=)[^&\\s'\\\"]+",
+        r"\\1[REDACTED]",
+        str(value),
+        flags=re.IGNORECASE,
+    )
+
+
+def is_retryable_network_error(exc: BaseException) -> bool:
+    if isinstance(exc, urllib.error.HTTPError):
+        return exc.code == 429 or 500 <= exc.code <= 599
+    return isinstance(
+        exc,
+        (urllib.error.URLError, TimeoutError, socket.timeout, ConnectionError),
+    )
+
+
 def normalized_fips(value: str, width: int) -> str:
     text = (value or "").strip()
     if not re.fullmatch(r"\d+", text):
@@ -82,38 +109,71 @@ def normalized_fips(value: str, width: int) -> str:
     return text.zfill(width)
 
 
-def download_file(url: str, destination: Path) -> dict[str, Any]:
+def download_file(
+    url: str,
+    destination: Path,
+    max_attempts: int = 3,
+    retry_delay_seconds: float = 0.5,
+) -> dict[str, Any]:
+    """Download atomically, retrying only transient network/server failures."""
     destination.parent.mkdir(parents=True, exist_ok=True)
-    req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
-    retrieved_at = utc_now()
-    h = hashlib.sha256()
-    total = 0
-    with urllib.request.urlopen(req, timeout=120) as response, destination.open("wb") as out:
-        final_url = response.geturl()
-        last_modified = response.headers.get("Last-Modified")
-        while True:
-            chunk = response.read(1024 * 1024)
-            if not chunk:
-                break
-            out.write(chunk)
-            h.update(chunk)
-            total += len(chunk)
-    if total <= 0:
-        raise ContractError(f"Source download was empty: {url}")
-    published = None
-    if last_modified:
+    part_path = destination.with_name(destination.name + ".part")
+    safe_url = sanitize_url(url)
+    last_error: BaseException | None = None
+
+    for attempt in range(1, max_attempts + 1):
+        if part_path.exists():
+            part_path.unlink()
+        req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
+        retrieved_at = utc_now()
+        h = hashlib.sha256()
+        total = 0
         try:
-            published = parsedate_to_datetime(last_modified).astimezone(timezone.utc).date().isoformat()
-        except Exception:
-            published = last_modified
-    return {
-        "requested_url": url,
-        "resolved_url": final_url,
-        "retrieved_at": retrieved_at,
-        "byte_size": total,
-        "sha256": h.hexdigest(),
-        "published_update_date": published,
-    }
+            with urllib.request.urlopen(req, timeout=120) as response, part_path.open("wb") as out:
+                final_url = response.geturl()
+                last_modified = response.headers.get("Last-Modified")
+                while True:
+                    chunk = response.read(1024 * 1024)
+                    if not chunk:
+                        break
+                    out.write(chunk)
+                    h.update(chunk)
+                    total += len(chunk)
+
+            if total <= 0:
+                raise ContractError(f"Source download was empty: {safe_url}")
+
+            published = None
+            if last_modified:
+                try:
+                    published = parsedate_to_datetime(last_modified).astimezone(timezone.utc).date().isoformat()
+                except Exception:
+                    published = last_modified
+
+            part_path.replace(destination)
+            return {
+                "requested_url": safe_url,
+                "resolved_url": sanitize_url(final_url),
+                "retrieved_at": retrieved_at,
+                "byte_size": total,
+                "sha256": h.hexdigest(),
+                "published_update_date": published,
+            }
+        except BaseException as exc:
+            if part_path.exists():
+                part_path.unlink()
+            last_error = exc
+            if isinstance(exc, ContractError) or not is_retryable_network_error(exc):
+                raise ContractError(
+                    f"Download failed for {safe_url}: {sanitize_error_text(exc)}"
+                ) from exc
+            if attempt < max_attempts:
+                time.sleep(retry_delay_seconds * attempt)
+
+    raise ContractError(
+        f"Download failed after {max_attempts} attempts for {safe_url}: "
+        f"{sanitize_error_text(last_error)}"
+    ) from last_error
 
 
 def verify_hrsa_header(fieldnames: list[str] | None, config: dict[str, Any]) -> None:
@@ -124,13 +184,13 @@ def verify_hrsa_header(fieldnames: list[str] | None, config: dict[str, Any]) -> 
         raise ContractError(f"Required HRSA columns changed or are missing: {missing}")
 
 
-def normalize_rural(value: str) -> str:
+def normalize_rural(value: str) -> str | None:
     text = (value or "").strip()
     if text in {"Rural", "Partially Rural", "Non-Rural"}:
         return text
     if text in {"", "Unknown", "Not Applicable", "N/A"}:
         return "Unknown"
-    return "Unknown"
+    return None
 
 
 def slug(value: str) -> str:
@@ -156,6 +216,12 @@ def summarize_hrsa(path: Path, config: dict[str, Any], dataset_key: str, state_f
                 continue
             if row_state != state_fips:
                 continue
+            row_state_name = (row[field["state_name"]] or "").strip()
+            if row_state_name != "West Virginia":
+                raise ContractError(
+                    f"HRSA state mismatch for FIPS {state_fips}: "
+                    f"expected 'West Virginia', got {row_state_name!r}"
+                )
             matching_rows += 1
             discipline = (row[field["discipline"]] or "").strip()
             if discipline != dataset["expected_discipline"]:
@@ -184,6 +250,7 @@ def summarize_hrsa(path: Path, config: dict[str, Any], dataset_key: str, state_f
     missing_score_ids: list[str] = []
     rural_by_id: dict[str, str] = {}
     mixed_rural_ids: list[str] = []
+    unexpected_rural_status_values: set[str] = set()
     duplicate_ids = {hid: len(rows) for hid, rows in by_id.items() if len(rows) > 1}
 
     for hpsa_id, rows in by_id.items():
@@ -208,7 +275,18 @@ def summarize_hrsa(path: Path, config: dict[str, Any], dataset_key: str, state_f
         else:
             missing_score_ids.append(hpsa_id)
 
-        rural_values = {normalize_rural(r[field["rural_status"]]) for r in rows}
+        rural_values: set[str] = set()
+        rural_drift_for_id = False
+        for row in rows:
+            raw_rural = (row[field["rural_status"]] or "").strip()
+            normalized_rural = normalize_rural(raw_rural)
+            if normalized_rural is None:
+                rural_drift_for_id = True
+                unexpected_rural_status_values.add(raw_rural)
+            else:
+                rural_values.add(normalized_rural)
+        if rural_drift_for_id:
+            continue
         if len(rural_values) == 1:
             rural_by_id[hpsa_id] = next(iter(rural_values))
         else:
@@ -277,7 +355,9 @@ def summarize_hrsa(path: Path, config: dict[str, Any], dataset_key: str, state_f
             ],
         })
 
-    rural_breakdown_included = len(mixed_rural_ids) == 0
+    rural_breakdown_included = (
+        len(mixed_rural_ids) == 0 and len(unexpected_rural_status_values) == 0
+    )
     if rural_breakdown_included:
         rural_counts = Counter(rural_by_id.values())
         if sum(rural_counts.values()) != distinct_count:
@@ -311,16 +391,38 @@ def summarize_hrsa(path: Path, config: dict[str, Any], dataset_key: str, state_f
         "duplicate_hpsa_ids": duplicate_ids,
         "rural_status_breakdown_included": rural_breakdown_included,
         "mixed_rural_status_hpsa_ids": mixed_rural_ids,
+        "unexpected_rural_status_values": sorted(unexpected_rural_status_values),
         "designation_update_dates_observed": update_dates,
         "source_field_map": field,
     }
     return indicators, diagnostics
 
 
-def fetch_json(url: str) -> Any:
-    req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
-    with urllib.request.urlopen(req, timeout=60) as response:
-        return json.load(response)
+def fetch_json(
+    url: str,
+    max_attempts: int = 3,
+    retry_delay_seconds: float = 0.5,
+) -> Any:
+    """Fetch JSON with bounded transient retries and API-key-safe errors."""
+    safe_url = sanitize_url(url)
+    last_error: BaseException | None = None
+    for attempt in range(1, max_attempts + 1):
+        req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
+        try:
+            with urllib.request.urlopen(req, timeout=60) as response:
+                return json.load(response)
+        except BaseException as exc:
+            last_error = exc
+            if not is_retryable_network_error(exc):
+                raise ContractError(
+                    f"Failed to fetch JSON from {safe_url}: {sanitize_error_text(exc)}"
+                ) from exc
+            if attempt < max_attempts:
+                time.sleep(retry_delay_seconds * attempt)
+    raise ContractError(
+        f"Failed to fetch JSON after {max_attempts} attempts from {safe_url}: "
+        f"{sanitize_error_text(last_error)}"
+    ) from last_error
 
 
 def verify_acs_labels(config: dict[str, Any], metadata: dict[str, Any]) -> dict[str, dict[str, str]]:
@@ -373,7 +475,23 @@ def parse_acs(config: dict[str, Any], data: list[list[str]]) -> tuple[list[dict[
     if not isinstance(data, list) or len(data) != 2:
         raise ContractError(f"Census state query must return exactly one data row; got {len(data)-1 if isinstance(data, list) else 'non-list'}")
     header, row = data
-    record = dict(zip(header, row, strict=True))
+    if not isinstance(header, list) or not isinstance(row, list):
+        raise ContractError("Census response header and row must both be arrays")
+    required_fields = {"NAME", "state"}
+    for spec in config["variables"]:
+        required_fields.update({
+            spec["estimate"],
+            spec["moe"],
+            spec["estimate_annotation"],
+            spec["moe_annotation"],
+        })
+    missing_fields = sorted(required_fields - set(header))
+    if missing_fields:
+        raise ContractError(f"Census response missing required columns: {missing_fields}")
+    try:
+        record = dict(zip(header, row, strict=True))
+    except ValueError as exc:
+        raise ContractError("Census response header/value lengths do not match") from exc
     geography = config["geography"]
     if record.get("NAME") != geography["name"] or record.get("state") != geography["state_fips"]:
         raise ContractError(
@@ -385,8 +503,8 @@ def parse_acs(config: dict[str, Any], data: list[list[str]]) -> tuple[list[dict[
     values_diag: dict[str, Any] = {}
     for spec in config["variables"]:
         annotations = {
-            spec["estimate_annotation"]: record.get(spec["estimate_annotation"], ""),
-            spec["moe_annotation"]: record.get(spec["moe_annotation"], ""),
+            spec["estimate_annotation"]: record[spec["estimate_annotation"]],
+            spec["moe_annotation"]: record[spec["moe_annotation"]],
         }
         if any((value or "").strip() for value in annotations.values()):
             raise ContractError(f"Census annotation/special-value flag present for {spec['indicator_id']}: {annotations}")
