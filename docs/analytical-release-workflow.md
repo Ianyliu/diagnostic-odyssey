@@ -26,7 +26,7 @@ A green CI run or successful real-data workflow is therefore **not** a scientifi
 
 Workflow: **MEPS 2024 Long COVID Candidate**
 
-The workflow checks out the exact `github.sha` selected by the manual dispatch and records repository/ref, run ID, run attempt, SHA, and timestamp. It uses Node 22 and R 4.6.1, reruns TypeScript and synthetic R checks, then invokes the maintained HC-256 downloader and MEPS runner.
+The workflow checks out the exact `github.sha` selected by the manual dispatch, explicitly asserts `git rev-parse HEAD == GITHUB_SHA`, and records repository/ref, run ID, run attempt, SHA, and timestamp. The R runner repeats the commit-vs-`GITHUB_SHA` assertion before generating analytical output. It uses Node 22 and R 4.6.1, reruns TypeScript and synthetic R checks, then invokes the maintained HC-256 downloader and MEPS runner.
 
 The workflow artifact contains only:
 
@@ -35,10 +35,15 @@ The workflow artifact contains only:
 - `review-manifest.json`
 - `hc256-source-metadata.json`
 - `github-actions-run-manifest.json`
+- `SHA256SUMS`
 
-The raw ZIP, `h256.dta`, person-level rows, and intermediate microdata are never uploaded. Raw files exist only ephemerally on the GitHub-hosted runner.
+The review manifest also preserves SHA-256 values for `bundle.json` and `diagnostics.json`. The raw ZIP, `h256.dta`, person-level rows, and intermediate microdata are never uploaded. Raw files exist only ephemerally on the GitHub-hosted runner.
 
-Workflow artifacts are retained for 14 days and are named `meps-2024-long-covid-candidate-<run-id>`.
+Workflow **candidate** artifacts are retained for 14 days and are named `meps-2024-long-covid-candidate-<run-id>`. This short-lived Actions copy is review transport only and is not the durable store for an approved artifact.
+
+## Source-integrity gate
+
+The current reviewed HC-256 bytes are pinned in `analysis/r/config/meps_hc256_source_integrity.json` using both the official ZIP SHA-256 and extracted Stata-file SHA-256. The downloader and runner fail on a mismatch. Expected hashes may be changed only after explicit review of an updated official AHRQ source; they must never be changed merely to make CI or a candidate run succeed.
 
 ## Candidate generation
 
@@ -70,13 +75,32 @@ Before any estimate can be changed to `reviewed_released`, all checklist items m
 
 A reviewer also confirms that no suppressed/unreliable value should be released.
 
+## Durable reviewed-artifact storage
+
+Actions retention is intentionally not relied upon for a reviewed release. Once a candidate has completed methods review and is explicitly approved, its **aggregate-only** reviewed package should be copied into:
+
+`artifacts/reviewed/<artifact_version>/`
+
+and committed to repository history together with:
+
+- the reviewed `bundle.json`;
+- reviewed `diagnostics.json`;
+- completed review manifest;
+- safe HC-256 source metadata;
+- GitHub run provenance;
+- `SHA256SUMS`.
+
+A GitHub Release may additionally attach the same immutable aggregate package for convenient retrieval, but the version-controlled reviewed directory is the primary durable provenance record. Raw HC-256 ZIP/DTA files and respondent-level/intermediate data remain excluded.
+
+The reviewed directory must not be created by the candidate workflow. Creating it is an explicit promotion action after human methods review.
+
 ## Promotion
 
 Promotion is intentionally **not automated**. There is no script that silently changes `preliminary` to `reviewed_released`.
 
 After review, a reviewer should:
 
-1. copy the candidate into a versioned reviewed-release directory;
+1. copy the approved aggregate candidate into `artifacts/reviewed/<artifact_version>/`;
 2. update only explicitly approved estimates to `reviewed_released`;
 3. mark unavailable/suppressed estimates appropriately;
 4. attach the completed review manifest;

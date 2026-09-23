@@ -6,7 +6,8 @@
     "release": "August 2026",
     "official_page": "https://meps.ahrq.gov/data_stats/download_data_files_detail.jsp?cboPufNumber=HC-256",
     "documentation": "https://meps.ahrq.gov/data_stats/download_data/pufs/h256/h256doc.shtml",
-    "codebook": "https://meps.ahrq.gov/mepsweb/data_stats/download_data_files_codebook.jsp?PUFId=H256"
+    "codebook": "https://meps.ahrq.gov/mepsweb/data_stats/download_data_files_codebook.jsp?PUFId=H256",
+    "source_integrity_policy": "analysis/r/config/meps_hc256_source_integrity.json"
   },
   "cohort": {
     "id": "current-long-covid-adults-18-64-meps-2024-r31-anchor",
@@ -66,7 +67,30 @@
       "Round-53 variables are diagnostic only and never overwrite the primary Round-31 classification.",
       "Routing contradictions are flagged and left unresolved rather than silently coerced."
     ],
-    "wording_caveat": "COVSYMNOW31 asks whether the person has COVID-19 or Long COVID-19 symptoms now. 'Current Long COVID' is an operational label conditional on established Long-COVID history at the common Round 3/1 2024 interview."
+    "wording_caveat": "COVSYMNOW31 asks whether the person has COVID-19 or Long COVID-19 symptoms now. 'Current Long COVID' is an operational label conditional on established Long-COVID history at the common Round 3/1 2024 interview.",
+    "reviewed_round31_allowable_codes": {
+      "COVIDEVER31": [
+        -8,
+        -7,
+        -1,
+        1,
+        2
+      ],
+      "LCEVER31": [
+        -8,
+        -7,
+        -1,
+        1,
+        2
+      ],
+      "COVSYMNOW31": [
+        -8,
+        -1,
+        1,
+        2
+      ]
+    },
+    "code_set_validation": "Fail fast before routing on any NA or unreviewed primary Round-31 code; record observed code counts in diagnostics."
   },
   "design": {
     "method": "Taylor series linearization, with-replacement MEPS design",
@@ -613,7 +637,9 @@
       "analytical_transformation": "Survey mean; values above 2080 already top-coded to 2080 by AHRQ",
       "interpretation": "Annualized time spent on own medical visits/filling prescriptions among valid ESAQ respondents.",
       "prohibited_interpretation": "Not diagnostic-delay time; do not sum with other ESAQ time domains.",
-      "source_locator": "https://meps.ahrq.gov/mepsweb/data_stats/download_data_files_codebook.jsp?PUFId=H256&varName=EQMVAM53"
+      "source_locator": "https://meps.ahrq.gov/mepsweb/data_stats/download_data_files_codebook.jsp?PUFId=H256&varName=EQMVAM53",
+      "temporal_note": "Cohort status is anchored at the earlier Round 3/1 2024 interview; ESAQ was administered later in Panel 28 Round 5 / Panel 29 Round 3.",
+      "annualization_note": "AHRQ edited annualized hours-per-year measure derived from the original reported period; not necessarily hours observed during calendar year 2024."
     },
     {
       "id": "medical_bills_time",
@@ -631,7 +657,9 @@
       "analytical_transformation": "Survey mean; AHRQ top-codes at 720",
       "interpretation": "Annualized bills/insurance-management time among valid ESAQ respondents.",
       "prohibited_interpretation": "Do not sum into a diagnostic-burden score.",
-      "source_locator": "https://meps.ahrq.gov/mepsweb/data_stats/download_data_files_codebook.jsp?PUFId=H256&varName=EQMBAM53"
+      "source_locator": "https://meps.ahrq.gov/mepsweb/data_stats/download_data_files_codebook.jsp?PUFId=H256&varName=EQMBAM53",
+      "temporal_note": "Cohort status is anchored at the earlier Round 3/1 2024 interview; ESAQ was administered later in Panel 28 Round 5 / Panel 29 Round 3.",
+      "annualization_note": "AHRQ edited annualized hours-per-year measure derived from the original reported period; not necessarily hours observed during calendar year 2024."
     },
     {
       "id": "paperwork_time",
@@ -649,7 +677,9 @@
       "analytical_transformation": "Survey mean; AHRQ top-codes at 520",
       "interpretation": "Annualized healthcare paperwork/navigation time among valid ESAQ respondents.",
       "prohibited_interpretation": "Do not sum into a diagnostic-burden score.",
-      "source_locator": "https://meps.ahrq.gov/mepsweb/data_stats/download_data_files_codebook.jsp?PUFId=H256&varName=EQPPAM53"
+      "source_locator": "https://meps.ahrq.gov/mepsweb/data_stats/download_data_files_codebook.jsp?PUFId=H256&varName=EQPPAM53",
+      "temporal_note": "Cohort status is anchored at the earlier Round 3/1 2024 interview; ESAQ was administered later in Panel 28 Round 5 / Panel 29 Round 3.",
+      "annualization_note": "AHRQ edited annualized hours-per-year measure derived from the original reported period; not necessarily hours observed during calendar year 2024."
     },
     {
       "id": "prior_approval_denied_delayed",
@@ -667,7 +697,8 @@
       "analytical_transformation": "Binary 1 for code 1 and 0 for code 2; exclude codes 3/4 and reserved from proportion denominator",
       "interpretation": "Share of the exact yes/no-response universe reporting denial/delay.",
       "prohibited_interpretation": "Do not label as percent of all Long COVID patients or as diagnosis-related prior authorization.",
-      "source_locator": "https://meps.ahrq.gov/mepsweb/data_stats/download_data_files_codebook.jsp?PUFId=H256&varName=EQDENY53"
+      "source_locator": "https://meps.ahrq.gov/mepsweb/data_stats/download_data_files_codebook.jsp?PUFId=H256&varName=EQDENY53",
+      "temporal_note": "Cohort status is anchored at the earlier Round 3/1 2024 interview; ESAQ was administered later in Panel 28 Round 5 / Panel 29 Round 3, so the later response does not establish continued current Long COVID."
     },
     {
       "id": "k6_score",

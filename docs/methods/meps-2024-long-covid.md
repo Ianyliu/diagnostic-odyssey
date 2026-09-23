@@ -51,6 +51,16 @@ The primary age anchor remains `AGE31X`; only the audit diagnostic was cleaned. 
 
 The categories reconcile exactly to 414. Negative reserved age codes are never labeled as genuine under-18 ages.
 
+### Reviewed source-code contract
+
+Before any routing logic runs, the pipeline validates the observed HC-256 codes for the three primary Round-3/1 variables against the reviewed 2024 codebook sets:
+
+- `COVIDEVER31`: -8, -7, -1, 1, 2;
+- `LCEVER31`: -8, -7, -1, 1, 2;
+- `COVSYMNOW31`: -8, -1, 1, 2.
+
+Any NA or unreviewed numeric code is a fail-fast source-contract error. The pipeline does **not** silently recode a new value. Diagnostics record the reviewed allowable codes, observed codes, and observed counts for each variable.
+
 ### Route-aware COVID / Long-COVID classification
 
 The 2024 PE instrument routes the COVID sequence as follows:
@@ -133,10 +143,12 @@ The primary policy is therefore:
 
 This decision follows AHRQ's domain-analysis guidance to retain the full MEPS design and the R `survey` package distinction between actual lonely PSUs and one-PSU representation inside a domain. The package's additional domain-lonely adjustment is a separate heuristic rather than the ordinary domain variance calculation.
 
+**Freeze note for the final metadata/provenance hardening pass:** this variance sensitivity and primary policy are preserved exactly. The hardening pass does not change cohort membership, routing, weights, VARSTR/VARPSU, Taylor linearization, `survey.adjust.domain.lonely=FALSE`, full-design CI df selection, estimators, thresholds, or the bounded t-based proportion CI implementation.
+
 ## Tier 1 estimands
 
 ### Represented population
-Survey-weighted total number of adults 18–64 meeting the operational current-Long-COVID definition.
+Survey-weighted total number of **status-classifiable** adults 18–64 meeting the operational current-Long-COVID definition. Respondents whose current-Long-COVID status remains unresolved after the reviewed routing rules are excluded from this represented-population estimator and are **not imputed** as either cases or noncases.
 
 ### Gross all-cause spending
 These are **calendar-year 2024** expenditures among adults who met the operational current-Long-COVID definition at their Round 3/1 interview in 2024. The point-in-time classification does not imply symptoms persisted throughout 2024, and annual expenditures may occur before or after the status interview.
@@ -166,7 +178,9 @@ For each, report the survey-weighted annual mean count and the proportion with a
 
 ## Tier 2 — ESAQ healthcare-work / administrative burden
 
-Use `ESAQWT24F` among `ESAQELIG=1`, then estimate the domain of respondents who had been classified operational-current at the **earlier Round 3/1 2024 anchor**. The later ESAQ response does not demonstrate that current Long COVID persisted through supplement administration.
+Use `ESAQWT24F` among `ESAQELIG=1`, then estimate the domain of respondents who had been classified operational-current at the **earlier Round 3/1 2024 interview**. AHRQ fielded the ESAQ later, in **Panel 28 Round 5 / Panel 29 Round 3**. The later ESAQ response therefore does not demonstrate that current Long COVID persisted through supplement administration.
+
+The edited `EQMVAM53`, `EQMBAM53`, and `EQPPAM53` fields are AHRQ **annualized hours-per-year measures** derived from respondents' original reporting periods. They should not be described as necessarily observed hours during calendar year 2024.
 
 Report separately:
 
@@ -256,3 +270,17 @@ A successful run produces `display_status="analytical_artifact"` but `release_st
 - HC-256 documentation: https://meps.ahrq.gov/data_stats/download_data/pufs/h256/h256doc.shtml
 - HC-256 HTML codebook: https://meps.ahrq.gov/mepsweb/data_stats/download_data_files_codebook.jsp?PUFId=H256
 - AHRQ example K6 classification: https://meps.ahrq.gov/data_files/publications/st570/stat570.shtml
+
+
+## Promotion-readiness provenance hardening
+
+The reviewed HC-256 source bytes are pinned by SHA-256 in `analysis/r/config/meps_hc256_source_integrity.json`, based on the successful third-candidate source metadata from workflow run `35745589631` / artifact `10702872683`:
+
+- official HC-256 Stata ZIP: `653891861ec18574b07f576915e6f9e423263fc947610dc34e1bd176feff7b40`;
+- extracted `h256.dta`: `b4bde859b39f626345561c05570292bb7264dd92eb76ce0c1a14d6b89076aed5`.
+
+A hash mismatch is a review event, not an invitation to update the expected value automatically. Candidate generation fails until the changed official source is reviewed.
+
+In GitHub Actions, the checked-out commit must equal `GITHUB_SHA`. The R runner independently checks its `git rev-parse HEAD` value against the same environment SHA and records the result in diagnostics/review metadata.
+
+Each candidate preserves SHA-256 checksums for `bundle.json` and `diagnostics.json` in the review manifest and writes an aggregate-only `SHA256SUMS` file for the candidate package.
