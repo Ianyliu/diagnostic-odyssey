@@ -100,14 +100,15 @@ jobs:
           ' "$C/hc256-source-metadata.json" >/dev/null
 
           jq -e '
-            [
-              .burden_domains[].measures[]
-              | select(
-                  .release_status != "preliminary"
-                  or .display_status != "analytical_artifact"
-                )
-            ] | length == 0
-            and ([.burden_domains[].measures[]] | length == 21)
+            ([.burden_domains[].measures[]] | length) == 21
+            and (
+              [.burden_domains[].measures[]
+                | select(
+                    .release_status != "preliminary"
+                    or .display_status != "analytical_artifact"
+                  )
+              ] | length
+            ) == 0
           ' "$C/bundle.json" >/dev/null
 
           jq -e '
@@ -296,7 +297,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cat >/tmp/verify-reviewed-export.ts <<'TS'
+          cat > verify-reviewed-export.tmp.ts <<'TS'
           import { readFileSync } from "node:fs";
           import {
             assertValidArtifactBundle,
@@ -324,7 +325,8 @@ jobs:
           }
           console.log("canExportEstimate() == true for all 21 reviewed estimates");
           TS
-          node --experimental-strip-types /tmp/verify-reviewed-export.ts
+          node --experimental-strip-types verify-reviewed-export.tmp.ts
+          rm verify-reviewed-export.tmp.ts
 
       - name: Add permanent reviewed-artifact regression test
         shell: bash
