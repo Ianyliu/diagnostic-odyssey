@@ -24,3 +24,23 @@ test("brief excludes illustrative and unreleased estimates", () => {
   });
   assert.equal(brief.burden_findings.length, 1);
 });
+
+
+test("brief preserves release gating for preliminary and illustrative values", () => {
+  const brief = buildPlanningBrief({
+    context:{condition_id:"c",cohort_id:"x",age_range:"18–64",evidence_year:2024,geography_scope:"United States",local_context_id:null,severity_filter:null,artifact_version:"v1"},
+    estimates:[
+      estimate("reviewed_released","analytical_artifact"),
+      estimate("preliminary","analytical_artifact"),
+      estimate("reviewed_released","illustrative")
+    ],
+    localContext:[],
+    evidence:[],
+    dataRequests:[],
+    generatedAt:"2026-01-01T00:00:00Z"
+  });
+
+  assert.equal(brief.burden_findings.length, 1);
+  assert.equal(brief.burden_findings[0]?.release_status, "reviewed_released");
+  assert.equal(brief.burden_findings[0]?.display_status, "analytical_artifact");
+});
