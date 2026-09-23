@@ -39,7 +39,7 @@ estimate_represented_population <- function(designs, artifact_version) {
     artifact_version = artifact_version,
       cohort_definition = cohort_definition_text(),
     allowed_interpretation = paste(
-      "Survey-weighted number of U.S. civilian noninstitutionalized adults age 18-64",
+      "Survey-weighted number of status-classifiable U.S. civilian noninstitutionalized adults age 18-64",
       "meeting the documented operational Round 3/1 2024 current-Long-COVID rule."
     ),
     prohibited_interpretation = c(
@@ -50,7 +50,8 @@ estimate_represented_population <- function(designs, artifact_version) {
     limitations = c(
       "COVSYMNOW31 wording refers to COVID-19 or Long COVID-19 symptoms now; use is conditional on route-aware established Long-COVID history.",
       "AGE31X anchors age to the same Round 3/1 interview; AGE24X is diagnostic only.",
-      "Structural PE skips are interpreted by questionnaire routing; RF/DK and unexpected downstream inapplicability remain unresolved."
+      "Structural PE skips are interpreted by questionnaire routing; RF/DK and unexpected downstream inapplicability remain unresolved.",
+      "The represented-population estimate is restricted to status-classifiable respondents; unresolved current-Long-COVID status is excluded from the estimator and is not imputed as case or noncase."
     )
   )
 }

@@ -92,7 +92,7 @@ estimate_utilization <- function(designs, artifact_version) {
       label = paste0("Proportion with at least one ", spec$event),
       unit = "proportion",
       denominator = paste0(
-        "Adults age 18-64 meeting operational current Long COVID definition with valid ",
+        "Adults age 18-64 who met the operational current-Long-COVID definition at their Round 3/1 2024 interview, with valid ",
         spec$variable
       ),
       universe = "U.S. civilian noninstitutionalized population, adults age 18-64",
