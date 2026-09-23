@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { assertValidArtifactBundle, type ArtifactBundle, type Scenario, type ScenarioResult } from "@diagnostic-odyssey/contracts";
+import { type ArtifactBundle, type Scenario, type ScenarioResult } from "@diagnostic-odyssey/contracts";
 import { calculateScenario } from "@diagnostic-odyssey/scenario-engine";
+import { loadReviewedMepsArtifact } from "./reviewedArtifact";
 
 interface ArtifactState {
   status: "loading" | "loaded" | "error";
@@ -20,23 +21,17 @@ export function ArtifactProvider({children}: {children: ReactNode}) {
   const [scenario, setScenario] = useState<Scenario | null>(null);
 
   useEffect(() => {
-    let active = true;
-    fetch("/fixture-2026-09-v1/bundle.json")
-      .then(async response => {
-        if (!response.ok) throw new Error(`Artifact request failed: ${response.status}`);
-        const candidate: unknown = await response.json();
-        assertValidArtifactBundle(candidate);
-        if (!active) return;
-        setBundle(candidate);
-        setScenario(candidate.scenario_examples[0] ?? null);
-        setStatus("loaded");
-      })
-      .catch(cause => {
-        if (!active) return;
-        setError(cause instanceof Error ? cause.message : String(cause));
-        setStatus("error");
-      });
-    return () => { active = false; };
+    try {
+      const candidate = loadReviewedMepsArtifact();
+      setBundle(candidate);
+      setScenario(candidate.scenario_examples[0] ?? null);
+      setError(null);
+      setStatus("loaded");
+    } catch (cause) {
+      setBundle(null);
+      setError(cause instanceof Error ? cause.message : String(cause));
+      setStatus("error");
+    }
   }, []);
 
   const scenarioResult = useMemo(() => {
