@@ -175,6 +175,15 @@ export interface LocalContextGeography {
 }
 
 export interface LocalContextRecord {
+  /**
+   * Legacy presentation aliases retained temporarily so existing empty/fixture runtime
+   * surfaces continue to typecheck. Reviewed local-context artifacts are validated
+   * against the canonical fields below and do not rely on these aliases.
+   */
+  indicator?: string;
+  geography?: string;
+  year?: number;
+  source?: string;
   indicator_id: string;
   label: string;
   geography_name: string;
