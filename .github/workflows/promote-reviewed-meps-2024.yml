@@ -1,0 +1,463 @@
+name: Promote reviewed MEPS 2024 artifact
+
+on:
+  push:
+    branches:
+      - promotion-helper-meps-2024
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      APPROVED_ANALYTICAL_SHA: 8952bb7446b7b0461e41f1794146ab5e612ebf40
+      APPROVED_RUN_ID: "35808850878"
+      APPROVED_ARTIFACT_ID: "10728314484"
+      APPROVED_ARTIFACT_NAME: meps-2024-long-covid-candidate-35808850878
+      APPROVED_ARTIFACT_ZIP_SHA256: 2284d5878217e242b2cc481cbc5fd08c3bd5799374de41c7b4f4e307766b8d8f
+      APPROVED_ARTIFACT_VERSION: meps-2024-long-covid-candidate-20260923T020607Z
+      APPROVED_BUNDLE_SHA256: c19dd201b799f5f66a3c7ef74dd69c799f76440c47e7aad0544f27cdd6fd9afa
+      APPROVED_DIAGNOSTICS_SHA256: a00b136193c90e234e0f1c59dbbfe6afdce68948f4318402311e72d1ffb1bdeb
+      APPROVED_REVIEW_MANIFEST_SHA256: 5a8437207e307e0434e09887e53a4b4c565c1380cdf93fcd90e6392af5c4bbf5
+      APPROVED_SOURCE_METADATA_SHA256: 960a8b7c4a7795f901273b64ed1b7c2166f6aa1db8cbf9f7f083ec0167f503c1
+      APPROVED_RUN_MANIFEST_SHA256: d67c3c8ed3121c6cddcb65871d110b28befbeb45b85f106e721c5b78e4220174
+      APPROVED_HC256_ZIP_SHA256: 653891861ec18574b07f576915e6f9e423263fc947610dc34e1bd176feff7b40
+      APPROVED_HC256_DTA_SHA256: b4bde859b39f626345561c05570292bb7264dd92eb76ce0c1a14d6b89076aed5
+      REVIEWED_DIR: artifacts/reviewed/meps-2024-long-covid-candidate-20260923T020607Z
+
+    steps:
+      - name: Checkout main for promotion
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Verify main is exact approved analytical commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$APPROVED_ANALYTICAL_SHA"
+          test "$(git rev-parse origin/main)" = "$APPROVED_ANALYTICAL_SHA"
+          test ! -e "$REVIEWED_DIR"
+
+      - name: Set up Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install JavaScript dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Download exact approved Actions artifact
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/meps-promotion/candidate
+          curl             --fail             --location             --silent             --show-error             -H "Authorization: Bearer $GH_TOKEN"             -H "Accept: application/vnd.github+json"             -H "X-GitHub-Api-Version: 2022-11-28"             "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/actions/artifacts/$APPROVED_ARTIFACT_ID/zip"             -o /tmp/meps-promotion/candidate.zip
+
+          echo "$APPROVED_ARTIFACT_ZIP_SHA256  /tmp/meps-promotion/candidate.zip" | sha256sum -c -
+          unzip -q /tmp/meps-promotion/candidate.zip -d /tmp/meps-promotion/candidate
+
+      - name: Verify immutable candidate identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          C=/tmp/meps-promotion/candidate
+
+          expected_files="$(
+            printf '%s\n'               SHA256SUMS               bundle.json               diagnostics.json               github-actions-run-manifest.json               hc256-source-metadata.json               review-manifest.json               | sort
+          )"
+          actual_files="$(find "$C" -maxdepth 1 -type f -printf '%f\n' | sort)"
+          test "$actual_files" = "$expected_files"
+
+          (
+            cd "$C"
+            sha256sum -c SHA256SUMS
+          )
+
+          test "$(sha256sum "$C/bundle.json" | awk '{print $1}')" = "$APPROVED_BUNDLE_SHA256"
+          test "$(sha256sum "$C/diagnostics.json" | awk '{print $1}')" = "$APPROVED_DIAGNOSTICS_SHA256"
+          test "$(sha256sum "$C/review-manifest.json" | awk '{print $1}')" = "$APPROVED_REVIEW_MANIFEST_SHA256"
+          test "$(sha256sum "$C/hc256-source-metadata.json" | awk '{print $1}')" = "$APPROVED_SOURCE_METADATA_SHA256"
+          test "$(sha256sum "$C/github-actions-run-manifest.json" | awk '{print $1}')" = "$APPROVED_RUN_MANIFEST_SHA256"
+
+          jq -e --arg sha "$APPROVED_ANALYTICAL_SHA" '.manifest.code_commit == $sha' "$C/bundle.json" >/dev/null
+          jq -e --arg version "$APPROVED_ARTIFACT_VERSION" '.manifest.artifact_version == $version and .context.artifact_version == $version' "$C/bundle.json" >/dev/null
+          jq -e --arg run "$APPROVED_RUN_ID" '.workflow_run_id == $run' "$C/github-actions-run-manifest.json" >/dev/null
+          jq -e --arg sha "$APPROVED_ANALYTICAL_SHA" '.github_sha == $sha' "$C/github-actions-run-manifest.json" >/dev/null
+
+          jq -e --arg zip "$APPROVED_HC256_ZIP_SHA256" --arg dta "$APPROVED_HC256_DTA_SHA256" '
+            .zip_sha256 == $zip
+            and .extracted_sha256 == $dta
+            and .zip_sha256_match == true
+            and .extracted_sha256_match == true
+          ' "$C/hc256-source-metadata.json" >/dev/null
+
+          jq -e '
+            [
+              .burden_domains[].measures[]
+              | select(
+                  .release_status != "preliminary"
+                  or .display_status != "analytical_artifact"
+                )
+            ] | length == 0
+            and ([.burden_domains[].measures[]] | length == 21)
+          ' "$C/bundle.json" >/dev/null
+
+          jq -e '
+            .release_status == "candidate_pending_review"
+            and .automatic_release == false
+            and ([.checks[].status] | all(. == "pending"))
+          ' "$C/review-manifest.json" >/dev/null
+
+      - name: Promote release state only and build durable reviewed package
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import copy
+          import hashlib
+          import json
+          import pathlib
+          import shutil
+
+          root = pathlib.Path(".").resolve()
+          src = pathlib.Path("/tmp/meps-promotion/candidate")
+          dst = root / "artifacts/reviewed/meps-2024-long-covid-candidate-20260923T020607Z"
+          dst.mkdir(parents=True, exist_ok=False)
+
+          def sha256(path):
+              return hashlib.sha256(pathlib.Path(path).read_bytes()).hexdigest()
+
+          raw = (src / "bundle.json").read_text()
+          needle = '"release_status": "preliminary"'
+          replacement = '"release_status": "reviewed_released"'
+          count = raw.count(needle)
+          if count != 21:
+              raise SystemExit(f"Expected 21 preliminary release states; found {count}")
+          reviewed_raw = raw.replace(needle, replacement)
+          (dst / "bundle.json").write_text(reviewed_raw)
+
+          for name in [
+              "diagnostics.json",
+              "hc256-source-metadata.json",
+              "github-actions-run-manifest.json",
+          ]:
+              shutil.copyfile(src / name, dst / name)
+
+          candidate_review = json.loads((src / "review-manifest.json").read_text())
+          review = copy.deepcopy(candidate_review)
+          reviewed_bundle_sha = sha256(dst / "bundle.json")
+          review.update({
+              "release_status": "reviewed_released",
+              "automatic_release": False,
+              "review_decision": "approved",
+              "review_type": "explicit_reviewed_artifact_promotion",
+              "approved_estimate_count": 21,
+              "suppressed_estimate_count": 0,
+              "ahrq_precision_flagged_estimate_count": 0,
+              "candidate_artifact_id": "10728314484",
+              "candidate_workflow_run_id": "35808850878",
+              "candidate_artifact_name": "meps-2024-long-covid-candidate-35808850878",
+              "candidate_artifact_zip_sha256": "2284d5878217e242b2cc481cbc5fd08c3bd5799374de41c7b4f4e307766b8d8f",
+              "candidate_code_commit": "8952bb7446b7b0461e41f1794146ab5e612ebf40",
+              "candidate_bundle_sha256": "c19dd201b799f5f66a3c7ef74dd69c799f76440c47e7aad0544f27cdd6fd9afa",
+              "candidate_diagnostics_sha256": "a00b136193c90e234e0f1c59dbbfe6afdce68948f4318402311e72d1ffb1bdeb",
+              "candidate_review_manifest_sha256": "5a8437207e307e0434e09887e53a4b4c565c1380cdf93fcd90e6392af5c4bbf5",
+              "candidate_hc256_source_metadata_sha256": "960a8b7c4a7795f901273b64ed1b7c2166f6aa1db8cbf9f7f083ec0167f503c1",
+              "candidate_github_actions_run_manifest_sha256": "d67c3c8ed3121c6cddcb65871d110b28befbeb45b85f106e721c5b78e4220174",
+              "reviewed_bundle": "bundle.json",
+              "reviewed_bundle_sha256": reviewed_bundle_sha,
+              "reviewed_diagnostics_sha256": sha256(dst / "diagnostics.json"),
+              "promotion_gate": "passed",
+              "promotion_scope": "release_state_only",
+              "numerical_recomputation_performed": False,
+              "runtime_selection_changed": False,
+          })
+          for check in review["checks"]:
+              check["status"] = "approved"
+          review["checks_approved_count"] = len(review["checks"])
+          if review["checks_approved_count"] != 8:
+              raise SystemExit("Expected exactly 8 review checks")
+          (dst / "review-manifest.json").write_text(
+              json.dumps(review, indent=2, ensure_ascii=False) + "\n"
+          )
+
+          ordered = [
+              "bundle.json",
+              "diagnostics.json",
+              "review-manifest.json",
+              "hc256-source-metadata.json",
+              "github-actions-run-manifest.json",
+          ]
+          (dst / "SHA256SUMS").write_text(
+              "".join(f"{sha256(dst / name)}  {name}\n" for name in ordered)
+          )
+          PY
+
+      - name: Prove numerical and provenance immutability
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import copy
+          import hashlib
+          import json
+          import pathlib
+
+          src = pathlib.Path("/tmp/meps-promotion/candidate")
+          dst = pathlib.Path("artifacts/reviewed/meps-2024-long-covid-candidate-20260923T020607Z")
+
+          candidate = json.loads((src / "bundle.json").read_text())
+          reviewed = json.loads((dst / "bundle.json").read_text())
+
+          def measures(bundle):
+              return [
+                  measure
+                  for domain in bundle["burden_domains"]
+                  for measure in domain["measures"]
+              ]
+
+          cm = measures(candidate)
+          rm = measures(reviewed)
+          if len(cm) != 21 or len(rm) != 21:
+              raise SystemExit("Expected exactly 21 analytical records")
+
+          normalized = copy.deepcopy(reviewed)
+          for measure in measures(normalized):
+              measure["release_status"] = "preliminary"
+          if candidate != normalized:
+              raise SystemExit("Reviewed bundle differs from candidate beyond release_status")
+
+          for before, after in zip(cm, rm):
+              differences = [
+                  key
+                  for key in set(before) | set(after)
+                  if before.get(key) != after.get(key)
+              ]
+              if differences != ["release_status"]:
+                  raise SystemExit(
+                      f"{before['estimate_id']} differs in unexpected fields: {differences}"
+                  )
+              if before["release_status"] != "preliminary":
+                  raise SystemExit("Candidate estimate was not preliminary")
+              if after["release_status"] != "reviewed_released":
+                  raise SystemExit("Reviewed estimate was not promoted")
+              if after["display_status"] != "analytical_artifact":
+                  raise SystemExit("Display status changed unexpectedly")
+
+          if any(m["release_status"] == "preliminary" for m in rm):
+              raise SystemExit("Preliminary estimate remains in reviewed bundle")
+          if any(m["release_status"] == "suppressed" for m in rm):
+              raise SystemExit("Suppressed estimate found unexpectedly")
+          if any(
+              m["display_status"] == "illustrative"
+              and isinstance(m.get("value"), (int, float))
+              for m in rm
+          ):
+              raise SystemExit("Illustrative numeric estimate found unexpectedly")
+
+          expected = {
+              "diagnostics.json": "a00b136193c90e234e0f1c59dbbfe6afdce68948f4318402311e72d1ffb1bdeb",
+              "hc256-source-metadata.json": "960a8b7c4a7795f901273b64ed1b7c2166f6aa1db8cbf9f7f083ec0167f503c1",
+              "github-actions-run-manifest.json": "d67c3c8ed3121c6cddcb65871d110b28befbeb45b85f106e721c5b78e4220174",
+          }
+          for name, expected_sha in expected.items():
+              if (src / name).read_bytes() != (dst / name).read_bytes():
+                  raise SystemExit(f"{name} is not byte-identical")
+              observed = hashlib.sha256((dst / name).read_bytes()).hexdigest()
+              if observed != expected_sha:
+                  raise SystemExit(f"{name} checksum mismatch")
+
+          unsafe_suffixes = {".dta", ".zip", ".csv", ".rds", ".RData", ".parquet", ".feather"}
+          unsafe = [p.name for p in dst.iterdir() if p.suffix in unsafe_suffixes]
+          if unsafe:
+              raise SystemExit(f"Unsafe file(s) in reviewed package: {unsafe}")
+
+          print("21/21 promoted; zero differences beyond release_status")
+          PY
+
+          (
+            cd "$REVIEWED_DIR"
+            sha256sum -c SHA256SUMS
+          )
+
+      - name: Validate reviewed artifact with existing TypeScript validator
+        run: |
+          node --experimental-strip-types             packages/contracts/src/validate-artifact-cli.ts             "$REVIEWED_DIR/bundle.json"
+
+      - name: Explicitly verify all 21 estimates are exportable
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat >/tmp/verify-reviewed-export.ts <<'TS'
+          import { readFileSync } from "node:fs";
+          import {
+            assertValidArtifactBundle,
+            canExportEstimate,
+            type ArtifactBundle
+          } from "./packages/contracts/src/index.ts";
+
+          const bundle = JSON.parse(
+            readFileSync(
+              "artifacts/reviewed/meps-2024-long-covid-candidate-20260923T020607Z/bundle.json",
+              "utf8"
+            )
+          ) as ArtifactBundle;
+
+          assertValidArtifactBundle(bundle);
+          const estimates = bundle.burden_domains.flatMap(domain => domain.measures);
+          if (estimates.length !== 21) {
+            throw new Error(`Expected 21 estimates; found ${estimates.length}`);
+          }
+          const failures = estimates.filter(estimate => !canExportEstimate(estimate));
+          if (failures.length > 0) {
+            throw new Error(
+              `Non-exportable reviewed estimates: ${failures.map(x => x.estimate_id).join(", ")}`
+            );
+          }
+          console.log("canExportEstimate() == true for all 21 reviewed estimates");
+          TS
+          node --experimental-strip-types /tmp/verify-reviewed-export.ts
+
+      - name: Add permanent reviewed-artifact regression test
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > packages/contracts/test/reviewed-meps-artifact.test.ts <<'TS'
+          import assert from "node:assert/strict";
+          import { readFileSync } from "node:fs";
+          import { fileURLToPath } from "node:url";
+          import test from "node:test";
+          import {
+            assertValidArtifactBundle,
+            canExportEstimate,
+            type ArtifactBundle
+          } from "../src/index.ts";
+
+          const reviewedBundlePath = fileURLToPath(
+            new URL(
+              "../../../artifacts/reviewed/meps-2024-long-covid-candidate-20260923T020607Z/bundle.json",
+              import.meta.url
+            )
+          );
+
+          test("reviewed MEPS 2024 artifact validates and all 21 estimates are exportable", () => {
+            const bundle = JSON.parse(
+              readFileSync(reviewedBundlePath, "utf8")
+            ) as ArtifactBundle;
+
+            assert.doesNotThrow(() => assertValidArtifactBundle(bundle));
+
+            const estimates = bundle.burden_domains.flatMap(domain => domain.measures);
+            assert.equal(estimates.length, 21);
+            assert.ok(estimates.every(canExportEstimate));
+            assert.ok(estimates.every(
+              estimate => estimate.release_status === "reviewed_released"
+            ));
+            assert.ok(estimates.every(
+              estimate => estimate.display_status === "analytical_artifact"
+            ));
+            assert.equal(
+              estimates.filter(estimate => estimate.release_status === "preliminary").length,
+              0
+            );
+            assert.equal(
+              estimates.filter(estimate => estimate.release_status === "suppressed").length,
+              0
+            );
+            assert.equal(
+              bundle.manifest.artifact_version,
+              "meps-2024-long-covid-candidate-20260923T020607Z"
+            );
+            assert.equal(
+              bundle.manifest.code_commit,
+              "8952bb7446b7b0461e41f1794146ab5e612ebf40"
+            );
+          });
+          TS
+
+      - name: Record completed promotion convention
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path("docs/analytical-release-workflow.md")
+          text = path.read_text()
+          marker = "## Completed reviewed promotion — MEPS 2024 Long COVID"
+          if marker not in text:
+              text += """
+
+          ## Completed reviewed promotion — MEPS 2024 Long COVID
+
+          The reviewed artifact at
+          `artifacts/reviewed/meps-2024-long-covid-candidate-20260923T020607Z/`
+          is an explicit release-state-only promotion of workflow run
+          `35808850878`, artifact ID `10728314484`, generated by analytical
+          commit `8952bb7446b7b0461e41f1794146ab5e612ebf40`.
+
+          Promotion convention for this reviewed package:
+
+          - all eight review-manifest checks use `status="approved"`;
+          - overall review-manifest `release_status="reviewed_released"`;
+          - `automatic_release=false`;
+          - all 21 analytical estimates use `release_status="reviewed_released"`;
+          - candidate and reviewed bundle SHA-256 identities are preserved separately;
+          - diagnostics, HC-256 source metadata, and GitHub Actions run provenance remain byte-identical to the approved candidate;
+          - no analytical recomputation occurred during promotion;
+          - runtime artifact selection was not changed by the promotion commit.
+
+          The promotion followed completed methods, cohort, weighted/unweighted N,
+          interval, denominator/universe, plausibility, provenance, interpretation,
+          and final promotion-gate review. No reviewer credentials are asserted.
+          """
+              path.write_text(text)
+          PY
+
+      - name: Run repository tests before promotion commit
+        run: |
+          npm run typecheck
+          npm test
+          npm run lint
+          npm run build
+
+      - name: Verify focused promotion diff
+        shell: bash
+        run: |
+          set -euo pipefail
+          git status --short
+          changed="$(
+            git status --short               | sed -E 's/^.. //'               | sort
+          )"
+          printf '%s\n' "$changed"
+
+          # Runtime selectors and analytical R code must remain untouched.
+          if git status --short | grep -E '(^.. apps/|^.. analysis/r/|^.. packages/brief-core/|^.. conditions/|^.. data/)'; then
+            echo "Unexpected runtime/analytical change in promotion diff."
+            exit 1
+          fi
+
+          test -f "$REVIEWED_DIR/bundle.json"
+          test -f "$REVIEWED_DIR/diagnostics.json"
+          test -f "$REVIEWED_DIR/review-manifest.json"
+          test -f "$REVIEWED_DIR/hc256-source-metadata.json"
+          test -f "$REVIEWED_DIR/github-actions-run-manifest.json"
+          test -f "$REVIEWED_DIR/SHA256SUMS"
+
+      - name: Create focused promotion commit on main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add             "$REVIEWED_DIR"             packages/contracts/test/reviewed-meps-artifact.test.ts             docs/analytical-release-workflow.md
+          git commit -m "release: promote reviewed MEPS 2024 Long COVID artifact"
+          git push origin HEAD:main
