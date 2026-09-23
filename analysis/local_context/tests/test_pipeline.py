@@ -76,9 +76,14 @@ class LocalContextPipelineTests(unittest.TestCase):
         indicators, _ = summarize_hrsa(self._write_hrsa(rows), HRSA_CONFIG, "primary_care")
         type_counts = [x for x in indicators if ".designation-type." in x["indicator_id"]]
         self.assertEqual(sum(int(x["value"]) for x in type_counts), 2)
-        forbidden_terms = {"population", "fte", "shortage"}
-        self.assertFalse(any(
-            x["indicator_id"].endswith(tuple(forbidden_terms))
+        allowed_families = (
+            ".designated-distinct-count",
+            ".designation-type.",
+            ".max-score",
+            ".rural-status.",
+        )
+        self.assertTrue(all(
+            any(token in x["indicator_id"] for token in allowed_families)
             for x in indicators
         ))
 
