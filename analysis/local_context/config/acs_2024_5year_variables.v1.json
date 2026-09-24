@@ -26,7 +26,7 @@
       "expected_estimate_annotation_label": "Annotation of Percent!!HEALTH INSURANCE COVERAGE!!Civilian noninstitutionalized population!!No health insurance coverage",
       "expected_moe_annotation_label": "Annotation of Percent Margin of Error!!HEALTH INSURANCE COVERAGE!!Civilian noninstitutionalized population!!No health insurance coverage",
       "expected_estimate_annotation_attribute_of": "DP03_0099PE",
-      "expected_moe_annotation_attribute_of": "DP03_0099PM"
+      "expected_moe_annotation_attribute_of": "DP03_0099PE"
     },
     {
       "indicator_id": "wv.acs.no_vehicle_pct",
@@ -71,7 +71,7 @@
       "expected_estimate_annotation_label": "Annotation of Percent!!PERCENTAGE OF FAMILIES AND PEOPLE WHOSE INCOME IN THE PAST 12 MONTHS IS BELOW THE POVERTY LEVEL!!All people",
       "expected_moe_annotation_label": "Annotation of Percent Margin of Error!!PERCENTAGE OF FAMILIES AND PEOPLE WHOSE INCOME IN THE PAST 12 MONTHS IS BELOW THE POVERTY LEVEL!!All people",
       "expected_estimate_annotation_attribute_of": "DP03_0128PE",
-      "expected_moe_annotation_attribute_of": "DP03_0128PM"
+      "expected_moe_annotation_attribute_of": "DP03_0128PE"
     }
   ],
   "variable_metadata_url_template": "https://api.census.gov/data/2024/acs/acs5/profile/variables/{variable}.json"
