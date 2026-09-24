@@ -5,6 +5,11 @@ import { PilotDecisionVisuals } from "../components/PilotDecisionVisuals";
 import { SensitivityExplorer } from "../components/SensitivityExplorer";
 import { useArtifact } from "../data/ArtifactContext";
 import {
+  createSensitivityDataRequest,
+  sensitivityDataRequestId
+} from "../data/dataRequestTemplates";
+import type { SensitivityField } from "../data/decisionVisuals";
+import {
   PLANNING_DEFAULTS_DESCRIPTION,
   PLANNING_DEFAULTS_LABEL
 } from "../data/planningScenarioDefaults";
@@ -23,7 +28,13 @@ const fields: Array<{key:NumericField;label:string;step?:number;scale?:number;su
 ];
 
 export function PilotPage() {
-  const {scenario,scenarioResult,setScenario} = useArtifact();
+  const {
+    scenario,
+    scenarioResult,
+    setScenario,
+    analystDataRequests,
+    upsertAnalystDataRequest
+  } = useArtifact();
 
   if (!scenario || !scenarioResult) {
     return <section className="page page-stack">
@@ -45,6 +56,13 @@ export function PilotPage() {
     if (!Number.isFinite(n)) return;
     setScenario({...scenario,[key]:n/scale} as Scenario);
   };
+
+  const addSensitivityDataRequest = (field: SensitivityField) => {
+    upsertAnalystDataRequest(createSensitivityDataRequest(scenario, field));
+  };
+
+  const hasSensitivityDataRequest = (field: SensitivityField) =>
+    analystDataRequests.some(request => request.request_id === sensitivityDataRequestId(field));
 
   return <section className="page page-stack">
     <ContextBar />
@@ -71,7 +89,11 @@ export function PilotPage() {
           <div><dt>Difference in person-month exposure</dt><dd>{scenarioResult.difference_person_months.toLocaleString()}</dd></div>
           <div><dt>Program-resource requirement</dt><dd>{new Intl.NumberFormat("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0}).format(scenarioResult.program_resource_requirement)}</dd></div>
         </dl>
-        <SensitivityExplorer scenario={scenario} />
+        <SensitivityExplorer
+          scenario={scenario}
+          onAddDataRequest={addSensitivityDataRequest}
+          hasDataRequest={hasSensitivityDataRequest}
+        />
         <div className="target-box"><strong>Target pathway step</strong><span>{scenario.target_pathway_step}</span><strong>Mechanism</strong><span>{scenario.mechanism}</span></div>
         <div className="guardrail compact"><strong>Not savings or ROI.</strong><p>The resource requirement is a program input. The person-month difference is a planning exposure quantity, not observed improvement.</p></div>
         <Link className="button" to="/brief">Preview Planning Brief</Link>

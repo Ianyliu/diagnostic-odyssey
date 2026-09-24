@@ -1,5 +1,6 @@
 import "./SensitivityExplorer.css";
 import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import type { Scenario } from "@diagnostic-odyssey/contracts";
 import { oneWaySensitivity } from "@diagnostic-odyssey/scenario-engine";
 import {
@@ -21,7 +22,15 @@ function formatInput(field: SensitivityField, value: number): string {
   return integer.format(value);
 }
 
-export function SensitivityExplorer({scenario}: {scenario: Scenario}) {
+export function SensitivityExplorer({
+  scenario,
+  onAddDataRequest,
+  hasDataRequest
+}: {
+  scenario: Scenario;
+  onAddDataRequest?: (field: SensitivityField) => void;
+  hasDataRequest?: (field: SensitivityField) => boolean;
+}) {
   const [field, setField] = useState<SensitivityField>("capacity");
   const values = useMemo(() => buildSensitivityValues(scenario, field), [scenario, field]);
   const points = useMemo(() => oneWaySensitivity(scenario, field, values), [scenario, field, values]);
@@ -34,6 +43,7 @@ export function SensitivityExplorer({scenario}: {scenario: Scenario}) {
   const outputs = points.map(point => point.result[metric]);
   const maxOutput = Math.max(...outputs, 0);
   const currentValue = scenario[field];
+  const requestExists = hasDataRequest?.(field) ?? false;
 
   return <section id="sensitivity" className="sensitivity-visual" aria-labelledby="sensitivity-title">
     <div className="sensitivity-heading">
@@ -77,5 +87,14 @@ export function SensitivityExplorer({scenario}: {scenario: Scenario}) {
         </tr>)}</tbody>
       </table>
     </details>
+    {onAddDataRequest && <div className="sensitivity-action">
+      <div>
+        <strong>Uncertain locally?</strong>
+        <span>Create a structured operational data request. Creating it does not automatically include it in the Planning Brief.</span>
+      </div>
+      {requestExists
+        ? <Link className="button secondary" to="/data-requests">Review data request</Link>
+        : <button className="button secondary" type="button" onClick={() => onAddDataRequest(field)}>Add to data requests</button>}
+    </div>}
   </section>;
 }
