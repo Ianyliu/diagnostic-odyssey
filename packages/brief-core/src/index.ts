@@ -62,7 +62,7 @@ export function buildPlanningBrief(input: BriefInput): PlanningBrief {
     title: "Diagnostic Odyssey planning brief",
     context: input.context,
     burden_findings: burdenFindings,
-    local_context: input.localContext.filter(record => record.state === "loaded" || record.state === "partial"),
+    local_context: input.localContext.filter(record =>\n      record.release_status === "reviewed_released" &&\n      (record.state === "loaded" || record.state === "partial")\n    ),
     scenario: input.scenario ?? null,
     evidence: input.evidence.filter(record => record.reviewer_status === "approved"),
     data_requests: input.dataRequests,

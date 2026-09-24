@@ -5,25 +5,34 @@ import { formatEstimateValue } from "../data/formatEstimateValue";
 import { PLANNING_DEFAULTS_LABEL } from "../data/planningScenarioDefaults";
 
 export function BriefPage() {
-  const {bundle,scenario,scenarioResult} = useArtifact();
+  const {
+    bundle,
+    scenario,
+    scenarioResult,
+    localContext,
+    localContextStatus
+  } = useArtifact();
   if (!bundle) return null;
 
   const estimates = bundle.burden_domains.flatMap(domain => domain.measures);
   const brief = buildPlanningBrief({
     context: bundle.context,
     estimates,
-    localContext: bundle.local_context,
+    localContext: [],
     scenario: scenario && scenarioResult ? {input:scenario,result:scenarioResult} : null,
     evidence: bundle.evidence,
     dataRequests: bundle.data_requests
   });
+
+  const localContextAvailable =
+    localContextStatus === "loaded" && localContext !== null;
 
   const exportJson = () => {
     const blob = new Blob([serializeBriefJson(brief)],{type:"application/json"});
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href=url;
-    a.download=`${brief.artifact_version}-planning-brief.json`;
+    a.download=brief.artifact_version + "-planning-brief.json";
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -61,8 +70,19 @@ export function BriefPage() {
         <section>
           <h2>Local implementation context</h2>
           {brief.local_context.length > 0
-            ? brief.local_context.map(x => <p key={`${x.geography}-${x.indicator}`}><strong>{x.indicator}:</strong> {x.value === null ? "Missing / not available" : String(x.value)}</p>)
-            : <div className="empty-state"><strong>Local context not yet loaded.</strong><p>No local prevalence or state-specific Long COVID burden is inferred from national MEPS evidence.</p></div>}
+            ? brief.local_context.map(record => <p key={record.indicator_id}><strong>{record.label}:</strong> {record.value === null ? "Missing / not available" : String(record.value)}</p>)
+            : <div className="empty-state">
+                <strong>
+                  {localContextAvailable
+                    ? "Reviewed West Virginia state context is available, but no local context has been selected for this brief."
+                    : "No local context has been selected for this brief."}
+                </strong>
+                <p>
+                  {localContextAvailable
+                    ? "Review the available state evidence on the Local Context page. An explicit analyst selection/handoff is required before any local-context record may enter a Planning Brief."
+                    : "National MEPS burden remains unchanged; no local prevalence or state-specific Long COVID burden is inferred."}
+                </p>
+              </div>}
         </section>
 
         <section>
@@ -87,7 +107,10 @@ export function BriefPage() {
         <div className="readiness"><strong>Burden estimates</strong><span className="status status-ok">Reviewed national</span></div>
         <div className="readiness"><strong>Scenario arithmetic</strong><span className="status status-scaffold">Planning assumptions</span></div>
         <div className="readiness"><strong>Evidence parameter</strong><span className="status status-scaffold">Not loaded</span></div>
-        <div className="readiness"><strong>Local context</strong><span className="status status-scaffold">Not loaded</span></div>
+        <div className="readiness">
+          <strong>Local context</strong>
+          <span className="status status-scaffold">{localContextAvailable ? "Available, not selected" : "Not selected"}</span>
+        </div>
         <button className="button" onClick={exportJson}>Export JSON companion</button>
         <button className="button secondary" onClick={()=>window.print()}>Print / save PDF</button>
       </aside>
