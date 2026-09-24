@@ -1,0 +1,30 @@
+{
+  "name": "Diagnostic Odyssey",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
+  "remoteUser": "node",
+  "forwardPorts": [5173],
+  "portsAttributes": {
+    "5173": {
+      "label": "Diagnostic Odyssey web app",
+      "onAutoForward": "notify"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "REditorSupport.r",
+        "ms-vscode.vscode-typescript-next"
+      ],
+      "settings": {
+        "editor.formatOnSave": false,
+        "r.rterm.linux": "/usr/bin/R"
+      }
+    }
+  },
+  "postCreateCommand": "npm install --no-audit --no-fund && Rscript analysis/r/install_dependencies.R",
+  "postStartCommand": "printf '\\nDiagnostic Odyssey is ready. Run npm run dev to start the web app.\\n'"
+}
