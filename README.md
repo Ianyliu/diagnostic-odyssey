@@ -4,6 +4,8 @@ Diagnostic Odyssey is a statistically grounded planning platform for making hidd
 
 It is designed for teams planning services around conditions such as Long COVID and ME/CFS. The application separates observed burden, local context, reviewed evidence, and planning assumptions so that a useful pilot plan does not imply stronger evidence than the data support.
 
+> **Project status:** working vertical slice with illustrative development data. The repository is ready for product and pipeline development, but it does not ship released estimates.
+
 The full product workflow is:
 
 **Overview → Burden → Local Context → Pilot Planner → Evidence / Data Requests → Planning Brief**
@@ -12,9 +14,17 @@ The first working vertical slice is:
 
 **Burden → Pilot Planner → Planning Brief**
 
+## Start here
+
+| Goal | Recommended path | Requirements |
+| --- | --- | --- |
+| Explore the web app | [Run locally](#run-locally) | Node.js 22+ |
+| Use a reproducible environment | [Open the dev container](#use-the-dev-container) | Docker and the Dev Containers extension |
+| Run the MEPS analysis | [Run the analytical pipeline](#run-the-analytical-pipeline) | R and internet access |
+
 ## Quick start
 
-### Run the web app
+### Run locally
 
 Requirements: Node.js 22 or newer. From the repository root:
 
@@ -24,6 +34,17 @@ npm run dev
 ```
 
 Open the local URL printed by Vite, usually `http://localhost:5173`. The app starts with the checked-in illustrative fixture so the planning workflow can be explored without downloading research data.
+
+### Use the dev container
+
+The repository includes an optional VS Code dev container with Node 22, R, the analytical system libraries, recommended extensions, and port `5173` forwarding.
+
+1. Install Docker and the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers).
+2. Open this repository in VS Code.
+3. Run **Dev Containers: Reopen in Container** from the Command Palette.
+4. After setup completes, run `npm run dev` in the container terminal.
+
+The container is a convenience for consistent tooling, not a requirement. Raw research data remains local and is never included in the image or committed to Git.
 
 ### Run the checks
 
@@ -47,7 +68,25 @@ Rscript analysis/r/meps/run_meps_2024.R --download
 
 See [Data and analytical inputs](#data-and-analytical-inputs) before running this workflow. Raw microdata and generated candidates are intentionally not committed.
 
-## What is implemented
+## Product map
+
+The intended workflow is:
+
+**Overview → Burden → Local Context → Pilot Planner → Evidence / Data Requests → Planning Brief**
+
+The working vertical slice is:
+
+**Burden → Pilot Planner → Planning Brief**
+
+Use the prototype in that order:
+
+1. **Burden:** inspect burden domains, native units, and release state.
+2. **Pilot Planner:** set planning assumptions such as reach, capacity, and duration.
+3. **Planning Brief:** review the assembled artifact and use the JSON or browser print/HTML export path.
+
+The other routes show the intended product boundary. Some are deliberately scaffolded while their source data or review workflow is being built.
+
+## Implementation status
 
 ### Working now
 
@@ -84,15 +123,6 @@ See [Data and analytical inputs](#data-and-analytical-inputs) before running thi
 
 The checked-in artifact under `artifacts/examples/fixture-2026-09-v1/` is **illustrative development/test data only**. It is deliberately barred from analytical export by the release/display gates. The released national MEPS artifact is separate and runtime-loaded; the fixture remains only for development and test coverage.
 
-## How to use the prototype
-
-1. Open **Burden** to inspect the available burden domains and their release state.
-2. Open **Pilot Planner** to set planning assumptions such as reach, capacity, and duration.
-3. Review the deterministic scenario calculations, keeping program-resource requirements separate from savings or ROI.
-4. Open **Planning Brief** to review the assembled planning artifact and use the JSON or browser print/HTML export path.
-
-The remaining routes are present to show the intended product boundary: **Overview**, **Local Context**, **Evidence**, and **Data Requests** are available even where the underlying data or review workflow is still scaffolded.
-
 ## Scientific boundaries
 
 The application preserves these distinctions:
@@ -108,7 +138,7 @@ The application preserves these distinctions:
 
 See [Scientific guardrails](docs/scientific-guardrails.md) for the detailed rules.
 
-## Repository structure
+## Repository map
 
 ```text
 apps/
@@ -168,7 +198,7 @@ Preferred reproducible execution is the manual GitHub Actions workflow:
 
 Select `main` (or an explicitly reviewed commit/ref). The workflow has no custom inputs. It downloads HC-256 from the official AHRQ source, reruns TypeScript and synthetic R checks, generates a **preliminary** candidate, and uploads aggregate review files only. It does not commit the candidate or change runtime artifact selection.
 
-For local execution, the second command uses the official AHRQ HC-256 Stata download when the raw file is absent. If automatic download is unavailable in your environment, manually place the official HC-256 Stata ZIP at `data/raw/meps/2024/meps_hc256_2024_stata.zip` and run the command without `--download`.
+For local execution, the pipeline uses the official AHRQ HC-256 Stata download when the raw file is absent. If automatic download is unavailable in your environment, manually place the official HC-256 Stata ZIP at `data/raw/meps/2024/meps_hc256_2024_stata.zip` and run the command without `--download`.
 
 Generated candidates are written under `artifacts/generated/meps-2024-long-covid-candidate/` and remain gitignored and `release_status=preliminary` until explicit methods review.
 
@@ -195,6 +225,14 @@ See [data/README.md](data/README.md) and [data/manifests/sources.json](data/mani
 - downstream script entry points.
 
 The repository contains the reviewed aggregate national MEPS artifact with 21 `reviewed_released` estimates. Raw MEPS and HRSA source files remain excluded. HRSA/ACS local-context values are not runtime-visible until a real candidate is generated, independently reviewed, promoted, and integrated. The illustrative fixture remains development/test-only and is not a substitute for reviewed evidence.
+
+## Working agreements
+
+- Keep raw microdata, intermediate files, and generated candidates out of Git.
+- Treat missing, suppressed, and unreleased values as distinct from zero.
+- Keep scenario assumptions separate from observed effects.
+- Do not interpret program-resource requirements as savings or ROI.
+- Run the quality checks before submitting changes.
 
 ## Documentation
 
