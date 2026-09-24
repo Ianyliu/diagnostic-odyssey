@@ -7,7 +7,7 @@ test("reach sensitivity labels preserve the exact evaluated planning fraction", 
   assert.equal(formatSensitivityInput("reach", 0.251), "25.1% (0.251)");
   assert.equal(
     formatSensitivityInput("reach", 0.0000004),
-    "0.00004% (4e-7)"
+    "0.00004% (0.0000004)"
   );
   assert.equal(formatSensitivityInput("reach", 0), "0% (0)");
   assert.equal(
