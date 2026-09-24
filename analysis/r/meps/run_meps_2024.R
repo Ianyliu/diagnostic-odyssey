@@ -174,7 +174,7 @@ review_manifest <- list(
   source_input_sha256 = input_sha256,
   expected_source_input_sha256 = source_integrity_policy$expected_extracted_dta_sha256,
   source_input_sha256_match = TRUE,
-  release_status = "candidate_pending_review",
+  release_status = "preliminary",
   automatic_release = FALSE,
   checks = list(
     list(id = "methods_review", status = "pending"),

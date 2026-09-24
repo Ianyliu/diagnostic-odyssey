@@ -138,7 +138,7 @@ jobs:
           ' "$OUTPUT_DIR/bundle.json" >/dev/null
 
           jq -e '
-            .release_status == "candidate_pending_review"
+            .release_status == "preliminary"
             and .automatic_release == false
             and ([.checks[].status] | all(. == "pending"))
           ' "$OUTPUT_DIR/review-manifest.json" >/dev/null
