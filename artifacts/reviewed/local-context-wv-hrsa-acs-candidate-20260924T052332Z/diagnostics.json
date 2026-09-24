@@ -1,0 +1,285 @@
+{
+  "acs": {
+    "acs_data_response_byte_size": 364,
+    "acs_data_response_sha256": "607178c16e56a3758381077f3087d24a26479b39152e9989a2c3356d13f58b68",
+    "acs_metadata_contract_byte_size": 6028,
+    "acs_metadata_contract_sha256": "bb49f42468b353fe1519c897a0b882d9cf3aeb8360ae2d520341b346e52f12ad",
+    "acs_source_snapshot_byte_size": 6438,
+    "acs_source_snapshot_sha256": "4d02813e2b098070ef13740ef75ca3afad3da41477d8d795534a7bc2813c8f22",
+    "exact_request_endpoint_excluding_api_key": "https://api.census.gov/data/2024/acs/acs5/profile?get=NAME,DP03_0099PE,DP03_0099PM,DP03_0099PEA,DP03_0099PMA,DP04_0058PE,DP04_0058PM,DP04_0058PEA,DP04_0058PMA,DP02_0154PE,DP02_0154PM,DP02_0154PEA,DP02_0154PMA,DP03_0128PE,DP03_0128PM,DP03_0128PEA,DP03_0128PMA&for=state:54",
+    "geography_returned": {
+      "NAME": "West Virginia",
+      "state": "54"
+    },
+    "metadata_contract_verified": {
+      "wv.acs.broadband_pct": {
+        "estimate": "DP02_0154PE",
+        "estimate_annotation": "DP02_0154PEA",
+        "estimate_annotation_attribute_of": "DP02_0154PE",
+        "estimate_annotation_label": "Annotation of Percent!!COMPUTERS AND INTERNET USE!!Total households!!With a broadband Internet subscription",
+        "estimate_attributes": [
+          "DP02_0154PEA",
+          "DP02_0154PM",
+          "DP02_0154PMA"
+        ],
+        "estimate_label": "Percent!!COMPUTERS AND INTERNET USE!!Total households!!With a broadband Internet subscription",
+        "moe": "DP02_0154PM",
+        "moe_annotation": "DP02_0154PMA",
+        "moe_annotation_attribute_of": "DP02_0154PM",
+        "moe_annotation_label": "Annotation of Percent Margin of Error!!COMPUTERS AND INTERNET USE!!Total households!!With a broadband Internet subscription",
+        "moe_attribute_of": "DP02_0154PE",
+        "moe_attribute_type": "MARGIN_OF_ERROR",
+        "moe_attributes": [
+          "DP02_0154PMA"
+        ],
+        "moe_label": "Percent Margin of Error!!COMPUTERS AND INTERNET USE!!Total households!!With a broadband Internet subscription"
+      },
+      "wv.acs.no_vehicle_pct": {
+        "estimate": "DP04_0058PE",
+        "estimate_annotation": "DP04_0058PEA",
+        "estimate_annotation_attribute_of": "DP04_0058PE",
+        "estimate_annotation_label": "Annotation of Percent!!VEHICLES AVAILABLE!!Occupied housing units!!No vehicles available",
+        "estimate_attributes": [
+          "DP04_0058PEA",
+          "DP04_0058PM",
+          "DP04_0058PMA"
+        ],
+        "estimate_label": "Percent!!VEHICLES AVAILABLE!!Occupied housing units!!No vehicles available",
+        "moe": "DP04_0058PM",
+        "moe_annotation": "DP04_0058PMA",
+        "moe_annotation_attribute_of": "DP04_0058PM",
+        "moe_annotation_label": "Annotation of Percent Margin of Error!!VEHICLES AVAILABLE!!Occupied housing units!!No vehicles available",
+        "moe_attribute_of": "DP04_0058PE",
+        "moe_attribute_type": "MARGIN_OF_ERROR",
+        "moe_attributes": [
+          "DP04_0058PMA"
+        ],
+        "moe_label": "Percent Margin of Error!!VEHICLES AVAILABLE!!Occupied housing units!!No vehicles available"
+      },
+      "wv.acs.poverty_pct": {
+        "estimate": "DP03_0128PE",
+        "estimate_annotation": "DP03_0128PEA",
+        "estimate_annotation_attribute_of": "DP03_0128PE",
+        "estimate_annotation_label": "Annotation of Percent!!PERCENTAGE OF FAMILIES AND PEOPLE WHOSE INCOME IN THE PAST 12 MONTHS IS BELOW THE POVERTY LEVEL!!All people",
+        "estimate_attributes": [
+          "DP03_0128PEA",
+          "DP03_0128PM",
+          "DP03_0128PMA"
+        ],
+        "estimate_label": "Percent!!PERCENTAGE OF FAMILIES AND PEOPLE WHOSE INCOME IN THE PAST 12 MONTHS IS BELOW THE POVERTY LEVEL!!All people",
+        "moe": "DP03_0128PM",
+        "moe_annotation": "DP03_0128PMA",
+        "moe_annotation_attribute_of": "DP03_0128PE",
+        "moe_annotation_label": "Annotation of Percent Margin of Error!!PERCENTAGE OF FAMILIES AND PEOPLE WHOSE INCOME IN THE PAST 12 MONTHS IS BELOW THE POVERTY LEVEL!!All people",
+        "moe_attribute_of": "DP03_0128PE",
+        "moe_attribute_type": "MARGIN_OF_ERROR",
+        "moe_attributes": [
+          "DP03_0128PMA"
+        ],
+        "moe_label": "Percent Margin of Error!!PERCENTAGE OF FAMILIES AND PEOPLE WHOSE INCOME IN THE PAST 12 MONTHS IS BELOW THE POVERTY LEVEL!!All people"
+      },
+      "wv.acs.uninsured_pct": {
+        "estimate": "DP03_0099PE",
+        "estimate_annotation": "DP03_0099PEA",
+        "estimate_annotation_attribute_of": "DP03_0099PE",
+        "estimate_annotation_label": "Annotation of Percent!!HEALTH INSURANCE COVERAGE!!Civilian noninstitutionalized population!!No health insurance coverage",
+        "estimate_attributes": [
+          "DP03_0099PEA",
+          "DP03_0099PM",
+          "DP03_0099PMA"
+        ],
+        "estimate_label": "Percent!!HEALTH INSURANCE COVERAGE!!Civilian noninstitutionalized population!!No health insurance coverage",
+        "moe": "DP03_0099PM",
+        "moe_annotation": "DP03_0099PMA",
+        "moe_annotation_attribute_of": "DP03_0099PE",
+        "moe_annotation_label": "Annotation of Percent Margin of Error!!HEALTH INSURANCE COVERAGE!!Civilian noninstitutionalized population!!No health insurance coverage",
+        "moe_attribute_of": "DP03_0099PE",
+        "moe_attribute_type": "MARGIN_OF_ERROR",
+        "moe_attributes": [
+          "DP03_0099PMA"
+        ],
+        "moe_label": "Percent Margin of Error!!HEALTH INSURANCE COVERAGE!!Civilian noninstitutionalized population!!No health insurance coverage"
+      }
+    },
+    "source_vintage": "2020-2024 ACS 5-year estimates / 2024 release",
+    "values": {
+      "wv.acs.broadband_pct": {
+        "annotations": {
+          "DP02_0154PEA": null,
+          "DP02_0154PMA": null
+        },
+        "estimate_variable": "DP02_0154PE",
+        "margin_of_error_90_percent": 0.3,
+        "moe_variable": "DP02_0154PM",
+        "universe": "Total households",
+        "value": 86.1
+      },
+      "wv.acs.no_vehicle_pct": {
+        "annotations": {
+          "DP04_0058PEA": null,
+          "DP04_0058PMA": null
+        },
+        "estimate_variable": "DP04_0058PE",
+        "margin_of_error_90_percent": 0.3,
+        "moe_variable": "DP04_0058PM",
+        "universe": "Occupied housing units",
+        "value": 8.0
+      },
+      "wv.acs.poverty_pct": {
+        "annotations": {
+          "DP03_0128PEA": null,
+          "DP03_0128PMA": null
+        },
+        "estimate_variable": "DP03_0128PE",
+        "margin_of_error_90_percent": 0.4,
+        "moe_variable": "DP03_0128PM",
+        "universe": "All people",
+        "value": 16.7
+      },
+      "wv.acs.uninsured_pct": {
+        "annotations": {
+          "DP03_0099PEA": null,
+          "DP03_0099PMA": null
+        },
+        "estimate_variable": "DP03_0099PE",
+        "margin_of_error_90_percent": 0.2,
+        "moe_variable": "DP03_0099PM",
+        "universe": "Civilian noninstitutionalized population",
+        "value": 6.0
+      }
+    }
+  },
+  "artifact_version": "local-context-wv-hrsa-acs-candidate-20260924T052332Z",
+  "hrsa": {
+    "mental_health": {
+      "dataset_key": "mental_health",
+      "designation_type_counts": {
+        "Correctional Facility": 9,
+        "Federally Qualified Health Center": 28,
+        "Federally Qualified Health Center Look A Like": 2,
+        "Geographic HPSA": 4,
+        "HPSA Population": 39,
+        "High Needs Geographic HPSA": 4,
+        "Other Facility": 1,
+        "Rural Health Clinic": 31,
+        "State Mental Hospital": 1
+      },
+      "designation_update_dates_observed": [
+        "03/14/2022",
+        "03/23/2021",
+        "03/24/2022",
+        "03/25/2021",
+        "03/30/2026",
+        "04/07/2022",
+        "08/06/2021",
+        "08/09/2024",
+        "08/14/2025",
+        "09/04/2025",
+        "09/10/2025",
+        "09/11/2025",
+        "09/22/2025",
+        "10/08/2025",
+        "10/09/2025",
+        "10/28/2025",
+        "10/30/2025",
+        "11/01/2025",
+        "11/17/2022"
+      ],
+      "distinct_designated_hpsa_ids": 119,
+      "duplicate_hpsa_id_count": 2,
+      "duplicate_hpsa_ids": {
+        "7542610428": 5,
+        "7543384303": 2
+      },
+      "missing_hpsa_score_distinct_id_count": 0,
+      "mixed_rural_status_hpsa_ids": [],
+      "rows_by_hpsa_status": {
+        "Designated": 124,
+        "Proposed For Withdrawal": 5,
+        "Withdrawn": 115
+      },
+      "rows_matching_west_virginia": 244,
+      "rural_status_breakdown_included": true,
+      "source_checksum_sha256": "862957c11eff1e7c9797b7df8fe4cf21660fc5b56cf89dd492883918bced1598",
+      "source_field_map": {
+        "county_fips": "Common State County FIPS Code",
+        "county_name": "Common County Name",
+        "designation_date": "HPSA Designation Date",
+        "designation_type": "Designation Type",
+        "designation_update_date": "HPSA Designation Last Update Date",
+        "discipline": "HPSA Discipline Class",
+        "hpsa_id": "HPSA ID",
+        "rural_status": "Rural Status",
+        "score": "HPSA Score",
+        "state_fips": "Common State FIPS Code",
+        "state_name": "Common State Name",
+        "status": "HPSA Status",
+        "warehouse_record_create_date": "Data Warehouse Record Create Date"
+      },
+      "total_rows_read": 41203,
+      "unexpected_rural_status_values": []
+    },
+    "primary_care": {
+      "dataset_key": "primary_care",
+      "designation_type_counts": {
+        "Correctional Facility": 9,
+        "Federally Qualified Health Center": 28,
+        "Federally Qualified Health Center Look A Like": 2,
+        "Geographic HPSA": 6,
+        "HPSA Population": 46,
+        "High Needs Geographic HPSA": 1,
+        "Rural Health Clinic": 31
+      },
+      "designation_update_dates_observed": [
+        "03/14/2022",
+        "03/23/2021",
+        "03/23/2022",
+        "03/25/2021",
+        "03/30/2026",
+        "04/15/2022",
+        "06/18/2025",
+        "08/14/2025",
+        "08/22/2025",
+        "08/27/2024",
+        "09/04/2025",
+        "09/05/2025",
+        "09/08/2025",
+        "09/09/2025",
+        "09/22/2025",
+        "10/16/2025",
+        "10/24/2025"
+      ],
+      "distinct_designated_hpsa_ids": 123,
+      "duplicate_hpsa_id_count": 0,
+      "duplicate_hpsa_ids": {},
+      "missing_hpsa_score_distinct_id_count": 0,
+      "mixed_rural_status_hpsa_ids": [],
+      "rows_by_hpsa_status": {
+        "Designated": 123,
+        "Proposed For Withdrawal": 3,
+        "Withdrawn": 220
+      },
+      "rows_matching_west_virginia": 346,
+      "rural_status_breakdown_included": true,
+      "source_checksum_sha256": "5060978625754f0eafd622e423e24fbe7e532234c7b1902944be2095f3cfcdf5",
+      "source_field_map": {
+        "county_fips": "Common State County FIPS Code",
+        "county_name": "Common County Name",
+        "designation_date": "HPSA Designation Date",
+        "designation_type": "Designation Type",
+        "designation_update_date": "HPSA Designation Last Update Date",
+        "discipline": "HPSA Discipline Class",
+        "hpsa_id": "HPSA ID",
+        "rural_status": "Rural Status",
+        "score": "HPSA Score",
+        "state_fips": "Common State FIPS Code",
+        "state_name": "Common State Name",
+        "status": "HPSA Status",
+        "warehouse_record_create_date": "Data Warehouse Record Create Date"
+      },
+      "total_rows_read": 80103,
+      "unexpected_rural_status_values": []
+    }
+  },
+  "national_meps_burden_unchanged": true
+}
