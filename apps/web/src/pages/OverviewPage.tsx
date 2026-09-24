@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { ContextBar } from "../components/ContextBar";
+import { DecisionStateRail } from "../components/DecisionStateRail";
 
 const journey: ReadonlyArray<readonly [step: string, title: string, to: string]> = [
   ["1", "Describe burden", "/burden"],
@@ -21,7 +22,8 @@ export function OverviewPage() {
           planning assumptions, admissible evidence, and unanswered data needs.
         </p>
       </header>
-      <div className="journey-grid">
+      <DecisionStateRail />
+      <div className="journey-grid" aria-label="Workspace navigation">
         {journey.map(([step, title, to]) => (
           <Link key={step} className="card journey-card" to={to}>
             <span>{step}</span>

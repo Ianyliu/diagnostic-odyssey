@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import {
   type ArtifactBundle,
+  type DataRequest,
   type LocalContextArtifact,
   type LocalContextRecord,
   type Scenario,
@@ -18,6 +19,7 @@ import {
 import { createPlanningScenarioDefaults } from "./planningScenarioDefaults";
 import { loadReviewedMepsArtifact } from "./reviewedArtifact";
 import { loadReviewedWvLocalContextArtifact } from "./reviewedLocalContext";
+import { isDataRequestCurrentForScenario } from "./dataRequestTemplates";
 
 interface ArtifactState {
   status: "loading" | "loaded" | "error";
@@ -33,6 +35,13 @@ interface ArtifactState {
   scenario: Scenario | null;
   scenarioResult: ScenarioResult | null;
   setScenario: (scenario: Scenario) => void;
+  analystDataRequests: DataRequest[];
+  availableDataRequests: DataRequest[];
+  briefDataRequestIds: string[];
+  selectedDataRequests: DataRequest[];
+  upsertAnalystDataRequest: (request: DataRequest) => void;
+  removeAnalystDataRequest: (requestId: string) => void;
+  toggleDataRequestForBrief: (requestId: string) => void;
 }
 
 const ArtifactContext = createContext<ArtifactState | null>(null);
@@ -48,6 +57,8 @@ export function ArtifactProvider({children}: {children: ReactNode}) {
   const [localContextSelection, setLocalContextSelection] =
     useState<LocalContextSelectionState>(createEmptyLocalContextSelection);
   const [scenario, setScenario] = useState<Scenario | null>(null);
+  const [analystDataRequests, setAnalystDataRequests] = useState<DataRequest[]>([]);
+  const [briefDataRequestIds, setBriefDataRequestIds] = useState<string[]>([]);
 
   useEffect(() => {
     try {
@@ -112,6 +123,47 @@ export function ArtifactProvider({children}: {children: ReactNode}) {
     catch { return null; }
   }, [scenario]);
 
+  const availableDataRequests = useMemo(() => {
+    const requests = new Map<string, DataRequest>();
+    for (const request of bundle?.data_requests ?? []) {
+      requests.set(request.request_id, request);
+    }
+    for (const request of analystDataRequests) {
+      requests.set(request.request_id, request);
+    }
+    return Array.from(requests.values());
+  }, [bundle, analystDataRequests]);
+
+  const selectedDataRequests = useMemo(() => {
+    const selected = new Set(briefDataRequestIds);
+    return availableDataRequests.filter(
+      request =>
+        selected.has(request.request_id) &&
+        isDataRequestCurrentForScenario(request, scenario)
+    );
+  }, [availableDataRequests, briefDataRequestIds, scenario]);
+
+  const upsertAnalystDataRequest = (request: DataRequest) => {
+    setAnalystDataRequests(current => [
+      ...current.filter(item => item.request_id !== request.request_id),
+      request
+    ]);
+  };
+
+  const removeAnalystDataRequest = (requestId: string) => {
+    setAnalystDataRequests(current => current.filter(item => item.request_id !== requestId));
+    setBriefDataRequestIds(current => current.filter(id => id !== requestId));
+  };
+
+  const toggleDataRequestForBrief = (requestId: string) => {
+    if (!availableDataRequests.some(request => request.request_id === requestId)) return;
+    setBriefDataRequestIds(current =>
+      current.includes(requestId)
+        ? current.filter(id => id !== requestId)
+        : [...current, requestId]
+    );
+  };
+
   return (
     <ArtifactContext.Provider
       value={{
@@ -127,7 +179,14 @@ export function ArtifactProvider({children}: {children: ReactNode}) {
         clearSelectedLocalContext,
         scenario,
         scenarioResult,
-        setScenario
+        setScenario,
+        analystDataRequests,
+        availableDataRequests,
+        briefDataRequestIds,
+        selectedDataRequests,
+        upsertAnalystDataRequest,
+        removeAnalystDataRequest,
+        toggleDataRequestForBrief
       }}
     >
       {children}

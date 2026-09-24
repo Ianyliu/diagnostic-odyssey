@@ -1,7 +1,16 @@
-import { Link } from "react-router-dom";
+import { useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import type { Scenario } from "@diagnostic-odyssey/contracts";
 import { ContextBar } from "../components/ContextBar";
+import { PilotDecisionVisuals } from "../components/PilotDecisionVisuals";
+import { SensitivityExplorer } from "../components/SensitivityExplorer";
 import { useArtifact } from "../data/ArtifactContext";
+import {
+  createSensitivityDataRequest,
+  getSensitivityDataRequestStatus
+} from "../data/dataRequestTemplates";
+import type { SensitivityField } from "../data/decisionVisuals";
+import { getPilotFragmentTargetId } from "../data/pilotFragmentScroll";
 import {
   PLANNING_DEFAULTS_DESCRIPTION,
   PLANNING_DEFAULTS_LABEL
@@ -21,7 +30,21 @@ const fields: Array<{key:NumericField;label:string;step?:number;scale?:number;su
 ];
 
 export function PilotPage() {
-  const {scenario,scenarioResult,setScenario} = useArtifact();
+  const {
+    scenario,
+    scenarioResult,
+    setScenario,
+    analystDataRequests,
+    upsertAnalystDataRequest
+  } = useArtifact();
+  const location = useLocation();
+  const sensitivityReady = scenario !== null && scenarioResult !== null;
+
+  useEffect(() => {
+    const targetId = getPilotFragmentTargetId(location.hash);
+    if (!targetId || !sensitivityReady) return;
+    document.getElementById(targetId)?.scrollIntoView({block: "start"});
+  }, [location.hash, sensitivityReady]);
 
   if (!scenario || !scenarioResult) {
     return <section className="page page-stack">
@@ -44,6 +67,13 @@ export function PilotPage() {
     setScenario({...scenario,[key]:n/scale} as Scenario);
   };
 
+  const addSensitivityDataRequest = (field: SensitivityField) => {
+    upsertAnalystDataRequest(createSensitivityDataRequest(scenario, field));
+  };
+
+  const sensitivityDataRequestStatus = (field: SensitivityField) =>
+    getSensitivityDataRequestStatus(scenario, field, analystDataRequests);
+
   return <section className="page page-stack">
     <ContextBar />
     <div className="heading-row">
@@ -59,6 +89,7 @@ export function PilotPage() {
       <article className="card result-card">
         <h2>Baseline vs recognition/navigation scenario</h2>
         <p className="subtle">Deterministic planning arithmetic · not observed evidence or an evidence-derived effect</p>
+        <PilotDecisionVisuals scenario={scenario} result={scenarioResult} />
         <dl className="result-list">
           <div><dt>Intended reach</dt><dd>{scenarioResult.intended_reach.toLocaleString()}</dd></div>
           <div><dt>Reached participants</dt><dd>{scenarioResult.reached_participants.toLocaleString()}</dd></div>
@@ -68,6 +99,11 @@ export function PilotPage() {
           <div><dt>Difference in person-month exposure</dt><dd>{scenarioResult.difference_person_months.toLocaleString()}</dd></div>
           <div><dt>Program-resource requirement</dt><dd>{new Intl.NumberFormat("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0}).format(scenarioResult.program_resource_requirement)}</dd></div>
         </dl>
+        <SensitivityExplorer
+          scenario={scenario}
+          onUpsertDataRequest={addSensitivityDataRequest}
+          dataRequestStatus={sensitivityDataRequestStatus}
+        />
         <div className="target-box"><strong>Target pathway step</strong><span>{scenario.target_pathway_step}</span><strong>Mechanism</strong><span>{scenario.mechanism}</span></div>
         <div className="guardrail compact"><strong>Not savings or ROI.</strong><p>The resource requirement is a program input. The person-month difference is a planning exposure quantity, not observed improvement.</p></div>
         <Link className="button" to="/brief">Preview Planning Brief</Link>

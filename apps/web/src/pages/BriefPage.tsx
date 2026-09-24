@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { buildPlanningBrief, serializeBriefJson } from "@diagnostic-odyssey/brief-core";
 import { ContextBar } from "../components/ContextBar";
 import { useArtifact } from "../data/ArtifactContext";
@@ -13,6 +14,7 @@ import {
   formatPublishedLocalContextUncertainty
 } from "../data/localContextPresentation";
 import { PLANNING_DEFAULTS_LABEL } from "../data/planningScenarioDefaults";
+import { withStaleSelectedDataRequestWarning } from "../data/briefDataRequestWarnings";
 
 export function BriefPage() {
   const {
@@ -21,7 +23,10 @@ export function BriefPage() {
     scenarioResult,
     localContext,
     localContextStatus,
-    selectedLocalContext
+    selectedLocalContext,
+    availableDataRequests,
+    briefDataRequestIds,
+    selectedDataRequests
   } = useArtifact();
   if (!bundle) return null;
 
@@ -32,14 +37,20 @@ export function BriefPage() {
     localContext,
     selectedLocalContext
   );
-  const brief = buildPlanningBrief({
+  const staleSelectedDataRequestCount =
+    Math.max(0, briefDataRequestIds.length - selectedDataRequests.length);
+  const baseBrief = buildPlanningBrief({
     context: briefContext,
     estimates,
     localContext: selectedLocalContext,
     scenario: scenario && scenarioResult ? {input:scenario,result:scenarioResult} : null,
     evidence: bundle.evidence,
-    dataRequests: bundle.data_requests
+    dataRequests: selectedDataRequests
   });
+  const brief = withStaleSelectedDataRequestWarning(
+    baseBrief,
+    staleSelectedDataRequestCount
+  );
 
   const localContextAvailable =
     localContextStatus === "loaded" && localContext !== null;
@@ -150,8 +161,19 @@ export function BriefPage() {
         <section>
           <h2>What to collect next</h2>
           {brief.data_requests.length > 0
-            ? <ul>{brief.data_requests.map(request => <li key={request.request_id}><strong>{request.target_question}</strong> — {request.fields_needed.join(", ")}</li>)}</ul>
-            : <div className="empty-state"><strong>No reviewed data-request template is loaded in this analytical artifact.</strong><p>Future pilot data requests remain planning templates rather than observed evidence.</p></div>}
+            ? <>
+                <p className="subtle">Only requests explicitly selected by the analyst are included.</p>
+                <ul>{brief.data_requests.map(request => <li key={request.request_id}><strong>{request.target_question}</strong> — {request.fields_needed.join(", ")}</li>)}</ul>
+              </>
+            : <div className="empty-state">
+                <strong>
+                  {availableDataRequests.length > 0
+                    ? "Data requests are available, but none has been selected for this brief."
+                    : "No data request has been created or loaded."}
+                </strong>
+                <p>Data requests are planning artifacts, not observed evidence. Add or select them explicitly before export.</p>
+                <Link className="button secondary" to="/data-requests">Review data requests</Link>
+              </div>}
         </section>
 
         <section><h2>Warnings</h2><ul>{brief.warnings.map(w=><li key={w}>{w}</li>)}</ul></section>
@@ -168,6 +190,12 @@ export function BriefPage() {
             {brief.local_context.length > 0
               ? brief.local_context.length + " selected"
               : localContextAvailable ? "Available, not selected" : "Not selected"}
+          </span>
+        </div>
+        <div className="readiness">
+          <strong>Data requests</strong>
+          <span className={`status ${selectedDataRequests.length > 0 ? "status-ok" : "status-scaffold"}`}>
+            {selectedDataRequests.length > 0 ? `${selectedDataRequests.length} selected` : "None selected"}
           </span>
         </div>
         <button className="button" onClick={exportJson}>Export JSON companion</button>
