@@ -77,3 +77,49 @@ test("high-precision reach keeps the exact current value in values and evaluatio
     false
   );
 });
+
+
+test("near-zero reach preserves both exact current and zero boundary", () => {
+  const currentReach = 0.0000004;
+  const boundaryScenario = {
+    ...scenario,
+    eligible_population: 1_000_000_000,
+    reach: currentReach
+  };
+  const values = buildSensitivityValues(boundaryScenario, "reach");
+
+  assert.ok(values.includes(0));
+  assert.ok(values.includes(currentReach));
+  assert.notEqual(0, currentReach);
+  assert.equal(values.filter(value => value === currentReach).length, 1);
+
+  const points = oneWaySensitivity(boundaryScenario, "reach", values);
+  assert.ok(points.some(point => point.input_value === 0));
+  assert.ok(points.some(point => point.input_value === currentReach));
+  assert.equal(
+    points.filter(point => point.input_value === currentReach).length,
+    1
+  );
+  assert.equal(
+    points.find(point => point.input_value === 0)?.result.intended_reach,
+    0
+  );
+  assert.equal(
+    points.find(point => point.input_value === currentReach)?.result.intended_reach,
+    400
+  );
+});
+
+test("near-one reach preserves both exact current and one boundary", () => {
+  const currentReach = 0.9999996;
+  const boundaryScenario = {...scenario, reach: currentReach};
+  const values = buildSensitivityValues(boundaryScenario, "reach");
+
+  assert.ok(values.includes(currentReach));
+  assert.ok(values.includes(1));
+  assert.equal(values.filter(value => value === currentReach).length, 1);
+
+  const points = oneWaySensitivity(boundaryScenario, "reach", values);
+  assert.ok(points.some(point => point.input_value === currentReach));
+  assert.ok(points.some(point => point.input_value === 1));
+});

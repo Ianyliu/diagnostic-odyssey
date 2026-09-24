@@ -9,14 +9,13 @@ function uniqueSortedWithCurrent(
   current: number,
   comparisonValues: number[]
 ): number[] {
-  const currentComparisonKey = roundComparison(current);
   const seenComparisonValues = new Set<number>();
   const comparisons: number[] = [];
 
   for (const value of comparisonValues) {
     const normalized = roundComparison(value);
     if (
-      normalized === currentComparisonKey ||
+      normalized === current ||
       seenComparisonValues.has(normalized)
     ) {
       continue;
