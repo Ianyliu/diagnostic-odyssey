@@ -1,5 +1,6 @@
 import "./PilotDecisionVisuals.css";
 import type { Scenario, ScenarioResult } from "@diagnostic-odyssey/contracts";
+import { getCapacityCoveragePresentation } from "../data/pilotDecisionPresentation";
 
 const integer = new Intl.NumberFormat("en-US", {maximumFractionDigits: 0});
 const currency = new Intl.NumberFormat("en-US", {
@@ -19,9 +20,7 @@ export function PilotDecisionVisuals({
   scenario: Scenario;
   result: ScenarioResult;
 }) {
-  const coverage = result.intended_reach > 0
-    ? clampPercent((result.reached_participants / result.intended_reach) * 100)
-    : 0;
+  const capacityCoverage = getCapacityCoveragePresentation(result);
   const windowScale = Math.max(
     scenario.baseline_window_months,
     scenario.alternative_window_months,
@@ -44,19 +43,23 @@ export function PilotDecisionVisuals({
           <p className="visual-kicker">FEASIBILITY</p>
           <h3 id="capacity-coverage-title">Capacity coverage</h3>
         </div>
-        <strong className="visual-headline">{coverage.toFixed(0)}%</strong>
+        <strong className="visual-headline">{capacityCoverage.headline}</strong>
       </div>
       <div
         className="capacity-track"
         role="img"
-        aria-label={`${integer.format(result.reached_participants)} of ${integer.format(result.intended_reach)} intended participants fit within the current program capacity assumption; capacity gap ${integer.format(result.capacity_gap)}.`}
+        aria-label={capacityCoverage.ariaLabel}
       >
-        <span className="capacity-fill" style={{width: `${coverage}%`}} />
+        <span
+          className="capacity-fill"
+          style={{width: `${capacityCoverage.coveragePercent ?? 0}%`}}
+        />
       </div>
       <div className="visual-stat-row">
         <span><strong>{integer.format(result.reached_participants)}</strong> within capacity</span>
         <span><strong>{integer.format(result.capacity_gap)}</strong> capacity gap</span>
       </div>
+      {capacityCoverage.noDemandCopy && <p className="visual-note"><strong>{capacityCoverage.noDemandCopy}</strong></p>}
       <p className="visual-note">This compares analyst-entered reach and capacity assumptions. It is not an observed access rate or forecast.</p>
     </section>
 
