@@ -1,5 +1,6 @@
 import type { LocalContextRecord } from "@diagnostic-odyssey/contracts";
 import { ContextBar } from "../components/ContextBar";
+import { HpsaRuralComposition } from "../components/HpsaRuralComposition";
 import { useArtifact } from "../data/ArtifactContext";
 import { formatLocalContextValue } from "../data/formatLocalContextValue";
 
@@ -156,6 +157,7 @@ export function LocalContextPage() {
       <p className="limitations">The maximum score is a maximum across included individual designations; it is not a statewide shortage severity score.</p>
       <details>
         <summary>Designation-type and rural-status breakdowns</summary>
+        <HpsaRuralComposition records={primaryBreakdowns} serviceLabel="Primary Care" />
         <BreakdownList records={primaryBreakdowns} />
       </details>
       <IndicatorDisclosure record={primaryCount} />
@@ -181,6 +183,7 @@ export function LocalContextPage() {
       <p className="limitations">The maximum score is a maximum across included individual designations; it is not a statewide shortage severity score.</p>
       <details>
         <summary>Designation-type and rural-status breakdowns</summary>
+        <HpsaRuralComposition records={mentalBreakdowns} serviceLabel="Mental Health" />
         <BreakdownList records={mentalBreakdowns} />
       </details>
       <IndicatorDisclosure record={mentalCount} />
