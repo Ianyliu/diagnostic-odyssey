@@ -172,35 +172,41 @@ class LocalContextPipelineTests(unittest.TestCase):
                 ]),
             }
             individual[spec["moe"]] = {
-                "name": spec["moe"],
-                "label": spec["expected_moe_label"],
-                "concept": "fixture concept",
-                "predicateType": "float",
-                "group": spec["moe"].split("_")[0],
-                "limit": 0,
-                "attributes": spec["moe_annotation"],
-                "attribute of": spec["estimate"],
-                "attribute type": "MARGIN_OF_ERROR",
+                "requested_variable_id": spec["moe"],
+                "response": {
+                    "label": spec["expected_moe_label"],
+                    "concept": "fixture concept",
+                    "predicateType": "float",
+                    "group": spec["moe"].split("_")[0],
+                    "limit": 0,
+                    "attributes": spec["moe_annotation"],
+                    "attribute of": spec["estimate"],
+                    "attribute type": "MARGIN_OF_ERROR",
+                },
             }
             individual[spec["estimate_annotation"]] = {
-                "name": spec["estimate_annotation"],
-                "label": spec["expected_estimate_annotation_label"],
-                "concept": "fixture concept",
-                "predicateType": "string",
-                "group": spec["estimate"].split("_")[0],
-                "limit": 0,
-                "attribute of": spec["estimate"],
-                "attribute type": "ANNOTATION",
+                "requested_variable_id": spec["estimate_annotation"],
+                "response": {
+                    "label": spec["expected_estimate_annotation_label"],
+                    "concept": "fixture concept",
+                    "predicateType": "string",
+                    "group": spec["estimate"].split("_")[0],
+                    "limit": 0,
+                    "attribute of": spec["estimate"],
+                    "attribute type": "ANNOTATION",
+                },
             }
             individual[spec["moe_annotation"]] = {
-                "name": spec["moe_annotation"],
-                "label": spec["expected_moe_annotation_label"],
-                "concept": "fixture concept",
-                "predicateType": "string",
-                "group": spec["estimate"].split("_")[0],
-                "limit": 0,
-                "attribute of": spec["expected_moe_annotation_attribute_of"],
-                "attribute type": "ANNOTATION",
+                "requested_variable_id": spec["moe_annotation"],
+                "response": {
+                    "label": spec["expected_moe_annotation_label"],
+                    "concept": "fixture concept",
+                    "predicateType": "string",
+                    "group": spec["estimate"].split("_")[0],
+                    "limit": 0,
+                    "attribute of": spec["expected_moe_annotation_attribute_of"],
+                    "attribute type": "ANNOTATION",
+                },
             }
         return bulk, individual
 
@@ -225,14 +231,48 @@ class LocalContextPipelineTests(unittest.TestCase):
 
     def test_acs_wrong_pm_relationship_fails(self):
         bulk, individual = self._realistic_acs_metadata()
-        individual["DP03_0099PM"]["attribute of"] = "DP03_0001PE"
+        individual["DP03_0099PM"]["response"]["attribute of"] = "DP03_0001PE"
         with self.assertRaises(ContractError):
             verify_acs_metadata(ACS_CONFIG, bulk, individual)
 
     def test_acs_wrong_pm_label_fails(self):
         bulk, individual = self._realistic_acs_metadata()
-        individual["DP03_0099PM"]["label"] = "changed"
+        individual["DP03_0099PM"]["response"]["label"] = "changed"
         with self.assertRaises(ContractError):
+            verify_acs_metadata(ACS_CONFIG, bulk, individual)
+
+    def test_acs_individual_metadata_without_name_passes(self):
+        bulk, individual = self._realistic_acs_metadata()
+        self.assertTrue(all(
+            "name" not in entry["response"] for entry in individual.values()
+        ))
+        verified, contract = verify_acs_metadata(ACS_CONFIG, bulk, individual)
+        self.assertEqual(len(verified), 4)
+        self.assertEqual(
+            contract["individual_attribute_records"]["DP03_0099PM"]["requested_variable_id"],
+            "DP03_0099PM",
+        )
+        self.assertNotIn(
+            "name",
+            contract["individual_attribute_records"]["DP03_0099PM"]["response"],
+        )
+
+    def test_acs_wrong_attribute_type_fails(self):
+        bulk, individual = self._realistic_acs_metadata()
+        individual["DP03_0099PM"]["response"]["attribute type"] = "ANNOTATION"
+        with self.assertRaises(ContractError):
+            verify_acs_metadata(ACS_CONFIG, bulk, individual)
+
+    def test_acs_requested_variable_identity_cannot_be_confused(self):
+        bulk, individual = self._realistic_acs_metadata()
+        individual["DP03_0099PM"]["requested_variable_id"] = "DP04_0058PM"
+        with self.assertRaisesRegex(ContractError, "request identity"):
+            verify_acs_metadata(ACS_CONFIG, bulk, individual)
+
+    def test_acs_optional_name_if_present_must_match_requested_variable(self):
+        bulk, individual = self._realistic_acs_metadata()
+        individual["DP03_0099PM"]["response"]["name"] = "DP04_0058PM"
+        with self.assertRaisesRegex(ContractError, "field 'name'"):
             verify_acs_metadata(ACS_CONFIG, bulk, individual)
 
     def test_acs_missing_pm_from_pe_attributes_fails(self):
@@ -243,7 +283,7 @@ class LocalContextPipelineTests(unittest.TestCase):
 
     def test_acs_wrong_annotation_relationship_fails(self):
         bulk, individual = self._realistic_acs_metadata()
-        individual["DP03_0099PMA"]["attribute of"] = "DP03_0099PM"
+        individual["DP03_0099PMA"]["response"]["attribute of"] = "DP03_0099PM"
         with self.assertRaises(ContractError):
             verify_acs_metadata(ACS_CONFIG, bulk, individual)
 
@@ -269,7 +309,13 @@ class LocalContextPipelineTests(unittest.TestCase):
 
     def test_acs_pm_annotation_attribute_is_required(self):
         bulk, individual = self._realistic_acs_metadata()
-        individual["DP03_0099PM"]["attributes"] = ""
+        individual["DP03_0099PM"]["response"]["attributes"] = ""
+        with self.assertRaises(ContractError):
+            verify_acs_metadata(ACS_CONFIG, bulk, individual)
+
+    def test_acs_wrong_pm_annotation_attribute_fails(self):
+        bulk, individual = self._realistic_acs_metadata()
+        individual["DP03_0099PM"]["response"]["attributes"] = "DP03_0001PMA"
         with self.assertRaises(ContractError):
             verify_acs_metadata(ACS_CONFIG, bulk, individual)
 
