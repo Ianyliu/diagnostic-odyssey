@@ -199,7 +199,7 @@ class LocalContextPipelineTests(unittest.TestCase):
                 "predicateType": "string",
                 "group": spec["estimate"].split("_")[0],
                 "limit": 0,
-                "attribute of": spec["moe"],
+                "attribute of": spec["expected_moe_annotation_attribute_of"],
                 "attribute type": "ANNOTATION",
             }
         return bulk, individual
