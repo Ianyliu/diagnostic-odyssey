@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import type { Scenario } from "@diagnostic-odyssey/contracts";
 import { ContextBar } from "../components/ContextBar";
+import { PilotDecisionVisuals } from "../components/PilotDecisionVisuals";
 import { useArtifact } from "../data/ArtifactContext";
 import {
   PLANNING_DEFAULTS_DESCRIPTION,
@@ -59,6 +60,7 @@ export function PilotPage() {
       <article className="card result-card">
         <h2>Baseline vs recognition/navigation scenario</h2>
         <p className="subtle">Deterministic planning arithmetic · not observed evidence or an evidence-derived effect</p>
+        <PilotDecisionVisuals scenario={scenario} result={scenarioResult} />
         <dl className="result-list">
           <div><dt>Intended reach</dt><dd>{scenarioResult.intended_reach.toLocaleString()}</dd></div>
           <div><dt>Reached participants</dt><dd>{scenarioResult.reached_participants.toLocaleString()}</dd></div>
