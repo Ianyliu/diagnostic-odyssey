@@ -75,8 +75,8 @@ export function BriefPage() {
           </div> : brief.burden_findings.map(x => {
             const interval = formatEstimateInterval(x);
             const accessibleInterval = interval
-              .replace(/^(d+(?:.d+)?)% CIs*/, "$1% confidence interval: ")
-              .replace(/^CIs*/, "Confidence interval: ");
+              .replace(/^(\d+(?:\.\d+)?)% CI\s*/, "$1% confidence interval: ")
+              .replace(/^CI\s*/, "Confidence interval: ");
             return <p className="brief-finding" key={x.estimate_id}>
               <strong>{x.label}:</strong> {formatEstimateValue(x)}
               <small className="brief-finding-interval">

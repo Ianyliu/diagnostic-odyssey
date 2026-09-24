@@ -24,12 +24,16 @@ export function buildSensitivityValues(
   }
 
   if (field === "capacity") {
+    const current = Math.max(0, scenario.capacity);
     const intended = Math.max(0, Math.round(scenario.eligible_population * scenario.reach));
-    const reference = scenario.capacity > 0 ? scenario.capacity : intended;
-    if (reference <= 0) return [0];
-    return uniqueSorted([0.5, 0.75, 1, 1.25, 1.5].map(multiplier =>
-      Math.max(0, Math.round(reference * multiplier))
-    ));
+    const reference = current > 0 ? current : intended;
+    if (reference <= 0) return [current];
+    return uniqueSorted([
+      current,
+      ...[0.5, 0.75, 1, 1.25, 1.5].map(multiplier =>
+        Math.max(0, Math.round(reference * multiplier))
+      )
+    ]);
   }
 
   const current = scenario.alternative_window_months;

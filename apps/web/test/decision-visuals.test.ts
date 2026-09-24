@@ -37,3 +37,12 @@ test("recognition-window sensitivity stays within baseline window", () => {
   assert.deepEqual(values, [4, 5, 6, 7, 8]);
   assert.ok(values.every(value => value >= 0 && value <= scenario.baseline_window_months));
 });
+
+
+test("capacity sensitivity keeps zero/current capacity when intended reach is positive", () => {
+  const zeroCapacityScenario = {...scenario, capacity: 0};
+  const values = buildSensitivityValues(zeroCapacityScenario, "capacity");
+
+  assert.deepEqual(values, [0, 1500, 2250, 3000, 3750, 4500]);
+  assert.ok(values.includes(zeroCapacityScenario.capacity));
+});
