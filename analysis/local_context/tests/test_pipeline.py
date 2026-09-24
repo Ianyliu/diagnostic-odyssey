@@ -243,9 +243,29 @@ class LocalContextPipelineTests(unittest.TestCase):
 
     def test_acs_wrong_annotation_relationship_fails(self):
         bulk, individual = self._realistic_acs_metadata()
-        individual["DP03_0099PMA"]["attribute of"] = "DP03_0099PE"
+        individual["DP03_0099PMA"]["attribute of"] = "DP03_0099PM"
         with self.assertRaises(ContractError):
             verify_acs_metadata(ACS_CONFIG, bulk, individual)
+
+    def test_acs_pma_relationships_preserve_observed_asymmetry(self):
+        bulk, individual = self._realistic_acs_metadata()
+        verified, _ = verify_acs_metadata(ACS_CONFIG, bulk, individual)
+        self.assertEqual(
+            verified["wv.acs.uninsured_pct"]["moe_annotation_attribute_of"],
+            "DP03_0099PE",
+        )
+        self.assertEqual(
+            verified["wv.acs.no_vehicle_pct"]["moe_annotation_attribute_of"],
+            "DP04_0058PM",
+        )
+        self.assertEqual(
+            verified["wv.acs.broadband_pct"]["moe_annotation_attribute_of"],
+            "DP02_0154PM",
+        )
+        self.assertEqual(
+            verified["wv.acs.poverty_pct"]["moe_annotation_attribute_of"],
+            "DP03_0128PE",
+        )
 
     def test_acs_pm_annotation_attribute_is_required(self):
         bulk, individual = self._realistic_acs_metadata()
