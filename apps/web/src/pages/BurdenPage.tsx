@@ -10,10 +10,13 @@ import {
 function EstimateIntervalText({estimate}: {estimate: Estimate}) {
   if (!canExportEstimate(estimate)) return null;
   const interval = formatEstimateInterval(estimate);
-  const accessibleInterval = interval.replace(/^95% CI\s*/, "95% confidence interval: ");
+  const accessibleInterval = interval
+    .replace(/^(\d+(?:\.\d+)?)% CI\s*/, "$1% confidence interval: ")
+    .replace(/^CI\s*/, "Confidence interval: ");
 
-  return <small className="measure-interval" aria-label={accessibleInterval}>
-    {interval}
+  return <small className="measure-interval">
+    <span aria-hidden="true">{interval}</span>
+    <span className="sr-only">{accessibleInterval}</span>
   </small>;
 }
 
@@ -48,8 +51,10 @@ export function BurdenPage() {
       <details className="interval-disclosure">
         <summary>About these intervals</summary>
         <p>Confidence intervals come directly from the reviewed MEPS artifact; no interval is recomputed in the web application. Survey weighting and design are preserved in the reviewed artifact metadata. These intervals describe sampling uncertainty for the descriptive survey estimates; they do not make gross burden attributable or causal.</p>
-        <p><strong>Exact interval method metadata:</strong></p>
-        <ul>{intervalMethods.map(method => <li key={method}>{method}</li>)}</ul>
+        {intervalMethods.length > 0 && <>
+          <p><strong>Exact interval method metadata:</strong></p>
+          <ul>{intervalMethods.map(method => <li key={method}>{method}</li>)}</ul>
+        </>}
       </details>
     </div>
     <div className="domain-grid">
