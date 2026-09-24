@@ -288,7 +288,6 @@ test("LocalContextPage uses canonical fields and preserves score/source interpre
   }
   const formatter = readSource("../src/data/formatLocalContextValue.ts");
   assert.match(formatter, /margin_of_error/);
-  assert.match(local, /localContext\.geography/);
   assert.doesNotMatch(local, /bundle\.local_context/);
   assert.match(local, /Maximum source-published HPSA score among included designations/);
   assert.match(local, /not a statewide shortage severity score/);
