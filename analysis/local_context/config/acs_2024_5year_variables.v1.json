@@ -1,10 +1,10 @@
 {
-  "config_version": "1.0.0",
+  "config_version": "1.1.0",
   "dataset": "2024 ACS 5-year Data Profiles",
   "base_url": "https://api.census.gov/data/2024/acs/acs5/profile",
   "metadata_url": "https://api.census.gov/data/2024/acs/acs5/profile/variables.json",
   "vintage": "2020-2024 ACS 5-year estimates / 2024 release",
-  "confidence_level": 0.90,
+  "confidence_level": 0.9,
   "geography": {
     "name": "West Virginia",
     "type": "state",
@@ -22,7 +22,11 @@
       "moe_annotation": "DP03_0099PMA",
       "expected_estimate_label": "Percent!!HEALTH INSURANCE COVERAGE!!Civilian noninstitutionalized population!!No health insurance coverage",
       "expected_moe_label": "Percent Margin of Error!!HEALTH INSURANCE COVERAGE!!Civilian noninstitutionalized population!!No health insurance coverage",
-      "universe": "Civilian noninstitutionalized population"
+      "universe": "Civilian noninstitutionalized population",
+      "expected_estimate_annotation_label": "Annotation of Percent!!HEALTH INSURANCE COVERAGE!!Civilian noninstitutionalized population!!No health insurance coverage",
+      "expected_moe_annotation_label": "Annotation of Percent Margin of Error!!HEALTH INSURANCE COVERAGE!!Civilian noninstitutionalized population!!No health insurance coverage",
+      "expected_estimate_annotation_attribute_of": "DP03_0099PE",
+      "expected_moe_annotation_attribute_of": "DP03_0099PE"
     },
     {
       "indicator_id": "wv.acs.no_vehicle_pct",
@@ -33,7 +37,11 @@
       "moe_annotation": "DP04_0058PMA",
       "expected_estimate_label": "Percent!!VEHICLES AVAILABLE!!Occupied housing units!!No vehicles available",
       "expected_moe_label": "Percent Margin of Error!!VEHICLES AVAILABLE!!Occupied housing units!!No vehicles available",
-      "universe": "Occupied housing units"
+      "universe": "Occupied housing units",
+      "expected_estimate_annotation_label": "Annotation of Percent!!VEHICLES AVAILABLE!!Occupied housing units!!No vehicles available",
+      "expected_moe_annotation_label": "Annotation of Percent Margin of Error!!VEHICLES AVAILABLE!!Occupied housing units!!No vehicles available",
+      "expected_estimate_annotation_attribute_of": "DP04_0058PE",
+      "expected_moe_annotation_attribute_of": "DP04_0058PM"
     },
     {
       "indicator_id": "wv.acs.broadband_pct",
@@ -44,7 +52,11 @@
       "moe_annotation": "DP02_0154PMA",
       "expected_estimate_label": "Percent!!COMPUTERS AND INTERNET USE!!Total households!!With a broadband Internet subscription",
       "expected_moe_label": "Percent Margin of Error!!COMPUTERS AND INTERNET USE!!Total households!!With a broadband Internet subscription",
-      "universe": "Households"
+      "universe": "Total households",
+      "expected_estimate_annotation_label": "Annotation of Percent!!COMPUTERS AND INTERNET USE!!Total households!!With a broadband Internet subscription",
+      "expected_moe_annotation_label": "Annotation of Percent Margin of Error!!COMPUTERS AND INTERNET USE!!Total households!!With a broadband Internet subscription",
+      "expected_estimate_annotation_attribute_of": "DP02_0154PE",
+      "expected_moe_annotation_attribute_of": "DP02_0154PM"
     },
     {
       "indicator_id": "wv.acs.poverty_pct",
@@ -55,7 +67,12 @@
       "moe_annotation": "DP03_0128PMA",
       "expected_estimate_label": "Percent!!PERCENTAGE OF FAMILIES AND PEOPLE WHOSE INCOME IN THE PAST 12 MONTHS IS BELOW THE POVERTY LEVEL!!All people",
       "expected_moe_label": "Percent Margin of Error!!PERCENTAGE OF FAMILIES AND PEOPLE WHOSE INCOME IN THE PAST 12 MONTHS IS BELOW THE POVERTY LEVEL!!All people",
-      "universe": "All people"
+      "universe": "All people",
+      "expected_estimate_annotation_label": "Annotation of Percent!!PERCENTAGE OF FAMILIES AND PEOPLE WHOSE INCOME IN THE PAST 12 MONTHS IS BELOW THE POVERTY LEVEL!!All people",
+      "expected_moe_annotation_label": "Annotation of Percent Margin of Error!!PERCENTAGE OF FAMILIES AND PEOPLE WHOSE INCOME IN THE PAST 12 MONTHS IS BELOW THE POVERTY LEVEL!!All people",
+      "expected_estimate_annotation_attribute_of": "DP03_0128PE",
+      "expected_moe_annotation_attribute_of": "DP03_0128PE"
     }
-  ]
+  ],
+  "variable_metadata_url_template": "https://api.census.gov/data/2024/acs/acs5/profile/variables/{variable}.json"
 }

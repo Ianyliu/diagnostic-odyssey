@@ -31,11 +31,13 @@ const baseRecord = {
   allowed_interpretation: "Implementation/access context for West Virginia.",
   prohibited_interpretation: [
     "West Virginia Long COVID prevalence",
+    "West Virginia Long COVID cost",
     "state-specific Long COVID burden",
-    "causal determinant of diagnostic delay",
+    "causal diagnostic-delay effect",
+    "causal pilot benefit",
     "causal effect modifier",
+    "calibrated access severity score",
     "attributable cost",
-    "predicted pilot effect",
     "savings",
     "ROI"
   ],
@@ -68,8 +70,8 @@ const preliminaryArtifact: LocalContextArtifact = {
     source_release_vintage: "2020-2024 ACS 5-year estimates / 2024 release",
     observation_as_of_date: "2024",
     retrieved_at: "2026-09-23T00:00:00Z",
-    byte_size: null,
-    sha256: null,
+    byte_size: 512,
+    sha256: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
     published_update_date: null,
     limitations: []
   }]
@@ -129,4 +131,15 @@ test("state records fail closed on county FIPS and national-burden mutation sema
   manifest.national_meps_burden_unchanged = false;
   const issues = validateLocalContextArtifact(mutated);
   assert.ok(issues.some(issue => issue.path.endsWith(".national_meps_burden_unchanged")));
+});
+
+
+test("ACS source provenance fails closed when deterministic hash metadata is absent", () => {
+  const missingHash = structuredClone(preliminaryArtifact) as unknown as Record<string, unknown>;
+  const source = ((missingHash.sources as unknown[])[0] as Record<string, unknown>);
+  source.sha256 = null;
+  source.byte_size = null;
+  const issues = validateLocalContextArtifact(missingHash);
+  assert.ok(issues.some(issue => issue.path.endsWith(".sha256")));
+  assert.ok(issues.some(issue => issue.path.endsWith(".byte_size")));
 });
