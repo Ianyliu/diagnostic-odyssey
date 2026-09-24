@@ -467,23 +467,30 @@ def _metadata_attributes(record: dict[str, Any], variable_id: str) -> list[str]:
 
 
 def _validate_attribute_record(
-    record: Any,
+    entry: Any,
     *,
     variable_id: str,
     expected_label: str,
     expected_attribute_of: str,
     expected_attribute_type: str,
 ) -> dict[str, Any]:
+    if not isinstance(entry, dict):
+        raise ContractError(f"Census individual metadata entry for {variable_id} is not an object")
+    if entry.get("requested_variable_id") != variable_id:
+        raise ContractError(
+            f"Census individual metadata request identity changed for {variable_id}: "
+            f"got {entry.get('requested_variable_id')!r}"
+        )
+    record = entry.get("response")
     if not isinstance(record, dict):
-        raise ContractError(f"Census individual metadata for {variable_id} is not an object")
-    required = {"name", "label", "attribute of", "attribute type"}
+        raise ContractError(f"Census individual metadata response for {variable_id} is not an object")
+    required = {"label", "attribute of", "attribute type"}
     missing = sorted(required - set(record))
     if missing:
         raise ContractError(
             f"Census individual metadata shape changed for {variable_id}: missing {missing}"
         )
     expected = {
-        "name": variable_id,
         "label": expected_label,
         "attribute of": expected_attribute_of,
         "attribute type": expected_attribute_type,
@@ -494,6 +501,11 @@ def _validate_attribute_record(
                 f"Census metadata contract changed for {variable_id} field {key!r}: "
                 f"expected {expected_value!r}, got {record.get(key)!r}"
             )
+    if "name" in record and record.get("name") != variable_id:
+        raise ContractError(
+            f"Census metadata contract changed for {variable_id} field 'name': "
+            f"expected {variable_id!r}, got {record.get('name')!r}"
+        )
     return record
 
 
@@ -565,12 +577,8 @@ def verify_acs_metadata(
         )
 
         bulk_pe_records[estimate_id] = pe_record
-        for variable_id, record in (
-            (moe_id, pm_record),
-            (pea_id, pea_record),
-            (pma_id, pma_record),
-        ):
-            used_individual_records[variable_id] = record
+        for variable_id in (moe_id, pea_id, pma_id):
+            used_individual_records[variable_id] = individual_metadata[variable_id]
 
         verified[spec["indicator_id"]] = {
             "estimate": estimate_id,
@@ -611,7 +619,10 @@ def fetch_acs_individual_metadata(config: dict[str, Any]) -> dict[str, dict[str,
                 raise ContractError(
                     f"Census individual metadata response for {variable_id} is not an object"
                 )
-            records[variable_id] = record
+            records[variable_id] = {
+                "requested_variable_id": variable_id,
+                "response": record,
+            }
     return records
 
 
