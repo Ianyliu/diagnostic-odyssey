@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import crypto from "node:crypto";
 import fs from "node:fs";
 import test from "node:test";
 import {
@@ -11,7 +12,13 @@ const artifactPath = new URL(
   "../../../artifacts/reviewed/local-context-wv-hrsa-acs-candidate-20260924T052332Z/local-context.json",
   import.meta.url
 );
-const artifact = JSON.parse(fs.readFileSync(artifactPath, "utf8")) as LocalContextArtifact;
+const artifactRaw = fs.readFileSync(artifactPath);
+const artifact = JSON.parse(artifactRaw.toString("utf8")) as LocalContextArtifact;
+const reviewManifestPath = new URL(
+  "../../../artifacts/reviewed/local-context-wv-hrsa-acs-candidate-20260924T052332Z/review-manifest.json",
+  import.meta.url
+);
+const reviewManifest = JSON.parse(fs.readFileSync(reviewManifestPath, "utf8")) as Record<string, unknown>;
 
 test("promoted WV local-context artifact is valid and eligible for reviewed loading", () => {
   assert.doesNotThrow(() => assertValidLocalContextArtifact(artifact));
@@ -37,4 +44,19 @@ test("promoted WV local-context artifact preserves the approved release and geog
     record.state_fips === "54" &&
     record.county_fips === null
   ));
+});
+
+
+test("promotion manifest is cryptographically bound to the reviewed payload and preserves promotion boundaries", () => {
+  const reviewedHash = crypto.createHash("sha256").update(artifactRaw).digest("hex");
+  assert.equal(reviewedHash, "82e3cc5d5c6bd1d084fddb47b36ca08df76be19ab2a641dbba50b8c59c467bc4");
+  assert.equal(reviewManifest.reviewed_local_context_sha256, reviewedHash);
+  assert.equal(
+    reviewManifest.candidate_local_context_sha256,
+    "05961842229ffff252d2deda74e10d1c1dd542c38678684f65ca6fa0fabb8588"
+  );
+  assert.equal(reviewManifest.numerical_recomputation_performed, false);
+  assert.equal(reviewManifest.runtime_selection_changed, false);
+  assert.equal(reviewManifest.state_level_only, true);
+  assert.equal(reviewManifest.county_evidence_approved, false);
 });
