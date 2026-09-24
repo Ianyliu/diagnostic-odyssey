@@ -1,6 +1,6 @@
-import { useEffect } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import type { Scenario } from "@diagnostic-odyssey/contracts";
+import type { Scenario, ScenarioResult } from "@diagnostic-odyssey/contracts";
 import { ContextBar } from "../components/ContextBar";
 import { PilotDecisionVisuals } from "../components/PilotDecisionVisuals";
 import { SensitivityExplorer } from "../components/SensitivityExplorer";
@@ -10,33 +10,24 @@ import {
   getSensitivityDataRequestStatus
 } from "../data/dataRequestTemplates";
 import type { SensitivityField } from "../data/decisionVisuals";
+import {
+  createPilotInputDraft,
+  evaluatePilotInputDraft,
+  formatPilotInputHelper,
+  formatPilotResultAnnouncement,
+  getPilotResultSignature,
+  pilotInputFields,
+  type PilotInputDraft,
+  type PilotNumericField
+} from "../data/pilotInputDraft";
 import { getPilotFragmentTargetId } from "../data/pilotFragmentScroll";
 import {
   PLANNING_DEFAULTS_DESCRIPTION,
   PLANNING_DEFAULTS_LABEL
 } from "../data/planningScenarioDefaults";
 
-type NumericField = "eligible_population"|"reach"|"capacity"|"baseline_window_months"|"alternative_window_months"|"horizon_months"|"fixed_cost"|"per_participant_cost";
-
-const fields: Array<{key:NumericField;label:string;step?:number;scale?:number;suffix?:string}> = [
-  {key:"eligible_population",label:"Potentially eligible"},
-  {key:"reach",label:"Intended reach",step:1,scale:100,suffix:"%"},
-  {key:"capacity",label:"Program capacity"},
-  {key:"baseline_window_months",label:"Baseline recognition window",suffix:"mo"},
-  {key:"alternative_window_months",label:"Planning recognition window",suffix:"mo"},
-  {key:"horizon_months",label:"Planning horizon",suffix:"mo"},
-  {key:"fixed_cost",label:"Fixed program cost",suffix:"USD"},
-  {key:"per_participant_cost",label:"Cost per participant",suffix:"USD"}
-];
-
 export function PilotPage() {
-  const {
-    scenario,
-    scenarioResult,
-    setScenario,
-    analystDataRequests,
-    upsertAnalystDataRequest
-  } = useArtifact();
+  const {scenario, scenarioResult} = useArtifact();
   const location = useLocation();
   const sensitivityReady = scenario !== null && scenarioResult !== null;
 
@@ -61,10 +52,47 @@ export function PilotPage() {
     </section>;
   }
 
-  const update = (key: NumericField, raw: string, scale = 1) => {
-    const n = Number(raw);
-    if (!Number.isFinite(n)) return;
-    setScenario({...scenario,[key]:n/scale} as Scenario);
+  return <PilotPlannerWorkspace scenario={scenario} scenarioResult={scenarioResult} />;
+}
+
+function PilotPlannerWorkspace({
+  scenario,
+  scenarioResult
+}: {
+  scenario: Scenario;
+  scenarioResult: ScenarioResult;
+}) {
+  const {
+    setScenario,
+    analystDataRequests,
+    upsertAnalystDataRequest
+  } = useArtifact();
+  const [draft, setDraft] = useState<PilotInputDraft>(
+    () => createPilotInputDraft(scenario)
+  );
+  const evaluation = useMemo(
+    () => evaluatePilotInputDraft(draft, scenario),
+    [draft, scenario]
+  );
+  const invalidDraft = evaluation.candidate === null;
+
+  const initialResultSignature = useRef(getPilotResultSignature(scenarioResult));
+  const [resultAnnouncement, setResultAnnouncement] = useState("");
+
+  useEffect(() => {
+    const nextSignature = getPilotResultSignature(scenarioResult);
+    if (initialResultSignature.current === nextSignature) return;
+    initialResultSignature.current = nextSignature;
+    setResultAnnouncement(formatPilotResultAnnouncement(scenarioResult));
+  }, [scenarioResult]);
+
+  const updateDraft = (key: PilotNumericField, raw: string) => {
+    const nextDraft = {...draft, [key]: raw};
+    setDraft(nextDraft);
+    const nextEvaluation = evaluatePilotInputDraft(nextDraft, scenario);
+    if (nextEvaluation.candidate) {
+      setScenario(nextEvaluation.candidate);
+    }
   };
 
   const addSensitivityDataRequest = (field: SensitivityField) => {
@@ -81,14 +109,45 @@ export function PilotPage() {
       <div className="caution cool"><strong>Plan · Test · Learn</strong><span>Every scenario names the pathway step and mechanism it is allowed to change.</span></div>
     </div>
     <div className="pilot-grid">
-      <form className="card assumption-card" onSubmit={e=>e.preventDefault()}>
+      <form className="card assumption-card" onSubmit={event => event.preventDefault()}>
         <h2>Planning assumptions</h2>
         <p className="subtle"><strong>{PLANNING_DEFAULTS_LABEL}</strong><br />{PLANNING_DEFAULTS_DESCRIPTION}</p>
-        {fields.map(field => <label key={field.key}><span>{field.label}</span><span className="input-wrap"><input type="number" min="0" step={field.step ?? 1} value={(scenario[field.key] as number)*(field.scale ?? 1)} onChange={e=>update(field.key,e.target.value,field.scale ?? 1)} /><small>{field.suffix}</small></span></label>)}
+        {pilotInputFields.map(field => {
+          const inputId = "pilot-" + field.key;
+          const helperId = inputId + "-helper";
+          const errorId = inputId + "-error";
+          const error = evaluation.errors[field.key];
+          const helper = error ? null : formatPilotInputHelper(field.key, draft[field.key]);
+
+          return <div className="pilot-field" key={field.key}>
+            <label className="pilot-field-label" htmlFor={inputId}>{field.label}</label>
+            <div className="pilot-field-control">
+              <span className={"input-wrap" + (error ? " invalid" : "")}>
+                <input
+                  id={inputId}
+                  type="text"
+                  inputMode="decimal"
+                  value={draft[field.key]}
+                  onChange={event => updateDraft(field.key, event.target.value)}
+                  aria-invalid={Boolean(error)}
+                  aria-describedby={helperId + " " + errorId}
+                />
+                {field.suffix && <small aria-hidden="true">{field.suffix}</small>}
+              </span>
+              <span id={helperId} className="input-helper">{helper}</span>
+              <span id={errorId} className="field-error" aria-live="polite">{error ?? ""}</span>
+            </div>
+          </div>;
+        })}
+        {evaluation.formError && <p className="field-error form-error" aria-live="polite">{evaluation.formError}</p>}
       </form>
       <article className="card result-card">
         <h2>Baseline vs recognition/navigation scenario</h2>
         <p className="subtle">Deterministic planning arithmetic · not observed evidence or an evidence-derived effect</p>
+        {invalidDraft && <div className="draft-not-applied" role="status">
+          <strong>Draft not applied</strong>
+          <span>These results still reflect the last valid planning assumptions. Fix the highlighted inputs to apply this draft.</span>
+        </div>}
         <PilotDecisionVisuals scenario={scenario} result={scenarioResult} />
         <dl className="result-list">
           <div><dt>Intended reach</dt><dd>{scenarioResult.intended_reach.toLocaleString()}</dd></div>
@@ -99,14 +158,21 @@ export function PilotPage() {
           <div><dt>Difference in person-month exposure</dt><dd>{scenarioResult.difference_person_months.toLocaleString()}</dd></div>
           <div><dt>Program-resource requirement</dt><dd>{new Intl.NumberFormat("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0}).format(scenarioResult.program_resource_requirement)}</dd></div>
         </dl>
-        <SensitivityExplorer
+        <div className="sr-only" aria-live="polite" aria-atomic="true">{resultAnnouncement}</div>
+        {invalidDraft ? <section id="sensitivity" className="sensitivity-paused-state" aria-labelledby="sensitivity-paused-title">
+          <h3 id="sensitivity-paused-title">Sensitivity analysis paused</h3>
+          <p>Fix the Pilot Planner inputs before running sensitivity analysis or creating data requests.</p>
+        </section> : <SensitivityExplorer
           scenario={scenario}
           onUpsertDataRequest={addSensitivityDataRequest}
           dataRequestStatus={sensitivityDataRequestStatus}
-        />
+        />}
         <div className="target-box"><strong>Target pathway step</strong><span>{scenario.target_pathway_step}</span><strong>Mechanism</strong><span>{scenario.mechanism}</span></div>
         <div className="guardrail compact"><strong>Not savings or ROI.</strong><p>The resource requirement is a program input. The person-month difference is a planning exposure quantity, not observed improvement.</p></div>
-        <Link className="button" to="/brief">Preview Planning Brief</Link>
+        {invalidDraft ? <div className="brief-action-paused">
+          <button className="button" type="button" disabled>Preview Planning Brief</button>
+          <span>Apply valid planning inputs before continuing from this draft.</span>
+        </div> : <Link className="button" to="/brief">Preview Planning Brief</Link>}
       </article>
     </div>
   </section>;
