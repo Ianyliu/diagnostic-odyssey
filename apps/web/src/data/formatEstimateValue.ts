@@ -32,7 +32,7 @@ function formatNativeValue(value: number, unit: string): string {
 }
 
 function intervalLabel(intervalType: string | null): string {
-  const confidenceLevel = intervalType?.match(/\b(\d+(?:\.\d+)?)%\b/)?.[1];
+  const confidenceLevel = intervalType?.match(/(\d+(?:\.\d+)?)%/)?.[1];
   return confidenceLevel ? `${confidenceLevel}% CI` : "CI";
 }
 
