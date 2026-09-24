@@ -1,4 +1,5 @@
 import type {
+  AnalysisContext,
   LocalContextArtifact,
   LocalContextRecord
 } from "@diagnostic-odyssey/contracts";
@@ -90,4 +91,21 @@ export function resolveSelectedLocalContext(
     const record = recordsById.get(indicatorId);
     return record && isSelectableLocalContextRecord(record) ? [record] : [];
   });
+}
+
+export function deriveBriefContextWithSelectedLocalContext(
+  context: AnalysisContext,
+  localContextStatus: "loading" | "loaded" | "error",
+  artifact: LocalContextArtifact | null,
+  selectedRecords: LocalContextRecord[]
+): AnalysisContext {
+  return {
+    ...context,
+    local_context_id:
+      localContextStatus === "loaded" &&
+      artifact !== null &&
+      selectedRecords.length > 0
+        ? artifact.manifest.artifact_version
+        : null
+  };
 }

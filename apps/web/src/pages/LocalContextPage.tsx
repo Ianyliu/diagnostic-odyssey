@@ -4,6 +4,7 @@ import { ContextBar } from "../components/ContextBar";
 import { useArtifact } from "../data/ArtifactContext";
 import { formatLocalContextValue } from "../data/formatLocalContextValue";
 import { isSelectableLocalContextRecord } from "../data/localContextSelection";
+import { getLocalContextSelectionAccessibility } from "../data/localContextPresentation";
 
 function IndicatorDisclosure({record}: {record: LocalContextRecord}) {
   return <details>
@@ -34,21 +35,23 @@ function SelectableIndicatorRow({
   displayLabel?: string;
 }) {
   const selectable = isSelectableLocalContextRecord(record);
-  const controlId = "select-local-context-" + record.indicator_id.replace(/[^a-zA-Z0-9_-]/g, "-");
+  const accessibility = getLocalContextSelectionAccessibility(record, displayLabel);
 
   return <div className="measure">
     <div>
-      <strong>{displayLabel ?? record.label}</strong>
+      <strong id={accessibility.titleId}>{accessibility.displayTitle}</strong>
+      {accessibility.disambiguatorId && <span id={accessibility.disambiguatorId} className="sr-only">{record.label}</span>}
       <span>{record.universe}</span>
-      <label className="selection-control" htmlFor={controlId}>
+      <label className="selection-control" htmlFor={accessibility.controlId}>
         <input
-          id={controlId}
+          id={accessibility.controlId}
           type="checkbox"
+          aria-labelledby={accessibility.labelledBy}
           checked={selected}
           disabled={!selectable}
           onChange={event => onSelectedChange(record.indicator_id, event.target.checked)}
         />
-        <span>Include in Planning Brief</span>
+        <span id={accessibility.actionLabelId}>Include in Planning Brief</span>
       </label>
     </div>
     <div className="measure-value">

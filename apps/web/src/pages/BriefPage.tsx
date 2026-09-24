@@ -6,10 +6,13 @@ import {
   formatEstimateValue
 } from "../data/formatEstimateValue";
 import { formatLocalContextValue } from "../data/formatLocalContextValue";
+import {
+  deriveBriefContextWithSelectedLocalContext
+} from "../data/localContextSelection";
+import {
+  formatPublishedLocalContextUncertainty
+} from "../data/localContextPresentation";
 import { PLANNING_DEFAULTS_LABEL } from "../data/planningScenarioDefaults";
-
-const formatConfidenceLevel = (value: number | null): string =>
-  value === null ? "Not applicable / not published" : (value * 100).toFixed(0) + "% confidence level";
 
 export function BriefPage() {
   const {
@@ -23,8 +26,14 @@ export function BriefPage() {
   if (!bundle) return null;
 
   const estimates = bundle.burden_domains.flatMap(domain => domain.measures);
+  const briefContext = deriveBriefContextWithSelectedLocalContext(
+    bundle.context,
+    localContextStatus,
+    localContext,
+    selectedLocalContext
+  );
   const brief = buildPlanningBrief({
-    context: bundle.context,
+    context: briefContext,
     estimates,
     localContext: selectedLocalContext,
     scenario: scenario && scenarioResult ? {input:scenario,result:scenarioResult} : null,
@@ -89,6 +98,9 @@ export function BriefPage() {
           <h2>Local implementation context</h2>
           {brief.local_context.length > 0
             ? <div className="brief-local-context-list">
+                <p className="subtle">
+                  <strong>Reviewed local-context artifact:</strong> {brief.context.local_context_id}
+                </p>
                 {brief.local_context.map(record =>
                   <article className="brief-local-context" key={record.indicator_id}>
                     <div className="card-title-row">
@@ -104,9 +116,9 @@ export function BriefPage() {
                     <p className="subtle">
                       <strong>Source:</strong> {record.source_agency} · {record.source_release_vintage}
                     </p>
-                    {record.margin_of_error !== null && <p className="subtle">
-                      <strong>Uncertainty:</strong> Published margin of error ±{record.margin_of_error} {record.unit === "percent" ? "percentage points" : record.unit} · {formatConfidenceLevel(record.confidence_level)}
-                    </p>}
+                    <p className="subtle">
+                      <strong>Published uncertainty:</strong> {formatPublishedLocalContextUncertainty(record)}
+                    </p>
                     <p className="subtle"><strong>Data state:</strong> {record.state}</p>
                     <p className="limitations"><strong>Allowed interpretation:</strong> {record.allowed_interpretation}</p>
                     {record.prohibited_interpretation.length > 0 && <p className="limitations"><strong>Not supported:</strong> {record.prohibited_interpretation.join("; ")}</p>}
