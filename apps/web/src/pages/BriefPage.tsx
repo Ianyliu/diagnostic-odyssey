@@ -1,7 +1,10 @@
 import { buildPlanningBrief, serializeBriefJson } from "@diagnostic-odyssey/brief-core";
 import { ContextBar } from "../components/ContextBar";
 import { useArtifact } from "../data/ArtifactContext";
-import { formatEstimateValue } from "../data/formatEstimateValue";
+import {
+  formatEstimateInterval,
+  formatEstimateValue
+} from "../data/formatEstimateValue";
 import { PLANNING_DEFAULTS_LABEL } from "../data/planningScenarioDefaults";
 
 export function BriefPage() {
@@ -52,9 +55,19 @@ export function BriefPage() {
           {brief.burden_findings.length === 0 ? <div className="empty-state">
             <strong>No reviewed analytical estimate is currently export-eligible.</strong>
             <p>The release/display gate remains active; no unreleased or illustrative value is substituted.</p>
-          </div> : brief.burden_findings.map(x =>
-            <p key={x.estimate_id}><strong>{x.label}:</strong> {formatEstimateValue(x)}</p>
-          )}
+          </div> : brief.burden_findings.map(x => {
+            const interval = formatEstimateInterval(x);
+            const accessibleInterval = interval.replace(
+              /^95% CI\s*/,
+              "95% confidence interval: "
+            );
+            return <p className="brief-finding" key={x.estimate_id}>
+              <strong>{x.label}:</strong> {formatEstimateValue(x)}
+              <small className="brief-finding-interval" aria-label={accessibleInterval}>
+                {interval}
+              </small>
+            </p>;
+          })}
         </section>
 
         <section>
