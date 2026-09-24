@@ -4,7 +4,7 @@ Diagnostic Odyssey is a statistically grounded planning platform for making hidd
 
 It is designed for teams planning services around conditions such as Long COVID and ME/CFS. The application separates observed burden, local context, reviewed evidence, and planning assumptions so that a useful pilot plan does not imply stronger evidence than the data support.
 
-> **Project status:** working vertical slice with a reviewed national 2024 MEPS Long COVID artifact runtime-loaded by the web app. The repository contains 21 national `reviewed_released` estimates. The illustrative fixture is development/test-only. The HRSA + ACS local-context pipeline is implemented and hardened, but no successful real local-context candidate has been reviewed or runtime-loaded.
+> **Project status:** working vertical slice with a reviewed national 2024 MEPS Long COVID artifact runtime-loaded by the web app. The repository contains 21 national `reviewed_released` estimates. A reviewed West Virginia **state-level** HRSA + ACS local-context artifact also exists, but it remains separate and is **not runtime-integrated**. The illustrative fixture is development/test-only; county-level Decision Workspace evidence remains future work.
 
 The full product workflow is:
 
@@ -92,7 +92,7 @@ The other routes show the intended product boundary. Some are deliberately scaff
 
 - Reviewed national 2024 MEPS HC-256 Long COVID artifact with **21 `reviewed_released` estimates**, loaded by the web runtime from `artifacts/reviewed/meps-2024-long-covid-candidate-20260923T020607Z/`.
 - Survey-aware MEPS analytical pipeline with reviewed variable map, cohort construction, weight-specific survey designs, burden domains, candidate generation, methods review, and explicit promotion gates.
-- Hardened HRSA + 2024 ACS 5-year local-context candidate pipeline with frozen source contracts, fail-closed metadata relationship validation, deterministic ACS source hashing, provenance, diagnostics, and independent candidate/release gates. The first real-data run failed closed during metadata validation and produced no candidate artifact; no real local-context artifact has been reviewed or runtime-integrated.
+- Hardened HRSA + 2024 ACS 5-year local-context pipeline with frozen source contracts, fail-closed metadata relationship validation, deterministic ACS source hashing, provenance, diagnostics, and independent candidate/release gates. The independently reviewed West Virginia state-level artifact is checked in under `artifacts/reviewed/`, but it is not runtime-integrated.
 
 - React + TypeScript + Vite application shell and all major product routes.
 - Versioned fixture artifact loading with runtime validation and explicit loading/error behavior.
@@ -109,7 +109,7 @@ The other routes show the intended product boundary. Some are deliberately scaff
 
 ### Scaffolded / intentionally incomplete
 
-- Reviewed HRSA/ACS local-context artifact and runtime integration. The acquisition/validation pipeline is implemented and hardened, but no successful real-data local-context candidate has yet been generated and independently reviewed.
+- Runtime integration of the reviewed West Virginia state-level HRSA/ACS local-context artifact remains intentionally pending. Reviewed local context stays separate from national MEPS and does not rescale national burden; county-level Implementation Decision Map evidence remains future work.
 - PLACES/CMS local-context ingestion.
 - Reviewed external literature ledger and source extraction workflow.
 - Evidence-backed bounded scenario parameters.
@@ -225,7 +225,7 @@ See [data/README.md](data/README.md) and [data/manifests/sources.json](data/mani
 - registration/API-key requirements;
 - downstream script entry points.
 
-The repository contains the reviewed aggregate national MEPS artifact with 21 `reviewed_released` estimates. Raw MEPS and HRSA source files remain excluded. HRSA/ACS local-context values are not runtime-visible until a real candidate is generated, independently reviewed, promoted, and integrated. The illustrative fixture remains development/test-only and is not a substitute for reviewed evidence.
+The repository contains the reviewed aggregate national MEPS artifact with 21 `reviewed_released` estimates. Raw MEPS and HRSA source files remain excluded. A reviewed West Virginia state-level HRSA/ACS local-context artifact now exists, but it is still not runtime-visible until a separate integration change is reviewed. State local context does not rescale national burden, and county-level Decision Workspace evidence remains future work. The illustrative fixture remains development/test-only and is not a substitute for reviewed evidence.
 
 ## Working agreements
 
