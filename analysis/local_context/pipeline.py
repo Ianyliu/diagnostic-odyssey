@@ -33,11 +33,13 @@ ACS_CONFIG_PATH = CONFIG_DIR / "acs_2024_5year_variables.v1.json"
 NATIONAL_ARTIFACT_VERSION = "meps-2024-long-covid-candidate-20260923T020607Z"
 PROHIBITED = [
     "West Virginia Long COVID prevalence",
+    "West Virginia Long COVID cost",
     "state-specific Long COVID burden",
-    "causal determinant of diagnostic delay",
+    "causal diagnostic-delay effect",
+    "causal pilot benefit",
     "causal effect modifier",
+    "calibrated access severity score",
     "attributable cost",
-    "predicted pilot effect",
     "savings",
     "ROI",
 ]
@@ -63,6 +65,33 @@ def sha256_file(path: Path) -> str:
         for chunk in iter(lambda: handle.read(1024 * 1024), b""):
             h.update(chunk)
     return h.hexdigest()
+
+
+ACS_CANONICALIZATION_RULE = (
+    "UTF-8 JSON; ensure_ascii=false; object keys sorted recursively; "
+    "separators=(',', ':'); arrays preserve source order; exactly one terminal LF; "
+    "Census API key and keyed URLs excluded before serialization."
+)
+
+
+def canonical_json_bytes(payload: Any) -> bytes:
+    return (
+        json.dumps(
+            payload,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        )
+        + "\n"
+    ).encode("utf-8")
+
+
+def canonical_json_fingerprint(payload: Any) -> dict[str, Any]:
+    canonical = canonical_json_bytes(payload)
+    return {
+        "sha256": hashlib.sha256(canonical).hexdigest(),
+        "byte_size": len(canonical),
+    }
 
 
 def git_head() -> str:
@@ -186,10 +215,12 @@ def verify_hrsa_header(fieldnames: list[str] | None, config: dict[str, Any]) -> 
 
 def normalize_rural(value: str) -> str | None:
     text = (value or "").strip()
-    if text in {"Rural", "Partially Rural", "Non-Rural"}:
+    if text in {"Rural", "Partially Rural", "Non-Rural", "Unknown", "Not Applicable"}:
         return text
-    if text in {"", "Unknown", "Not Applicable", "N/A"}:
+    if text == "":
         return "Unknown"
+    if text == "N/A":
+        return "Not Applicable"
     return None
 
 
@@ -321,6 +352,7 @@ def summarize_hrsa(path: Path, config: dict[str, Any], dataset_key: str, state_f
         "limitations": [
             "HPSA IDs may contain multiple component rows; counts use distinct HPSA IDs.",
             "Designation counts are contextual descriptors and are not a calibrated shortage-severity scale.",
+            "HPSA Score is a source-published designation priority/shortage score, not a calibrated statewide access-severity composite.",
             "No HPSA designation populations, FTE-short values, or other overlapping quantities are summed."
         ],
         "allowed_interpretation": "Implementation/access context for West Virginia.",
@@ -351,7 +383,7 @@ def summarize_hrsa(path: Path, config: dict[str, Any], dataset_key: str, state_f
             "unit": "HPSA score points",
             "universe": universe + " Restricted to included IDs with non-missing HPSA Score.",
             "limitations": common["limitations"] + [
-                "The maximum is a source-published HPSA score, not a state-level composite severity score."
+                "The maximum preserves the source-published HPSA designation priority/shortage score; it is not a statewide severity index or calibrated state composite."
             ],
         })
 
@@ -362,7 +394,7 @@ def summarize_hrsa(path: Path, config: dict[str, Any], dataset_key: str, state_f
         rural_counts = Counter(rural_by_id.values())
         if sum(rural_counts.values()) != distinct_count:
             raise ContractError("Rural-status breakdown does not reconcile to distinct HPSA ID count")
-        for rural_status in ["Rural", "Partially Rural", "Non-Rural", "Unknown"]:
+        for rural_status in ["Rural", "Partially Rural", "Non-Rural", "Not Applicable", "Unknown"]:
             count = rural_counts.get(rural_status, 0)
             indicators.append({
                 **common,
@@ -425,37 +457,176 @@ def fetch_json(
     ) from last_error
 
 
-def verify_acs_labels(config: dict[str, Any], metadata: dict[str, Any]) -> dict[str, dict[str, str]]:
-    variables = metadata.get("variables")
+def _metadata_attributes(record: dict[str, Any], variable_id: str) -> list[str]:
+    raw = record.get("attributes")
+    if not isinstance(raw, str):
+        raise ContractError(
+            f"Census metadata relationship changed for {variable_id}: missing string attributes"
+        )
+    return [value.strip() for value in raw.split(",") if value.strip()]
+
+
+def _validate_attribute_record(
+    record: Any,
+    *,
+    variable_id: str,
+    expected_label: str,
+    expected_attribute_of: str,
+    expected_attribute_type: str,
+) -> dict[str, Any]:
+    if not isinstance(record, dict):
+        raise ContractError(f"Census individual metadata for {variable_id} is not an object")
+    required = {"name", "label", "attribute of", "attribute type"}
+    missing = sorted(required - set(record))
+    if missing:
+        raise ContractError(
+            f"Census individual metadata shape changed for {variable_id}: missing {missing}"
+        )
+    expected = {
+        "name": variable_id,
+        "label": expected_label,
+        "attribute of": expected_attribute_of,
+        "attribute type": expected_attribute_type,
+    }
+    for key, expected_value in expected.items():
+        if record.get(key) != expected_value:
+            raise ContractError(
+                f"Census metadata contract changed for {variable_id} field {key!r}: "
+                f"expected {expected_value!r}, got {record.get(key)!r}"
+            )
+    return record
+
+
+def verify_acs_metadata(
+    config: dict[str, Any],
+    bulk_metadata: dict[str, Any],
+    individual_metadata: dict[str, dict[str, Any]],
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    variables = bulk_metadata.get("variables")
     if not isinstance(variables, dict):
         raise ContractError("Census variables metadata has no variables object")
-    verified: dict[str, dict[str, str]] = {}
+
+    verified: dict[str, Any] = {}
+    bulk_pe_records: dict[str, Any] = {}
+    used_individual_records: dict[str, Any] = {}
+
     for spec in config["variables"]:
-        for key, expected_key in [("estimate", "expected_estimate_label"), ("moe", "expected_moe_label")]:
-            variable_id = spec[key]
-            actual = variables.get(variable_id, {}).get("label")
-            expected = spec[expected_key]
-            if actual != expected:
-                raise ContractError(
-                    f"Census variable meaning changed for {variable_id}: "
-                    f"expected {expected!r}, got {actual!r}"
-                )
+        estimate_id = spec["estimate"]
+        moe_id = spec["moe"]
+        pea_id = spec["estimate_annotation"]
+        pma_id = spec["moe_annotation"]
+
+        pe_record = variables.get(estimate_id)
+        if not isinstance(pe_record, dict):
+            raise ContractError(
+                f"Census bulk metadata is missing configured PE variable {estimate_id}"
+            )
+        if pe_record.get("label") != spec["expected_estimate_label"]:
+            raise ContractError(
+                f"Census variable meaning changed for {estimate_id}: "
+                f"expected {spec['expected_estimate_label']!r}, got {pe_record.get('label')!r}"
+            )
+
+        pe_attributes = _metadata_attributes(pe_record, estimate_id)
+        expected_pe_attributes = {pea_id, moe_id, pma_id}
+        if set(pe_attributes) != expected_pe_attributes:
+            raise ContractError(
+                f"Census PE attributes relationship changed for {estimate_id}: "
+                f"expected {sorted(expected_pe_attributes)}, got {sorted(pe_attributes)}"
+            )
+
+        pm_record = _validate_attribute_record(
+            individual_metadata.get(moe_id),
+            variable_id=moe_id,
+            expected_label=spec["expected_moe_label"],
+            expected_attribute_of=estimate_id,
+            expected_attribute_type="MARGIN_OF_ERROR",
+        )
+        pm_attributes = _metadata_attributes(pm_record, moe_id)
+        if pm_attributes != [pma_id]:
+            raise ContractError(
+                f"Census PM annotation relationship changed for {moe_id}: "
+                f"expected {[pma_id]}, got {pm_attributes}"
+            )
+
+        pea_record = _validate_attribute_record(
+            individual_metadata.get(pea_id),
+            variable_id=pea_id,
+            expected_label=spec["expected_estimate_annotation_label"],
+            expected_attribute_of=spec["expected_estimate_annotation_attribute_of"],
+            expected_attribute_type="ANNOTATION",
+        )
+        pma_record = _validate_attribute_record(
+            individual_metadata.get(pma_id),
+            variable_id=pma_id,
+            expected_label=spec["expected_moe_annotation_label"],
+            expected_attribute_of=spec["expected_moe_annotation_attribute_of"],
+            expected_attribute_type="ANNOTATION",
+        )
+
+        bulk_pe_records[estimate_id] = pe_record
+        for variable_id, record in (
+            (moe_id, pm_record),
+            (pea_id, pea_record),
+            (pma_id, pma_record),
+        ):
+            used_individual_records[variable_id] = record
+
         verified[spec["indicator_id"]] = {
-            "estimate": spec["estimate"],
-            "estimate_label": variables[spec["estimate"]]["label"],
-            "moe": spec["moe"],
-            "moe_label": variables[spec["moe"]]["label"],
+            "estimate": estimate_id,
+            "estimate_label": pe_record["label"],
+            "estimate_attributes": pe_attributes,
+            "estimate_annotation": pea_id,
+            "estimate_annotation_label": pea_record["label"],
+            "estimate_annotation_attribute_of": pea_record["attribute of"],
+            "moe": moe_id,
+            "moe_label": pm_record["label"],
+            "moe_attribute_of": pm_record["attribute of"],
+            "moe_attribute_type": pm_record["attribute type"],
+            "moe_attributes": pm_attributes,
+            "moe_annotation": pma_id,
+            "moe_annotation_label": pma_record["label"],
+            "moe_annotation_attribute_of": pma_record["attribute of"],
         }
-    return verified
+
+    metadata_contract = {
+        "bulk_metadata_endpoint": config["metadata_url"],
+        "individual_metadata_url_template": config["variable_metadata_url_template"],
+        "bulk_pe_records": bulk_pe_records,
+        "individual_attribute_records": used_individual_records,
+    }
+    return verified, metadata_contract
 
 
-def build_acs_request(config: dict[str, Any]) -> tuple[str, str]:
+def fetch_acs_individual_metadata(config: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    records: dict[str, dict[str, Any]] = {}
+    template = config.get("variable_metadata_url_template")
+    if not isinstance(template, str) or "{variable}" not in template:
+        raise ContractError("ACS variable metadata URL template is missing or invalid")
+    for spec in config["variables"]:
+        for key in ("moe", "estimate_annotation", "moe_annotation"):
+            variable_id = spec[key]
+            record = fetch_json(template.replace("{variable}", variable_id))
+            if not isinstance(record, dict):
+                raise ContractError(
+                    f"Census individual metadata response for {variable_id} is not an object"
+                )
+            records[variable_id] = record
+    return records
+
+
+def acs_requested_variables(config: dict[str, Any]) -> list[str]:
     variables = ["NAME"]
     for spec in config["variables"]:
         variables.extend([
             spec["estimate"], spec["moe"],
             spec["estimate_annotation"], spec["moe_annotation"]
         ])
+    return variables
+
+
+def build_acs_request(config: dict[str, Any]) -> tuple[str, str]:
+    variables = acs_requested_variables(config)
     base = config["base_url"]
     query = urllib.parse.urlencode(
         {"get": ",".join(variables), "for": config["geography"]["api_for"]},
@@ -616,27 +787,39 @@ def main() -> int:
             ],
         })
 
-    metadata = fetch_json(acs_config["metadata_url"])
-    labels_verified = verify_acs_labels(acs_config, metadata)
+    bulk_metadata = fetch_json(acs_config["metadata_url"])
+    individual_metadata = fetch_acs_individual_metadata(acs_config)
+    metadata_verified, metadata_contract = verify_acs_metadata(
+        acs_config, bulk_metadata, individual_metadata
+    )
     public_endpoint, keyed_endpoint = build_acs_request(acs_config)
     acs_retrieved_at = utc_now()
     acs_data = fetch_json(keyed_endpoint)
     acs_indicators, acs_diag = parse_acs(acs_config, acs_data)
     all_indicators.extend(acs_indicators)
 
+    data_fingerprint = canonical_json_fingerprint(acs_data)
+    metadata_fingerprint = canonical_json_fingerprint(metadata_contract)
+    source_snapshot = {
+        "acs_data_response": acs_data,
+        "acs_metadata_contract": metadata_contract,
+    }
+    snapshot_fingerprint = canonical_json_fingerprint(source_snapshot)
+
     acs_source = {
         "source_ref": "acs-2024-5year-profile",
         "source_agency": "U.S. Census Bureau",
         "source_name": acs_config["dataset"],
-        "source_locator": acs_config["base_url"],
+        "source_locator": public_endpoint,
         "source_release_vintage": acs_config["vintage"],
         "observation_as_of_date": "2024",
         "retrieved_at": acs_retrieved_at,
-        "byte_size": None,
-        "sha256": None,
+        "byte_size": snapshot_fingerprint["byte_size"],
+        "sha256": snapshot_fingerprint["sha256"],
         "published_update_date": None,
         "limitations": [
-            "2024 ACS 5-year Data Profile estimates summarize the 2020-2024 period and are not temporally equivalent to the current HRSA snapshot."
+            "2024 ACS 5-year Data Profile estimates summarize the 2020-2024 period and are not temporally equivalent to the current HRSA snapshot.",
+            "ACS source SHA-256 identifies the canonical combined state-data response plus the exact metadata contract records used for validation; it is not a hash of a raw HTTP transfer."
         ],
     }
 
@@ -667,8 +850,14 @@ def main() -> int:
         "hrsa": hrsa_diagnostics,
         "acs": {
             "exact_request_endpoint_excluding_api_key": public_endpoint,
-            "variable_labels_verified": labels_verified,
+            "metadata_contract_verified": metadata_verified,
             "source_vintage": acs_config["vintage"],
+            "acs_data_response_sha256": data_fingerprint["sha256"],
+            "acs_data_response_byte_size": data_fingerprint["byte_size"],
+            "acs_metadata_contract_sha256": metadata_fingerprint["sha256"],
+            "acs_metadata_contract_byte_size": metadata_fingerprint["byte_size"],
+            "acs_source_snapshot_sha256": snapshot_fingerprint["sha256"],
+            "acs_source_snapshot_byte_size": snapshot_fingerprint["byte_size"],
             **acs_diag,
         },
     }
@@ -689,12 +878,28 @@ def main() -> int:
     }
     acs_metadata = {
         "source_ref": "acs-2024-5year-profile",
+        "dataset": acs_config["dataset"],
         "source_retrieved_at": acs_retrieved_at,
         "source_vintage": acs_config["vintage"],
         "metadata_endpoint": acs_config["metadata_url"],
+        "individual_metadata_url_template": acs_config["variable_metadata_url_template"],
         "request_endpoint_excluding_api_key": public_endpoint,
-        "variable_labels_verified": labels_verified,
+        "exact_variables_requested": acs_requested_variables(acs_config),
+        "metadata_contract_verified": metadata_verified,
+        "official_metadata_contract": metadata_contract,
+        "acs_data_response_sha256": data_fingerprint["sha256"],
+        "acs_data_response_byte_size": data_fingerprint["byte_size"],
+        "acs_metadata_contract_sha256": metadata_fingerprint["sha256"],
+        "acs_metadata_contract_byte_size": metadata_fingerprint["byte_size"],
+        "acs_source_snapshot_sha256": snapshot_fingerprint["sha256"],
+        "acs_source_snapshot_byte_size": snapshot_fingerprint["byte_size"],
+        "canonicalization_rule": ACS_CANONICALIZATION_RULE,
+        "source_sha256_represents": (
+            "SHA-256 of canonical JSON for {'acs_data_response': <exact parsed state response>, "
+            "'acs_metadata_contract': <exact relevant metadata records used for validation>}"
+        ),
         "api_key_recorded": False,
+        "keyed_url_recorded": False,
     }
     actions_manifest = {
         "repository": os.environ.get("GITHUB_REPOSITORY"),
