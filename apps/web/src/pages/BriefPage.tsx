@@ -6,6 +6,13 @@ import {
   formatEstimateInterval,
   formatEstimateValue
 } from "../data/formatEstimateValue";
+import { formatLocalContextValue } from "../data/formatLocalContextValue";
+import {
+  deriveBriefContextWithSelectedLocalContext
+} from "../data/localContextSelection";
+import {
+  formatPublishedLocalContextUncertainty
+} from "../data/localContextPresentation";
 import { PLANNING_DEFAULTS_LABEL } from "../data/planningScenarioDefaults";
 
 export function BriefPage() {
@@ -15,16 +22,23 @@ export function BriefPage() {
     scenarioResult,
     localContext,
     localContextStatus,
+    selectedLocalContext,
     availableDataRequests,
     selectedDataRequests
   } = useArtifact();
   if (!bundle) return null;
 
   const estimates = bundle.burden_domains.flatMap(domain => domain.measures);
+  const briefContext = deriveBriefContextWithSelectedLocalContext(
+    bundle.context,
+    localContextStatus,
+    localContext,
+    selectedLocalContext
+  );
   const brief = buildPlanningBrief({
-    context: bundle.context,
+    context: briefContext,
     estimates,
-    localContext: [],
+    localContext: selectedLocalContext,
     scenario: scenario && scenarioResult ? {input:scenario,result:scenarioResult} : null,
     evidence: bundle.evidence,
     dataRequests: selectedDataRequests
@@ -48,7 +62,7 @@ export function BriefPage() {
     <header className="page-heading">
       <p className="eyebrow">PLANNING BRIEF</p>
       <h1>Long COVID burden and pilot planning brief</h1>
-      <p>Deterministic synthesis of reviewed national burden, analyst-supplied planning assumptions, explicit evidence gaps, and interpretation guardrails.</p>
+      <p>Deterministic synthesis of reviewed national burden, analyst-supplied planning assumptions, explicitly selected implementation context, evidence gaps, and interpretation guardrails.</p>
     </header>
 
     <div className="brief-grid">
@@ -61,8 +75,8 @@ export function BriefPage() {
           </div> : brief.burden_findings.map(x => {
             const interval = formatEstimateInterval(x);
             const accessibleInterval = interval
-              .replace(/^(\d+(?:\.\d+)?)% CI\s*/, "$1% confidence interval: ")
-              .replace(/^CI\s*/, "Confidence interval: ");
+              .replace(/^(d+(?:.d+)?)% CIs*/, "$1% confidence interval: ")
+              .replace(/^CIs*/, "Confidence interval: ");
             return <p className="brief-finding" key={x.estimate_id}>
               <strong>{x.label}:</strong> {formatEstimateValue(x)}
               <small className="brief-finding-interval">
@@ -86,7 +100,35 @@ export function BriefPage() {
         <section>
           <h2>Local implementation context</h2>
           {brief.local_context.length > 0
-            ? brief.local_context.map(record => <p key={record.indicator_id}><strong>{record.label}:</strong> {record.value === null ? "Missing / not available" : String(record.value)}</p>)
+            ? <div className="brief-local-context-list">
+                <p className="subtle">
+                  <strong>Reviewed local-context artifact:</strong> {brief.context.local_context_id}
+                </p>
+                {brief.local_context.map(record =>
+                  <article className="brief-local-context" key={record.indicator_id}>
+                    <div className="card-title-row">
+                      <div>
+                        <strong>{record.label}</strong>
+                        <span>{record.geography_name} ({record.geography_type})</span>
+                      </div>
+                      <span className={record.state === "partial" ? "status status-scaffold" : "status status-ok"}>
+                        {record.state === "partial" ? "Partial data state" : "Loaded"}
+                      </span>
+                    </div>
+                    <p className="brief-local-context-value">{formatLocalContextValue(record)}</p>
+                    <p className="subtle">
+                      <strong>Source:</strong> {record.source_agency} · {record.source_release_vintage}
+                    </p>
+                    <p className="subtle">
+                      <strong>Published uncertainty:</strong> {formatPublishedLocalContextUncertainty(record)}
+                    </p>
+                    <p className="subtle"><strong>Data state:</strong> {record.state}</p>
+                    <p className="limitations"><strong>Allowed interpretation:</strong> {record.allowed_interpretation}</p>
+                    {record.prohibited_interpretation.length > 0 && <p className="limitations"><strong>Not supported:</strong> {record.prohibited_interpretation.join("; ")}</p>}
+                    {record.limitations.length > 0 && <p className="limitations"><strong>Limitations:</strong> {record.limitations.join(" ")}</p>}
+                  </article>
+                )}
+              </div>
             : <div className="empty-state">
                 <strong>
                   {localContextAvailable
@@ -95,7 +137,7 @@ export function BriefPage() {
                 </strong>
                 <p>
                   {localContextAvailable
-                    ? "Review the available state evidence on the Local Context page. An explicit analyst selection/handoff is required before any local-context record may enter a Planning Brief."
+                    ? "Review the available state evidence on the Local Context page. An explicit analyst selection is required before any local-context record may enter a Planning Brief."
                     : "National MEPS burden remains unchanged; no local prevalence or state-specific Long COVID burden is inferred."}
                 </p>
               </div>}
@@ -136,7 +178,11 @@ export function BriefPage() {
         <div className="readiness"><strong>Evidence parameter</strong><span className="status status-scaffold">Not loaded</span></div>
         <div className="readiness">
           <strong>Local context</strong>
-          <span className="status status-scaffold">{localContextAvailable ? "Available, not selected" : "Not selected"}</span>
+          <span className={brief.local_context.length > 0 ? "status status-ok" : "status status-scaffold"}>
+            {brief.local_context.length > 0
+              ? brief.local_context.length + " selected"
+              : localContextAvailable ? "Available, not selected" : "Not selected"}
+          </span>
         </div>
         <div className="readiness">
           <strong>Data requests</strong>
