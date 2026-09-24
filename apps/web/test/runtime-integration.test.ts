@@ -510,7 +510,7 @@ test("planning brief includes only explicitly supplied release-eligible local co
   assert.match(briefSource, /record\.limitations/);
   assert.match(briefSource, /record\.allowed_interpretation/);
   assert.match(briefSource, /record\.prohibited_interpretation/);
-  assert.match(briefSource, /formatConfidenceLevel\(record\.confidence_level\)/);
+  assert.match(briefSource, /formatPublishedLocalContextUncertainty\(record\)/);
   assert.match(briefSource, /available, but no local context has been selected for this brief/);
   assert.match(briefSource, /explicit analyst selection is required/);
   assert.doesNotMatch(briefSource, /development fixture|Fixture only|Partial fixture/);
