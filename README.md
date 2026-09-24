@@ -14,6 +14,8 @@ The first working vertical slice is:
 
 **Burden → Pilot Planner → Planning Brief**
 
+Within that slice, the Pilot Planner now includes deterministic decision visuals and one-way sensitivity testing. Sensitivity findings can be converted into structured operational data requests, which require explicit analyst opt-in before they enter the Planning Brief.
+
 ## Start here
 
 | Goal | Recommended path | Requirements |
@@ -78,11 +80,12 @@ The working vertical slice is:
 
 **Burden → Pilot Planner → Planning Brief**
 
-Use the prototype in that order:
+Use the application in that order:
 
-1. **Burden:** inspect burden domains, native units, and release state.
-2. **Pilot Planner:** set planning assumptions such as reach, capacity, and duration.
-3. **Planning Brief:** review the assembled artifact and use the JSON companion export or browser print / save-PDF path.
+1. **Burden:** inspect burden domains, native units, release state, and comparable reviewed confidence intervals where units and universe permit.
+2. **Pilot Planner:** set planning assumptions, inspect deterministic decision visuals, and run one-way sensitivity for reach, capacity, or the planning recognition window.
+3. **Data Requests:** optionally turn sensitivity uncertainty into a structured operational request; explicit analyst opt-in is required before a current request enters the Planning Brief.
+4. **Planning Brief:** review the assembled artifact and use the JSON companion export or browser print / save-PDF path.
 
 The other routes show the intended product boundary. Some are deliberately scaffolded while their source data or review workflow is being built.
 
@@ -98,7 +101,11 @@ The other routes show the intended product boundary. Some are deliberately scaff
 - Versioned fixture artifact loading with runtime validation and explicit loading/error behavior.
 - Typed scientific contracts and status vocabulary.
 - Deterministic TypeScript scenario engine with reach, capacity, person-month exposure, and program-resource calculations.
-- Interactive Burden → Pilot Planner → Planning Brief vertical slice.
+- Pilot decision visuals for capacity coverage/gap, recognition-window comparison, and fixed versus participant-dependent program-resource composition.
+- Deterministic one-way sensitivity explorer for intended reach, program capacity, and the planning recognition window, with an accessible table alternative. Sensitivity is assumption testing, not evidence-derived effect estimation, and scenario outputs are not forecasts.
+- Sensitivity → structured operational data-request handoff with explicit analyst opt-in before a request enters the Planning Brief; stale or invalid sensitivity-derived requests fail closed from Brief/JSON until valid, current, and explicitly refreshed. Data requests are planning artifacts, not observed evidence.
+- Decision-state rail plus comparable reviewed confidence-interval visualization where units and universe permit, and reviewed HRSA rural-status composition visualization.
+- Interactive Burden → Pilot Planner → Data Requests → Planning Brief workflow.
 - JSON planning-brief companion export and browser print / save-PDF path.
 - Export filtering that prevents illustrative/unreleased estimates from appearing as released burden findings.
 - Deterministic evidence admissibility gates.
@@ -114,7 +121,6 @@ The other routes show the intended product boundary. Some are deliberately scaff
 - Reviewed external literature ledger and source extraction workflow.
 - Evidence-backed bounded scenario parameters.
 - Rich provenance drawer/interactions.
-- Sensitivity UI (the engine API exists).
 - Real analytical-artifact release workflow.
 - ME/CFS analytical estimates.
 - Rich HTML/PDF/Markdown export formatting.
@@ -131,7 +137,12 @@ The application preserves these distinctions:
 - national burden evidence ≠ state/local implementation context;
 - missing/suppressed ≠ zero;
 - scenario assumptions ≠ observed effects;
+- deterministic sensitivity testing ≠ evidence-derived effect estimation;
+- scenario outputs ≠ forecasts;
 - program-resource requirement ≠ savings or ROI;
+- data requests are planning artifacts, not observed evidence;
+- state/local implementation context does not rescale national MEPS burden;
+- reviewed county-level context and the Implementation Decision Map remain future work;
 - PHQ-2/K6 screens ≠ psychiatric diagnoses;
 - unreleased/suppressed values cannot enter exports;
 - bounded effects can modify only the pathway step/mechanism they support.
