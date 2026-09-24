@@ -116,6 +116,7 @@ test("stale selected sensitivity requests are excluded from Brief/export until r
   const requests = readSource("../src/pages/DataRequestsPage.tsx");
   const sensitivity = readSource("../src/components/SensitivityExplorer.tsx");
   const brief = readSource("../src/pages/BriefPage.tsx");
+  const warnings = readSource("../src/data/briefDataRequestWarnings.ts");
 
   assert.match(context, /isDataRequestCurrentForScenario\(request, scenario\)/);
   assert.match(context, /\[availableDataRequests, briefDataRequestIds, scenario\]/);
@@ -123,7 +124,8 @@ test("stale selected sensitivity requests are excluded from Brief/export until r
   assert.match(requests, /Stale — excluded from Brief/);
   assert.match(requests, /Selected state is preserved/);
   assert.match(requests, /createSensitivityDataRequest\(scenario, sensitivityField\)/);
-  assert.match(brief, /stale for the current scenario/);
+  assert.match(brief, /withStaleSelectedDataRequestWarning/);
+  assert.match(warnings, /stale for the current scenario/);
 });
 
 
