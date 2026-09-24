@@ -2,10 +2,19 @@ import { createContext, useContext, useEffect, useMemo, useState, type ReactNode
 import {
   type ArtifactBundle,
   type LocalContextArtifact,
+  type LocalContextRecord,
   type Scenario,
   type ScenarioResult
 } from "@diagnostic-odyssey/contracts";
 import { calculateScenario } from "@diagnostic-odyssey/scenario-engine";
+import {
+  clearLocalContextSelection,
+  createEmptyLocalContextSelection,
+  createLocalContextSelectionForArtifact,
+  resolveSelectedLocalContext,
+  updateLocalContextSelection,
+  type LocalContextSelectionState
+} from "./localContextSelection";
 import { createPlanningScenarioDefaults } from "./planningScenarioDefaults";
 import { loadReviewedMepsArtifact } from "./reviewedArtifact";
 import { loadReviewedWvLocalContextArtifact } from "./reviewedLocalContext";
@@ -17,6 +26,10 @@ interface ArtifactState {
   localContext: LocalContextArtifact | null;
   localContextStatus: "loading" | "loaded" | "error";
   localContextError: string | null;
+  selectedLocalContextIds: string[];
+  selectedLocalContext: LocalContextRecord[];
+  setLocalContextSelected: (indicatorId: string, selected: boolean) => void;
+  clearSelectedLocalContext: () => void;
   scenario: Scenario | null;
   scenarioResult: ScenarioResult | null;
   setScenario: (scenario: Scenario) => void;
@@ -32,6 +45,8 @@ export function ArtifactProvider({children}: {children: ReactNode}) {
   const [localContextStatus, setLocalContextStatus] =
     useState<ArtifactState["localContextStatus"]>("loading");
   const [localContextError, setLocalContextError] = useState<string | null>(null);
+  const [localContextSelection, setLocalContextSelection] =
+    useState<LocalContextSelectionState>(createEmptyLocalContextSelection);
   const [scenario, setScenario] = useState<Scenario | null>(null);
 
   useEffect(() => {
@@ -52,14 +67,44 @@ export function ArtifactProvider({children}: {children: ReactNode}) {
     try {
       const candidate = loadReviewedWvLocalContextArtifact();
       setLocalContext(candidate);
+      setLocalContextSelection(
+        createLocalContextSelectionForArtifact(candidate)
+      );
       setLocalContextError(null);
       setLocalContextStatus("loaded");
     } catch (cause) {
       setLocalContext(null);
+      setLocalContextSelection(createEmptyLocalContextSelection());
       setLocalContextError(cause instanceof Error ? cause.message : String(cause));
       setLocalContextStatus("error");
     }
   }, []);
+
+  const selectedLocalContext = useMemo(
+    () =>
+      resolveSelectedLocalContext(
+        localContextSelection,
+        localContextStatus,
+        localContext
+      ),
+    [localContextSelection, localContextStatus, localContext]
+  );
+
+  const selectedLocalContextIds = useMemo(
+    () => selectedLocalContext.map(record => record.indicator_id),
+    [selectedLocalContext]
+  );
+
+  const setLocalContextSelected = (indicatorId: string, selected: boolean) => {
+    if (localContextStatus !== "loaded" || !localContext) return;
+    setLocalContextSelection(current =>
+      updateLocalContextSelection(current, localContext, indicatorId, selected)
+    );
+  };
+
+  const clearSelectedLocalContext = () => {
+    setLocalContextSelection(clearLocalContextSelection(localContext));
+  };
 
   const scenarioResult = useMemo(() => {
     if (!scenario) return null;
@@ -76,6 +121,10 @@ export function ArtifactProvider({children}: {children: ReactNode}) {
         localContext,
         localContextStatus,
         localContextError,
+        selectedLocalContextIds,
+        selectedLocalContext,
+        setLocalContextSelected,
+        clearSelectedLocalContext,
         scenario,
         scenarioResult,
         setScenario

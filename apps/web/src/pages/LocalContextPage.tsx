@@ -1,7 +1,10 @@
+import { Link } from "react-router-dom";
 import type { LocalContextRecord } from "@diagnostic-odyssey/contracts";
 import { ContextBar } from "../components/ContextBar";
 import { useArtifact } from "../data/ArtifactContext";
 import { formatLocalContextValue } from "../data/formatLocalContextValue";
+import { isSelectableLocalContextRecord } from "../data/localContextSelection";
+import { getLocalContextSelectionAccessibility } from "../data/localContextPresentation";
 
 function IndicatorDisclosure({record}: {record: LocalContextRecord}) {
   return <details>
@@ -20,18 +23,62 @@ function IndicatorDisclosure({record}: {record: LocalContextRecord}) {
   </details>;
 }
 
-function BreakdownList({records}: {records: LocalContextRecord[]}) {
+function SelectableIndicatorRow({
+  record,
+  selected,
+  onSelectedChange,
+  displayLabel
+}: {
+  record: LocalContextRecord;
+  selected: boolean;
+  onSelectedChange: (indicatorId: string, selected: boolean) => void;
+  displayLabel?: string;
+}) {
+  const selectable = isSelectableLocalContextRecord(record);
+  const accessibility = getLocalContextSelectionAccessibility(record, displayLabel);
+
+  return <div className="measure">
+    <div>
+      <strong id={accessibility.titleId}>{accessibility.displayTitle}</strong>
+      {accessibility.disambiguatorId && <span id={accessibility.disambiguatorId} className="sr-only">{record.label}</span>}
+      <span>{record.universe}</span>
+      <label className="selection-control" htmlFor={accessibility.controlId}>
+        <input
+          id={accessibility.controlId}
+          type="checkbox"
+          aria-labelledby={accessibility.labelledBy}
+          checked={selected}
+          disabled={!selectable}
+          onChange={event => onSelectedChange(record.indicator_id, event.target.checked)}
+        />
+        <span id={accessibility.actionLabelId}>Include in Planning Brief</span>
+      </label>
+    </div>
+    <div className="measure-value">
+      {formatLocalContextValue(record)}
+      <small>{record.release_status} · {record.state}</small>
+    </div>
+  </div>;
+}
+
+function BreakdownList({
+  records,
+  selectedIds,
+  onSelectedChange
+}: {
+  records: LocalContextRecord[];
+  selectedIds: string[];
+  onSelectedChange: (indicatorId: string, selected: boolean) => void;
+}) {
   return <div>
-    {records.map(record => <div className="measure" key={record.indicator_id}>
-      <div>
-        <strong>{record.label}</strong>
-        <span>{record.universe}</span>
-      </div>
-      <div className="measure-value">
-        {formatLocalContextValue(record)}
-        <small>{record.release_status}</small>
-      </div>
-    </div>)}
+    {records.map(record =>
+      <SelectableIndicatorRow
+        key={record.indicator_id}
+        record={record}
+        selected={selectedIds.includes(record.indicator_id)}
+        onSelectedChange={onSelectedChange}
+      />
+    )}
   </div>;
 }
 
@@ -40,7 +87,10 @@ export function LocalContextPage() {
     bundle,
     localContext,
     localContextStatus,
-    localContextError
+    localContextError,
+    selectedLocalContextIds,
+    setLocalContextSelected,
+    clearSelectedLocalContext
   } = useArtifact();
   if (!bundle) return null;
 
@@ -115,6 +165,8 @@ export function LocalContextPage() {
     source.source_ref === "acs-2024-5year-profile"
   );
 
+  const selectedCount = selectedLocalContextIds.length;
+
   return <section className="page page-stack">
     <ContextBar />
     <header className="page-heading">
@@ -130,6 +182,22 @@ export function LocalContextPage() {
     </div>
 
     <div className="guardrail">
+      <strong>Planning Brief selection boundary</strong>
+      <p>Selecting an indicator includes its reviewed value, source, geography, vintage, uncertainty, and interpretation boundaries in the Planning Brief. It does not change national burden or Pilot Planner assumptions.</p>
+    </div>
+
+    <div className="card selection-summary" aria-live="polite">
+      <div>
+        <strong>{selectedCount} {selectedCount === 1 ? "indicator" : "indicators"} selected for Planning Brief</strong>
+        <p className="subtle">Only explicit selections from the currently loaded reviewed artifact are eligible.</p>
+      </div>
+      <div className="selection-actions">
+        {selectedCount > 0 && <Link className="button" to="/brief">Review selected context in Planning Brief</Link>}
+        {selectedCount > 0 && <button className="button secondary" type="button" onClick={clearSelectedLocalContext}>Clear selections</button>}
+      </div>
+    </div>
+
+    <div className="guardrail">
       <strong>Source/vintage boundary</strong>
       <p><strong>HRSA:</strong> {primarySource?.source_release_vintage ?? "Current HPSA snapshot retrieved 2026-09-24"}.</p>
       <p><strong>ACS:</strong> {acsSource?.source_release_vintage ?? "2020–2024 ACS 5-year estimates / 2024 release"}.</p>
@@ -139,24 +207,25 @@ export function LocalContextPage() {
     <article className="card">
       <h2>A. Primary Care HPSA context</h2>
       <p className="subtle">{primaryCount.source_agency} · {primaryCount.source_release_vintage}</p>
-      <div className="measure">
-        <div>
-          <strong>{primaryCount.label}</strong>
-          <span>{primaryCount.universe}</span>
-        </div>
-        <div className="measure-value">{formatLocalContextValue(primaryCount)}</div>
-      </div>
-      <div className="measure">
-        <div>
-          <strong>Maximum source-published HPSA score among included designations</strong>
-          <span>{primaryScore.universe}</span>
-        </div>
-        <div className="measure-value">{formatLocalContextValue(primaryScore)}</div>
-      </div>
+      <SelectableIndicatorRow
+        record={primaryCount}
+        selected={selectedLocalContextIds.includes(primaryCount.indicator_id)}
+        onSelectedChange={setLocalContextSelected}
+      />
+      <SelectableIndicatorRow
+        record={primaryScore}
+        selected={selectedLocalContextIds.includes(primaryScore.indicator_id)}
+        onSelectedChange={setLocalContextSelected}
+        displayLabel="Maximum source-published HPSA score among included designations"
+      />
       <p className="limitations">The maximum score is a maximum across included individual designations; it is not a statewide shortage severity score.</p>
       <details>
         <summary>Designation-type and rural-status breakdowns</summary>
-        <BreakdownList records={primaryBreakdowns} />
+        <BreakdownList
+          records={primaryBreakdowns}
+          selectedIds={selectedLocalContextIds}
+          onSelectedChange={setLocalContextSelected}
+        />
       </details>
       <IndicatorDisclosure record={primaryCount} />
     </article>
@@ -164,24 +233,25 @@ export function LocalContextPage() {
     <article className="card">
       <h2>B. Mental Health HPSA context</h2>
       <p className="subtle">{mentalCount.source_agency} · {mentalCount.source_release_vintage}</p>
-      <div className="measure">
-        <div>
-          <strong>{mentalCount.label}</strong>
-          <span>{mentalCount.universe}</span>
-        </div>
-        <div className="measure-value">{formatLocalContextValue(mentalCount)}</div>
-      </div>
-      <div className="measure">
-        <div>
-          <strong>Maximum source-published HPSA score among included designations</strong>
-          <span>{mentalScore.universe}</span>
-        </div>
-        <div className="measure-value">{formatLocalContextValue(mentalScore)}</div>
-      </div>
+      <SelectableIndicatorRow
+        record={mentalCount}
+        selected={selectedLocalContextIds.includes(mentalCount.indicator_id)}
+        onSelectedChange={setLocalContextSelected}
+      />
+      <SelectableIndicatorRow
+        record={mentalScore}
+        selected={selectedLocalContextIds.includes(mentalScore.indicator_id)}
+        onSelectedChange={setLocalContextSelected}
+        displayLabel="Maximum source-published HPSA score among included designations"
+      />
       <p className="limitations">The maximum score is a maximum across included individual designations; it is not a statewide shortage severity score.</p>
       <details>
         <summary>Designation-type and rural-status breakdowns</summary>
-        <BreakdownList records={mentalBreakdowns} />
+        <BreakdownList
+          records={mentalBreakdowns}
+          selectedIds={selectedLocalContextIds}
+          onSelectedChange={setLocalContextSelected}
+        />
       </details>
       <IndicatorDisclosure record={mentalCount} />
     </article>
@@ -190,17 +260,12 @@ export function LocalContextPage() {
       <h2>C. ACS implementation/access context</h2>
       <p className="subtle">U.S. Census Bureau · 2020–2024 ACS 5-year estimates / 2024 release. Native 90% margins of error are preserved.</p>
       {acsRecords.map(record => <div key={record.indicator_id}>
-        <div className="measure">
-          <div>
-            <strong>{record.label}</strong>
-            <span>Universe: {record.universe}</span>
-            <span>{record.source_agency} · {record.source_release_vintage}</span>
-          </div>
-          <div className="measure-value">
-            {formatLocalContextValue(record)}
-            <small>{record.uncertainty_type} · confidence level {record.confidence_level}</small>
-          </div>
-        </div>
+        <SelectableIndicatorRow
+          record={record}
+          selected={selectedLocalContextIds.includes(record.indicator_id)}
+          onSelectedChange={setLocalContextSelected}
+        />
+        <p className="subtle">{record.source_agency} · {record.source_release_vintage} · {record.uncertainty_type} · confidence level {record.confidence_level}</p>
         <IndicatorDisclosure record={record} />
       </div>)}
     </article>

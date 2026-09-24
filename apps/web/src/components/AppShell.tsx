@@ -1,4 +1,5 @@
 import { NavLink, Outlet } from "react-router-dom";
+import { useArtifact } from "../data/ArtifactContext";
 
 const nav = [
   ["/", "Overview"],
@@ -10,6 +11,15 @@ const nav = [
 ] as const;
 
 export function AppShell() {
+  const {localContextStatus} = useArtifact();
+
+  const localContextMessage =
+    localContextStatus === "loading"
+      ? "Local implementation context is loading; intervention-effect evidence is not yet loaded."
+      : localContextStatus === "loaded"
+        ? "Reviewed West Virginia state implementation context loaded; intervention-effect evidence is not yet loaded."
+        : "Local implementation context is unavailable; intervention-effect evidence is not yet loaded.";
+
   return (
     <div className="app-shell">
       <header className="site-header">
@@ -28,7 +38,7 @@ export function AppShell() {
       </header>
       <div className="prototype-strip" role="note">
         <strong>Reviewed national MEPS burden loaded · planning assumptions remain analyst-editable</strong>
-        <span>Local implementation context and intervention-effect evidence are not yet loaded.</span>
+        <span>{localContextMessage}</span>
       </div>
       <main>
         <Outlet />
