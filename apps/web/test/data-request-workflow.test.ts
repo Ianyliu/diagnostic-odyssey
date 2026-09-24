@@ -4,6 +4,8 @@ import { fileURLToPath } from "node:url";
 import test from "node:test";
 import type { Scenario } from "@diagnostic-odyssey/contracts";
 import { buildPlanningBrief, serializeBriefJson } from "@diagnostic-odyssey/brief-core";
+import { oneWaySensitivity } from "@diagnostic-odyssey/scenario-engine";
+import { buildSensitivityValues } from "../src/data/decisionVisuals.ts";
 import {
   createSensitivityDataRequest,
   getSensitivityDataRequestStatus,
@@ -203,4 +205,29 @@ test("stale-selection warning helper does not duplicate an existing warning", ()
   const once = withStaleSelectedDataRequestWarning(baseBrief, 1);
   const twice = withStaleSelectedDataRequestWarning(once, 1);
   assert.equal(twice.warnings.filter(item => item === warning).length, 1);
+});
+
+
+test("capacity request rationale stays conditional when the tested capacity range is flat", () => {
+  const flatScenario = {...scenario, capacity: 10000};
+  const values = buildSensitivityValues(flatScenario, "capacity");
+  const points = oneWaySensitivity(flatScenario, "capacity", values);
+
+  assert.ok(points.length > 0);
+  assert.ok(points.every(point => point.result.capacity_gap === 0));
+
+  const request = createSensitivityDataRequest(flatScenario, "capacity");
+  assert.doesNotMatch(
+    request.rationale,
+    /sensitivity shows capacity directly changes/i
+  );
+  assert.match(request.rationale, /Capacity can constrain reached participants/i);
+  assert.match(
+    request.rationale,
+    /when intended demand exceeds available capacity/i
+  );
+  assert.match(
+    request.rationale,
+    /local capacity should be verified before operational planning/i
+  );
 });

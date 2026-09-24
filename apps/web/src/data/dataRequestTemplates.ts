@@ -25,7 +25,7 @@ export function createSensitivityDataRequest(
       ],
       likely_source_owner: "Program operations, provider network, or participating health system",
       granularity_time_window: `Program/site level during the ${scenario.horizon_months}-month planning horizon`,
-      rationale: `The current scenario assumes capacity of ${Math.round(scenario.capacity).toLocaleString()} participants. One-way sensitivity shows capacity directly changes the modeled capacity gap, so local capacity should be verified before operational planning.`,
+      rationale: `The current scenario assumes capacity of ${Math.round(scenario.capacity).toLocaleString()} participants. Capacity can constrain reached participants and create a modeled capacity gap when intended demand exceeds available capacity, so local capacity should be verified before operational planning.`,
       feasibility_privacy_notes: "Prefer aggregate operational capacity and scheduling data. Individual identifiers are not required for this planning question."
     };
   }
