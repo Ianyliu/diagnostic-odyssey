@@ -47,5 +47,11 @@
     "Data Warehouse Record Create Date"
   ],
   "designated_status": "Designated",
-  "rural_status_categories": ["Rural", "Partially Rural", "Non-Rural", "Unknown"]
+  "rural_status_categories": [
+    "Rural",
+    "Partially Rural",
+    "Non-Rural",
+    "Not Applicable",
+    "Unknown"
+  ]
 }
