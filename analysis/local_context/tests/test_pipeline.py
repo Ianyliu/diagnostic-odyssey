@@ -11,12 +11,13 @@ from unittest.mock import MagicMock, patch
 from analysis.local_context.pipeline import (
     ContractError,
     build_acs_request,
+    canonical_json_fingerprint,
     download_file,
     fetch_json,
     parse_acs,
     sanitize_url,
     summarize_hrsa,
-    verify_acs_labels,
+    verify_acs_metadata,
 )
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -138,27 +139,126 @@ class LocalContextPipelineTests(unittest.TestCase):
         )
         self.assertFalse(any(".rural-status." in x["indicator_id"] for x in indicators))
 
-    def test_acs_variable_ids_labels_and_percent_moe_pairing(self):
-        metadata = {"variables": {}}
+    def test_not_applicable_rural_status_is_preserved_not_collapsed_to_unknown(self):
+        field = HRSA_CONFIG["field_map"]
+        row = self._hrsa_row(**{field["rural_status"]: "Not Applicable"})
+        indicators, diagnostics = summarize_hrsa(
+            self._write_hrsa([row]), HRSA_CONFIG, "primary_care"
+        )
+        self.assertTrue(diagnostics["rural_status_breakdown_included"])
+        not_applicable = next(
+            x for x in indicators if x["indicator_id"].endswith("rural-status.not-applicable")
+        )
+        unknown = next(
+            x for x in indicators if x["indicator_id"].endswith("rural-status.unknown")
+        )
+        self.assertEqual(not_applicable["value"], 1)
+        self.assertEqual(unknown["value"], 0)
+
+    def _realistic_acs_metadata(self):
+        bulk = {"variables": {}}
+        individual = {}
         for spec in ACS_CONFIG["variables"]:
-            metadata["variables"][spec["estimate"]] = {"label": spec["expected_estimate_label"]}
-            metadata["variables"][spec["moe"]] = {"label": spec["expected_moe_label"]}
-        verified = verify_acs_labels(ACS_CONFIG, metadata)
+            bulk["variables"][spec["estimate"]] = {
+                "label": spec["expected_estimate_label"],
+                "concept": "fixture concept",
+                "predicateType": "float",
+                "group": spec["estimate"].split("_")[0],
+                "limit": 0,
+                "attributes": ",".join([
+                    spec["estimate_annotation"],
+                    spec["moe"],
+                    spec["moe_annotation"],
+                ]),
+            }
+            individual[spec["moe"]] = {
+                "name": spec["moe"],
+                "label": spec["expected_moe_label"],
+                "concept": "fixture concept",
+                "predicateType": "float",
+                "group": spec["moe"].split("_")[0],
+                "limit": 0,
+                "attributes": spec["moe_annotation"],
+                "attribute of": spec["estimate"],
+                "attribute type": "MARGIN_OF_ERROR",
+            }
+            individual[spec["estimate_annotation"]] = {
+                "name": spec["estimate_annotation"],
+                "label": spec["expected_estimate_annotation_label"],
+                "concept": "fixture concept",
+                "predicateType": "string",
+                "group": spec["estimate"].split("_")[0],
+                "limit": 0,
+                "attribute of": spec["estimate"],
+                "attribute type": "ANNOTATION",
+            }
+            individual[spec["moe_annotation"]] = {
+                "name": spec["moe_annotation"],
+                "label": spec["expected_moe_annotation_label"],
+                "concept": "fixture concept",
+                "predicateType": "string",
+                "group": spec["estimate"].split("_")[0],
+                "limit": 0,
+                "attribute of": spec["moe"],
+                "attribute type": "ANNOTATION",
+            }
+        return bulk, individual
+
+    def test_acs_real_bulk_shape_does_not_require_pm_top_level(self):
+        bulk, individual = self._realistic_acs_metadata()
+        for spec in ACS_CONFIG["variables"]:
+            self.assertNotIn(spec["moe"], bulk["variables"])
+        verified, contract = verify_acs_metadata(ACS_CONFIG, bulk, individual)
         self.assertEqual(len(verified), 4)
+        self.assertEqual(len(contract["bulk_pe_records"]), 4)
         self.assertEqual(
             {(spec["estimate"], spec["moe"]) for spec in ACS_CONFIG["variables"]},
             {("DP03_0099PE", "DP03_0099PM"), ("DP04_0058PE", "DP04_0058PM"),
              ("DP02_0154PE", "DP02_0154PM"), ("DP03_0128PE", "DP03_0128PM")}
         )
 
-    def test_acs_label_drift_fails(self):
-        metadata = {"variables": {}}
-        for spec in ACS_CONFIG["variables"]:
-            metadata["variables"][spec["estimate"]] = {"label": spec["expected_estimate_label"]}
-            metadata["variables"][spec["moe"]] = {"label": spec["expected_moe_label"]}
-        metadata["variables"]["DP03_0099PE"]["label"] = "changed"
+    def test_acs_pe_label_drift_fails(self):
+        bulk, individual = self._realistic_acs_metadata()
+        bulk["variables"]["DP03_0099PE"]["label"] = "changed"
         with self.assertRaises(ContractError):
-            verify_acs_labels(ACS_CONFIG, metadata)
+            verify_acs_metadata(ACS_CONFIG, bulk, individual)
+
+    def test_acs_wrong_pm_relationship_fails(self):
+        bulk, individual = self._realistic_acs_metadata()
+        individual["DP03_0099PM"]["attribute of"] = "DP03_0001PE"
+        with self.assertRaises(ContractError):
+            verify_acs_metadata(ACS_CONFIG, bulk, individual)
+
+    def test_acs_wrong_pm_label_fails(self):
+        bulk, individual = self._realistic_acs_metadata()
+        individual["DP03_0099PM"]["label"] = "changed"
+        with self.assertRaises(ContractError):
+            verify_acs_metadata(ACS_CONFIG, bulk, individual)
+
+    def test_acs_missing_pm_from_pe_attributes_fails(self):
+        bulk, individual = self._realistic_acs_metadata()
+        bulk["variables"]["DP03_0099PE"]["attributes"] = "DP03_0099PEA,DP03_0099PMA"
+        with self.assertRaises(ContractError):
+            verify_acs_metadata(ACS_CONFIG, bulk, individual)
+
+    def test_acs_wrong_annotation_relationship_fails(self):
+        bulk, individual = self._realistic_acs_metadata()
+        individual["DP03_0099PMA"]["attribute of"] = "DP03_0099PE"
+        with self.assertRaises(ContractError):
+            verify_acs_metadata(ACS_CONFIG, bulk, individual)
+
+    def test_acs_pm_annotation_attribute_is_required(self):
+        bulk, individual = self._realistic_acs_metadata()
+        individual["DP03_0099PM"]["attributes"] = ""
+        with self.assertRaises(ContractError):
+            verify_acs_metadata(ACS_CONFIG, bulk, individual)
+
+    def test_canonical_json_hashing_is_deterministic_and_newline_bound(self):
+        left = canonical_json_fingerprint({"b": 2, "a": [1, {"z": "x"}]})
+        right = canonical_json_fingerprint({"a": [1, {"z": "x"}], "b": 2})
+        self.assertEqual(left, right)
+        self.assertGreater(left["byte_size"], 0)
+        self.assertRegex(left["sha256"], r"^[a-f0-9]{64}$")
 
     def test_acs_fips_universes_and_native_90_percent_moe(self):
         variables = ["NAME"]
@@ -171,7 +271,7 @@ class LocalContextPipelineTests(unittest.TestCase):
         indicators, diagnostics = parse_acs(ACS_CONFIG, [variables, row])
         self.assertEqual(diagnostics["geography_returned"]["state"], "54")
         self.assertEqual({x["universe"] for x in indicators},
-                         {"Civilian noninstitutionalized population", "Occupied housing units", "Households", "All people"})
+                         {"Civilian noninstitutionalized population", "Occupied housing units", "Total households", "All people"})
         self.assertTrue(all(x["confidence_level"] == 0.90 for x in indicators))
         self.assertTrue(all(x["margin_of_error"] == 0.5 for x in indicators))
 
