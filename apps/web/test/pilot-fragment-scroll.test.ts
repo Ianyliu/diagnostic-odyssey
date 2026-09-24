@@ -11,6 +11,10 @@ const pilotSource = readFileSync(
   fileURLToPath(new URL("../src/pages/PilotPage.tsx", import.meta.url)),
   "utf8"
 );
+const sensitivitySource = readFileSync(
+  fileURLToPath(new URL("../src/components/SensitivityExplorer.tsx", import.meta.url)),
+  "utf8"
+);
 
 test("Pilot fragment helper recognizes only the sensitivity target", () => {
   assert.equal(SENSITIVITY_FRAGMENT, "#sensitivity");
@@ -24,5 +28,5 @@ test("PilotPage explicitly scrolls the sensitivity fragment after scenario conte
   assert.match(pilotSource, /getPilotFragmentTargetId\(location\.hash\)/);
   assert.match(pilotSource, /document\.getElementById\(targetId\)\?\.scrollIntoView/);
   assert.match(pilotSource, /\[location\.hash, sensitivityReady\]/);
-  assert.match(pilotSource, /id="sensitivity"/);
+  assert.match(sensitivitySource, /id="sensitivity"/);
 });
