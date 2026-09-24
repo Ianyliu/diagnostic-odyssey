@@ -267,8 +267,6 @@ test("LocalContextPage uses canonical fields and preserves score/source interpre
   for (const canonicalField of [
     "indicator_id",
     "label",
-    "geography_name",
-    "geography_type",
     "source_agency",
     "source_ref",
     "source_release_vintage",
@@ -276,7 +274,6 @@ test("LocalContextPage uses canonical fields and preserves score/source interpre
     "value",
     "unit",
     "universe",
-    "margin_of_error",
     "confidence_level",
     "uncertainty_type",
     "limitations",
@@ -286,6 +283,9 @@ test("LocalContextPage uses canonical fields and preserves score/source interpre
   ]) {
     assert.match(local, new RegExp(canonicalField));
   }
+  const formatter = readSource("../src/data/formatLocalContextValue.ts");
+  assert.match(formatter, /margin_of_error/);
+  assert.match(local, /localContext\.geography/);
   assert.doesNotMatch(local, /bundle\.local_context/);
   assert.match(local, /Maximum source-published HPSA score among included designations/);
   assert.match(local, /not a statewide shortage severity score/);
