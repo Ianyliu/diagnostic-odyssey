@@ -13,7 +13,7 @@ import {
   type Estimate,
   type LocalContextArtifact
 } from "@diagnostic-odyssey/contracts";
-import { buildPlanningBrief } from "@diagnostic-odyssey/brief-core";
+import { buildPlanningBrief, serializeBriefJson } from "@diagnostic-odyssey/brief-core";
 import { calculateScenario } from "@diagnostic-odyssey/scenario-engine";
 import {
   formatEstimateInterval,
@@ -424,10 +424,10 @@ test("LocalContextPage uses canonical fields and preserves score/source interpre
   assert.match(local, /No fixture or illustrative local data are substituted/);
 });
 
-test("planning brief keeps available WV context unselected until an explicit future handoff", () => {
+test("planning brief includes only explicitly supplied release-eligible local context", () => {
   const scenario = createPlanningScenarioDefaults();
   const scenarioResult = calculateScenario(scenario);
-  const brief = buildPlanningBrief({
+  const zeroSelectionBrief = buildPlanningBrief({
     context: reviewedBundle.context,
     estimates: reviewedEstimates,
     localContext: [],
@@ -437,14 +437,62 @@ test("planning brief keeps available WV context unselected until an explicit fut
     generatedAt: "2026-09-23T00:00:00Z"
   });
 
-  assert.equal(brief.burden_findings.length, 21);
-  assert.equal(brief.local_context.length, 0);
-  assert.equal(brief.evidence.length, 0);
-  assert.equal(brief.scenario?.input.artifact_version, "planning-assumptions-2026-09-v1");
-  assert.ok(brief.warnings.some(warning => /Gross burden is not attributable burden/.test(warning)));
-  assert.ok(brief.warnings.some(warning => /Out-of-pocket\/self-family-paid/.test(warning)));
-  assert.ok(brief.warnings.some(warning => /K6.*PHQ-2/.test(warning)));
-  assert.ok(brief.warnings.some(warning => /ESAQ time measures/.test(warning)));
+  assert.equal(zeroSelectionBrief.burden_findings.length, 21);
+  assert.equal(zeroSelectionBrief.local_context.length, 0);
+  assert.equal(zeroSelectionBrief.evidence.length, 0);
+  assert.deepEqual(zeroSelectionBrief.scenario?.input, scenario);
+
+  const loadedRecord = reviewedLocalContext.indicators.find(record => record.state === "loaded");
+  assert.ok(loadedRecord);
+  const partialRecord = structuredClone(
+    reviewedLocalContext.indicators.find(record => record.indicator_id !== loadedRecord.indicator_id)
+  );
+  assert.ok(partialRecord);
+  partialRecord.state = "partial";
+
+  const preliminaryRecord = structuredClone(
+    reviewedLocalContext.indicators.find(
+      record =>
+        record.indicator_id !== loadedRecord.indicator_id &&
+        record.indicator_id !== partialRecord.indicator_id
+    )
+  );
+  assert.ok(preliminaryRecord);
+  preliminaryRecord.release_status = "preliminary";
+
+  const selectedBrief = buildPlanningBrief({
+    context: reviewedBundle.context,
+    estimates: reviewedEstimates,
+    localContext: [loadedRecord, partialRecord, preliminaryRecord],
+    scenario: {input: scenario, result: scenarioResult},
+    evidence: reviewedBundle.evidence,
+    dataRequests: reviewedBundle.data_requests,
+    generatedAt: "2026-09-23T00:00:00Z"
+  });
+
+  assert.deepEqual(
+    selectedBrief.local_context.map(record => record.indicator_id),
+    [loadedRecord.indicator_id, partialRecord.indicator_id]
+  );
+  assert.equal(selectedBrief.local_context[1]?.state, "partial");
+  assert.equal(selectedBrief.burden_findings.length, 21);
+  assert.deepEqual(selectedBrief.scenario?.input, scenario);
+  assert.deepEqual(selectedBrief.scenario?.result, scenarioResult);
+  assert.equal(reviewedBundle.local_context.length, 0);
+
+  const serialized = JSON.parse(serializeBriefJson(selectedBrief)) as {
+    local_context: typeof selectedBrief.local_context;
+  };
+  assert.deepEqual(
+    serialized.local_context.map(record => record.indicator_id),
+    [loadedRecord.indicator_id, partialRecord.indicator_id]
+  );
+  assert.equal(serialized.local_context[0]?.source_agency, loadedRecord.source_agency);
+  assert.equal(
+    serialized.local_context[0]?.source_release_vintage,
+    loadedRecord.source_release_vintage
+  );
+  assert.equal(serialized.local_context[0]?.geography_name, "West Virginia");
 
   const briefSource = readSource("../src/pages/BriefPage.tsx");
   assert.match(briefSource, /Reviewed national burden findings/);
@@ -453,12 +501,71 @@ test("planning brief keeps available WV context unselected until an explicit fut
   assert.match(briefSource, /brief-finding-interval/);
   assert.match(briefSource, /aria-hidden="true"/);
   assert.match(briefSource, /sr-only/);
-  assert.match(briefSource, /\\d\+.*confidence interval/);
-  assert.match(briefSource, /localContext:\s*\[\]/);
+  assert.match(briefSource, /localContext:\s*selectedLocalContext/);
+  assert.doesNotMatch(briefSource, /localContext:\s*\[\]/);
+  assert.match(briefSource, /formatLocalContextValue\(record\)/);
+  assert.match(briefSource, /Partial data state/);
+  assert.match(briefSource, /source_release_vintage/);
+  assert.match(briefSource, /record\.state/);
+  assert.match(briefSource, /record\.limitations/);
+  assert.match(briefSource, /record\.allowed_interpretation/);
+  assert.match(briefSource, /record\.prohibited_interpretation/);
+  assert.match(briefSource, /formatConfidenceLevel\(record\.confidence_level\)/);
   assert.match(briefSource, /available, but no local context has been selected for this brief/);
-  assert.match(briefSource, /explicit analyst selection\/handoff is required/);
-  assert.doesNotMatch(briefSource, /localContext:\s*localContext\.indicators/);
+  assert.match(briefSource, /explicit analyst selection is required/);
   assert.doesNotMatch(briefSource, /development fixture|Fixture only|Partial fixture/);
+});
+
+test("local-context selection UI supports reviewed records without changing Pilot assumptions", () => {
+  const localSource = readSource("../src/pages/LocalContextPage.tsx");
+  const contextSource = readSource("../src/data/ArtifactContext.tsx");
+  const pilotSource = readSource("../src/pages/PilotPage.tsx");
+
+  assert.match(localSource, /Include in Planning Brief/);
+  assert.match(localSource, /Review selected context in Planning Brief/);
+  assert.match(localSource, /Clear selections/);
+  assert.match(localSource, /selected for Planning Brief/);
+  assert.match(localSource, /Selecting an indicator includes its reviewed value, source, geography, vintage, uncertainty, and interpretation boundaries/);
+  assert.match(localSource, /does not change national burden or Pilot Planner assumptions/);
+  assert.match(localSource, /BreakdownList/);
+  assert.match(localSource, /primaryBreakdowns/);
+  assert.match(localSource, /mentalBreakdowns/);
+  assert.match(localSource, /acsRecords\.map/);
+
+  assert.match(contextSource, /selectedLocalContextIds: string\[\]/);
+  assert.match(contextSource, /selectedLocalContext: LocalContextRecord\[\]/);
+  assert.match(contextSource, /setLocalContextSelected/);
+  assert.match(contextSource, /clearSelectedLocalContext/);
+  assert.match(contextSource, /resolveSelectedLocalContext/);
+  assert.match(contextSource, /createLocalContextSelectionForArtifact/);
+  assert.doesNotMatch(contextSource, /localContext.*setScenario|setScenario.*localContext/);
+  assert.doesNotMatch(localSource, /setScenario/);
+  assert.doesNotMatch(pilotSource, /selectedLocalContext|setLocalContextSelected/);
+});
+
+test("AppShell evidence strip is truthful for loading, loaded, and error local-context states", () => {
+  const shell = readSource("../src/components/AppShell.tsx");
+  assert.match(shell, /useArtifact\(\)/);
+  assert.match(
+    shell,
+    /Local implementation context is loading; intervention-effect evidence is not yet loaded\./
+  );
+  assert.match(
+    shell,
+    /Reviewed West Virginia state implementation context loaded; intervention-effect evidence is not yet loaded\./
+  );
+  assert.match(
+    shell,
+    /Local implementation context is unavailable; intervention-effect evidence is not yet loaded\./
+  );
+  assert.doesNotMatch(
+    shell,
+    /Local implementation context and intervention-effect evidence are not yet loaded/
+  );
+  assert.match(
+    shell,
+    /Reviewed national MEPS burden loaded · planning assumptions remain analyst-editable/
+  );
 });
 
 test("local-context failure state leaves national routes conceptually available", () => {
