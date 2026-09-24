@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { canExportEstimate, type Estimate } from "@diagnostic-odyssey/contracts";
 import { ContextBar } from "../components/ContextBar";
+import { IntervalWhiskerPlot } from "../components/IntervalWhiskerPlot";
 import { useArtifact } from "../data/ArtifactContext";
 import {
   formatEstimateInterval,
@@ -60,6 +61,9 @@ export function BurdenPage() {
     <div className="domain-grid">
       {bundle.burden_domains.map(domain => {
         const reviewed = domain.measures.length > 0 && domain.measures.every(canExportEstimate);
+        const administrativeHourMeasures = domain.domain_id === "healthcare-work-admin"
+          ? domain.measures.filter(estimate => estimate.unit === "hours/person/year")
+          : [];
         return <article className="card domain-card" key={domain.domain_id}>
           <div className="card-title-row">
             <div><h2>{domain.label}</h2><span>{domain.availability_state}</span></div>
@@ -67,6 +71,11 @@ export function BurdenPage() {
               {reviewed ? "Reviewed national evidence" : "Not release-eligible"}
             </span>
           </div>
+          {administrativeHourMeasures.length > 1 && <IntervalWhiskerPlot
+            estimates={administrativeHourMeasures}
+            title="Annual healthcare-work time with survey uncertainty"
+            description="Comparable reviewed ESAQ time measures shown together because they share hours/person/year and the same respondent universe."
+          />}
           <div className="measure-list">
             {domain.measures.map(estimate => <div className="measure" key={estimate.estimate_id}>
               <div><strong>{estimate.label}</strong><span>{estimate.allowed_interpretation}</span></div>
