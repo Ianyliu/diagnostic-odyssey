@@ -575,6 +575,20 @@ export function validateLocalContextArtifact(value: unknown): ValidationIssue[] 
       if (!(source.sha256 === null || (typeof source.sha256 === "string" && /^[a-f0-9]{64}$/.test(source.sha256)))) {
         issues.push({ path: `${sourcePath}.sha256`, message: "must be a lowercase SHA-256 string or null" });
       }
+      if (source.source_ref === "acs-2024-5year-profile") {
+        if (!(typeof source.byte_size === "number" && Number.isFinite(source.byte_size) && source.byte_size > 0)) {
+          issues.push({
+            path: `${sourcePath}.byte_size`,
+            message: "ACS source snapshots must have a positive deterministic canonical byte size"
+          });
+        }
+        if (!(typeof source.sha256 === "string" && /^[a-f0-9]{64}$/.test(source.sha256))) {
+          issues.push({
+            path: `${sourcePath}.sha256`,
+            message: "ACS source snapshots must have a deterministic SHA-256"
+          });
+        }
+      }
     });
   }
 
