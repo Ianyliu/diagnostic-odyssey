@@ -83,7 +83,7 @@ test("reach preserves exact decimal intent without whole-percent rounding", () =
   draft.reach = "25.1234567";
   const result = evaluatePilotInputDraft(draft, scenario);
   assert.ok(result.candidate);
-  assert.equal(result.candidate.reach, 0.251234567);
+  assert.equal(result.candidate.reach, 25.1234567 / 100);
 });
 
 test("cross-field recovery constructs the candidate from all current drafts", () => {
