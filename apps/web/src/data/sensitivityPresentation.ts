@@ -12,9 +12,10 @@ function exactDecimal(value: number): string {
 
   const sign = raw.startsWith("-") ? "-" : "";
   const unsigned = sign ? raw.slice(1) : raw;
-  const [coefficient, exponentText] = unsigned.toLowerCase().split("e");
+  const [coefficient = "", exponentText = "0"] =
+    unsigned.toLowerCase().split("e");
   const exponent = Number(exponentText);
-  const [integerPart, fractionalPart = ""] = coefficient.split(".");
+  const [integerPart = "", fractionalPart = ""] = coefficient.split(".");
   const digits = integerPart + fractionalPart;
   const decimalIndex = integerPart.length + exponent;
 
