@@ -30,6 +30,16 @@ jobs:
       - name: Unit tests
         run: npm test
 
+      - name: Local-context contract tests
+        run: |
+          python -m unittest discover -s analysis/local_context/tests -p 'test_*.py'
+          bash analysis/local_context/tests/test_candidate_output_verifier.sh
+
+      - name: Verify immutable reviewed MEPS checksums
+        run: |
+          cd artifacts/reviewed/meps-2024-long-covid-candidate-20260923T020607Z/
+          sha256sum -c SHA256SUMS
+
       - name: Lint
         run: npm run lint
 

@@ -51,7 +51,9 @@ See [Data and analytical inputs](#data-and-analytical-inputs) before running thi
 
 ### Working now
 
-- Survey-aware 2024 MEPS HC-256 Long COVID analytical pipeline code: reviewed variable map, cohort construction, weight-specific survey designs, Tier 1 spending/utilization, Tier 2 ESAQ administrative burden, Tier 3 K6/PHQ-2, candidate-artifact generation, and candidate/release gates.
+- Reviewed national 2024 MEPS HC-256 Long COVID artifact with **21 `reviewed_released` estimates**, loaded by the web runtime from `artifacts/reviewed/meps-2024-long-covid-candidate-20260923T020607Z/`.
+- Survey-aware MEPS analytical pipeline with reviewed variable map, cohort construction, weight-specific survey designs, burden domains, candidate generation, methods review, and explicit promotion gates.
+- Hardened HRSA + 2024 ACS 5-year local-context candidate pipeline with frozen source contracts, fail-closed validation, provenance, diagnostics, and independent candidate/release gates. No real HRSA/ACS candidate has been reviewed or runtime-integrated yet.
 
 - React + TypeScript + Vite application shell and all major product routes.
 - Versioned fixture artifact loading with runtime validation and explicit loading/error behavior.
@@ -68,8 +70,8 @@ See [Data and analytical inputs](#data-and-analytical-inputs) before running thi
 
 ### Scaffolded / intentionally incomplete
 
-- Execution of the real MEPS HC-256 estimator against raw HC-256 data. The survey-aware pipeline is implemented, but no raw public-use file or generated estimates are committed.
-- HRSA/ACS/PLACES/CMS local-context ingestion.
+- Reviewed HRSA/ACS local-context artifact and runtime integration. The acquisition/validation pipeline is implemented and hardened, but the real-data local-context candidate has not yet been run and independently reviewed.
+- PLACES/CMS local-context ingestion.
 - Reviewed external literature ledger and source extraction workflow.
 - Evidence-backed bounded scenario parameters.
 - Rich provenance drawer/interactions.
@@ -80,7 +82,7 @@ See [Data and analytical inputs](#data-and-analytical-inputs) before running thi
 - Pixel-level Figma parity, chart polish, and full accessibility QA.
 - Optional grounded AI. The core product does not require AI.
 
-The checked-in artifact under `artifacts/examples/fixture-2026-09-v1/` is **illustrative development data only**. It is deliberately barred from analytical export by the release/display gates. It exists to make the application and tests runnable before reviewed analytical estimates are released.
+The checked-in artifact under `artifacts/examples/fixture-2026-09-v1/` is **illustrative development/test data only**. It is deliberately barred from analytical export by the release/display gates. The released national MEPS artifact is separate and runtime-loaded; the fixture remains only for development and test coverage.
 
 ## How to use the prototype
 
@@ -122,6 +124,7 @@ packages/
 
 analysis/
   r/                         offline survey-analysis entry points
+  local_context/             HRSA + ACS candidate pipeline/config/tests
 
 pipelines/
   data/                      source acquisition helpers/boundaries
@@ -150,6 +153,7 @@ docs/
   workflows/
     ci.yml
     meps-candidate.yml
+    local-context-candidate.yml
 ```
 
 ## Development
@@ -190,7 +194,7 @@ See [data/README.md](data/README.md) and [data/manifests/sources.json](data/mani
 - registration/API-key requirements;
 - downstream script entry points.
 
-The current repository contains no real MEPS, NHIS, HRSA, ACS, PLACES, or CMS analytical data. The fixture is not a substitute for reviewed estimates.
+The repository contains the reviewed aggregate national MEPS artifact with 21 `reviewed_released` estimates. Raw MEPS and HRSA source files remain excluded. HRSA/ACS local-context values are not runtime-visible until a real candidate is generated, independently reviewed, promoted, and integrated. The illustrative fixture remains development/test-only and is not a substitute for reviewed evidence.
 
 ## Documentation
 

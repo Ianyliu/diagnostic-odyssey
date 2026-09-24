@@ -1,0 +1,118 @@
+name: Local Context Candidate — WV HRSA + ACS
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  generate-candidate:
+    name: Generate preliminary WV local-context candidate
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      OUTPUT_DIR: artifacts/generated/local-context-wv-hrsa-acs-candidate-${{ github.run_id }}
+      CANDIDATE_ARTIFACT_NAME: local-context-wv-hrsa-acs-candidate-${{ github.run_id }}
+
+    steps:
+      - name: Checkout exact requested revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+
+      - name: Assert checkout matches dispatched GitHub SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          ACTUAL_SHA="$(git rev-parse HEAD)"
+          test "$ACTUAL_SHA" = "$GITHUB_SHA" || {
+            echo "::error::Checkout SHA mismatch: HEAD=$ACTUAL_SHA GITHUB_SHA=$GITHUB_SHA"
+            exit 1
+          }
+
+      - name: Require Census API key
+        shell: bash
+        env:
+          CENSUS_API_KEY: ${{ secrets.CENSUS_API_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -z "${CENSUS_API_KEY:-}" ]; then
+            echo "::error::Missing required repository Actions secret CENSUS_API_KEY. Add CENSUS_API_KEY before dispatching this workflow."
+            exit 1
+          fi
+
+      - name: Set up Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install JavaScript dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Run ordinary validation before source acquisition
+        run: |
+          npm run typecheck
+          npm test
+          python -m unittest discover -s analysis/local_context/tests -p 'test_*.py'
+
+      - name: Acquire HRSA and ACS and generate preliminary candidate
+        shell: bash
+        env:
+          CENSUS_API_KEY: ${{ secrets.CENSUS_API_KEY }}
+        run: |
+          set -euo pipefail
+          python analysis/local_context/pipeline.py --output-dir "$OUTPUT_DIR"
+
+      - name: Revalidate local artifact contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --experimental-strip-types --input-type=module -e '
+            import fs from "node:fs";
+            import { assertValidLocalContextArtifact } from "./packages/contracts/src/index.ts";
+            const artifact = JSON.parse(fs.readFileSync(process.argv[1], "utf8"));
+            assertValidLocalContextArtifact(artifact);
+          ' "$OUTPUT_DIR/local-context.json"
+
+      - name: Assert preliminary release state and national separation
+        shell: bash
+        run: |
+          set -euo pipefail
+          jq -e '
+            .manifest.artifact_family == "local_context"
+            and .manifest.release_status == "preliminary"
+            and .manifest.national_meps_burden_unchanged == true
+            and ([.indicators[].release_status] | all(. == "preliminary"))
+            and ([.indicators[].context_type] | all(. == "contextual_indicator"))
+          ' "$OUTPUT_DIR/local-context.json" >/dev/null
+          git diff --exit-code -- artifacts/reviewed/meps-2024-long-covid-candidate-20260923T020607Z/
+          (
+            cd artifacts/reviewed/meps-2024-long-covid-candidate-20260923T020607Z/
+            sha256sum -c SHA256SUMS
+          )
+
+      - name: Verify aggregate-only output and credential exclusion
+        shell: bash
+        env:
+          CENSUS_API_KEY: ${{ secrets.CENSUS_API_KEY }}
+        run: |
+          set -euo pipefail
+          bash analysis/local_context/verify_candidate_output.sh "$OUTPUT_DIR"
+
+      - name: Upload preliminary candidate for independent review
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.CANDIDATE_ARTIFACT_NAME }}
+          path: |
+            ${{ env.OUTPUT_DIR }}/local-context.json
+            ${{ env.OUTPUT_DIR }}/diagnostics.json
+            ${{ env.OUTPUT_DIR }}/review-manifest.json
+            ${{ env.OUTPUT_DIR }}/hrsa-source-metadata.json
+            ${{ env.OUTPUT_DIR }}/acs-source-metadata.json
+            ${{ env.OUTPUT_DIR }}/github-actions-run-manifest.json
+            ${{ env.OUTPUT_DIR }}/SHA256SUMS
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 6
