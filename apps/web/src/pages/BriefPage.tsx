@@ -57,14 +57,14 @@ export function BriefPage() {
             <p>The release/display gate remains active; no unreleased or illustrative value is substituted.</p>
           </div> : brief.burden_findings.map(x => {
             const interval = formatEstimateInterval(x);
-            const accessibleInterval = interval.replace(
-              /^95% CI\s*/,
-              "95% confidence interval: "
-            );
+            const accessibleInterval = interval
+              .replace(/^(\d+(?:\.\d+)?)% CI\s*/, "$1% confidence interval: ")
+              .replace(/^CI\s*/, "Confidence interval: ");
             return <p className="brief-finding" key={x.estimate_id}>
               <strong>{x.label}:</strong> {formatEstimateValue(x)}
-              <small className="brief-finding-interval" aria-label={accessibleInterval}>
-                {interval}
+              <small className="brief-finding-interval">
+                <span aria-hidden="true">{interval}</span>
+                <span className="sr-only">{accessibleInterval}</span>
               </small>
             </p>;
           })}
