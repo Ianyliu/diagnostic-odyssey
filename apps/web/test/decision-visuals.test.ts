@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import type { Scenario } from "@diagnostic-odyssey/contracts";
+import { oneWaySensitivity } from "@diagnostic-odyssey/scenario-engine";
 import { buildSensitivityValues } from "../src/data/decisionVisuals.ts";
 
 const scenario: Scenario = {
@@ -45,4 +46,34 @@ test("capacity sensitivity keeps zero/current capacity when intended reach is po
 
   assert.deepEqual(values, [0, 1500, 2250, 3000, 3750, 4500]);
   assert.ok(values.includes(zeroCapacityScenario.capacity));
+});
+
+
+test("high-precision reach keeps the exact current value in values and evaluation", () => {
+  const highPrecisionReach = 0.251234567;
+  const highPrecisionScenario = {...scenario, reach: highPrecisionReach};
+  const values = buildSensitivityValues(highPrecisionScenario, "reach");
+
+  assert.ok(values.includes(highPrecisionReach));
+  assert.equal(values.includes(0.251235), false);
+
+  const currentValues = values.filter(
+    value => Math.abs(value - highPrecisionReach) < 1e-9
+  );
+  assert.deepEqual(currentValues, [highPrecisionReach]);
+
+  const points = oneWaySensitivity(
+    highPrecisionScenario,
+    "reach",
+    values
+  );
+  const exactCurrentPoints = points.filter(
+    point => point.input_value === highPrecisionReach
+  );
+  assert.equal(exactCurrentPoints.length, 1);
+  assert.equal(exactCurrentPoints[0]?.input_value, 0.251234567);
+  assert.equal(
+    points.some(point => point.input_value === 0.251235),
+    false
+  );
 });
