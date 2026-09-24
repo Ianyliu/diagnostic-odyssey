@@ -369,6 +369,10 @@ test("reviewed burden UI has no development-fixture labels", () => {
   assert.match(burden, /Gross burden is not attributable burden/);
   assert.match(burden, /formatEstimateInterval/);
   assert.match(burden, /canExportEstimate\(estimate\)/);
+  assert.match(burden, /aria-hidden="true"/);
+  assert.match(burden, /sr-only/);
+  assert.match(burden, /\\d\+.*confidence interval/);
+  assert.match(burden, /intervalMethods\.length > 0/);
   assert.match(burden, /measure-interval/);
   assert.match(
     burden,
@@ -447,7 +451,9 @@ test("planning brief keeps available WV context unselected until an explicit fut
   assert.match(briefSource, /planning assumptions, not observed evidence/);
   assert.match(briefSource, /formatEstimateInterval\(x\)/);
   assert.match(briefSource, /brief-finding-interval/);
-  assert.match(briefSource, /95% confidence interval:/);
+  assert.match(briefSource, /aria-hidden="true"/);
+  assert.match(briefSource, /sr-only/);
+  assert.match(briefSource, /\\d\+.*confidence interval/);
   assert.match(briefSource, /localContext:\s*\[\]/);
   assert.match(briefSource, /available, but no local context has been selected for this brief/);
   assert.match(briefSource, /explicit analyst selection\/handoff is required/);
