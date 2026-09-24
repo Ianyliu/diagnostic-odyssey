@@ -1,4 +1,5 @@
-import { Link } from "react-router-dom";
+import { useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import type { Scenario } from "@diagnostic-odyssey/contracts";
 import { ContextBar } from "../components/ContextBar";
 import { PilotDecisionVisuals } from "../components/PilotDecisionVisuals";
@@ -9,6 +10,7 @@ import {
   getSensitivityDataRequestStatus
 } from "../data/dataRequestTemplates";
 import type { SensitivityField } from "../data/decisionVisuals";
+import { getPilotFragmentTargetId } from "../data/pilotFragmentScroll";
 import {
   PLANNING_DEFAULTS_DESCRIPTION,
   PLANNING_DEFAULTS_LABEL
@@ -35,6 +37,14 @@ export function PilotPage() {
     analystDataRequests,
     upsertAnalystDataRequest
   } = useArtifact();
+  const location = useLocation();
+  const sensitivityReady = scenario !== null && scenarioResult !== null;
+
+  useEffect(() => {
+    const targetId = getPilotFragmentTargetId(location.hash);
+    if (!targetId || !sensitivityReady) return;
+    document.getElementById(targetId)?.scrollIntoView({block: "start"});
+  }, [location.hash, sensitivityReady]);
 
   if (!scenario || !scenarioResult) {
     return <section className="page page-stack">
