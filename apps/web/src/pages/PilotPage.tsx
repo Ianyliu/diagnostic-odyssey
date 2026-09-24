@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import type { Scenario } from "@diagnostic-odyssey/contracts";
 import { ContextBar } from "../components/ContextBar";
 import { PilotDecisionVisuals } from "../components/PilotDecisionVisuals";
+import { SensitivityExplorer } from "../components/SensitivityExplorer";
 import { useArtifact } from "../data/ArtifactContext";
 import {
   PLANNING_DEFAULTS_DESCRIPTION,
@@ -70,6 +71,7 @@ export function PilotPage() {
           <div><dt>Difference in person-month exposure</dt><dd>{scenarioResult.difference_person_months.toLocaleString()}</dd></div>
           <div><dt>Program-resource requirement</dt><dd>{new Intl.NumberFormat("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0}).format(scenarioResult.program_resource_requirement)}</dd></div>
         </dl>
+        <SensitivityExplorer scenario={scenario} />
         <div className="target-box"><strong>Target pathway step</strong><span>{scenario.target_pathway_step}</span><strong>Mechanism</strong><span>{scenario.mechanism}</span></div>
         <div className="guardrail compact"><strong>Not savings or ROI.</strong><p>The resource requirement is a program input. The person-month difference is a planning exposure quantity, not observed improvement.</p></div>
         <Link className="button" to="/brief">Preview Planning Brief</Link>
