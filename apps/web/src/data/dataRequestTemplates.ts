@@ -45,7 +45,7 @@ export function createSensitivityDataRequest(
       ],
       likely_source_owner: "Program operations, outreach partner, or participating payer/health system",
       granularity_time_window: `Monthly or quarterly during the ${scenario.horizon_months}-month planning horizon`,
-      rationale: `The current scenario assumes intended reach of ${(scenario.reach * 100).toFixed(0)}%. One-way sensitivity shows reach changes intended demand and may create or remove a capacity gap.`,
+      rationale: `The current scenario assumes intended reach of ${(scenario.reach * 100).toFixed(0)}% (planning fraction ${scenario.reach.toString()}). One-way sensitivity shows reach changes intended demand and may create or remove a capacity gap.`,
       feasibility_privacy_notes: "Aggregate funnel counts are sufficient for initial planning. Any record linkage should use the minimum necessary data and an approved governance process."
     };
   }

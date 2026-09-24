@@ -233,3 +233,32 @@ test("capacity request rationale stays conditional when the tested capacity rang
     /local capacity should be verified before operational planning/i
   );
 });
+
+
+test("reach request freshness distinguishes exact assumptions that share the same rounded percent", () => {
+  const original = {...scenario, reach: 0.251};
+  const changed = {...scenario, reach: 0.254};
+  const stored = createSensitivityDataRequest(original, "reach");
+
+  assert.equal(stored.request_id, "session.sensitivity.reach");
+  assert.match(stored.rationale, /25%/);
+  assert.match(stored.rationale, /planning fraction 0\.251/);
+
+  assert.equal(
+    getSensitivityDataRequestStatus(original, "reach", [stored]),
+    "current"
+  );
+  assert.equal(
+    getSensitivityDataRequestStatus(changed, "reach", [stored]),
+    "stale"
+  );
+  assert.equal(isDataRequestCurrentForScenario(stored, changed), false);
+
+  const refreshed = createSensitivityDataRequest(changed, "reach");
+  assert.match(refreshed.rationale, /planning fraction 0\.254/);
+  assert.equal(
+    getSensitivityDataRequestStatus(changed, "reach", [refreshed]),
+    "current"
+  );
+  assert.equal(isDataRequestCurrentForScenario(refreshed, changed), true);
+});
