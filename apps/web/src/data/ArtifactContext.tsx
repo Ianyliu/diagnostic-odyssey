@@ -19,6 +19,7 @@ import {
 import { createPlanningScenarioDefaults } from "./planningScenarioDefaults";
 import { loadReviewedMepsArtifact } from "./reviewedArtifact";
 import { loadReviewedWvLocalContextArtifact } from "./reviewedLocalContext";
+import { isDataRequestCurrentForScenario } from "./dataRequestTemplates";
 
 interface ArtifactState {
   status: "loading" | "loaded" | "error";
@@ -135,8 +136,12 @@ export function ArtifactProvider({children}: {children: ReactNode}) {
 
   const selectedDataRequests = useMemo(() => {
     const selected = new Set(briefDataRequestIds);
-    return availableDataRequests.filter(request => selected.has(request.request_id));
-  }, [availableDataRequests, briefDataRequestIds]);
+    return availableDataRequests.filter(
+      request =>
+        selected.has(request.request_id) &&
+        isDataRequestCurrentForScenario(request, scenario)
+    );
+  }, [availableDataRequests, briefDataRequestIds, scenario]);
 
   const upsertAnalystDataRequest = (request: DataRequest) => {
     setAnalystDataRequests(current => [

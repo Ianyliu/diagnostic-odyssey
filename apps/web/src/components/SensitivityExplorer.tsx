@@ -24,12 +24,12 @@ function formatInput(field: SensitivityField, value: number): string {
 
 export function SensitivityExplorer({
   scenario,
-  onAddDataRequest,
-  hasDataRequest
+  onUpsertDataRequest,
+  dataRequestStatus
 }: {
   scenario: Scenario;
-  onAddDataRequest?: (field: SensitivityField) => void;
-  hasDataRequest?: (field: SensitivityField) => boolean;
+  onUpsertDataRequest?: (field: SensitivityField) => void;
+  dataRequestStatus?: (field: SensitivityField) => "absent" | "current" | "stale";
 }) {
   const [field, setField] = useState<SensitivityField>("capacity");
   const values = useMemo(() => buildSensitivityValues(scenario, field), [scenario, field]);
@@ -43,7 +43,7 @@ export function SensitivityExplorer({
   const outputs = points.map(point => point.result[metric]);
   const maxOutput = Math.max(...outputs, 0);
   const currentValue = scenario[field];
-  const requestExists = hasDataRequest?.(field) ?? false;
+  const requestStatus = dataRequestStatus?.(field) ?? "absent";
 
   return <section id="sensitivity" className="sensitivity-visual" aria-labelledby="sensitivity-title">
     <div className="sensitivity-heading">
@@ -87,14 +87,24 @@ export function SensitivityExplorer({
         </tr>)}</tbody>
       </table>
     </details>
-    {onAddDataRequest && <div className="sensitivity-action">
+    {onUpsertDataRequest && <div className="sensitivity-action">
       <div>
-        <strong>Uncertain locally?</strong>
-        <span>Create a structured operational data request. Creating it does not automatically include it in the Planning Brief.</span>
+        <strong>{requestStatus === "stale" ? "Scenario changed since this request was created." : "Uncertain locally?"}</strong>
+        <span>
+          {requestStatus === "stale"
+            ? "Refresh explicitly before this request can be exported in the Planning Brief."
+            : "Create a structured operational data request. Creating it does not automatically include it in the Planning Brief."}
+        </span>
       </div>
-      {requestExists
+      {requestStatus === "current"
         ? <Link className="button secondary" to="/data-requests">Review data request</Link>
-        : <button className="button secondary" type="button" onClick={() => onAddDataRequest(field)}>Add to data requests</button>}
+        : <button
+            className="button secondary"
+            type="button"
+            onClick={() => onUpsertDataRequest(field)}
+          >
+            {requestStatus === "stale" ? "Refresh data request" : "Add to data requests"}
+          </button>}
     </div>}
   </section>;
 }

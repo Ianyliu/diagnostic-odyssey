@@ -2,13 +2,21 @@ import "./DataRequestsPage.css";
 import { Link } from "react-router-dom";
 import { ContextBar } from "../components/ContextBar";
 import { useArtifact } from "../data/ArtifactContext";
+import {
+  createSensitivityDataRequest,
+  isDataRequestCurrentForScenario,
+  sensitivityFieldFromDataRequestId
+} from "../data/dataRequestTemplates";
 
 export function DataRequestsPage() {
   const {
     bundle,
+    scenario,
     analystDataRequests,
     availableDataRequests,
     briefDataRequestIds,
+    selectedDataRequests,
+    upsertAnalystDataRequest,
     toggleDataRequestForBrief,
     removeAnalystDataRequest
   } = useArtifact();
@@ -32,13 +40,19 @@ export function DataRequestsPage() {
       {availableDataRequests.map(request => {
         const isAnalystRequest = analystIds.has(request.request_id);
         const selected = briefDataRequestIds.includes(request.request_id);
+        const sensitivityField = sensitivityFieldFromDataRequestId(request.request_id);
+        const stale = isAnalystRequest &&
+          sensitivityField !== null &&
+          !isDataRequestCurrentForScenario(request, scenario);
         return <article className="card data-request-card" key={request.request_id}>
           <div className="card-title-row">
             <div>
               <p className="visual-kicker">{isAnalystRequest ? "SESSION PLANNING REQUEST" : "LOADED REQUEST TEMPLATE"}</p>
               <h2>{request.target_question}</h2>
             </div>
-            <span className="status status-scaffold">{selected ? "Selected for Brief" : "Not in Brief"}</span>
+            <span className="status status-scaffold">
+              {stale ? "Stale — excluded from Brief" : selected ? "Selected for Brief" : "Not in Brief"}
+            </span>
           </div>
           <dl className="data-request-details">
             <div><dt>Pathway step</dt><dd>{request.pathway_step}</dd></div>
@@ -55,8 +69,24 @@ export function DataRequestsPage() {
                 checked={selected}
                 onChange={() => toggleDataRequestForBrief(request.request_id)}
               />
-              <span><strong>Include in Planning Brief</strong><small>Explicit opt-in; creating a request alone is not enough.</small></span>
+              <span>
+                <strong>Include in Planning Brief</strong>
+                <small>
+                  {stale && selected
+                    ? "Selected state is preserved, but this stale request is excluded from export until refreshed."
+                    : "Explicit opt-in; creating a request alone is not enough."}
+                </small>
+              </span>
             </label>
+            {stale && sensitivityField && scenario && <button
+              className="text-button"
+              type="button"
+              onClick={() =>
+                upsertAnalystDataRequest(
+                  createSensitivityDataRequest(scenario, sensitivityField)
+                )
+              }
+            >Refresh data request</button>}
             {isAnalystRequest && <button
               className="text-button"
               type="button"
@@ -68,7 +98,12 @@ export function DataRequestsPage() {
     </div>}
 
     {availableDataRequests.length > 0 && <div className="request-footer-actions">
-      <span><strong>{briefDataRequestIds.length}</strong> request{briefDataRequestIds.length === 1 ? "" : "s"} selected for the Planning Brief.</span>
+      <span>
+        <strong>{selectedDataRequests.length}</strong> current request{selectedDataRequests.length === 1 ? "" : "s"} eligible for the Planning Brief.
+        {briefDataRequestIds.length > selectedDataRequests.length
+          ? ` ${briefDataRequestIds.length - selectedDataRequests.length} selected request(s) are stale and excluded until refreshed.`
+          : ""}
+      </span>
       <Link className="button" to="/brief">Preview Planning Brief</Link>
     </div>}
   </section>;

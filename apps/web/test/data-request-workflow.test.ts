@@ -5,6 +5,8 @@ import test from "node:test";
 import type { Scenario } from "@diagnostic-odyssey/contracts";
 import {
   createSensitivityDataRequest,
+  getSensitivityDataRequestStatus,
+  isDataRequestCurrentForScenario,
   sensitivityDataRequestId
 } from "../src/data/dataRequestTemplates.ts";
 
@@ -59,4 +61,60 @@ test("analyst-created requests require explicit Planning Brief opt-in", () => {
   assert.match(brief, /dataRequests:\s*selectedDataRequests/);
   assert.doesNotMatch(brief, /dataRequests:\s*bundle\.data_requests/);
   assert.match(sensitivity, /does not automatically include it in the Planning Brief/);
+});
+
+
+test("sensitivity requests become stale after relevant scenario values change and refresh to current", () => {
+  const storedCapacity = createSensitivityDataRequest(scenario, "capacity");
+  assert.equal(
+    getSensitivityDataRequestStatus(scenario, "capacity", [storedCapacity]),
+    "current"
+  );
+  assert.equal(isDataRequestCurrentForScenario(storedCapacity, scenario), true);
+
+  const changedCapacity = {...scenario, capacity: 2400};
+  assert.equal(
+    getSensitivityDataRequestStatus(changedCapacity, "capacity", [storedCapacity]),
+    "stale"
+  );
+  assert.equal(
+    isDataRequestCurrentForScenario(storedCapacity, changedCapacity),
+    false
+  );
+
+  const refreshed = createSensitivityDataRequest(changedCapacity, "capacity");
+  assert.equal(
+    getSensitivityDataRequestStatus(changedCapacity, "capacity", [refreshed]),
+    "current"
+  );
+  assert.equal(isDataRequestCurrentForScenario(refreshed, changedCapacity), true);
+});
+
+test("planning-horizon changes make every sensitivity-derived request stale", () => {
+  const fields = ["reach", "capacity", "alternative_window_months"] as const;
+  const changedHorizon = {...scenario, horizon_months: 18};
+
+  for (const field of fields) {
+    const stored = createSensitivityDataRequest(scenario, field);
+    assert.equal(
+      getSensitivityDataRequestStatus(changedHorizon, field, [stored]),
+      "stale"
+    );
+    assert.equal(isDataRequestCurrentForScenario(stored, changedHorizon), false);
+  }
+});
+
+test("stale selected sensitivity requests are excluded from Brief/export until refreshed", () => {
+  const context = readSource("../src/data/ArtifactContext.tsx");
+  const requests = readSource("../src/pages/DataRequestsPage.tsx");
+  const sensitivity = readSource("../src/components/SensitivityExplorer.tsx");
+  const brief = readSource("../src/pages/BriefPage.tsx");
+
+  assert.match(context, /isDataRequestCurrentForScenario\(request, scenario\)/);
+  assert.match(context, /\[availableDataRequests, briefDataRequestIds, scenario\]/);
+  assert.match(sensitivity, /Refresh data request/);
+  assert.match(requests, /Stale — excluded from Brief/);
+  assert.match(requests, /Selected state is preserved/);
+  assert.match(requests, /createSensitivityDataRequest\(scenario, sensitivityField\)/);
+  assert.match(brief, /stale for the current scenario/);
 });

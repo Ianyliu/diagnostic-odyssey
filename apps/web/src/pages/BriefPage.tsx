@@ -24,6 +24,7 @@ export function BriefPage() {
     localContextStatus,
     selectedLocalContext,
     availableDataRequests,
+    briefDataRequestIds,
     selectedDataRequests
   } = useArtifact();
   if (!bundle) return null;
@@ -46,6 +47,8 @@ export function BriefPage() {
 
   const localContextAvailable =
     localContextStatus === "loaded" && localContext !== null;
+  const staleSelectedDataRequestCount =
+    Math.max(0, briefDataRequestIds.length - selectedDataRequests.length);
 
   const exportJson = () => {
     const blob = new Blob([serializeBriefJson(brief)],{type:"application/json"});
@@ -163,7 +166,12 @@ export function BriefPage() {
                     ? "Data requests are available, but none has been selected for this brief."
                     : "No data request has been created or loaded."}
                 </strong>
-                <p>Data requests are planning artifacts, not observed evidence. Add or select them explicitly before export.</p>
+                <p>
+                  Data requests are planning artifacts, not observed evidence. Add or select them explicitly before export.
+                  {staleSelectedDataRequestCount > 0
+                    ? ` ${staleSelectedDataRequestCount} selected request(s) are stale for the current scenario and are excluded from this Brief until explicitly refreshed.`
+                    : ""}
+                </p>
                 <Link className="button secondary" to="/data-requests">Review data requests</Link>
               </div>}
         </section>

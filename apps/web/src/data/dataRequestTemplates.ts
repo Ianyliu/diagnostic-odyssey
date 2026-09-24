@@ -68,3 +68,59 @@ export function createSensitivityDataRequest(
     feasibility_privacy_notes: "Use de-identified or aggregate interval summaries when possible. Timing data can improve planning but do not by themselves establish a causal intervention effect."
   };
 }
+
+
+export type SensitivityDataRequestStatus = "absent" | "current" | "stale";
+
+export function sensitivityFieldFromDataRequestId(
+  requestId: string
+): SensitivityField | null {
+  const prefix = "session.sensitivity.";
+  if (!requestId.startsWith(prefix)) return null;
+  const field = requestId.slice(prefix.length);
+  return field === "reach" ||
+    field === "capacity" ||
+    field === "alternative_window_months"
+    ? field
+    : null;
+}
+
+function sameStringArray(left: string[], right: string[]): boolean {
+  return left.length === right.length &&
+    left.every((value, index) => value === right[index]);
+}
+
+export function dataRequestsMatch(
+  stored: DataRequest,
+  expected: DataRequest
+): boolean {
+  return stored.request_id === expected.request_id &&
+    stored.target_question === expected.target_question &&
+    stored.pathway_step === expected.pathway_step &&
+    sameStringArray(stored.fields_needed, expected.fields_needed) &&
+    stored.likely_source_owner === expected.likely_source_owner &&
+    stored.granularity_time_window === expected.granularity_time_window &&
+    stored.rationale === expected.rationale &&
+    stored.feasibility_privacy_notes === expected.feasibility_privacy_notes;
+}
+
+export function getSensitivityDataRequestStatus(
+  scenario: Scenario,
+  field: SensitivityField,
+  requests: DataRequest[]
+): SensitivityDataRequestStatus {
+  const expected = createSensitivityDataRequest(scenario, field);
+  const stored = requests.find(request => request.request_id === expected.request_id);
+  if (!stored) return "absent";
+  return dataRequestsMatch(stored, expected) ? "current" : "stale";
+}
+
+export function isDataRequestCurrentForScenario(
+  request: DataRequest,
+  scenario: Scenario | null
+): boolean {
+  const field = sensitivityFieldFromDataRequestId(request.request_id);
+  if (!field) return true;
+  if (!scenario) return false;
+  return dataRequestsMatch(request, createSensitivityDataRequest(scenario, field));
+}

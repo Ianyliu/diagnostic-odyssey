@@ -6,7 +6,7 @@ import { SensitivityExplorer } from "../components/SensitivityExplorer";
 import { useArtifact } from "../data/ArtifactContext";
 import {
   createSensitivityDataRequest,
-  sensitivityDataRequestId
+  getSensitivityDataRequestStatus
 } from "../data/dataRequestTemplates";
 import type { SensitivityField } from "../data/decisionVisuals";
 import {
@@ -61,8 +61,8 @@ export function PilotPage() {
     upsertAnalystDataRequest(createSensitivityDataRequest(scenario, field));
   };
 
-  const hasSensitivityDataRequest = (field: SensitivityField) =>
-    analystDataRequests.some(request => request.request_id === sensitivityDataRequestId(field));
+  const sensitivityDataRequestStatus = (field: SensitivityField) =>
+    getSensitivityDataRequestStatus(scenario, field, analystDataRequests);
 
   return <section className="page page-stack">
     <ContextBar />
@@ -91,8 +91,8 @@ export function PilotPage() {
         </dl>
         <SensitivityExplorer
           scenario={scenario}
-          onAddDataRequest={addSensitivityDataRequest}
-          hasDataRequest={hasSensitivityDataRequest}
+          onUpsertDataRequest={addSensitivityDataRequest}
+          dataRequestStatus={sensitivityDataRequestStatus}
         />
         <div className="target-box"><strong>Target pathway step</strong><span>{scenario.target_pathway_step}</span><strong>Mechanism</strong><span>{scenario.mechanism}</span></div>
         <div className="guardrail compact"><strong>Not savings or ROI.</strong><p>The resource requirement is a program input. The person-month difference is a planning exposure quantity, not observed improvement.</p></div>
