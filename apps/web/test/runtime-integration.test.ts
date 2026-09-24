@@ -9,8 +9,7 @@ import {
   canLoadReviewedLocalContextArtifact,
   type ArtifactBundle,
   type Estimate,
-  type LocalContextArtifact,
-  type LocalContextRecord
+  type LocalContextArtifact
 } from "@diagnostic-odyssey/contracts";
 import { buildPlanningBrief } from "@diagnostic-odyssey/brief-core";
 import { calculateScenario } from "@diagnostic-odyssey/scenario-engine";
