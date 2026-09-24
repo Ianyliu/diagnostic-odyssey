@@ -12,6 +12,7 @@ export function DataRequestsPage() {
   const {
     bundle,
     scenario,
+    scenarioResult,
     analystDataRequests,
     availableDataRequests,
     briefDataRequestIds,
@@ -78,7 +79,7 @@ export function DataRequestsPage() {
                 </small>
               </span>
             </label>
-            {stale && sensitivityField && scenario && <button
+            {stale && sensitivityField && scenario && scenarioResult && <button
               className="text-button"
               type="button"
               onClick={() =>
@@ -87,6 +88,9 @@ export function DataRequestsPage() {
                 )
               }
             >Refresh data request</button>}
+            {stale && sensitivityField && scenario && !scenarioResult && <span className="data-request-refresh-blocked">
+              Fix the Pilot Planner inputs before refreshing this request.
+            </span>}
             {isAnalystRequest && <button
               className="text-button"
               type="button"

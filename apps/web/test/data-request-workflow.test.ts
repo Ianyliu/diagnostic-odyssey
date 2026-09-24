@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import test from "node:test";
-import type { Scenario } from "@diagnostic-odyssey/contracts";
+import { validateScenario, type Scenario } from "@diagnostic-odyssey/contracts";
 import { buildPlanningBrief, serializeBriefJson } from "@diagnostic-odyssey/brief-core";
 import { oneWaySensitivity } from "@diagnostic-odyssey/scenario-engine";
 import { buildSensitivityValues } from "../src/data/decisionVisuals.ts";
@@ -261,4 +261,66 @@ test("reach request freshness distinguishes exact assumptions that share the sam
     "current"
   );
   assert.equal(isDataRequestCurrentForScenario(refreshed, changed), true);
+});
+
+
+test("invalid scenarios fail closed for sensitivity-request currency and Brief eligibility", () => {
+  const invalidScenario = {
+    ...scenario,
+    baseline_window_months: 6,
+    alternative_window_months: 7
+  };
+  assert.ok(validateScenario(invalidScenario).length > 0);
+
+  const storedCapacity = createSensitivityDataRequest(scenario, "capacity");
+  const storedReach = createSensitivityDataRequest(scenario, "reach");
+
+  for (const [field, stored] of [
+    ["capacity", storedCapacity],
+    ["reach", storedReach]
+  ] as const) {
+    assert.equal(
+      getSensitivityDataRequestStatus(invalidScenario, field, [stored]),
+      "stale"
+    );
+    assert.equal(
+      isDataRequestCurrentForScenario(stored, invalidScenario),
+      false
+    );
+  }
+
+  const selectedIds = [storedCapacity.request_id, storedReach.request_id];
+  const currentSelected = [storedCapacity, storedReach].filter(
+    request =>
+      selectedIds.includes(request.request_id) &&
+      isDataRequestCurrentForScenario(request, invalidScenario)
+  );
+  assert.deepEqual(currentSelected, []);
+
+  assert.equal(
+    isDataRequestCurrentForScenario(storedCapacity, scenario),
+    true
+  );
+  assert.equal(
+    getSensitivityDataRequestStatus(scenario, "reach", [storedReach]),
+    "current"
+  );
+});
+
+test("DataRequestsPage blocks sensitivity-request refresh while scenario result is invalid", () => {
+  const requests = readSource("../src/pages/DataRequestsPage.tsx");
+
+  assert.match(requests, /scenarioResult/);
+  assert.match(
+    requests,
+    /stale && sensitivityField && scenario && scenarioResult/
+  );
+  assert.match(
+    requests,
+    /Fix the Pilot Planner inputs before refreshing this request\./
+  );
+  assert.match(
+    requests,
+    /stale && sensitivityField && scenario && !scenarioResult/
+  );
 });

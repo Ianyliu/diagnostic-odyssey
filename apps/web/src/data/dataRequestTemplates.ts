@@ -1,4 +1,8 @@
-import type { DataRequest, Scenario } from "@diagnostic-odyssey/contracts";
+import {
+  validateScenario,
+  type DataRequest,
+  type Scenario
+} from "@diagnostic-odyssey/contracts";
 import type { SensitivityField } from "./decisionVisuals";
 
 export function sensitivityDataRequestId(field: SensitivityField): string {
@@ -112,6 +116,7 @@ export function getSensitivityDataRequestStatus(
   const expected = createSensitivityDataRequest(scenario, field);
   const stored = requests.find(request => request.request_id === expected.request_id);
   if (!stored) return "absent";
+  if (validateScenario(scenario).length > 0) return "stale";
   return dataRequestsMatch(stored, expected) ? "current" : "stale";
 }
 
@@ -121,6 +126,6 @@ export function isDataRequestCurrentForScenario(
 ): boolean {
   const field = sensitivityFieldFromDataRequestId(request.request_id);
   if (!field) return true;
-  if (!scenario) return false;
+  if (!scenario || validateScenario(scenario).length > 0) return false;
   return dataRequestsMatch(request, createSensitivityDataRequest(scenario, field));
 }
