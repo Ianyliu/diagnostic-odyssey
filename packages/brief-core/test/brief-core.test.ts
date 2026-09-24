@@ -83,7 +83,7 @@ test("brief requires reviewed release status as well as loaded or partial local-
       localRecord("reviewed_released", "partial"),
       localRecord("preliminary", "loaded"),
       localRecord("preliminary", "partial"),
-      localRecord("reviewed_released", "missing")
+      localRecord("reviewed_released", "empty")
     ],
     evidence:[],
     dataRequests:[],
