@@ -1,12 +1,33 @@
 import { Link } from "react-router-dom";
-import { canExportEstimate } from "@diagnostic-odyssey/contracts";
+import { canExportEstimate, type Estimate } from "@diagnostic-odyssey/contracts";
 import { ContextBar } from "../components/ContextBar";
 import { useArtifact } from "../data/ArtifactContext";
-import { formatEstimateValue } from "../data/formatEstimateValue";
+import {
+  formatEstimateInterval,
+  formatEstimateValue
+} from "../data/formatEstimateValue";
+
+function EstimateIntervalText({estimate}: {estimate: Estimate}) {
+  if (!canExportEstimate(estimate)) return null;
+  const interval = formatEstimateInterval(estimate);
+  const accessibleInterval = interval.replace(/^95% CI\s*/, "95% confidence interval: ");
+
+  return <small className="measure-interval" aria-label={accessibleInterval}>
+    {interval}
+  </small>;
+}
 
 export function BurdenPage() {
   const {bundle} = useArtifact();
   if (!bundle) return null;
+
+  const intervalMethods = Array.from(new Set(
+    bundle.burden_domains
+      .flatMap(domain => domain.measures)
+      .filter(canExportEstimate)
+      .map(estimate => estimate.interval_type)
+      .filter((intervalType): intervalType is string => intervalType !== null)
+  ));
 
   return <section className="page page-stack">
     <ContextBar />
@@ -20,6 +41,16 @@ export function BurdenPage() {
         <strong>Gross burden is not attributable burden.</strong>
         <span>Reviewed MEPS estimates are national and descriptive—not diagnostic-delay cost, local prevalence, preventable spending, or savings.</span>
       </div>
+    </div>
+    <div className="uncertainty-note">
+      <strong>Survey uncertainty</strong>
+      <p>Intervals shown are the reviewed 95% confidence intervals from the MEPS survey-weighted analysis.</p>
+      <details className="interval-disclosure">
+        <summary>About these intervals</summary>
+        <p>Confidence intervals come directly from the reviewed MEPS artifact; no interval is recomputed in the web application. Survey weighting and design are preserved in the reviewed artifact metadata. These intervals describe sampling uncertainty for the descriptive survey estimates; they do not make gross burden attributable or causal.</p>
+        <p><strong>Exact interval method metadata:</strong></p>
+        <ul>{intervalMethods.map(method => <li key={method}>{method}</li>)}</ul>
+      </details>
     </div>
     <div className="domain-grid">
       {bundle.burden_domains.map(domain => {
@@ -36,6 +67,7 @@ export function BurdenPage() {
               <div><strong>{estimate.label}</strong><span>{estimate.allowed_interpretation}</span></div>
               <div className="measure-value">
                 {formatEstimateValue(estimate)}
+                <EstimateIntervalText estimate={estimate} />
                 <small>{estimate.release_status === "reviewed_released" ? "Reviewed analytical estimate" : estimate.release_status.replaceAll("_"," ")}</small>
               </div>
             </div>)}
