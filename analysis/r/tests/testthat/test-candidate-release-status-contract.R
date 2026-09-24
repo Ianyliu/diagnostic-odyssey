@@ -30,12 +30,19 @@ testthat::test_that("MEPS candidate review manifest uses governed preliminary st
     fixed = TRUE
   ))
 
-  check_statuses <- regmatches(
+  check_entries <- regmatches(
     manifest_source,
-    gregexpr('status = "[^"]+"', manifest_source)
+    gregexpr(
+      'list\\(id = "[^"]+", status = "[^"]+"\\)',
+      manifest_source
+    )
   )[[1]]
-  testthat::expect_length(check_statuses, 8L)
-  testthat::expect_true(all(check_statuses == 'status = "pending"'))
+  testthat::expect_length(check_entries, 8L)
+  testthat::expect_true(all(grepl(
+    'status = "pending"',
+    check_entries,
+    fixed = TRUE
+  )))
 
   testthat::expect_false(grepl(
     "candidate_pending_review",
