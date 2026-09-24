@@ -39,3 +39,13 @@ export function formatSensitivityInput(
   }
   return integer.format(value);
 }
+
+
+export function getSensitivityBarWidth(
+  output: number,
+  maxOutput: number
+): number {
+  if (!Number.isFinite(output) || !Number.isFinite(maxOutput)) return 0;
+  if (output <= 0 || maxOutput <= 0) return 0;
+  return Math.max(0, Math.min(100, (output / maxOutput) * 100));
+}

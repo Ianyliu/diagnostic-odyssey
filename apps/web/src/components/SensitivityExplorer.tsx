@@ -7,7 +7,10 @@ import {
   buildSensitivityValues,
   type SensitivityField
 } from "../data/decisionVisuals";
-import { formatSensitivityInput } from "../data/sensitivityPresentation";
+import {
+  formatSensitivityInput,
+  getSensitivityBarWidth
+} from "../data/sensitivityPresentation";
 
 const integer = new Intl.NumberFormat("en-US", {maximumFractionDigits: 0});
 
@@ -60,7 +63,7 @@ export function SensitivityExplorer({
     <div className="sensitivity-bars">
       {points.map((point, index) => {
         const output = outputs[index] ?? 0;
-        const width = maxOutput > 0 ? (output / maxOutput) * 100 : 0;
+        const width = getSensitivityBarWidth(output, maxOutput);
         const isCurrent = Math.abs(point.input_value - currentValue) < 1e-9;
         return <div className={`sensitivity-row ${isCurrent ? "current" : ""}`} key={point.input_value}>
           <span className="sensitivity-input">{formatSensitivityInput(field, point.input_value)}{isCurrent ? <small>current</small> : null}</span>
