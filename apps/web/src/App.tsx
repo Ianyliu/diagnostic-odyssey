@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import { AppShell } from "./components/AppShell";
 import { ArtifactState } from "./components/ArtifactState";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 import { ArtifactProvider } from "./data/ArtifactContext";
 import { OverviewPage } from "./pages/OverviewPage";
 import { BurdenPage } from "./pages/BurdenPage";
@@ -12,7 +13,7 @@ import { DataRequestsPage } from "./pages/DataRequestsPage";
 import { BriefPage } from "./pages/BriefPage";
 
 export function App() {
-  return <ArtifactProvider><ArtifactState><Routes>
+  return <ErrorBoundary><ArtifactProvider><ArtifactState><Routes>
     <Route element={<AppShell />}>
       <Route index element={<OverviewPage />} />
       <Route path="burden" element={<BurdenPage />} />
@@ -27,5 +28,5 @@ export function App() {
       <Route path="brief" element={<BriefPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Route>
-  </Routes></ArtifactState></ArtifactProvider>;
+  </Routes></ArtifactState></ArtifactProvider></ErrorBoundary>;
 }

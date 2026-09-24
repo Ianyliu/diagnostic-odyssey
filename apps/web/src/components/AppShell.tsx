@@ -22,6 +22,7 @@ export function AppShell() {
 
   return (
     <div className="app-shell">
+      <a className="skip-link" href="#main-content">Skip to main content</a>
       <header className="site-header">
         <div className="brand">
           <strong>Diagnostic Odyssey</strong>
@@ -40,7 +41,7 @@ export function AppShell() {
         <strong>Reviewed national MEPS burden loaded · planning assumptions remain analyst-editable</strong>
         <span>{localContextMessage}</span>
       </div>
-      <main>
+      <main id="main-content" tabIndex={-1}>
         <Outlet />
       </main>
       <footer>
