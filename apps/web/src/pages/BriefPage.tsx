@@ -65,13 +65,20 @@ export function BriefPage() {
     URL.revokeObjectURL(url);
   };
 
-  return <section className="page page-stack">
+  return <section className="page page-stack planning-brief-page">
     <ContextBar />
     <header className="page-heading">
       <p className="eyebrow">PLANNING BRIEF</p>
       <h1>Long COVID burden and pilot planning brief</h1>
       <p>Deterministic synthesis of reviewed national burden, analyst-supplied planning assumptions, explicitly selected implementation context, evidence gaps, and interpretation guardrails.</p>
     </header>
+
+    <div className="print-provenance" aria-label="Planning Brief provenance">
+      <strong>Brief provenance</strong>
+      <span><b>National reviewed artifact:</b> {brief.artifact_version}</span>
+      {brief.context.local_context_id && <span><b>Reviewed local-context artifact:</b> {brief.context.local_context_id}</span>}
+      <span><b>Generated:</b> {brief.generated_at}</span>
+    </div>
 
     <div className="brief-grid">
       <article className="card brief-content">
@@ -198,8 +205,10 @@ export function BriefPage() {
             {selectedDataRequests.length > 0 ? `${selectedDataRequests.length} selected` : "None selected"}
           </span>
         </div>
-        <button className="button" onClick={exportJson}>Export JSON companion</button>
-        <button className="button secondary" onClick={()=>window.print()}>Print / save PDF</button>
+        <div className="brief-export-actions">
+          <button className="button" onClick={exportJson}>Export JSON companion</button>
+          <button className="button secondary" onClick={()=>window.print()}>Print / save PDF</button>
+        </div>
       </aside>
     </div>
   </section>;
