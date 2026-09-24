@@ -14,6 +14,7 @@ import {
   formatPublishedLocalContextUncertainty
 } from "../data/localContextPresentation";
 import { PLANNING_DEFAULTS_LABEL } from "../data/planningScenarioDefaults";
+import { withStaleSelectedDataRequestWarning } from "../data/briefDataRequestWarnings";
 
 export function BriefPage() {
   const {
@@ -36,7 +37,9 @@ export function BriefPage() {
     localContext,
     selectedLocalContext
   );
-  const brief = buildPlanningBrief({
+  const staleSelectedDataRequestCount =
+    Math.max(0, briefDataRequestIds.length - selectedDataRequests.length);
+  const baseBrief = buildPlanningBrief({
     context: briefContext,
     estimates,
     localContext: selectedLocalContext,
@@ -44,11 +47,13 @@ export function BriefPage() {
     evidence: bundle.evidence,
     dataRequests: selectedDataRequests
   });
+  const brief = withStaleSelectedDataRequestWarning(
+    baseBrief,
+    staleSelectedDataRequestCount
+  );
 
   const localContextAvailable =
     localContextStatus === "loaded" && localContext !== null;
-  const staleSelectedDataRequestCount =
-    Math.max(0, briefDataRequestIds.length - selectedDataRequests.length);
 
   const exportJson = () => {
     const blob = new Blob([serializeBriefJson(brief)],{type:"application/json"});
@@ -166,12 +171,7 @@ export function BriefPage() {
                     ? "Data requests are available, but none has been selected for this brief."
                     : "No data request has been created or loaded."}
                 </strong>
-                <p>
-                  Data requests are planning artifacts, not observed evidence. Add or select them explicitly before export.
-                  {staleSelectedDataRequestCount > 0
-                    ? ` ${staleSelectedDataRequestCount} selected request(s) are stale for the current scenario and are excluded from this Brief until explicitly refreshed.`
-                    : ""}
-                </p>
+                <p>Data requests are planning artifacts, not observed evidence. Add or select them explicitly before export.</p>
                 <Link className="button secondary" to="/data-requests">Review data requests</Link>
               </div>}
         </section>

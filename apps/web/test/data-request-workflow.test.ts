@@ -3,12 +3,17 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import test from "node:test";
 import type { Scenario } from "@diagnostic-odyssey/contracts";
+import { buildPlanningBrief, serializeBriefJson } from "@diagnostic-odyssey/brief-core";
 import {
   createSensitivityDataRequest,
   getSensitivityDataRequestStatus,
   isDataRequestCurrentForScenario,
   sensitivityDataRequestId
 } from "../src/data/dataRequestTemplates.ts";
+import {
+  staleSelectedDataRequestExclusionWarning,
+  withStaleSelectedDataRequestWarning
+} from "../src/data/briefDataRequestWarnings.ts";
 
 const scenario: Scenario = {
   scenario_id: "test",
@@ -117,4 +122,85 @@ test("stale selected sensitivity requests are excluded from Brief/export until r
   assert.match(requests, /Selected state is preserved/);
   assert.match(requests, /createSensitivityDataRequest\(scenario, sensitivityField\)/);
   assert.match(brief, /stale for the current scenario/);
+});
+
+
+test("mixed current and stale selected requests remain explicit in rendered and serialized Brief state", () => {
+  const storedCapacity = createSensitivityDataRequest(scenario, "capacity");
+  const storedReach = createSensitivityDataRequest(scenario, "reach");
+  const selectedIds = [storedCapacity.request_id, storedReach.request_id];
+  const changedScenario = {...scenario, capacity: 2400};
+  const available = [storedCapacity, storedReach];
+
+  const currentSelected = available.filter(
+    request =>
+      selectedIds.includes(request.request_id) &&
+      isDataRequestCurrentForScenario(request, changedScenario)
+  );
+  const staleCount = selectedIds.length - currentSelected.length;
+
+  assert.equal(staleCount, 1);
+  assert.deepEqual(
+    currentSelected.map(request => request.request_id),
+    [storedReach.request_id]
+  );
+
+  const baseBrief = buildPlanningBrief({
+    context: {
+      condition_id: "long-covid",
+      cohort_id: "test",
+      age_range: "18–64",
+      evidence_year: 2024,
+      geography_scope: "United States",
+      local_context_id: null,
+      severity_filter: null,
+      artifact_version: "test"
+    },
+    estimates: [],
+    localContext: [],
+    scenario: null,
+    evidence: [],
+    dataRequests: currentSelected,
+    generatedAt: "2026-09-24T00:00:00Z"
+  });
+  const finalBrief = withStaleSelectedDataRequestWarning(baseBrief, staleCount);
+  const warning = staleSelectedDataRequestExclusionWarning(staleCount);
+
+  assert.equal(finalBrief.data_requests.length, 1);
+  assert.equal(finalBrief.data_requests[0]?.request_id, storedReach.request_id);
+  assert.ok(warning);
+  assert.equal(finalBrief.warnings.filter(item => item === warning).length, 1);
+
+  const serialized = JSON.parse(serializeBriefJson(finalBrief));
+  assert.ok(serialized.warnings.includes(warning));
+
+  const briefSource = readSource("../src/pages/BriefPage.tsx");
+  assert.match(briefSource, /withStaleSelectedDataRequestWarning/);
+  assert.match(briefSource, /brief\.warnings\.map/);
+});
+
+test("stale-selection warning helper does not duplicate an existing warning", () => {
+  const warning = staleSelectedDataRequestExclusionWarning(1);
+  assert.ok(warning);
+  const baseBrief = buildPlanningBrief({
+    context: {
+      condition_id: "long-covid",
+      cohort_id: "test",
+      age_range: "18–64",
+      evidence_year: 2024,
+      geography_scope: "United States",
+      local_context_id: null,
+      severity_filter: null,
+      artifact_version: "test"
+    },
+    estimates: [],
+    localContext: [],
+    scenario: null,
+    evidence: [],
+    dataRequests: [],
+    generatedAt: "2026-09-24T00:00:00Z"
+  });
+  const once = withStaleSelectedDataRequestWarning(baseBrief, 1);
+  const twice = withStaleSelectedDataRequestWarning(once, 1);
+  assert.equal(twice.warnings.filter(item => item === warning).length, 1);
 });
