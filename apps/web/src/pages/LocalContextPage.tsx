@@ -9,7 +9,10 @@ function IndicatorDisclosure({record}: {record: LocalContextRecord}) {
     <p><strong>Source:</strong> {record.source_agency} · {record.source_ref}</p>
     <p><strong>Vintage:</strong> {record.source_release_vintage}</p>
     <p><strong>Observation as of:</strong> {record.observation_as_of_date ?? "Missing / not available"}</p>
+    <p><strong>Geography:</strong> {record.geography_name} ({record.geography_type})</p>
     <p><strong>Universe:</strong> {record.universe}</p>
+    <p><strong>Unit:</strong> {record.unit}</p>
+    <p><strong>Published margin of error:</strong> {record.margin_of_error === null ? "Not applicable / not published" : record.margin_of_error} {record.margin_of_error === null ? "" : "at native confidence level " + String(record.confidence_level)}</p>
     <p><strong>Allowed use:</strong> {record.allowed_interpretation}</p>
     <p><strong>Not supported:</strong> {record.prohibited_interpretation.join("; ")}</p>
     <p><strong>Limitations:</strong> {record.limitations.join(" ")}</p>
