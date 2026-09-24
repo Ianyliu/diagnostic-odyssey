@@ -4,7 +4,10 @@ import { fileURLToPath } from "node:url";
 import test from "node:test";
 import type { Scenario } from "@diagnostic-odyssey/contracts";
 import { calculateScenario } from "@diagnostic-odyssey/scenario-engine";
-import { getCapacityCoveragePresentation } from "../src/data/pilotDecisionPresentation.ts";
+import {
+  formatRecognitionWindowDifference,
+  getCapacityCoveragePresentation
+} from "../src/data/pilotDecisionPresentation.ts";
 
 const baseScenario: Scenario = {
   scenario_id: "coverage-test",
@@ -70,4 +73,18 @@ test("PilotDecisionVisuals renders the capacity presentation instead of a hard-c
   assert.match(visualSource, /capacityCoverage\.coveragePercent \?\? 0/);
   assert.match(visualSource, /capacityCoverage\.noDemandCopy/);
   assert.doesNotMatch(visualSource, /coverage\.toFixed\(0\)/);
+});
+
+
+test("recognition-window difference formatting hides floating-point artifacts", () => {
+  assert.equal(formatRecognitionWindowDifference(6.2, 5.1), "1.1");
+  assert.equal(formatRecognitionWindowDifference(12, 6), "6");
+});
+
+test("PilotDecisionVisuals uses the recognition-window display formatter", () => {
+  assert.match(visualSource, /formatRecognitionWindowDifference/);
+  assert.doesNotMatch(
+    visualSource,
+    /scenario\.baseline_window_months - scenario\.alternative_window_months/
+  );
 });

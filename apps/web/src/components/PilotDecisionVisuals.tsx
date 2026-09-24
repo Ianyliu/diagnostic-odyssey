@@ -1,6 +1,9 @@
 import "./PilotDecisionVisuals.css";
 import type { Scenario, ScenarioResult } from "@diagnostic-odyssey/contracts";
-import { getCapacityCoveragePresentation } from "../data/pilotDecisionPresentation";
+import {
+  formatRecognitionWindowDifference,
+  getCapacityCoveragePresentation
+} from "../data/pilotDecisionPresentation";
 
 const integer = new Intl.NumberFormat("en-US", {maximumFractionDigits: 0});
 const currency = new Intl.NumberFormat("en-US", {
@@ -69,7 +72,10 @@ export function PilotDecisionVisuals({
           <p className="visual-kicker">TARGETED PATHWAY ASSUMPTION</p>
           <h3 id="recognition-window-title">Recognition-window comparison</h3>
         </div>
-        <strong className="visual-headline">{scenario.baseline_window_months - scenario.alternative_window_months} mo</strong>
+        <strong className="visual-headline">{formatRecognitionWindowDifference(
+          scenario.baseline_window_months,
+          scenario.alternative_window_months
+        )} mo</strong>
       </div>
       <div className="window-bars">
         <div className="window-row">
