@@ -97,18 +97,21 @@ test("reviewed WV loader validation fails closed on release or MEPS-binding mism
   assert.equal(canLoadReviewedLocalContextArtifact(reviewedLocalContext), true);
   assert.doesNotThrow(() => assertReviewedWvLocalContextArtifact(reviewedLocalContext));
 
-  const preliminaryManifest = structuredClone(reviewedLocalContext);
-  preliminaryManifest.manifest.release_status = "preliminary";
+  const preliminaryArtifact = structuredClone(reviewedLocalContext);
+  preliminaryArtifact.manifest.release_status = "preliminary";
+  for (const record of preliminaryArtifact.indicators) {
+    record.release_status = "preliminary";
+  }
   assert.throws(
-    () => assertReviewedWvLocalContextArtifact(preliminaryManifest),
+    () => assertReviewedWvLocalContextArtifact(preliminaryArtifact),
     /not eligible for reviewed runtime loading/
   );
 
-  const preliminaryRecord = structuredClone(reviewedLocalContext);
-  preliminaryRecord.indicators[0]!.release_status = "preliminary";
+  const mixedReleaseArtifact = structuredClone(reviewedLocalContext);
+  mixedReleaseArtifact.indicators[0]!.release_status = "preliminary";
   assert.throws(
-    () => assertReviewedWvLocalContextArtifact(preliminaryRecord),
-    /not eligible for reviewed runtime loading/
+    () => assertReviewedWvLocalContextArtifact(mixedReleaseArtifact),
+    /Invalid Diagnostic Odyssey local-context artifact/
   );
 
   const mismatchedBinding = structuredClone(reviewedLocalContext);
