@@ -7,6 +7,7 @@ import {
   buildSensitivityValues,
   type SensitivityField
 } from "../data/decisionVisuals";
+import { formatSensitivityInput } from "../data/sensitivityPresentation";
 
 const integer = new Intl.NumberFormat("en-US", {maximumFractionDigits: 0});
 
@@ -15,12 +16,6 @@ const fieldLabels: Record<SensitivityField, string> = {
   capacity: "Program capacity",
   alternative_window_months: "Planning recognition window"
 };
-
-function formatInput(field: SensitivityField, value: number): string {
-  if (field === "reach") return `${(value * 100).toFixed(0)}%`;
-  if (field === "alternative_window_months") return `${value} mo`;
-  return integer.format(value);
-}
 
 export function SensitivityExplorer({
   scenario,
@@ -68,7 +63,7 @@ export function SensitivityExplorer({
         const width = maxOutput > 0 ? (output / maxOutput) * 100 : 0;
         const isCurrent = Math.abs(point.input_value - currentValue) < 1e-9;
         return <div className={`sensitivity-row ${isCurrent ? "current" : ""}`} key={point.input_value}>
-          <span className="sensitivity-input">{formatInput(field, point.input_value)}{isCurrent ? <small>current</small> : null}</span>
+          <span className="sensitivity-input">{formatSensitivityInput(field, point.input_value)}{isCurrent ? <small>current</small> : null}</span>
           <div className="sensitivity-track" aria-hidden="true">
             <span className="sensitivity-fill" style={{width: `${width}%`}} />
           </div>
@@ -81,7 +76,7 @@ export function SensitivityExplorer({
       <table className="visual-data-table">
         <thead><tr><th scope="col">{fieldLabels[field]}</th><th scope="col">{metricLabel}</th><th scope="col">Reached participants</th></tr></thead>
         <tbody>{points.map(point => <tr key={point.input_value}>
-          <td>{formatInput(field, point.input_value)}</td>
+          <td>{formatSensitivityInput(field, point.input_value)}</td>
           <td>{integer.format(point.result[metric])}</td>
           <td>{integer.format(point.result.reached_participants)}</td>
         </tr>)}</tbody>
