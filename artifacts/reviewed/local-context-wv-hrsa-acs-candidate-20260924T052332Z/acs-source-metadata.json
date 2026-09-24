@@ -1,0 +1,328 @@
+{
+  "acs_data_response_byte_size": 364,
+  "acs_data_response_sha256": "607178c16e56a3758381077f3087d24a26479b39152e9989a2c3356d13f58b68",
+  "acs_metadata_contract_byte_size": 6028,
+  "acs_metadata_contract_sha256": "bb49f42468b353fe1519c897a0b882d9cf3aeb8360ae2d520341b346e52f12ad",
+  "acs_source_snapshot_byte_size": 6438,
+  "acs_source_snapshot_sha256": "4d02813e2b098070ef13740ef75ca3afad3da41477d8d795534a7bc2813c8f22",
+  "api_key_recorded": false,
+  "canonicalization_rule": "UTF-8 JSON; ensure_ascii=false; object keys sorted recursively; separators=(',', ':'); arrays preserve source order; exactly one terminal LF; Census API key and keyed URLs excluded before serialization.",
+  "dataset": "2024 ACS 5-year Data Profiles",
+  "exact_variables_requested": [
+    "NAME",
+    "DP03_0099PE",
+    "DP03_0099PM",
+    "DP03_0099PEA",
+    "DP03_0099PMA",
+    "DP04_0058PE",
+    "DP04_0058PM",
+    "DP04_0058PEA",
+    "DP04_0058PMA",
+    "DP02_0154PE",
+    "DP02_0154PM",
+    "DP02_0154PEA",
+    "DP02_0154PMA",
+    "DP03_0128PE",
+    "DP03_0128PM",
+    "DP03_0128PEA",
+    "DP03_0128PMA"
+  ],
+  "individual_metadata_url_template": "https://api.census.gov/data/2024/acs/acs5/profile/variables/{variable}.json",
+  "keyed_url_recorded": false,
+  "metadata_contract_verified": {
+    "wv.acs.broadband_pct": {
+      "estimate": "DP02_0154PE",
+      "estimate_annotation": "DP02_0154PEA",
+      "estimate_annotation_attribute_of": "DP02_0154PE",
+      "estimate_annotation_label": "Annotation of Percent!!COMPUTERS AND INTERNET USE!!Total households!!With a broadband Internet subscription",
+      "estimate_attributes": [
+        "DP02_0154PEA",
+        "DP02_0154PM",
+        "DP02_0154PMA"
+      ],
+      "estimate_label": "Percent!!COMPUTERS AND INTERNET USE!!Total households!!With a broadband Internet subscription",
+      "moe": "DP02_0154PM",
+      "moe_annotation": "DP02_0154PMA",
+      "moe_annotation_attribute_of": "DP02_0154PM",
+      "moe_annotation_label": "Annotation of Percent Margin of Error!!COMPUTERS AND INTERNET USE!!Total households!!With a broadband Internet subscription",
+      "moe_attribute_of": "DP02_0154PE",
+      "moe_attribute_type": "MARGIN_OF_ERROR",
+      "moe_attributes": [
+        "DP02_0154PMA"
+      ],
+      "moe_label": "Percent Margin of Error!!COMPUTERS AND INTERNET USE!!Total households!!With a broadband Internet subscription"
+    },
+    "wv.acs.no_vehicle_pct": {
+      "estimate": "DP04_0058PE",
+      "estimate_annotation": "DP04_0058PEA",
+      "estimate_annotation_attribute_of": "DP04_0058PE",
+      "estimate_annotation_label": "Annotation of Percent!!VEHICLES AVAILABLE!!Occupied housing units!!No vehicles available",
+      "estimate_attributes": [
+        "DP04_0058PEA",
+        "DP04_0058PM",
+        "DP04_0058PMA"
+      ],
+      "estimate_label": "Percent!!VEHICLES AVAILABLE!!Occupied housing units!!No vehicles available",
+      "moe": "DP04_0058PM",
+      "moe_annotation": "DP04_0058PMA",
+      "moe_annotation_attribute_of": "DP04_0058PM",
+      "moe_annotation_label": "Annotation of Percent Margin of Error!!VEHICLES AVAILABLE!!Occupied housing units!!No vehicles available",
+      "moe_attribute_of": "DP04_0058PE",
+      "moe_attribute_type": "MARGIN_OF_ERROR",
+      "moe_attributes": [
+        "DP04_0058PMA"
+      ],
+      "moe_label": "Percent Margin of Error!!VEHICLES AVAILABLE!!Occupied housing units!!No vehicles available"
+    },
+    "wv.acs.poverty_pct": {
+      "estimate": "DP03_0128PE",
+      "estimate_annotation": "DP03_0128PEA",
+      "estimate_annotation_attribute_of": "DP03_0128PE",
+      "estimate_annotation_label": "Annotation of Percent!!PERCENTAGE OF FAMILIES AND PEOPLE WHOSE INCOME IN THE PAST 12 MONTHS IS BELOW THE POVERTY LEVEL!!All people",
+      "estimate_attributes": [
+        "DP03_0128PEA",
+        "DP03_0128PM",
+        "DP03_0128PMA"
+      ],
+      "estimate_label": "Percent!!PERCENTAGE OF FAMILIES AND PEOPLE WHOSE INCOME IN THE PAST 12 MONTHS IS BELOW THE POVERTY LEVEL!!All people",
+      "moe": "DP03_0128PM",
+      "moe_annotation": "DP03_0128PMA",
+      "moe_annotation_attribute_of": "DP03_0128PE",
+      "moe_annotation_label": "Annotation of Percent Margin of Error!!PERCENTAGE OF FAMILIES AND PEOPLE WHOSE INCOME IN THE PAST 12 MONTHS IS BELOW THE POVERTY LEVEL!!All people",
+      "moe_attribute_of": "DP03_0128PE",
+      "moe_attribute_type": "MARGIN_OF_ERROR",
+      "moe_attributes": [
+        "DP03_0128PMA"
+      ],
+      "moe_label": "Percent Margin of Error!!PERCENTAGE OF FAMILIES AND PEOPLE WHOSE INCOME IN THE PAST 12 MONTHS IS BELOW THE POVERTY LEVEL!!All people"
+    },
+    "wv.acs.uninsured_pct": {
+      "estimate": "DP03_0099PE",
+      "estimate_annotation": "DP03_0099PEA",
+      "estimate_annotation_attribute_of": "DP03_0099PE",
+      "estimate_annotation_label": "Annotation of Percent!!HEALTH INSURANCE COVERAGE!!Civilian noninstitutionalized population!!No health insurance coverage",
+      "estimate_attributes": [
+        "DP03_0099PEA",
+        "DP03_0099PM",
+        "DP03_0099PMA"
+      ],
+      "estimate_label": "Percent!!HEALTH INSURANCE COVERAGE!!Civilian noninstitutionalized population!!No health insurance coverage",
+      "moe": "DP03_0099PM",
+      "moe_annotation": "DP03_0099PMA",
+      "moe_annotation_attribute_of": "DP03_0099PE",
+      "moe_annotation_label": "Annotation of Percent Margin of Error!!HEALTH INSURANCE COVERAGE!!Civilian noninstitutionalized population!!No health insurance coverage",
+      "moe_attribute_of": "DP03_0099PE",
+      "moe_attribute_type": "MARGIN_OF_ERROR",
+      "moe_attributes": [
+        "DP03_0099PMA"
+      ],
+      "moe_label": "Percent Margin of Error!!HEALTH INSURANCE COVERAGE!!Civilian noninstitutionalized population!!No health insurance coverage"
+    }
+  },
+  "metadata_endpoint": "https://api.census.gov/data/2024/acs/acs5/profile/variables.json",
+  "official_metadata_contract": {
+    "bulk_metadata_endpoint": "https://api.census.gov/data/2024/acs/acs5/profile/variables.json",
+    "bulk_pe_records": {
+      "DP02_0154PE": {
+        "attributes": "DP02_0154PEA,DP02_0154PM,DP02_0154PMA",
+        "concept": "Selected Social Characteristics in the United States",
+        "group": "DP02",
+        "label": "Percent!!COMPUTERS AND INTERNET USE!!Total households!!With a broadband Internet subscription",
+        "limit": 0,
+        "predicateType": "float"
+      },
+      "DP03_0099PE": {
+        "attributes": "DP03_0099PEA,DP03_0099PM,DP03_0099PMA",
+        "concept": "Selected Economic Characteristics",
+        "group": "DP03",
+        "label": "Percent!!HEALTH INSURANCE COVERAGE!!Civilian noninstitutionalized population!!No health insurance coverage",
+        "limit": 0,
+        "predicateType": "float"
+      },
+      "DP03_0128PE": {
+        "attributes": "DP03_0128PEA,DP03_0128PM,DP03_0128PMA",
+        "concept": "Selected Economic Characteristics",
+        "group": "DP03",
+        "label": "Percent!!PERCENTAGE OF FAMILIES AND PEOPLE WHOSE INCOME IN THE PAST 12 MONTHS IS BELOW THE POVERTY LEVEL!!All people",
+        "limit": 0,
+        "predicateType": "float"
+      },
+      "DP04_0058PE": {
+        "attributes": "DP04_0058PEA,DP04_0058PM,DP04_0058PMA",
+        "concept": "Selected Housing Characteristics",
+        "group": "DP04",
+        "label": "Percent!!VEHICLES AVAILABLE!!Occupied housing units!!No vehicles available",
+        "limit": 0,
+        "predicateType": "float"
+      }
+    },
+    "individual_attribute_records": {
+      "DP02_0154PEA": {
+        "requested_variable_id": "DP02_0154PEA",
+        "response": {
+          "attribute of": "DP02_0154PE",
+          "attribute type": "ANNOTATION",
+          "concept": "Selected Social Characteristics in the United States",
+          "group": "DP02",
+          "label": "Annotation of Percent!!COMPUTERS AND INTERNET USE!!Total households!!With a broadband Internet subscription",
+          "limit": 0,
+          "name": "DP02_0154PEA",
+          "predicateType": "string"
+        }
+      },
+      "DP02_0154PM": {
+        "requested_variable_id": "DP02_0154PM",
+        "response": {
+          "attribute of": "DP02_0154PE",
+          "attribute type": "MARGIN_OF_ERROR",
+          "attributes": "DP02_0154PMA",
+          "concept": "Selected Social Characteristics in the United States",
+          "group": "DP02",
+          "label": "Percent Margin of Error!!COMPUTERS AND INTERNET USE!!Total households!!With a broadband Internet subscription",
+          "limit": 0,
+          "name": "DP02_0154PM",
+          "predicateType": "float"
+        }
+      },
+      "DP02_0154PMA": {
+        "requested_variable_id": "DP02_0154PMA",
+        "response": {
+          "attribute of": "DP02_0154PM",
+          "attribute type": "ANNOTATION",
+          "concept": "Selected Social Characteristics in the United States",
+          "group": "DP02",
+          "label": "Annotation of Percent Margin of Error!!COMPUTERS AND INTERNET USE!!Total households!!With a broadband Internet subscription",
+          "limit": 0,
+          "name": "DP02_0154PMA",
+          "predicateType": "string"
+        }
+      },
+      "DP03_0099PEA": {
+        "requested_variable_id": "DP03_0099PEA",
+        "response": {
+          "attribute of": "DP03_0099PE",
+          "attribute type": "ANNOTATION",
+          "concept": "Selected Economic Characteristics",
+          "group": "DP03",
+          "label": "Annotation of Percent!!HEALTH INSURANCE COVERAGE!!Civilian noninstitutionalized population!!No health insurance coverage",
+          "limit": 0,
+          "name": "DP03_0099PEA",
+          "predicateType": "string"
+        }
+      },
+      "DP03_0099PM": {
+        "requested_variable_id": "DP03_0099PM",
+        "response": {
+          "attribute of": "DP03_0099PE",
+          "attribute type": "MARGIN_OF_ERROR",
+          "attributes": "DP03_0099PMA",
+          "concept": "Selected Economic Characteristics",
+          "group": "DP03",
+          "label": "Percent Margin of Error!!HEALTH INSURANCE COVERAGE!!Civilian noninstitutionalized population!!No health insurance coverage",
+          "limit": 0,
+          "name": "DP03_0099PM",
+          "predicateType": "float"
+        }
+      },
+      "DP03_0099PMA": {
+        "requested_variable_id": "DP03_0099PMA",
+        "response": {
+          "attribute of": "DP03_0099PE",
+          "attribute type": "ANNOTATION",
+          "concept": "Selected Economic Characteristics",
+          "group": "DP03",
+          "label": "Annotation of Percent Margin of Error!!HEALTH INSURANCE COVERAGE!!Civilian noninstitutionalized population!!No health insurance coverage",
+          "limit": 0,
+          "name": "DP03_0099PMA",
+          "predicateType": "string"
+        }
+      },
+      "DP03_0128PEA": {
+        "requested_variable_id": "DP03_0128PEA",
+        "response": {
+          "attribute of": "DP03_0128PE",
+          "attribute type": "ANNOTATION",
+          "concept": "Selected Economic Characteristics",
+          "group": "DP03",
+          "label": "Annotation of Percent!!PERCENTAGE OF FAMILIES AND PEOPLE WHOSE INCOME IN THE PAST 12 MONTHS IS BELOW THE POVERTY LEVEL!!All people",
+          "limit": 0,
+          "name": "DP03_0128PEA",
+          "predicateType": "string"
+        }
+      },
+      "DP03_0128PM": {
+        "requested_variable_id": "DP03_0128PM",
+        "response": {
+          "attribute of": "DP03_0128PE",
+          "attribute type": "MARGIN_OF_ERROR",
+          "attributes": "DP03_0128PMA",
+          "concept": "Selected Economic Characteristics",
+          "group": "DP03",
+          "label": "Percent Margin of Error!!PERCENTAGE OF FAMILIES AND PEOPLE WHOSE INCOME IN THE PAST 12 MONTHS IS BELOW THE POVERTY LEVEL!!All people",
+          "limit": 0,
+          "name": "DP03_0128PM",
+          "predicateType": "float"
+        }
+      },
+      "DP03_0128PMA": {
+        "requested_variable_id": "DP03_0128PMA",
+        "response": {
+          "attribute of": "DP03_0128PE",
+          "attribute type": "ANNOTATION",
+          "concept": "Selected Economic Characteristics",
+          "group": "DP03",
+          "label": "Annotation of Percent Margin of Error!!PERCENTAGE OF FAMILIES AND PEOPLE WHOSE INCOME IN THE PAST 12 MONTHS IS BELOW THE POVERTY LEVEL!!All people",
+          "limit": 0,
+          "name": "DP03_0128PMA",
+          "predicateType": "string"
+        }
+      },
+      "DP04_0058PEA": {
+        "requested_variable_id": "DP04_0058PEA",
+        "response": {
+          "attribute of": "DP04_0058PE",
+          "attribute type": "ANNOTATION",
+          "concept": "Selected Housing Characteristics",
+          "group": "DP04",
+          "label": "Annotation of Percent!!VEHICLES AVAILABLE!!Occupied housing units!!No vehicles available",
+          "limit": 0,
+          "name": "DP04_0058PEA",
+          "predicateType": "string"
+        }
+      },
+      "DP04_0058PM": {
+        "requested_variable_id": "DP04_0058PM",
+        "response": {
+          "attribute of": "DP04_0058PE",
+          "attribute type": "MARGIN_OF_ERROR",
+          "attributes": "DP04_0058PMA",
+          "concept": "Selected Housing Characteristics",
+          "group": "DP04",
+          "label": "Percent Margin of Error!!VEHICLES AVAILABLE!!Occupied housing units!!No vehicles available",
+          "limit": 0,
+          "name": "DP04_0058PM",
+          "predicateType": "float"
+        }
+      },
+      "DP04_0058PMA": {
+        "requested_variable_id": "DP04_0058PMA",
+        "response": {
+          "attribute of": "DP04_0058PM",
+          "attribute type": "ANNOTATION",
+          "concept": "Selected Housing Characteristics",
+          "group": "DP04",
+          "label": "Annotation of Percent Margin of Error!!VEHICLES AVAILABLE!!Occupied housing units!!No vehicles available",
+          "limit": 0,
+          "name": "DP04_0058PMA",
+          "predicateType": "string"
+        }
+      }
+    },
+    "individual_metadata_url_template": "https://api.census.gov/data/2024/acs/acs5/profile/variables/{variable}.json"
+  },
+  "request_endpoint_excluding_api_key": "https://api.census.gov/data/2024/acs/acs5/profile?get=NAME,DP03_0099PE,DP03_0099PM,DP03_0099PEA,DP03_0099PMA,DP04_0058PE,DP04_0058PM,DP04_0058PEA,DP04_0058PMA,DP02_0154PE,DP02_0154PM,DP02_0154PEA,DP02_0154PMA,DP03_0128PE,DP03_0128PM,DP03_0128PEA,DP03_0128PMA&for=state:54",
+  "source_ref": "acs-2024-5year-profile",
+  "source_retrieved_at": "2026-09-24T05:23:40Z",
+  "source_sha256_represents": "SHA-256 of canonical JSON for {'acs_data_response': <exact parsed state response>, 'acs_metadata_contract': <exact relevant metadata records used for validation>}",
+  "source_vintage": "2020-2024 ACS 5-year estimates / 2024 release"
+}

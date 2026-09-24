@@ -1,0 +1,74 @@
+{
+  "approved_indicator_count": 34,
+  "artifact_version": "local-context-wv-hrsa-acs-candidate-20260924T052332Z",
+  "automatic_release": false,
+  "candidate_acs_source_metadata_sha256": "e84a84385162cf8db7e8ed996b7caf7acca84be2b161cc44e802a5792dd15afa",
+  "candidate_artifact_id": 10791962155,
+  "candidate_artifact_name": "local-context-wv-hrsa-acs-candidate-35959686324",
+  "candidate_artifact_zip_sha256": "cf6e9cc085c2ec45d4a6e64d2a8e2fd088dc0722a74832ec780654dd7bafd441",
+  "candidate_code_commit": "7cfeb2f70e00421bb22d880b2e49b5c35920ed7a",
+  "candidate_diagnostics_sha256": "3dbff0ba734d1a80b13d0298ce024181c690c3f3dcd50cea3c4f48704399a54c",
+  "candidate_github_actions_run_manifest_sha256": "f8a501f3c87695e2dd2c9d46cc75a8821af8b009440106e99c4d3641a60cfe5f",
+  "candidate_hrsa_source_metadata_sha256": "c6f94c8da0c458cb839af03777b098659ae880117d8edb959a8bdc2519efc306",
+  "candidate_local_context_sha256": "05961842229ffff252d2deda74e10d1c1dd542c38678684f65ca6fa0fabb8588",
+  "candidate_review_manifest_sha256": "08ea75045b2857f405b18f6cc01c8b5fd25f588476c2e1261dddd34da0a5fbba",
+  "candidate_workflow_run_id": "35959686324",
+  "county_evidence_approved": false,
+  "numerical_recomputation_performed": false,
+  "promotion_gate": "passed",
+  "promotion_rule": "Candidate indicators must not enter runtime until independently reviewed and explicitly promoted to reviewed_released.",
+  "promotion_scope": "release_state_only",
+  "release_status": "reviewed_released",
+  "review_checks": [
+    {
+      "check": "source_integrity",
+      "status": "approved"
+    },
+    {
+      "check": "hrsa_universe_and_dedup",
+      "status": "approved"
+    },
+    {
+      "check": "acs_labels_universes_and_moe",
+      "status": "approved"
+    },
+    {
+      "check": "geography",
+      "status": "approved"
+    },
+    {
+      "check": "interpretation_boundaries",
+      "status": "approved"
+    },
+    {
+      "check": "runtime_separation",
+      "status": "approved"
+    }
+  ],
+  "review_decision": "approved",
+  "review_required": false,
+  "review_type": "explicit_reviewed_artifact_promotion",
+  "reviewer_notes": [
+    {
+      "blocking": false,
+      "id": "P2-1",
+      "note": "HRSA published_update_date is derived from HTTP Last-Modified and should be understood as source-resource modification metadata, not necessarily a formal HRSA release date.",
+      "severity": "P2"
+    },
+    {
+      "blocking": false,
+      "id": "P2-2",
+      "note": "The safe artifact does not preserve the complete ordered HRSA CSV header. Future candidates may optionally preserve an ordered header list or header hash for easier auditability.",
+      "severity": "P2"
+    },
+    {
+      "blocking": false,
+      "id": "P2-3",
+      "note": "Duplicate-group diagnostics preserve IDs and row multiplicities but not the common frozen type/discipline/score tuple. Future candidates may persist that tuple for easier independent audit.",
+      "severity": "P2"
+    }
+  ],
+  "runtime_selection_changed": false,
+  "state_level_only": true,
+  "reviewed_local_context_sha256": "82e3cc5d5c6bd1d084fddb47b36ca08df76be19ab2a641dbba50b8c59c467bc4"
+}

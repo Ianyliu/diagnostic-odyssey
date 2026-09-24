@@ -1,0 +1,28 @@
+{
+  "sources": {
+    "mental_health": {
+      "byte_size": 25030342,
+      "download_url": "https://data.hrsa.gov/DataDownload/DD_Files/BCD_HPSA_FCT_DET_MH.csv",
+      "expected_discipline": "Mental Health",
+      "name": "HPSA - Mental Health - All HPSAs",
+      "published_update_date": "2026-09-23",
+      "requested_url": "https://data.hrsa.gov/DataDownload/DD_Files/BCD_HPSA_FCT_DET_MH.csv",
+      "resolved_url": "https://data.hrsa.gov/DataDownload/DD_Files/BCD_HPSA_FCT_DET_MH.csv",
+      "retrieved_at": "2026-09-24T05:23:34Z",
+      "sha256": "862957c11eff1e7c9797b7df8fe4cf21660fc5b56cf89dd492883918bced1598",
+      "source_ref": "hrsa-hpsa-mental-health-current"
+    },
+    "primary_care": {
+      "byte_size": 48749811,
+      "download_url": "https://data.hrsa.gov/DataDownload/DD_Files/BCD_HPSA_FCT_DET_PC.csv",
+      "expected_discipline": "Primary Care",
+      "name": "HPSA - Primary Care - All HPSAs",
+      "published_update_date": "2026-09-23",
+      "requested_url": "https://data.hrsa.gov/DataDownload/DD_Files/BCD_HPSA_FCT_DET_PC.csv",
+      "resolved_url": "https://data.hrsa.gov/DataDownload/DD_Files/BCD_HPSA_FCT_DET_PC.csv",
+      "retrieved_at": "2026-09-24T05:23:32Z",
+      "sha256": "5060978625754f0eafd622e423e24fbe7e532234c7b1902944be2095f3cfcdf5",
+      "source_ref": "hrsa-hpsa-primary-care-current"
+    }
+  }
+}
