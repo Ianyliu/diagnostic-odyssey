@@ -130,3 +130,26 @@
   .technical-detail-list>div{grid-template-columns:1fr;gap:3px}
   .brief-burden-group-heading{align-items:flex-start;flex-direction:column}
 }
+
+
+/* Issue #24 Phase A: explicit Pilot local context and decision trace */
+.pilot-context-action{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px}
+.pilot-local-context,.pilot-decision-trace,.brief-decision-trace{display:grid;gap:10px;margin-top:18px;padding:14px;border:1px solid var(--do-color-line);border-radius:8px;background:white}
+.pilot-local-context-heading{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.pilot-local-context-heading h3,.pilot-decision-trace h3,.brief-decision-trace h3{margin:0;color:var(--do-color-navy)}
+.pilot-local-context-record{display:grid;gap:5px;padding:12px;border-radius:7px;background:var(--do-color-soft-blue);color:var(--do-color-muted);font-size:13px;line-height:1.45}
+.pilot-local-context-record strong,.pilot-local-context-value{color:var(--do-color-navy)}
+.pilot-local-context-value{font-size:18px;font-weight:800}
+.pilot-local-context-actions{display:flex;flex-wrap:wrap;gap:10px}
+.decision-trace{display:grid;gap:10px}
+.decision-trace-boundary{margin:0;color:var(--do-color-muted);font-size:12px;line-height:1.45}
+.decision-trace ol{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+.decision-trace li{display:grid;grid-template-columns:28px minmax(0,1fr);gap:10px;align-items:start;padding:10px;border:1px solid var(--do-color-line);border-radius:7px;background:var(--do-color-bg)}
+.decision-trace-step{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--do-color-soft-blue);color:var(--do-color-navy);font-weight:800}
+.decision-trace li>div{display:grid;gap:4px}
+.decision-trace li strong{color:var(--do-color-navy)}
+.decision-trace li span:not(.decision-trace-step){color:var(--do-color-muted);font-size:13px;line-height:1.45}
+.pilot-used-badge{width:fit-content;margin-top:5px}
+.empty-state.compact{padding:12px}
+@media(max-width:640px){.pilot-local-context-heading{display:grid}}
+@media print{.pilot-local-context,.pilot-decision-trace,.brief-decision-trace,.decision-trace li{break-inside:avoid}}
