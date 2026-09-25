@@ -525,9 +525,9 @@ test("local-context selection UI supports reviewed records without changing Pilo
   const pilotSource = readSource("../src/pages/PilotPage.tsx");
 
   assert.match(localSource, /Include in Planning Brief/);
-  assert.match(localSource, /Review selected context in Planning Brief/);
+  assert.match(localSource, /Review context in Planning Brief/);
   assert.match(localSource, /Clear selections/);
-  assert.match(localSource, /selected for Planning Brief/);
+  assert.match(localSource, /explicitly selected by checkbox for Planning Brief/);
   assert.match(localSource, /Include in Planning Brief/);
   assert.match(localSource, /Use in Pilot planning/);
   assert.match(localSource, /separate analyst choices/);
