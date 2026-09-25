@@ -2,6 +2,7 @@ import "./DecisionStateRail.css";
 import { Link } from "react-router-dom";
 import { canExportEstimate } from "@diagnostic-odyssey/contracts";
 import { useArtifact } from "../data/ArtifactContext";
+import { formatPathwayStepLabel } from "../data/pathwayBoundary";
 
 type StateTone = "ready" | "context" | "assumption" | "gap";
 
@@ -55,7 +56,7 @@ export function DecisionStateRail() {
       label: "Pilot assumptions",
       status: scenarioResult ? "Active planning scenario" : "Unavailable",
       detail: scenarioResult && scenario
-        ? `Target: ${scenario.target_pathway_step}`
+        ? `Target: ${formatPathwayStepLabel(scenario.target_pathway_step)}`
         : "No valid scenario result",
       to: "/pilot",
       tone: scenarioResult ? "assumption" : "gap"
