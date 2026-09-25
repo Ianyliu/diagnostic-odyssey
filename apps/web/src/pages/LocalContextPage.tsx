@@ -223,11 +223,15 @@ export function LocalContextPage() {
 
     <div className="card selection-summary" aria-live="polite">
       <div>
-        <strong>{selectedCount} {selectedCount === 1 ? "indicator" : "indicators"} selected for Planning Brief</strong>
-        <p className="subtle">Only explicit selections from the currently loaded reviewed artifact are eligible.</p>
+        <strong>{selectedCount} {selectedCount === 1 ? "indicator" : "indicators"} explicitly selected by checkbox for Planning Brief</strong>
+        <p className="subtle">
+          {pilotLocalContextId
+            ? "The active Pilot-used context will also appear in the Planning Brief, deduplicated if it is checkbox-selected too."
+            : "Only explicit selections from the currently loaded reviewed artifact are eligible."}
+        </p>
       </div>
       <div className="selection-actions">
-        {selectedCount > 0 && <Link className="button" to="/brief">Review selected context in Planning Brief</Link>}
+        {(selectedCount > 0 || pilotLocalContextId) && <Link className="button" to="/brief">Review context in Planning Brief</Link>}
         {selectedCount > 0 && <button className="button secondary" type="button" onClick={clearSelectedLocalContext}>Clear selections</button>}
       </div>
     </div>
