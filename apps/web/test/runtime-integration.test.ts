@@ -503,7 +503,7 @@ test("planning brief includes only explicitly supplied release-eligible local co
   assert.match(briefSource, /AccessibleEstimateInterval/);
   assert.match(briefSource, /aria-hidden="true"/);
   assert.match(briefSource, /sr-only/);
-  assert.match(briefSource, /localContext:\s*selectedLocalContext/);
+  assert.match(briefSource, /localContext:\s*briefLocalContext/);
   assert.doesNotMatch(briefSource, /localContext:\s*\[\]/);
   assert.match(briefSource, /formatLocalContextValue\(record\)/);
   assert.match(briefSource, /formatDataStateLabel\(record\.state\)/);
@@ -514,8 +514,8 @@ test("planning brief includes only explicitly supplied release-eligible local co
   assert.match(briefSource, /record\.allowed_interpretation/);
   assert.match(briefSource, /record\.prohibited_interpretation/);
   assert.match(briefSource, /formatPublishedLocalContextUncertainty\(record\)/);
-  assert.match(briefSource, /available, but no local context has been selected for this brief/);
-  assert.match(briefSource, /explicit analyst selection is required/);
+  assert.match(briefSource, /available, but no local context has been selected for this brief or used in Pilot planning/);
+  assert.match(briefSource, /explicit Include-in-Brief selection or an explicit Use-in-Pilot selection/);
   assert.doesNotMatch(briefSource, /development fixture|Fixture only|Partial fixture/);
 });
 
@@ -528,8 +528,10 @@ test("local-context selection UI supports reviewed records without changing Pilo
   assert.match(localSource, /Review selected context in Planning Brief/);
   assert.match(localSource, /Clear selections/);
   assert.match(localSource, /selected for Planning Brief/);
-  assert.match(localSource, /Selecting an indicator includes its reviewed value, source, geography, vintage, uncertainty, and interpretation boundaries/);
-  assert.match(localSource, /does not change national burden or Pilot Planner assumptions/);
+  assert.match(localSource, /Include in Planning Brief/);
+  assert.match(localSource, /Use in Pilot planning/);
+  assert.match(localSource, /separate analyst choices/);
+  assert.match(localSource, /Neither changes national burden or Pilot Planner numeric assumptions/);
   assert.match(localSource, /BreakdownList/);
   assert.match(localSource, /primaryBreakdowns/);
   assert.match(localSource, /mentalBreakdowns/);
