@@ -9,11 +9,13 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 from analysis.local_context.pipeline import (
+    PROHIBITED,
     ContractError,
     build_acs_request,
     canonical_json_fingerprint,
     download_file,
     fetch_json,
+    load_expected_candidate_output_files,
     parse_acs,
     sanitize_url,
     summarize_hrsa,
@@ -126,6 +128,29 @@ class LocalContextPipelineTests(unittest.TestCase):
         bad = self._hrsa_row(**{field["state_name"]: "Virginia"})
         with self.assertRaisesRegex(ContractError, "HRSA state mismatch"):
             summarize_hrsa(self._write_hrsa([bad]), HRSA_CONFIG, "primary_care")
+
+    def test_hrsa_invalid_fips_rows_are_counted_without_losing_valid_wv_rows(self):
+        field = HRSA_CONFIG["field_map"]
+        rows = [
+            self._hrsa_row(**{field["state_fips"]: "not-a-fips"}),
+            self._hrsa_row(**{field["hpsa_id"]: "H2"}),
+        ]
+        indicators, diagnostics = summarize_hrsa(
+            self._write_hrsa(rows), HRSA_CONFIG, "primary_care"
+        )
+        count = next(
+            x for x in indicators
+            if x["indicator_id"].endswith("designated-distinct-count")
+        )
+        self.assertEqual(count["value"], 1)
+        self.assertEqual(diagnostics["skipped_invalid_fips_rows"], 1)
+        self.assertEqual(diagnostics["rows_matching_west_virginia"], 1)
+
+    def test_hrsa_all_invalid_fips_still_fails_closed(self):
+        field = HRSA_CONFIG["field_map"]
+        rows = [self._hrsa_row(**{field["state_fips"]: "bad"})]
+        with self.assertRaisesRegex(ContractError, "zero West Virginia rows"):
+            summarize_hrsa(self._write_hrsa(rows), HRSA_CONFIG, "primary_care")
 
     def test_unexpected_rural_status_suppresses_breakdown_and_is_diagnostic(self):
         field = HRSA_CONFIG["field_map"]
@@ -400,6 +425,18 @@ class LocalContextPipelineTests(unittest.TestCase):
             self.assertIn("key=secret-value", keyed)
 
 
+    def test_census_key_reserved_characters_are_fully_percent_encoded(self):
+        secret = "slash/value?x=1&y=2#fragment"
+        with patch.dict(os.environ, {"CENSUS_API_KEY": secret}, clear=True):
+            public, keyed = build_acs_request(ACS_CONFIG)
+        self.assertNotIn(secret, public)
+        self.assertNotIn("key=", public.lower())
+        self.assertNotIn(secret, keyed)
+        self.assertIn(
+            "&key=slash%2Fvalue%3Fx%3D1%26y%3D2%23fragment",
+            keyed,
+        )
+
     def test_sanitize_url_redacts_api_key(self):
         url = "https://api.census.gov/data?get=NAME&key=secret123&for=state:54"
         safe = sanitize_url(url)
@@ -440,6 +477,30 @@ class LocalContextPipelineTests(unittest.TestCase):
             with self.assertRaises(ContractError):
                 fetch_json("https://example.test", retry_delay_seconds=0)
             self.assertEqual(mocked.call_count, 1)
+
+    def test_fetch_json_keyboard_interrupt_propagates(self):
+        with patch(
+            "analysis.local_context.pipeline.urllib.request.urlopen",
+            side_effect=KeyboardInterrupt(),
+        ):
+            with self.assertRaises(KeyboardInterrupt):
+                fetch_json("https://example.test", retry_delay_seconds=0)
+
+    def test_download_file_keyboard_interrupt_propagates(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            destination = Path(tmpdir) / "source.csv"
+            with patch(
+                "analysis.local_context.pipeline.urllib.request.urlopen",
+                side_effect=KeyboardInterrupt(),
+            ):
+                with self.assertRaises(KeyboardInterrupt):
+                    download_file(
+                        "https://example.test/source.csv",
+                        destination,
+                        retry_delay_seconds=0,
+                    )
+            self.assertFalse(destination.exists())
+            self.assertFalse(Path(str(destination) + ".part").exists())
 
     def test_hrsa_download_is_atomic_and_retries_transient_failure(self):
         transient = urllib.error.URLError("temporary")
@@ -482,6 +543,39 @@ class LocalContextPipelineTests(unittest.TestCase):
             self.assertFalse(destination.exists())
             self.assertFalse(part.exists())
 
+
+    def test_expected_candidate_output_file_set_is_canonical_and_unique(self):
+        expected = (
+            "local-context.json",
+            "diagnostics.json",
+            "review-manifest.json",
+            "hrsa-source-metadata.json",
+            "acs-source-metadata.json",
+            "github-actions-run-manifest.json",
+            "SHA256SUMS",
+        )
+        governed = load_expected_candidate_output_files()
+        self.assertEqual(governed, expected)
+        self.assertEqual(len(governed), len(set(governed)))
+
+    def test_prohibited_guardrails_preserve_current_and_historical_union(self):
+        expected = {
+            "West Virginia Long COVID prevalence",
+            "West Virginia Long COVID cost",
+            "state-specific Long COVID burden",
+            "causal diagnostic-delay effect",
+            "causal pilot benefit",
+            "causal effect modifier",
+            "calibrated access severity score",
+            "attributable cost",
+            "savings",
+            "ROI",
+            "causal determinant of diagnostic delay",
+            "predicted pilot effect",
+        }
+        self.assertEqual(set(PROHIBITED), expected)
+        self.assertEqual(len(PROHIBITED), 12)
+        self.assertEqual(len(PROHIBITED), len(set(PROHIBITED)))
 
 
 if __name__ == "__main__":
