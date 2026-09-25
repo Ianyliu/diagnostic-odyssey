@@ -4,7 +4,7 @@ Diagnostic Odyssey is a statistically grounded planning platform for making hidd
 
 It is designed for teams planning services around conditions such as Long COVID and ME/CFS. The application separates observed burden, local context, reviewed evidence, and planning assumptions so that a useful pilot plan does not imply stronger evidence than the data support.
 
-> **Project status:** working decision-workspace foundation with reviewed national 2024 MEPS Long COVID burden runtime-loaded as one evidence layer and reviewed West Virginia **state-level** HRSA + ACS context runtime-loaded separately as implementation context. The 21 national `reviewed_released` estimates remain unchanged; WV context does not rescale or mutate them. Analysts may explicitly select reviewed WV records into the Planning Brief, while nothing is auto-selected and the Pilot Planner does not consume local context. County-level reviewed context and the Implementation Decision Map remain future work.
+> **Project status:** working decision-workspace foundation with reviewed national 2024 MEPS Long COVID burden runtime-loaded as one evidence layer and reviewed West Virginia **state-level** HRSA + ACS context runtime-loaded separately as implementation context. The 21 national `reviewed_released` estimates remain unchanged; WV context does not rescale or mutate them. Analysts may explicitly include reviewed WV records in the Planning Brief and may separately attach one eligible reviewed record as the active Pilot planning context. Pilot attachment is contextual only: it does not auto-change numeric assumptions or rescale national burden. County-level reviewed context and the Implementation Decision Map remain future work.
 
 The full product workflow is:
 
@@ -116,7 +116,7 @@ The other routes show the intended product boundary. Some are deliberately scaff
 
 ### Scaffolded / intentionally incomplete
 
-- Reviewed county-level local context does not exist yet; county HRSA/ACS aggregation, topology, and the Implementation Decision Map remain future work. An explicit local-context → Pilot Planner selection/handoff is also future work.
+- Reviewed county-level local context does not exist yet; county HRSA/ACS aggregation, topology, and the Implementation Decision Map remain future work. The state-level Local Context → Pilot Planner handoff is implemented as an explicit single-record analyst choice without automatic numeric calibration.
 - PLACES/CMS local-context ingestion.
 - Reviewed external literature ledger and source extraction workflow.
 - Evidence-backed bounded scenario parameters.
@@ -236,7 +236,7 @@ See [data/README.md](data/README.md) and [data/manifests/sources.json](data/mani
 - registration/API-key requirements;
 - downstream script entry points.
 
-The repository contains the reviewed aggregate national MEPS artifact with 21 `reviewed_released` estimates and a separately runtime-loaded reviewed West Virginia state-level HRSA/ACS implementation-context artifact. Raw MEPS and HRSA source files remain excluded. State local context does not rescale or mutate national burden. Eligible reviewed state records may be explicitly selected into the Planning Brief, but nothing is auto-selected and the Pilot Planner remains unaffected. No reviewed county-level local context exists yet; the Implementation Decision Map remains future work. The illustrative fixture remains development/test-only and is not a substitute for reviewed evidence.
+The repository contains the reviewed aggregate national MEPS artifact with 21 `reviewed_released` estimates and a separately runtime-loaded reviewed West Virginia state-level HRSA/ACS implementation-context artifact. Raw MEPS and HRSA source files remain excluded. State local context does not rescale or mutate national burden. Eligible reviewed state records may be explicitly selected into the Planning Brief, and one eligible reviewed state record may separately be attached for Pilot planning. That attachment is an analyst context handoff only and does not change Pilot numeric assumptions or national burden. No reviewed county-level local context exists yet; the Implementation Decision Map remains future work. The illustrative fixture remains development/test-only and is not a substitute for reviewed evidence.
 
 ## Working agreements
 
