@@ -19,6 +19,7 @@ export interface DecisionTraceItem {
 export interface DecisionTraceInput {
   burdenEstimateCount: number;
   pilotLocalContext: LocalContextRecord | null;
+  localContextStatus: "loading" | "loaded" | "error";
   scenario: Scenario;
   currentDataRequestCount: number;
   evidence: EvidenceRecord[];
@@ -32,8 +33,12 @@ export function describeSupportedClaimBoundary(
     record => canDriveScenarioParameter(record, scenario).allowed
   );
 
-  if (applicable.length === 0) {
+  if (evidence.length === 0) {
     return "No reviewed intervention-effect parameter is available. The scenario remains assumption-based; causal benefit, savings, ROI, and preventable-cost claims remain unavailable.";
+  }
+
+  if (applicable.length === 0) {
+    return "Reviewed intervention-effect evidence is loaded, but none is admissible for this scenario's pathway step and mechanism. The scenario remains assumption-based; causal benefit, savings, ROI, and preventable-cost claims remain unavailable.";
   }
 
   const boundaries = Array.from(
@@ -48,6 +53,7 @@ export function describeSupportedClaimBoundary(
 export function buildDecisionTrace({
   burdenEstimateCount,
   pilotLocalContext,
+  localContextStatus,
   scenario,
   currentDataRequestCount,
   evidence
@@ -73,7 +79,11 @@ export function buildDecisionTrace({
           " " +
           pilotLocalContext.geography_type +
           " context"
-        : "No explicit local constraint selected"
+        : localContextStatus === "loading"
+          ? "Reviewed local context is loading; no explicit Pilot context can be resolved yet"
+          : localContextStatus === "error"
+            ? "Reviewed local context is unavailable; no explicit Pilot context can be resolved"
+            : "No explicit local constraint selected"
     },
     {
       key: "pathway",
