@@ -187,7 +187,7 @@ export function LocalContextPage() {
     />
     <div className="guardrail compact">
       <strong>Missing does not mean zero.</strong>
-      <p>Missing designation/data does not mean no shortage or zero implementation constraint. Selecting an indicator includes its reviewed value, source, geography, vintage, uncertainty, and interpretation boundaries in the Planning Brief without changing national burden or Pilot Planner assumptions.</p>
+      <p>Missing designation/data does not mean no shortage or zero implementation constraint. Selecting an indicator includes its reviewed value, source, geography, vintage, uncertainty, and interpretation boundaries in the Planning Brief. It does not change national burden or Pilot Planner assumptions.</p>
     </div>
 
     <div className="card selection-summary" aria-live="polite">
