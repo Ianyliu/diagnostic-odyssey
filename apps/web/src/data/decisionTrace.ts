@@ -19,17 +19,17 @@ export interface DecisionTraceItem {
 export interface DecisionTraceInput {
   burdenEstimateCount: number;
   pilotLocalContext: LocalContextRecord | null;
-  scenario: Pick<Scenario, "target_pathway_step" | "mechanism">;
+  scenario: Scenario;
   currentDataRequestCount: number;
   evidence: EvidenceRecord[];
 }
 
 export function describeSupportedClaimBoundary(
   evidence: EvidenceRecord[],
-  scenario: Pick<Scenario, "target_pathway_step" | "mechanism">
+  scenario: Scenario
 ): string {
   const applicable = evidence.filter(
-    record => canDriveScenarioParameter(record, scenario as Scenario).allowed
+    record => canDriveScenarioParameter(record, scenario).allowed
   );
 
   if (applicable.length === 0) {
