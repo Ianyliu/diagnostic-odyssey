@@ -77,7 +77,7 @@ test("Overview provides first-run workflow semantics and outcomes on all five li
 test("DecisionStateRail reuses the readable pathway formatter", () => {
   const source = readSource("../src/components/DecisionStateRail.tsx");
   assert.match(source, /formatPathwayStepLabel\(scenario\.target_pathway_step\)/);
-  assert.doesNotMatch(source, "Target: ${scenario.target_pathway_step}");
+  assert.ok(!source.includes("Target: ${scenario.target_pathway_step}"));
 });
 
 test("Local Context humanizes statuses and preserves interpretation boundaries", () => {
