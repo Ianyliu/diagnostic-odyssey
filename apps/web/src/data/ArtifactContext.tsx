@@ -16,6 +16,14 @@ import {
   updateLocalContextSelection,
   type LocalContextSelectionState
 } from "./localContextSelection";
+import {
+  clearPilotLocalContextSelection,
+  createEmptyPilotLocalContextSelection,
+  createPilotLocalContextSelectionForArtifact,
+  resolvePilotLocalContext,
+  selectPilotLocalContext,
+  type PilotLocalContextSelectionState
+} from "./pilotLocalContextSelection";
 import { createPlanningScenarioDefaults } from "./planningScenarioDefaults";
 import { loadReviewedMepsArtifact } from "./reviewedArtifact";
 import { loadReviewedWvLocalContextArtifact } from "./reviewedLocalContext";
@@ -32,6 +40,10 @@ interface ArtifactState {
   selectedLocalContext: LocalContextRecord[];
   setLocalContextSelected: (indicatorId: string, selected: boolean) => void;
   clearSelectedLocalContext: () => void;
+  pilotLocalContextId: string | null;
+  pilotLocalContext: LocalContextRecord | null;
+  setPilotLocalContext: (indicatorId: string) => void;
+  clearPilotLocalContext: () => void;
   scenario: Scenario | null;
   scenarioResult: ScenarioResult | null;
   setScenario: (scenario: Scenario) => void;
@@ -56,6 +68,8 @@ export function ArtifactProvider({children}: {children: ReactNode}) {
   const [localContextError, setLocalContextError] = useState<string | null>(null);
   const [localContextSelection, setLocalContextSelection] =
     useState<LocalContextSelectionState>(createEmptyLocalContextSelection);
+  const [pilotLocalContextSelection, setPilotLocalContextSelection] =
+    useState<PilotLocalContextSelectionState>(createEmptyPilotLocalContextSelection);
   const [scenario, setScenario] = useState<Scenario | null>(null);
   const [analystDataRequests, setAnalystDataRequests] = useState<DataRequest[]>([]);
   const [briefDataRequestIds, setBriefDataRequestIds] = useState<string[]>([]);
@@ -81,11 +95,15 @@ export function ArtifactProvider({children}: {children: ReactNode}) {
       setLocalContextSelection(
         createLocalContextSelectionForArtifact(candidate)
       );
+      setPilotLocalContextSelection(
+        createPilotLocalContextSelectionForArtifact(candidate)
+      );
       setLocalContextError(null);
       setLocalContextStatus("loaded");
     } catch (cause) {
       setLocalContext(null);
       setLocalContextSelection(createEmptyLocalContextSelection());
+      setPilotLocalContextSelection(createEmptyPilotLocalContextSelection());
       setLocalContextError(cause instanceof Error ? cause.message : String(cause));
       setLocalContextStatus("error");
     }
@@ -106,6 +124,18 @@ export function ArtifactProvider({children}: {children: ReactNode}) {
     [selectedLocalContext]
   );
 
+  const pilotLocalContext = useMemo(
+    () =>
+      resolvePilotLocalContext(
+        pilotLocalContextSelection,
+        localContextStatus,
+        localContext
+      ),
+    [pilotLocalContextSelection, localContextStatus, localContext]
+  );
+
+  const pilotLocalContextId = pilotLocalContext?.indicator_id ?? null;
+
   const setLocalContextSelected = (indicatorId: string, selected: boolean) => {
     if (localContextStatus !== "loaded" || !localContext) return;
     setLocalContextSelection(current =>
@@ -115,6 +145,17 @@ export function ArtifactProvider({children}: {children: ReactNode}) {
 
   const clearSelectedLocalContext = () => {
     setLocalContextSelection(clearLocalContextSelection(localContext));
+  };
+
+  const setPilotLocalContext = (indicatorId: string) => {
+    if (localContextStatus !== "loaded" || !localContext) return;
+    setPilotLocalContextSelection(current =>
+      selectPilotLocalContext(current, localContext, indicatorId)
+    );
+  };
+
+  const clearPilotLocalContext = () => {
+    setPilotLocalContextSelection(clearPilotLocalContextSelection(localContext));
   };
 
   const scenarioResult = useMemo(() => {
@@ -177,6 +218,10 @@ export function ArtifactProvider({children}: {children: ReactNode}) {
         selectedLocalContext,
         setLocalContextSelected,
         clearSelectedLocalContext,
+        pilotLocalContextId,
+        pilotLocalContext,
+        setPilotLocalContext,
+        clearPilotLocalContext,
         scenario,
         scenarioResult,
         setScenario,
