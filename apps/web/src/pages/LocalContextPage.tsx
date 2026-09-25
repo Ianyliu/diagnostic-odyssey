@@ -303,7 +303,7 @@ export function LocalContextPage() {
           records={mentalBreakdowns}
           selectedIds={selectedLocalContextIds}
           onSelectedChange={setLocalContextSelected}
-          pilotSelected={pilotLocalContextId === record.indicator_id}
+          pilotContextId={pilotLocalContextId}
           onPilotSelect={setPilotLocalContext}
           onPilotClear={clearPilotLocalContext}
         />
@@ -319,6 +319,9 @@ export function LocalContextPage() {
           record={record}
           selected={selectedLocalContextIds.includes(record.indicator_id)}
           onSelectedChange={setLocalContextSelected}
+          pilotSelected={pilotLocalContextId === record.indicator_id}
+          onPilotSelect={setPilotLocalContext}
+          onPilotClear={clearPilotLocalContext}
         />
         <p className="subtle">{record.source_agency} · {record.source_release_vintage} · {record.uncertainty_type} · confidence level {record.confidence_level}</p>
         <IndicatorDisclosure record={record} />
