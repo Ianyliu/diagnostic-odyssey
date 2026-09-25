@@ -74,6 +74,7 @@ function PilotPlannerWorkspace({
     analystDataRequests,
     upsertAnalystDataRequest,
     pilotLocalContext,
+    localContextStatus,
     clearPilotLocalContext
   } = useArtifact();
   const [draft, setDraft] = useState<PilotInputDraft>(
@@ -209,6 +210,7 @@ function PilotPlannerWorkspace({
           <DecisionTrace
             burdenEstimateCount={burdenEstimateCount}
             pilotLocalContext={pilotLocalContext}
+            localContextStatus={localContextStatus}
             scenario={scenario}
             currentDataRequestCount={currentOperationalDataRequests.length}
             evidence={bundle?.evidence ?? []}
