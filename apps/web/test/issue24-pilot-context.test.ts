@@ -97,10 +97,13 @@ test("six-step decision trace source preserves current descriptive boundaries", 
   }
   assert.match(source, /reviewed estimates · national descriptive evidence/);
   assert.match(source, /No explicit local constraint selected/);
+  assert.match(source, /Reviewed local context is loading/);
+  assert.match(source, /Reviewed local context is unavailable/);
   assert.match(source, /formatPathwayStepLabel/);
   assert.match(source, /formatMechanismLabel/);
   assert.match(source, /No current operational data request attached/);
   assert.match(source, /No reviewed intervention-effect parameter is available/);
+  assert.match(source, /none is admissible for this scenario's pathway step and mechanism/);
   assert.match(source, /causal benefit, savings, ROI, and preventable-cost claims remain unavailable/);
   assert.match(source, /canDriveScenarioParameter/);
 });
@@ -118,10 +121,12 @@ test("DecisionTrace and page sources preserve independent UI semantics", () => {
   assert.match(localPage, /Use in Pilot planning/);
   assert.match(localPage, /Used in Pilot planning/);
   assert.match(localPage, /Remove from Pilot/);
+  assert.match(localPage, /active Pilot-used context will also appear in the Planning Brief/);
   assert.match(pilotPage, /does not alter reach, capacity, timing, cost, pathway, or mechanism parameters/);
   assert.match(pilotPage, /No local implementation context is currently attached/);
   assert.match(briefPage, /mergeBriefLocalContext/);
   assert.match(briefPage, /Used in Pilot planning/);
+  assert.match(briefPage, /currentDataRequestCount={selectedDataRequests.length}/);
   assert.match(context, /pilotLocalContextId: string \| null/);
   assert.match(context, /selectedLocalContextIds: string\[\]/);
   assert.doesNotMatch(context, /localStorage|sessionStorage/);
