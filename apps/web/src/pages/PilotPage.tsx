@@ -2,13 +2,15 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import type { Scenario, ScenarioResult } from "@diagnostic-odyssey/contracts";
 import { ContextBar } from "../components/ContextBar";
+import { DecisionTrace } from "../components/DecisionTrace";
 import { InterpretationGuide } from "../components/InterpretationGuide";
 import { PilotDecisionVisuals } from "../components/PilotDecisionVisuals";
 import { SensitivityExplorer } from "../components/SensitivityExplorer";
 import { useArtifact } from "../data/ArtifactContext";
 import {
   createSensitivityDataRequest,
-  getSensitivityDataRequestStatus
+  getSensitivityDataRequestStatus,
+  isDataRequestCurrentForScenario
 } from "../data/dataRequestTemplates";
 import type { SensitivityField } from "../data/decisionVisuals";
 import {
@@ -22,6 +24,8 @@ import {
   type PilotNumericField
 } from "../data/pilotInputDraft";
 import { getPilotFragmentTargetId } from "../data/pilotFragmentScroll";
+import { formatLocalContextValue } from "../data/formatLocalContextValue";
+import { formatPublishedLocalContextUncertainty } from "../data/localContextPresentation";
 import {
   PLANNING_DEFAULTS_DESCRIPTION,
   PLANNING_DEFAULTS_LABEL
@@ -65,9 +69,12 @@ function PilotPlannerWorkspace({
   scenarioResult: ScenarioResult;
 }) {
   const {
+    bundle,
     setScenario,
     analystDataRequests,
-    upsertAnalystDataRequest
+    upsertAnalystDataRequest,
+    pilotLocalContext,
+    clearPilotLocalContext
   } = useArtifact();
   const [draft, setDraft] = useState<PilotInputDraft>(
     () => createPilotInputDraft(scenario)
@@ -78,6 +85,11 @@ function PilotPlannerWorkspace({
   );
   const invalidDraft = evaluation.candidate === null;
   const pathwayBoundary = getPathwayBoundaryPresentation(scenario);
+  const currentOperationalDataRequests = analystDataRequests.filter(request =>
+    isDataRequestCurrentForScenario(request, scenario)
+  );
+  const burdenEstimateCount =
+    bundle?.burden_domains.reduce((count, domain) => count + domain.measures.length, 0) ?? 0;
 
   const initialResultSignature = useRef(getPilotResultSignature(scenarioResult));
   const [resultAnnouncement, setResultAnnouncement] = useState("");
@@ -159,6 +171,49 @@ function PilotPlannerWorkspace({
             <Link className="text-button" to="/pilot#sensitivity">Stress-test these assumptions</Link>
             <Link className="text-button" to="/evidence">Review evidence limits</Link>
           </div>
+        </section>
+
+        <section className="pilot-local-context" aria-labelledby="pilot-local-context-title">
+          <div className="pilot-local-context-heading">
+            <div>
+              <p className="visual-kicker">ANALYST-SELECTED CONTEXT</p>
+              <h3 id="pilot-local-context-title">Local planning context</h3>
+            </div>
+            <Link className="text-button" to="/local-context">
+              {pilotLocalContext ? "Replace in Local Context" : "Review Local Context"}
+            </Link>
+          </div>
+          {pilotLocalContext ? <>
+            <div className="pilot-local-context-record">
+              <strong>{pilotLocalContext.label}</strong>
+              <span className="pilot-local-context-value">{formatLocalContextValue(pilotLocalContext)}</span>
+              <span>{pilotLocalContext.geography_name} ({pilotLocalContext.geography_type})</span>
+              <span><b>Source:</b> {pilotLocalContext.source_agency} · {pilotLocalContext.source_release_vintage}</span>
+              <span><b>Published uncertainty:</b> {formatPublishedLocalContextUncertainty(pilotLocalContext)}</span>
+              <span><b>Allowed interpretation:</b> {pilotLocalContext.allowed_interpretation}</span>
+            </div>
+            <div className="pilot-local-context-actions">
+              <button className="text-button" type="button" onClick={clearPilotLocalContext}>Remove from Pilot</button>
+            </div>
+          </> : <div className="empty-state compact">
+            <strong>No local implementation context is currently attached to this Pilot scenario.</strong>
+            <p>Absence of a selected record does not mean there is no implementation constraint.</p>
+          </div>}
+          <p className="subtle">
+            Reviewed local implementation context is for analyst judgment only. Selecting, replacing, or removing it does not alter reach, capacity, timing, cost, pathway, or mechanism parameters.
+          </p>
+        </section>
+
+        <section className="pilot-decision-trace" aria-labelledby="pilot-decision-trace-title">
+          <h3 id="pilot-decision-trace-title">Decision trace</h3>
+          <DecisionTrace
+            burdenEstimateCount={burdenEstimateCount}
+            pilotLocalContext={pilotLocalContext}
+            scenario={scenario}
+            currentDataRequestCount={currentOperationalDataRequests.length}
+            evidence={bundle?.evidence ?? []}
+            dataRequestHref="/pilot#sensitivity"
+          />
         </section>
       </form>
       <article className="card result-card">
