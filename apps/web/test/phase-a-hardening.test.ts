@@ -50,7 +50,7 @@ test("JSON companion remains derived from the same gated brief object and artifa
   assert.match(brief, /serializeBriefJson\(brief\)/);
   assert.match(brief, /a\.download=brief\.artifact_version \+ "-planning-brief\.json"/);
   assert.match(brief, /dataRequests: selectedDataRequests/);
-  assert.match(brief, /localContext: selectedLocalContext/);
+  assert.match(brief, /localContext: briefLocalContext/);
   assert.match(brief, /withStaleSelectedDataRequestWarning/);
 });
 
