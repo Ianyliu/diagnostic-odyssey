@@ -134,6 +134,12 @@
       "note": "Observed HC-256 diagnostics, not a hard-coded inference constant."
     }
   },
+  "provenance_references": {
+    "cohort_routing_documentation": "https://meps.ahrq.gov/data_stats/download_data/pufs/h256/h256doc.shtml#2.5.5",
+    "esaq_time_cost_documentation": "https://meps.ahrq.gov/data_stats/download_data/pufs/h256/h256doc.shtml#2.5.9",
+    "k6_serious_distress_classification": "https://meps.ahrq.gov/data_files/publications/st570/stat570.shtml",
+    "phq2_screening_cut_point": "https://meps.ahrq.gov/data_stats/download_data/pufs/h256/h256doc.shtml#2.5.7"
+  },
   "measures": [
     {
       "id": "panel",

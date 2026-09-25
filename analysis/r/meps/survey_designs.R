@@ -1,5 +1,3 @@
-source(file.path("analysis", "r", "lib", "survey_helpers.R"))
-
 valid_design_rows <- function(data, weight_variable) {
   weight <- suppressWarnings(as.numeric(data[[weight_variable]]))
   !is.na(weight) &

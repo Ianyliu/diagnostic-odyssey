@@ -34,8 +34,9 @@ Rscript analysis/r/meps/run_meps_2024.R --download
 
 ## Structure
 
-- `config/meps_2024_variable_map.json`: machine-readable frozen estimand/variable map.
-- `lib/`: generic reserved-value, survey-estimation, result/provenance, and path helpers.
+- `config/meps_2024_variable_map.json`: machine-readable frozen estimand/variable map and reviewed source-locator/reference configuration.
+- `lib/`: generic reserved-value, survey-estimation, result/provenance, configuration, and path helpers.
+- `meps/bootstrap.R`: canonical loader for the MEPS analytical modules; callers source it once.
 - `meps/load_hc256.R`: loader and ZIP extraction.
 - `meps/cohort_long_covid.R`: explicit round-resolution/case rule.
 - `meps/survey_designs.R`: PERWT24F / ESAQWT24F / SAQWT24F designs.
@@ -55,5 +56,9 @@ Rscript analysis/r/meps/run_meps_2024.R --download
 - Never sum EQMVAM53 + EQMBAM53 + EQPPAM53 into an opaque burden score.
 - Treat K6 as nonspecific psychological distress and PHQ-2 as a depressive-symptom screen, not diagnoses.
 - Successful code execution does not confer scientific release.
+
+Estimator modules do not own AHRQ URL or documentation-anchor literals. Reviewed source locators and shared provenance references are resolved through `config/meps_2024_variable_map.json` and `lib/meps_config.R`.
+
+This loading/provenance refactor does not change the reviewed estimands, formulas, cohort, survey design, or 2024 released artifact.
 
 The readable methods contract is `docs/methods/meps-2024-long-covid.md`.

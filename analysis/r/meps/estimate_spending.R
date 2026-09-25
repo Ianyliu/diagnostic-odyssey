@@ -1,13 +1,7 @@
-source(file.path("analysis", "r", "lib", "meps_values.R"))
-source(file.path("analysis", "r", "lib", "survey_helpers.R"))
-source(file.path("analysis", "r", "lib", "result_helpers.R"))
-source(file.path("analysis", "r", "meps", "cohort_long_covid.R"))
-source(file.path("analysis", "r", "meps", "survey_designs.R"))
-
 estimate_spending <- function(designs, artifact_version) {
   domain <- current_long_covid_domain(designs$person)
-  total_url <- "https://meps.ahrq.gov/mepsweb/data_stats/download_data_files_codebook.jsp?PUFId=H256&varName=TOTEXP24"
-  oop_url <- "https://meps.ahrq.gov/mepsweb/data_stats/download_data_files_codebook.jsp?PUFId=H256&varName=TOTSLF24"
+  total_url <- get_meps_measure_source_locator("gross_spending_total")
+  oop_url <- get_meps_measure_source_locator("oop_spending_total")
 
   ci_ref <- designs$person
   ci_source <- "full PERSON / PERWT24F survey design"

@@ -1,8 +1,3 @@
-source(file.path("analysis", "r", "lib", "survey_helpers.R"))
-source(file.path("analysis", "r", "lib", "meps_values.R"))
-source(file.path("analysis", "r", "lib", "meps_source_guardrails.R"))
-source(file.path("analysis", "r", "meps", "survey_designs.R"))
-
 age_transition_diagnostics <- function(data) {
   age31 <- meps_bounded_score(data$AGE31X, 0, 85)
   age24 <- meps_bounded_score(data$AGE24X, 0, 85)

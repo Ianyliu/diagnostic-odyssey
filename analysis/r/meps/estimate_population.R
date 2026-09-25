@@ -1,8 +1,3 @@
-source(file.path("analysis", "r", "lib", "meps_values.R"))
-source(file.path("analysis", "r", "lib", "survey_helpers.R"))
-source(file.path("analysis", "r", "lib", "result_helpers.R"))
-source(file.path("analysis", "r", "meps", "cohort_long_covid.R"))
-
 estimate_represented_population <- function(designs, artifact_version) {
   # Domain estimation keeps the full MEPS survey design and then restricts to
   # age-eligible adults whose Long COVID/current-symptom status is classifiable.
@@ -31,10 +26,7 @@ estimate_represented_population <- function(designs, artifact_version) {
     denominator = "MEPS 2024 adults age 18-64 at AGE31X with classifiable route-aware Round 3/1 Long-COVID/current status",
     universe = "U.S. civilian noninstitutionalized population, adults age 18-64",
     system_boundary = "National descriptive population estimate",
-    source_locator = paste0(
-      "HC-256 PANEL + AGE31X + COVIDEVER31 + LCEVER31 + COVSYMNOW31; ",
-      "https://meps.ahrq.gov/data_stats/download_data/pufs/h256/h256doc.shtml#2.5.5"
-    ),
+    source_locator = meps_population_source_locator(),
     weight_variable = "PERWT24F",
     artifact_version = artifact_version,
       cohort_definition = cohort_definition_text(),

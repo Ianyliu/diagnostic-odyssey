@@ -1,14 +1,9 @@
-source(file.path("analysis", "r", "lib", "meps_values.R"))
-source(file.path("analysis", "r", "lib", "survey_helpers.R"))
-source(file.path("analysis", "r", "lib", "result_helpers.R"))
-source(file.path("analysis", "r", "meps", "cohort_long_covid.R"))
-source(file.path("analysis", "r", "meps", "survey_designs.R"))
-
 estimate_admin_burden <- function(designs, artifact_version) {
   domain <- current_long_covid_domain(designs$esaq)
 
   time_specs <- list(
     list(
+      config_id = "own_medical_time",
       variable = "EQMVAM53",
       measure_id = "own-medical-visit-time",
       label = "Annualized time on own medical visits / filling prescriptions",
@@ -16,6 +11,7 @@ estimate_admin_burden <- function(designs, artifact_version) {
       detail = "own medical visits and filling prescriptions"
     ),
     list(
+      config_id = "medical_bills_time",
       variable = "EQMBAM53",
       measure_id = "medical-bills-insurance-time",
       label = "Annualized time managing medical bills / insurance",
@@ -23,6 +19,7 @@ estimate_admin_burden <- function(designs, artifact_version) {
       detail = "paying or managing medical bills and insurance"
     ),
     list(
+      config_id = "paperwork_time",
       variable = "EQPPAM53",
       measure_id = "healthcare-paperwork-time",
       label = "Annualized health care paperwork / navigation time",
@@ -52,10 +49,7 @@ estimate_admin_burden <- function(designs, artifact_version) {
       ),
       universe = "U.S. civilian noninstitutionalized adult ESAQ respondent population",
       system_boundary = "National healthcare-work / administrative burden; ESAQ native time domain",
-      source_locator = paste0(
-        "HC-256 ", spec$variable, "; ESAQ time-cost documentation: ",
-        "https://meps.ahrq.gov/data_stats/download_data/pufs/h256/h256doc.shtml#2.5.9"
-      ),
+      source_locator = meps_esaq_time_source_locator(spec$config_id),
       weight_variable = "ESAQWT24F",
       artifact_version = artifact_version,
       cohort_definition = cohort_definition_text(),
@@ -98,11 +92,7 @@ estimate_admin_burden <- function(designs, artifact_version) {
     ),
     universe = "U.S. civilian noninstitutionalized adult ESAQ respondent population",
     system_boundary = "National ESAQ prior-approval experience",
-    source_locator = paste0(
-      "HC-256 EQDENY53 codebook and ESAQ documentation: ",
-      "https://meps.ahrq.gov/mepsweb/data_stats/download_data_files_codebook.jsp?",
-      "PUFId=H256&varName=EQDENY53"
-    ),
+    source_locator = meps_prior_approval_source_locator(),
     weight_variable = "ESAQWT24F",
     artifact_version = artifact_version,
       cohort_definition = cohort_definition_text(),
