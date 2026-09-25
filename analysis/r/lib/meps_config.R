@@ -30,7 +30,9 @@ load_meps_variable_map <- function(path = meps_variable_map_path()) {
 }
 
 # Backward-compatible alias retained for callers/tests that used the original loader.
-load_variable_map <- function() load_meps_variable_map()
+load_variable_map <- function(path = meps_variable_map_path()) {
+  load_meps_variable_map(path)
+}
 
 get_meps_measure_spec <- function(id, variable_map = load_meps_variable_map()) {
   assert_meps_nonempty_string(id, "MEPS config measure id")

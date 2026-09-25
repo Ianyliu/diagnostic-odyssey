@@ -270,6 +270,14 @@ Focused regressions now pin the reviewed analytical semantics for the EQDENY53 s
 
 The historical variance-policy sensitivity executable is archived in `analysis/r/review/meps_variance_policy_review.R`, with provenance in `analysis/r/review/README.md`. It records the historical `methods-variance-review` source commit and reviewed workflow run while retaining the current production policy (`survey.lonely.psu="adjust"`, `survey.adjust.domain.lonely=FALSE`) unchanged.
 
+## Loader and provenance configuration
+
+`analysis/r/meps/bootstrap.R` is the canonical MEPS analytical module loader. The production runner, the test helper, and the archived variance-policy review source this loader once rather than maintaining parallel module lists. Estimator modules define analytical functions and do not recreate the dependency graph.
+
+Reviewed AHRQ source locators and shared documentation references are governed by `analysis/r/config/meps_2024_variable_map.json` and fail-closed lookup helpers in `analysis/r/lib/meps_config.R`. This includes the Round-3/1 routing documentation, ESAQ time-cost documentation, the published K6 serious-distress classification, and the PHQ-2 screening-cut-point reference. Estimators compose their existing `source_locator` strings from that reviewed configuration rather than embedding URL or section-anchor literals.
+
+This is a loading/provenance refactor only. It does not change cohort membership, variables, weights, denominators, thresholds, estimators, interval methods, numerical results, variance policy, source-integrity policy, or the reviewed 2024 release.
+
 ## Release semantics
 
 A successful run produces `display_status="analytical_artifact"` but `release_status="preliminary"`. Script execution is not scientific approval. The candidate must pass the review checklist before any status is changed to `reviewed_released`.
