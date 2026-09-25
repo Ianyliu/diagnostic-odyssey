@@ -2,14 +2,16 @@ import { Link } from "react-router-dom";
 import type { LocalContextRecord } from "@diagnostic-odyssey/contracts";
 import { ContextBar } from "../components/ContextBar";
 import { HpsaRuralComposition } from "../components/HpsaRuralComposition";
+import { InterpretationGuide } from "../components/InterpretationGuide";
 import { useArtifact } from "../data/ArtifactContext";
 import { formatLocalContextValue } from "../data/formatLocalContextValue";
 import { isSelectableLocalContextRecord } from "../data/localContextSelection";
 import { getLocalContextSelectionAccessibility } from "../data/localContextPresentation";
+import { formatDataStateLabel, formatReleaseStatusLabel } from "../data/presentationLabels";
 
 function IndicatorDisclosure({record}: {record: LocalContextRecord}) {
   return <details>
-    <summary>Source, universe, and interpretation boundary</summary>
+    <summary>Source timing and technical details</summary>
     <p><strong>Source:</strong> {record.source_agency} · {record.source_ref}</p>
     <p><strong>Vintage:</strong> {record.source_release_vintage}</p>
     <p><strong>Observation as of:</strong> {record.observation_as_of_date ?? "Missing / not available"}</p>
@@ -20,7 +22,7 @@ function IndicatorDisclosure({record}: {record: LocalContextRecord}) {
     <p><strong>Allowed use:</strong> {record.allowed_interpretation}</p>
     <p><strong>Not supported:</strong> {record.prohibited_interpretation.join("; ")}</p>
     <p><strong>Limitations:</strong> {record.limitations.join(" ")}</p>
-    <p><strong>Release/data state:</strong> {record.release_status} / {record.state}</p>
+    <p><strong>Release/data state:</strong> {formatReleaseStatusLabel(record.release_status)} / {formatDataStateLabel(record.state)}</p>
   </details>;
 }
 
@@ -57,7 +59,7 @@ function SelectableIndicatorRow({
     </div>
     <div className="measure-value">
       {formatLocalContextValue(record)}
-      <small>{record.release_status} · {record.state}</small>
+      <small>{formatReleaseStatusLabel(record.release_status)} · {formatDataStateLabel(record.state)}</small>
     </div>
   </div>;
 }
@@ -176,15 +178,16 @@ export function LocalContextPage() {
       <p>What statewide implementation constraints are documented, and what can they legitimately be used for?</p>
     </header>
 
-    <div className="guardrail">
-      <strong>Separate evidence layer — not a West Virginia burden estimate.</strong>
-      <p>This state context may inform implementation/access planning. It does not change national MEPS burden and is not West Virginia Long COVID prevalence, West Virginia Long COVID cost, a causal effect modifier, a calibrated access severity score, savings, or ROI.</p>
-      <p>Missing designation/data does not mean no shortage or zero constraint.</p>
-    </div>
-
-    <div className="guardrail">
-      <strong>Planning Brief selection boundary</strong>
-      <p>Selecting an indicator includes its reviewed value, source, geography, vintage, uncertainty, and interpretation boundaries in the Planning Brief. It does not change national burden or Pilot Planner assumptions.</p>
+    <InterpretationGuide
+      id="local-context-interpretation"
+      whatThisShows="Statewide implementation and access context from reviewed Health Resources and Services Administration (HRSA) and U.S. Census Bureau sources."
+      whyItMatters="These indicators can identify operational constraints that may matter when planning implementation."
+      whatItDoesNotShow="West Virginia Long COVID prevalence, burden, cost, causal effect, savings, ROI, or a composite access-severity score."
+      whatToDoNext="Select reviewed indicators if their value, provenance, and interpretation boundaries should travel into the Planning Brief."
+    />
+    <div className="guardrail compact">
+      <strong>Missing does not mean zero.</strong>
+      <p>Missing designation/data does not mean no shortage or zero implementation constraint. Selecting an indicator includes its reviewed value, source, geography, vintage, uncertainty, and interpretation boundaries in the Planning Brief without changing national burden or Pilot Planner assumptions.</p>
     </div>
 
     <div className="card selection-summary" aria-live="polite">
@@ -198,15 +201,15 @@ export function LocalContextPage() {
       </div>
     </div>
 
-    <div className="guardrail">
-      <strong>Source/vintage boundary</strong>
-      <p><strong>HRSA:</strong> {primarySource?.source_release_vintage ?? "Current HPSA snapshot retrieved 2026-09-24"}.</p>
-      <p><strong>ACS:</strong> {acsSource?.source_release_vintage ?? "2020–2024 ACS 5-year estimates / 2024 release"}.</p>
-      <p>These sources have different time bases and should not be interpreted as one common observation year.</p>
-    </div>
+    <details className="technical-disclosure">
+      <summary>Source timing and technical details</summary>
+      <p><strong>Health Resources and Services Administration (HRSA):</strong> {primarySource?.source_release_vintage ?? "Current HPSA snapshot retrieved 2026-09-24"}.</p>
+      <p><strong>American Community Survey (ACS):</strong> {acsSource?.source_release_vintage ?? "2020–2024 ACS 5-year estimates / 2024 release"}.</p>
+      <p>These sources have different time bases and should not be interpreted as one common observation year. Record disclosures below retain observation dates, universe, uncertainty, allowed and prohibited interpretation, and limitations.</p>
+    </details>
 
     <article className="card">
-      <h2>A. Primary Care HPSA context</h2>
+      <h2>A. Primary Care Health Professional Shortage Area (HPSA) context</h2>
       <p className="subtle">{primaryCount.source_agency} · {primaryCount.source_release_vintage}</p>
       <SelectableIndicatorRow
         record={primaryCount}
@@ -260,7 +263,7 @@ export function LocalContextPage() {
     </article>
 
     <article className="card">
-      <h2>C. ACS implementation/access context</h2>
+      <h2>C. American Community Survey (ACS) implementation/access context</h2>
       <p className="subtle">U.S. Census Bureau · 2020–2024 ACS 5-year estimates / 2024 release. Native 90% margins of error are preserved.</p>
       {acsRecords.map(record => <div key={record.indicator_id}>
         <SelectableIndicatorRow
