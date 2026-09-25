@@ -16,7 +16,7 @@ export function DecisionTrace({
 }: {
   burdenEstimateCount: number;
   pilotLocalContext: LocalContextRecord | null;
-  scenario: Pick<Scenario, "target_pathway_step" | "mechanism">;
+  scenario: Scenario;
   currentDataRequestCount: number;
   evidence: EvidenceRecord[];
   dataRequestHref: string;
