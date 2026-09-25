@@ -21,7 +21,12 @@
   .brief-content>section{break-inside:auto}
   .brief-content>section+section{margin-top:12pt;padding-top:10pt}
   .brief-content h2{break-after:avoid-page}
-  .brief-local-context,.readiness,.empty-state,.brief-burden-group{break-inside:avoid}\n  .brief-burden-table-wrap{overflow:visible;border-color:#9aa7af}\n  .brief-burden-table{min-width:0}\n  .brief-burden-table tr{break-inside:avoid}\n  .brief-burden-table thead{display:table-header-group}\n  .interpretation-boundaries{background:white;border:1px solid #9aa7af;break-inside:avoid}
+  .brief-local-context,.readiness,.empty-state,.brief-burden-group{break-inside:avoid}
+  .brief-burden-table-wrap{overflow:visible;border-color:#9aa7af}
+  .brief-burden-table{min-width:0}
+  .brief-burden-table tr{break-inside:avoid}
+  .brief-burden-table thead{display:table-header-group}
+  .interpretation-boundaries{background:white;border:1px solid #9aa7af;break-inside:avoid}
   .brief-local-context,.empty-state{background:white;border:1px solid #b8c0c5}
   .brief-aside{margin-top:14pt;border:1px solid #9aa7af;border-radius:0;box-shadow:none;break-inside:avoid}
   .card{box-shadow:none}
