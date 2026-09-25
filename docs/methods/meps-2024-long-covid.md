@@ -260,6 +260,16 @@ Only finite positive design degrees of freedom are accepted. The pipeline no lon
 
 Workflow run `35705520659` / artifact `10683963312` is retained only as a preliminary comparison baseline. It must not be promoted, overwritten, or selected by the runtime. A corrected candidate must be generated as a new workflow artifact tied to the corrected commit and then independently reviewed.
 
+## Candidate hardening and review provenance
+
+Future candidates record aggregate survey-design construction exclusions under `diagnostics.json -> design -> row_filtering`, separately for PERSON/`PERWT24F`, ESAQ/`ESAQWT24F`, and PSAQ/`SAQWT24F`. The diagnostics report retained and excluded row counts, criterion counts for eligibility/weight/`VARSTR`/`VARPSU` failures, and counts by exact exclusion-reason combination. Criterion counts can overlap; they are not summed to infer excluded N. Each design instead enforces the direct reconciliation `retained_n + excluded_any_n == total_input_n`. These are aggregate counts only and do not expose respondent-level records.
+
+Candidate serialization is fail-closed for headline numeric estimates. `value`, `standard_error`, `interval_low`, and `interval_high` must each be one finite numeric value; standard errors cannot be negative; confidence-interval endpoints must be ordered; and the point estimate must lie inside its interval. Validation errors identify the offending `estimate_id` and condition before `bundle.json` is written.
+
+Focused regressions now pin the reviewed analytical semantics for the EQDENY53 substantive Yes/No universe, ESAQ annualized-time ranges/top-code boundaries (2,080 / 720 / 520), K6 score range 0–24 with serious-distress threshold >=13, and PHQ-2 range 0–6 with screen-positive threshold >=3. These tests preserve the reviewed transformations; they do not introduce clamping or reinterpret questionnaire screens as diagnoses.
+
+The historical variance-policy sensitivity executable is archived in `analysis/r/review/meps_variance_policy_review.R`, with provenance in `analysis/r/review/README.md`. It records the historical `methods-variance-review` source commit and reviewed workflow run while retaining the current production policy (`survey.lonely.psu="adjust"`, `survey.adjust.domain.lonely=FALSE`) unchanged.
+
 ## Release semantics
 
 A successful run produces `display_status="analytical_artifact"` but `release_status="preliminary"`. Script execution is not scientific approval. The candidate must pass the review checklist before any status is changed to `reviewed_released`.
