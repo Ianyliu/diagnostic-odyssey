@@ -85,14 +85,23 @@ testthat::test_that("HC-256 integrity policy requires both expected source hashe
   )
   testthat::expect_true(all(required %in% names(policy)))
 
-  broken <- policy
-  broken$expected_extracted_dta_sha256 <- NULL
-  path <- tempfile("hc256-policy-", fileext = ".json")
-  on.exit(unlink(path), add = TRUE)
-  jsonlite::write_json(broken, path, auto_unbox = TRUE)
-
+  missing_dta <- policy
+  missing_dta$expected_extracted_dta_sha256 <- NULL
+  dta_path <- tempfile("hc256-policy-dta-", fileext = ".json")
+  on.exit(unlink(dta_path), add = TRUE)
+  jsonlite::write_json(missing_dta, dta_path, auto_unbox = TRUE)
   testthat::expect_error(
-    read_hc256_source_integrity(path),
+    read_hc256_source_integrity(dta_path),
     "lacks: expected_extracted_dta_sha256"
+  )
+
+  missing_zip <- policy
+  missing_zip$expected_zip_sha256 <- NULL
+  zip_path <- tempfile("hc256-policy-zip-", fileext = ".json")
+  on.exit(unlink(zip_path), add = TRUE)
+  jsonlite::write_json(missing_zip, zip_path, auto_unbox = TRUE)
+  testthat::expect_error(
+    read_hc256_source_integrity(zip_path),
+    "lacks: expected_zip_sha256"
   )
 })

@@ -168,7 +168,7 @@ testthat::test_that("design-row diagnostics reconcile overlapping exclusion caus
     d$total_input_n
   )
   testthat::expect_equal(
-    d$exclusion_reason_combinations$eligibility_false.weight_zero.varstr_missing.varpsu_missing,
+    d$exclusion_reason_combinations[["eligibility_false+weight_zero+varstr_missing+varpsu_missing"]],
     1L
   )
   testthat::expect_equal(
