@@ -200,7 +200,7 @@ function PilotPlannerWorkspace({
             <p>Absence of a selected record does not mean there is no implementation constraint.</p>
           </div>}
           <p className="subtle">
-            Reviewed local implementation context is for analyst judgment only. Selecting, replacing, or removing it does not alter reach, capacity, timing, cost, pathway, or mechanism parameters.
+            Reviewed local implementation context is for analyst judgment only. Attaching, replacing, or removing it does not alter reach, capacity, timing, cost, pathway, or mechanism parameters.
           </p>
         </section>
 
