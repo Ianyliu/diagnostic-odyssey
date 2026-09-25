@@ -2,7 +2,7 @@ import type {
   LocalContextArtifact,
   LocalContextRecord
 } from "@diagnostic-odyssey/contracts";
-import { isSelectableLocalContextRecord } from "./localContextSelection";
+import { isSelectableLocalContextRecord } from "./localContextSelection.ts";
 
 export interface PilotLocalContextSelectionState {
   artifactVersion: string | null;
