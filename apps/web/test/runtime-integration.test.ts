@@ -367,13 +367,15 @@ test("reviewed burden UI has no development-fixture labels", () => {
   }
   assert.match(burden, /Reviewed national MEPS evidence/);
   assert.match(burden, /Gross burden is not attributable burden/);
-  assert.match(burden, /formatEstimateInterval/);
-  assert.match(burden, /canExportEstimate\(estimate\)/);
-  assert.match(burden, /aria-hidden="true"/);
-  assert.match(burden, /sr-only/);
-  assert.match(burden, /\\d\+.*confidence interval/);
+  const burdenMeasures = readSource("../src/components/BurdenMeasureList.tsx");
+  assert.match(burden, /<BurdenMeasureList estimates=\{domain\.measures\} \/>/);
+  assert.match(burdenMeasures, /formatEstimateInterval\(estimate\)/);
+  assert.match(burdenMeasures, /canExportEstimate\(estimate\)/);
+  assert.match(burdenMeasures, /aria-hidden="true"/);
+  assert.match(burdenMeasures, /sr-only/);
+  assert.match(burdenMeasures, /\\d\+.*confidence interval/);
   assert.match(burden, /intervalMethods\.length > 0/);
-  assert.match(burden, /measure-interval/);
+  assert.match(burdenMeasures, /measure-interval/);
   assert.match(
     burden,
     /Intervals shown are the reviewed 95% confidence intervals from the MEPS survey-weighted analysis/
@@ -497,14 +499,15 @@ test("planning brief includes only explicitly supplied release-eligible local co
   const briefSource = readSource("../src/pages/BriefPage.tsx");
   assert.match(briefSource, /Reviewed national burden findings/);
   assert.match(briefSource, /planning assumptions, not observed evidence/);
-  assert.match(briefSource, /formatEstimateInterval\(x\)/);
-  assert.match(briefSource, /brief-finding-interval/);
+  assert.match(briefSource, /formatEstimateInterval\(estimate\)/);
+  assert.match(briefSource, /AccessibleEstimateInterval/);
   assert.match(briefSource, /aria-hidden="true"/);
   assert.match(briefSource, /sr-only/);
   assert.match(briefSource, /localContext:\s*selectedLocalContext/);
   assert.doesNotMatch(briefSource, /localContext:\s*\[\]/);
   assert.match(briefSource, /formatLocalContextValue\(record\)/);
-  assert.match(briefSource, /Partial data state/);
+  assert.match(briefSource, /formatDataStateLabel\(record\.state\)/);
+  assert.doesNotMatch(briefSource, /Partial data state/);
   assert.match(briefSource, /source_release_vintage/);
   assert.match(briefSource, /record\.state/);
   assert.match(briefSource, /record\.limitations/);

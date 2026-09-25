@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { buildPlanningBrief, serializeBriefJson } from "@diagnostic-odyssey/brief-core";
+import type { Estimate } from "@diagnostic-odyssey/contracts";
 import { ContextBar } from "../components/ContextBar";
 import { useArtifact } from "../data/ArtifactContext";
 import {
@@ -19,7 +20,21 @@ import {
   formatPathwayStepLabel,
   getPathwayBoundaryPresentation
 } from "../data/pathwayBoundary";
+import { formatDataStateLabel } from "../data/presentationLabels";
 import { withStaleSelectedDataRequestWarning } from "../data/briefDataRequestWarnings";
+import { groupBriefBurdenFindings } from "../data/briefBurdenPresentation";
+
+function AccessibleEstimateInterval({estimate}: {estimate: Estimate}) {
+  const interval = formatEstimateInterval(estimate);
+  const accessibleInterval = interval
+    .replace(/^(\d+(?:\.\d+)?)% CI\s*/, "$1% confidence interval: ")
+    .replace(/^CI\s*/, "Confidence interval: ");
+
+  return <>
+    <span aria-hidden="true">{interval}</span>
+    <span className="sr-only">{accessibleInterval}</span>
+  </>;
+}
 
 export function BriefPage() {
   const {
@@ -56,6 +71,10 @@ export function BriefPage() {
     baseBrief,
     staleSelectedDataRequestCount
   );
+  const burdenGroups = groupBriefBurdenFindings(
+    bundle.burden_domains,
+    brief.burden_findings
+  );
   const scenarioBoundary = brief.scenario
     ? getPathwayBoundaryPresentation(brief.scenario.input)
     : null;
@@ -90,24 +109,57 @@ export function BriefPage() {
 
     <div className="brief-grid">
       <article className="card brief-content">
+        <section className="interpretation-boundaries">
+          <h2>Interpretation boundaries</h2>
+          <ul>{brief.warnings.map(warning => <li key={warning}>{warning}</li>)}</ul>
+        </section>
+
         <section>
           <h2>Reviewed national burden findings</h2>
           {brief.burden_findings.length === 0 ? <div className="empty-state">
             <strong>No reviewed analytical estimate is currently export-eligible.</strong>
             <p>The release/display gate remains active; no unreleased or illustrative value is substituted.</p>
-          </div> : brief.burden_findings.map(x => {
-            const interval = formatEstimateInterval(x);
-            const accessibleInterval = interval
-              .replace(/^(\d+(?:\.\d+)?)% CI\s*/, "$1% confidence interval: ")
-              .replace(/^CI\s*/, "Confidence interval: ");
-            return <p className="brief-finding" key={x.estimate_id}>
-              <strong>{x.label}:</strong> {formatEstimateValue(x)}
-              <small className="brief-finding-interval">
-                <span aria-hidden="true">{interval}</span>
-                <span className="sr-only">{accessibleInterval}</span>
-              </small>
-            </p>;
-          })}
+          </div> : <div className="brief-burden-groups">
+            {burdenGroups.map(group => <section
+              className="brief-burden-group"
+              aria-labelledby={`brief-burden-${group.group_id}`}
+              key={group.group_id}
+            >
+              <div className="brief-burden-group-heading">
+                <h3 id={`brief-burden-${group.group_id}`}>{group.label}</h3>
+                <span className="status status-ok">{group.findings.length} reviewed</span>
+              </div>
+              <div className="brief-burden-table-wrap" tabIndex={0} aria-label={`${group.label} burden findings table`}>
+                <table className="brief-burden-table">
+                  <caption className="sr-only">{group.label} reviewed national burden findings</caption>
+                  <thead>
+                    <tr>
+                      <th scope="col">Measure</th>
+                      <th scope="col">Estimate</th>
+                      <th scope="col">Confidence interval</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {group.findings.map(finding => <tr key={finding.estimate_id}>
+                      <th scope="row">{finding.label}</th>
+                      <td>{formatEstimateValue(finding)}</td>
+                      <td><AccessibleEstimateInterval estimate={finding} /></td>
+                    </tr>)}
+                  </tbody>
+                </table>
+              </div>
+              <details className="brief-burden-details technical-disclosure">
+                <summary>Interpretation and technical details</summary>
+                {group.limitations.length > 0 && <p><strong>Domain limitations:</strong> {group.limitations.join(" ")}</p>}
+                <ul>
+                  {group.findings.map(finding => <li key={finding.estimate_id}>
+                    <strong>{finding.label}:</strong> {finding.allowed_interpretation}
+                    {finding.system_boundary && <> <span className="subtle">System boundary: {finding.system_boundary}</span></>}
+                  </li>)}
+                </ul>
+              </details>
+            </section>)}
+          </div>}
         </section>
 
         <section>
@@ -140,7 +192,7 @@ export function BriefPage() {
                         <span>{record.geography_name} ({record.geography_type})</span>
                       </div>
                       <span className={record.state === "partial" ? "status status-scaffold" : "status status-ok"}>
-                        {record.state === "partial" ? "Partial data state" : "Loaded"}
+                        {formatDataStateLabel(record.state)}
                       </span>
                     </div>
                     <p className="brief-local-context-value">{formatLocalContextValue(record)}</p>
@@ -150,7 +202,7 @@ export function BriefPage() {
                     <p className="subtle">
                       <strong>Published uncertainty:</strong> {formatPublishedLocalContextUncertainty(record)}
                     </p>
-                    <p className="subtle"><strong>Data state:</strong> {record.state}</p>
+                    <p className="subtle"><strong>Availability:</strong> {formatDataStateLabel(record.state)}</p>
                     <p className="limitations"><strong>Allowed interpretation:</strong> {record.allowed_interpretation}</p>
                     {record.prohibited_interpretation.length > 0 && <p className="limitations"><strong>Not supported:</strong> {record.prohibited_interpretation.join("; ")}</p>}
                     {record.limitations.length > 0 && <p className="limitations"><strong>Limitations:</strong> {record.limitations.join(" ")}</p>}
@@ -201,8 +253,6 @@ export function BriefPage() {
                 <Link className="button secondary" to="/data-requests">Review data requests</Link>
               </div>}
         </section>
-
-        <section><h2>Warnings</h2><ul>{brief.warnings.map(w=><li key={w}>{w}</li>)}</ul></section>
       </article>
 
       <aside className="card brief-aside">

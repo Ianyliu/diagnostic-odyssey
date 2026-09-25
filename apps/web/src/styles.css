@@ -21,7 +21,12 @@
   .brief-content>section{break-inside:auto}
   .brief-content>section+section{margin-top:12pt;padding-top:10pt}
   .brief-content h2{break-after:avoid-page}
-  .brief-finding,.brief-local-context,.readiness,.empty-state{break-inside:avoid}
+  .brief-local-context,.readiness,.empty-state,.brief-burden-group{break-inside:avoid}
+  .brief-burden-table-wrap{overflow:visible;border-color:#9aa7af}
+  .brief-burden-table{min-width:0}
+  .brief-burden-table tr{break-inside:avoid}
+  .brief-burden-table thead{display:table-header-group}
+  .interpretation-boundaries{background:white;border:1px solid #9aa7af;break-inside:avoid}
   .brief-local-context,.empty-state{background:white;border:1px solid #b8c0c5}
   .brief-aside{margin-top:14pt;border:1px solid #9aa7af;border-radius:0;box-shadow:none;break-inside:avoid}
   .card{box-shadow:none}
@@ -87,3 +92,41 @@
 .evidence-use-summary>div{display:grid;gap:4px;padding:12px;background:var(--do-color-bg);border-radius:7px}
 .empty-state-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
 @media(max-width:640px){.interpretation-guide-list,.evidence-status-guide dl,.evidence-use-summary{grid-template-columns:1fr}}
+
+
+/* Issue #14 Phase B: burden and Planning Brief scanability */
+.burden-domain-stack{display:grid;gap:20px}
+.burden-domain-header{margin-bottom:6px}
+.burden-domain-header h2{margin-bottom:4px}
+.burden-measure-list{margin-top:10px}
+.burden-measure-row{grid-template-columns:minmax(0,1fr) minmax(180px,auto);align-items:start}
+.burden-measure-summary{display:grid;gap:5px}
+.burden-measure-details{grid-column:1/-1;margin-top:0}
+.component-note{display:block;color:var(--do-color-amber)!important;font-weight:700}
+.technical-detail-list{display:grid;gap:8px;margin:10px 0 0}
+.technical-detail-list>div{display:grid;grid-template-columns:minmax(150px,220px) minmax(0,1fr);gap:12px;padding-top:8px;border-top:1px solid var(--do-color-line)}
+.technical-detail-list dt{font-weight:800;color:var(--do-color-navy)}
+.technical-detail-list dd{margin:0;overflow-wrap:anywhere}
+.domain-limitations{margin-top:14px}
+.brief-burden-groups{display:grid;gap:18px}
+.brief-burden-group{display:grid;gap:10px}
+.brief-burden-group-heading{display:flex;justify-content:space-between;gap:12px;align-items:center}
+.brief-burden-group-heading h3{margin:0;color:var(--do-color-navy)}
+.brief-burden-table-wrap{max-width:100%;overflow-x:auto;border:1px solid var(--do-color-line);border-radius:8px}
+.brief-burden-table{width:100%;min-width:660px;border-collapse:collapse;background:white}
+.brief-burden-table th,.brief-burden-table td{padding:10px 12px;border-bottom:1px solid var(--do-color-line);text-align:left;vertical-align:top}
+.brief-burden-table thead th{background:var(--do-color-soft-blue);color:var(--do-color-navy);font-size:12px}
+.brief-burden-table tbody th{font-weight:700;color:var(--do-color-navy)}
+.brief-burden-table tbody tr:last-child th,.brief-burden-table tbody tr:last-child td{border-bottom:0}
+.brief-burden-details ul{margin:8px 0 0;padding-left:20px}
+.brief-burden-details li{margin:6px 0}
+.brief-burden-details li .subtle{display:block;margin-top:3px}
+.interpretation-boundaries{padding:14px 16px;background:var(--do-color-soft-amber);border:1px solid var(--do-color-line);border-radius:8px}
+.interpretation-boundaries h2{margin-top:0}
+.interpretation-boundaries ul{margin-bottom:0}
+@media(max-width:640px){
+  .burden-measure-row{grid-template-columns:1fr}
+  .burden-measure-details{grid-column:1}
+  .technical-detail-list>div{grid-template-columns:1fr;gap:3px}
+  .brief-burden-group-heading{align-items:flex-start;flex-direction:column}
+}

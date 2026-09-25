@@ -1,25 +1,10 @@
 import { Link } from "react-router-dom";
-import { canExportEstimate, type Estimate } from "@diagnostic-odyssey/contracts";
+import { canExportEstimate } from "@diagnostic-odyssey/contracts";
+import { BurdenMeasureList } from "../components/BurdenMeasureList";
 import { ContextBar } from "../components/ContextBar";
 import { IntervalWhiskerPlot } from "../components/IntervalWhiskerPlot";
 import { useArtifact } from "../data/ArtifactContext";
-import {
-  formatEstimateInterval,
-  formatEstimateValue
-} from "../data/formatEstimateValue";
-
-function EstimateIntervalText({estimate}: {estimate: Estimate}) {
-  if (!canExportEstimate(estimate)) return null;
-  const interval = formatEstimateInterval(estimate);
-  const accessibleInterval = interval
-    .replace(/^(\d+(?:\.\d+)?)% CI\s*/, "$1% confidence interval: ")
-    .replace(/^CI\s*/, "Confidence interval: ");
-
-  return <small className="measure-interval">
-    <span aria-hidden="true">{interval}</span>
-    <span className="sr-only">{accessibleInterval}</span>
-  </small>;
-}
+import { formatDataStateLabel } from "../data/presentationLabels";
 
 export function BurdenPage() {
   const {bundle} = useArtifact();
@@ -46,6 +31,7 @@ export function BurdenPage() {
         <span>Reviewed MEPS estimates are national and descriptive—not diagnostic-delay cost, local prevalence, preventable spending, or savings.</span>
       </div>
     </div>
+
     <div className="uncertainty-note">
       <strong>Survey uncertainty</strong>
       <p>Intervals shown are the reviewed 95% confidence intervals from the MEPS survey-weighted analysis.</p>
@@ -58,38 +44,43 @@ export function BurdenPage() {
         </>}
       </details>
     </div>
-    <div className="domain-grid">
+
+    <div className="burden-domain-stack">
       {bundle.burden_domains.map(domain => {
         const reviewed = domain.measures.length > 0 && domain.measures.every(canExportEstimate);
         const administrativeHourMeasures = domain.domain_id === "healthcare-work-admin"
           ? domain.measures.filter(estimate => estimate.unit === "hours/person/year")
           : [];
+
         return <article className="card domain-card" key={domain.domain_id}>
-          <div className="card-title-row">
-            <div><h2>{domain.label}</h2><span>{domain.availability_state}</span></div>
+          <div className="card-title-row burden-domain-header">
+            <div>
+              <h2>{domain.label}</h2>
+              <p className="subtle">
+                {formatDataStateLabel(domain.availability_state)} · {domain.measures.length} {domain.measures.length === 1 ? "measure" : "measures"}
+              </p>
+            </div>
             <span className={`status ${reviewed ? "status-ok" : "status-scaffold"}`}>
               {reviewed ? "Reviewed national evidence" : "Not release-eligible"}
             </span>
           </div>
+
           {administrativeHourMeasures.length > 1 && <IntervalWhiskerPlot
             estimates={administrativeHourMeasures}
             title="Annual healthcare-work time with survey uncertainty"
             description="Comparable reviewed ESAQ time measures shown together because they share hours/person/year and the same respondent universe."
           />}
-          <div className="measure-list">
-            {domain.measures.map(estimate => <div className="measure" key={estimate.estimate_id}>
-              <div><strong>{estimate.label}</strong><span>{estimate.allowed_interpretation}</span></div>
-              <div className="measure-value">
-                {formatEstimateValue(estimate)}
-                <EstimateIntervalText estimate={estimate} />
-                <small>{estimate.release_status === "reviewed_released" ? "Reviewed analytical estimate" : estimate.release_status.replaceAll("_"," ")}</small>
-              </div>
-            </div>)}
-          </div>
-          <p className="limitations">{domain.limitations.join(" ")}</p>
+
+          <BurdenMeasureList estimates={domain.measures} />
+
+          {domain.limitations.length > 0 && <details className="domain-limitations technical-disclosure">
+            <summary>Domain interpretation boundaries</summary>
+            <p>{domain.limitations.join(" ")}</p>
+          </details>}
         </article>;
       })}
     </div>
+
     <div className="guardrail">
       <strong>Native units stay separate.</strong>
       <p>Administrative time, spending, screening measures, utilization, and access experience are not added into one opaque score. Out-of-pocket spending remains nested within total spending, and K6/PHQ-2 remain screening/distress measures rather than diagnoses.</p>
