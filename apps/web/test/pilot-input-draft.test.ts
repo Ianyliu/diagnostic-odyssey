@@ -83,7 +83,68 @@ test("reach preserves exact decimal intent without whole-percent rounding", () =
   draft.reach = "25.1234567";
   const result = evaluatePilotInputDraft(draft, scenario);
   assert.ok(result.candidate);
-  assert.equal(result.candidate.reach, 25.1234567 / 100);
+  assert.equal(result.candidate.reach, 0.251234567);
+  assert.equal(
+    createPilotInputDraft({...scenario, reach: 0.251234567}).reach,
+    "25.1234567"
+  );
+});
+
+test("reach Scenario-to-draft conversion avoids binary floating-point garbage", () => {
+  const cases = [
+    [0, "0"],
+    [0.07, "7"],
+    [0.29, "29"],
+    [0.25, "25"],
+    [0.251234567, "25.1234567"],
+    [0.0000004, "0.00004"],
+    [0.9999996, "99.99996"],
+    [1, "100"]
+  ] as const;
+
+  for (const [reach, expectedDraft] of cases) {
+    assert.equal(createPilotInputDraft({...scenario, reach}).reach, expectedDraft);
+  }
+
+  const drafts = cases.map(([reach]) =>
+    createPilotInputDraft({...scenario, reach}).reach
+  );
+  for (const garbage of [
+    "28.999999999999996",
+    "7.000000000000001",
+    "25.123456700000002",
+    "0.000039999999999999996"
+  ]) {
+    assert.ok(!drafts.includes(garbage));
+  }
+});
+
+test("reach Scenario-to-draft-to-Scenario round trip is strict", () => {
+  for (const reach of [
+    0,
+    0.07,
+    0.29,
+    0.25,
+    0.251234567,
+    0.0000004,
+    0.9999996,
+    1
+  ]) {
+    const source = {...scenario, reach};
+    const draft = createPilotInputDraft(source);
+    const evaluated = evaluatePilotInputDraft(draft, source);
+    assert.equal(evaluated.candidate?.reach, reach);
+  }
+});
+
+test("reach draft decimal shifting supports scientific notation without binary scaling", () => {
+  const twentyNine = createPilotInputDraft(scenario);
+  twentyNine.reach = "2.9e1";
+  assert.equal(evaluatePilotInputDraft(twentyNine, scenario).candidate?.reach, 0.29);
+
+  const tiny = createPilotInputDraft(scenario);
+  tiny.reach = "4e-5";
+  assert.equal(evaluatePilotInputDraft(tiny, scenario).candidate?.reach, 0.0000004);
 });
 
 test("cross-field recovery constructs the candidate from all current drafts", () => {
@@ -181,6 +242,11 @@ test("exact sensitivity-current regressions remain intact for precise reach and 
   const nearZero = buildSensitivityValues({...scenario, reach: 0.0000004}, "reach");
   assert.ok(nearZero.includes(0));
   assert.ok(nearZero.includes(0.0000004));
+
+  const nearOne = buildSensitivityValues({...scenario, reach: 0.9999996}, "reach");
+  assert.ok(nearOne.includes(0.9999996));
+  assert.ok(nearOne.includes(1));
+  assert.notEqual(0.9999996, 1);
 
   const zeroCapacity = buildSensitivityValues({...scenario, capacity: 0}, "capacity");
   assert.ok(zeroCapacity.includes(0));

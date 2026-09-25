@@ -78,6 +78,36 @@ function parseNumericDraft(raw: string): ParsedDraftNumber {
   return {ok: true, value};
 }
 
+function shiftDecimalPoint(raw: string, places: number): string {
+  const trimmed = raw.trim();
+  const sign = trimmed.startsWith("-") ? "-" : "";
+  const unsigned = trimmed.startsWith("-") || trimmed.startsWith("+")
+    ? trimmed.slice(1)
+    : trimmed;
+  const [coefficient = "", exponentText = "0"] =
+    unsigned.toLowerCase().split("e");
+  const exponent = Number(exponentText) + places;
+  const [integerPart = "", fractionalPart = ""] = coefficient.split(".");
+  const digits = (integerPart + fractionalPart) || "0";
+  const decimalIndex = integerPart.length + exponent;
+
+  let plain: string;
+  if (decimalIndex <= 0) {
+    plain = `0.${"0".repeat(-decimalIndex)}${digits}`;
+  } else if (decimalIndex >= digits.length) {
+    plain = `${digits}${"0".repeat(decimalIndex - digits.length)}`;
+  } else {
+    plain = `${digits.slice(0, decimalIndex)}.${digits.slice(decimalIndex)}`;
+  }
+
+  let [whole = "0", fraction = ""] = plain.split(".");
+  whole = whole.replace(/^0+(?=\d)/, "");
+  fraction = fraction.replace(/0+$/, "");
+  const normalized = fraction ? `${whole}.${fraction}` : whole;
+
+  return /^0(?:\.0*)?$/.test(normalized) ? "0" : sign + normalized;
+}
+
 function isPilotNumericField(value: string): value is PilotNumericField {
   return pilotInputFields.some(field => field.key === value);
 }
@@ -105,7 +135,9 @@ function presentValidationMessage(
 export function createPilotInputDraft(scenario: Scenario): PilotInputDraft {
   const draft = {} as PilotInputDraft;
   for (const field of pilotInputFields) {
-    draft[field.key] = String(scenario[field.key] * field.scale);
+    draft[field.key] = field.key === "reach"
+      ? shiftDecimalPoint(scenario[field.key].toString(), 2)
+      : String(scenario[field.key]);
   }
   return draft;
 }
@@ -123,7 +155,9 @@ export function evaluatePilotInputDraft(
       errors[field.key] = result.message;
       continue;
     }
-    parsed[field.key] = result.value / field.scale;
+    parsed[field.key] = field.key === "reach"
+      ? Number(shiftDecimalPoint(draft[field.key], -2))
+      : result.value;
   }
 
   if (Object.keys(errors).length > 0) {
