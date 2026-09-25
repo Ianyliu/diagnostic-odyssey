@@ -14,6 +14,11 @@ import {
   formatPublishedLocalContextUncertainty
 } from "../data/localContextPresentation";
 import { PLANNING_DEFAULTS_LABEL } from "../data/planningScenarioDefaults";
+import {
+  formatMechanismLabel,
+  formatPathwayStepLabel,
+  getPathwayBoundaryPresentation
+} from "../data/pathwayBoundary";
 import { withStaleSelectedDataRequestWarning } from "../data/briefDataRequestWarnings";
 
 export function BriefPage() {
@@ -51,6 +56,9 @@ export function BriefPage() {
     baseBrief,
     staleSelectedDataRequestCount
   );
+  const scenarioBoundary = brief.scenario
+    ? getPathwayBoundaryPresentation(brief.scenario.input)
+    : null;
 
   const localContextAvailable =
     localContextStatus === "loaded" && localContext !== null;
@@ -105,8 +113,13 @@ export function BriefPage() {
         <section>
           <h2>Pilot planning assumptions</h2>
           <p className="subtle"><strong>{PLANNING_DEFAULTS_LABEL}</strong> These inputs are planning assumptions, not observed evidence.</p>
-          {brief.scenario ? <>
-            <p><strong>{brief.scenario.input.target_pathway_step}</strong> via {brief.scenario.input.mechanism}</p>
+          {brief.scenario && scenarioBoundary ? <>
+            <dl className="brief-scenario-trace">
+              <div><dt>Modeled pathway step</dt><dd>{scenarioBoundary.pathwayStepLabel}</dd></div>
+              <div><dt>Assumed mechanism</dt><dd>{scenarioBoundary.mechanismLabel}</dd></div>
+            </dl>
+            <p>{scenarioBoundary.assumptionBoundaryStatement}</p>
+            <p><strong>Outside this model:</strong> {scenarioBoundary.outsideModelItems.join("; ")}.</p>
             <p>{brief.scenario.result.reached_participants.toLocaleString()} participants within capacity; {brief.scenario.result.difference_person_months.toLocaleString()} person-month planning exposure difference.</p>
             <p>Program-resource requirement: {new Intl.NumberFormat("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0}).format(brief.scenario.result.program_resource_requirement)}.</p>
           </> : <div className="empty-state"><strong>No valid planning scenario result is available.</strong><p>This does not alter the reviewed national burden findings.</p></div>}
@@ -170,7 +183,13 @@ export function BriefPage() {
           {brief.data_requests.length > 0
             ? <>
                 <p className="subtle">Only requests explicitly selected by the analyst are included.</p>
-                <ul>{brief.data_requests.map(request => <li key={request.request_id}><strong>{request.target_question}</strong> — {request.fields_needed.join(", ")}</li>)}</ul>
+                <ul>{brief.data_requests.map(request => <li key={request.request_id}>
+                  <strong>{request.target_question}</strong> — {request.fields_needed.join(", ")}
+                  <small className="brief-request-trace">
+                    Pathway: {formatPathwayStepLabel(request.pathway_step)}
+                    {request.target_mechanism && <> · Mechanism: {formatMechanismLabel(request.target_mechanism)}</>}
+                  </small>
+                </li>)}</ul>
               </>
             : <div className="empty-state">
                 <strong>

@@ -49,3 +49,17 @@
 .brief-action-paused span{max-width:420px;color:var(--do-color-muted);font-size:12px;line-height:1.4}
 .button:disabled{opacity:.58;cursor:not-allowed}
 @media(max-width:640px){.pilot-field{grid-template-columns:1fr}.assumption-card .pilot-field-label{padding-top:0}}
+
+
+/* Issue #15: scenario pathway boundary and downstream trace */
+.pathway-boundary{display:grid;gap:10px;margin-top:18px;padding:14px;border:1px solid var(--do-color-line);border-radius:8px;background:var(--do-color-soft-blue)}
+.pathway-boundary h3,.pathway-boundary p{margin:0}
+.pathway-boundary h3{color:var(--do-color-navy)}
+.pathway-boundary p{color:var(--do-color-muted);font-size:13px;line-height:1.5}
+.pathway-boundary-facts,.brief-scenario-trace{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0}
+.pathway-boundary-facts div,.brief-scenario-trace div{display:grid;gap:3px;padding:9px 10px;border:1px solid var(--do-color-line);border-radius:6px;background:var(--do-color-surface)}
+.pathway-boundary-facts dt,.brief-scenario-trace dt{color:var(--do-color-muted);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.pathway-boundary-facts dd,.brief-scenario-trace dd{margin:0;color:var(--do-color-navy);font-weight:700}
+.pathway-boundary-actions{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.brief-request-trace{display:block;margin-top:5px;color:var(--do-color-muted);line-height:1.4}
+@media(max-width:640px){.pathway-boundary-facts,.brief-scenario-trace{grid-template-columns:1fr}}

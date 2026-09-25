@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 import test from "node:test";
 import { validateScenario, type Scenario } from "@diagnostic-odyssey/contracts";
 import { buildPlanningBrief, serializeBriefJson } from "@diagnostic-odyssey/brief-core";
-import { oneWaySensitivity } from "@diagnostic-odyssey/scenario-engine";
+import { calculateScenario, oneWaySensitivity } from "@diagnostic-odyssey/scenario-engine";
 import { buildSensitivityValues } from "../src/data/decisionVisuals.ts";
 import {
   createSensitivityDataRequest,
@@ -36,19 +36,24 @@ const scenario: Scenario = {
 const readSource = (path: string) =>
   readFileSync(fileURLToPath(new URL(path, import.meta.url)), "utf8");
 
-test("sensitivity data-request templates are deterministic and preserve the pathway step", () => {
+test("sensitivity data-request templates are deterministic and preserve pathway step and mechanism", () => {
   const capacity = createSensitivityDataRequest(scenario, "capacity");
   assert.equal(capacity.request_id, "session.sensitivity.capacity");
   assert.equal(capacity.pathway_step, scenario.target_pathway_step);
+  assert.equal(capacity.target_mechanism, scenario.mechanism);
   assert.match(capacity.target_question, /capacity/i);
   assert.match(capacity.rationale, /3,000/);
   assert.ok(capacity.fields_needed.some(field => /slots|capacity/i.test(field)));
 
   const reach = createSensitivityDataRequest(scenario, "reach");
   assert.equal(reach.request_id, sensitivityDataRequestId("reach"));
+  assert.equal(reach.pathway_step, scenario.target_pathway_step);
+  assert.equal(reach.target_mechanism, scenario.mechanism);
   assert.match(reach.rationale, /25%/);
 
   const window = createSensitivityDataRequest(scenario, "alternative_window_months");
+  assert.equal(window.pathway_step, scenario.target_pathway_step);
+  assert.equal(window.target_mechanism, scenario.mechanism);
   assert.match(window.rationale, /6-month/);
   assert.match(window.rationale, /12-month/);
   assert.match(window.feasibility_privacy_notes, /do not by themselves establish a causal/i);
@@ -323,4 +328,62 @@ test("DataRequestsPage blocks sensitivity-request refresh while scenario result 
     requests,
     /stale && sensitivityField && scenario && !scenarioResult/
   );
+});
+
+
+test("sensitivity request freshness becomes stale when target mechanism differs", () => {
+  const fields = ["reach", "capacity", "alternative_window_months"] as const;
+  const changedMechanism = {...scenario, mechanism: "future-mechanism"};
+
+  for (const field of fields) {
+    const stored = createSensitivityDataRequest(scenario, field);
+    assert.equal(stored.request_id, `session.sensitivity.${field}`);
+    assert.equal(stored.pathway_step, scenario.target_pathway_step);
+    assert.equal(stored.target_mechanism, scenario.mechanism);
+    assert.equal(
+      getSensitivityDataRequestStatus(changedMechanism, field, [stored]),
+      "stale"
+    );
+    assert.equal(isDataRequestCurrentForScenario(stored, changedMechanism), false);
+  }
+});
+
+test("Planning Brief and JSON preserve scenario and selected-request pathway trace", () => {
+  const request = createSensitivityDataRequest(scenario, "reach");
+  const result = calculateScenario(scenario);
+  const built = buildPlanningBrief({
+    context: {
+      condition_id: "long-covid",
+      cohort_id: "test",
+      age_range: "18–64",
+      evidence_year: 2024,
+      geography_scope: "United States",
+      local_context_id: null,
+      severity_filter: null,
+      artifact_version: "test"
+    },
+    estimates: [],
+    localContext: [],
+    scenario: {input: scenario, result},
+    evidence: [],
+    dataRequests: [request],
+    generatedAt: "2026-09-24T00:00:00Z"
+  });
+
+  assert.equal(built.scenario?.input.target_pathway_step, scenario.target_pathway_step);
+  assert.equal(built.scenario?.input.mechanism, scenario.mechanism);
+  assert.equal(built.data_requests[0]?.pathway_step, scenario.target_pathway_step);
+  assert.equal(built.data_requests[0]?.target_mechanism, scenario.mechanism);
+
+  const serialized = JSON.parse(serializeBriefJson(built));
+  assert.equal(serialized.scenario.input.target_pathway_step, scenario.target_pathway_step);
+  assert.equal(serialized.scenario.input.mechanism, scenario.mechanism);
+  assert.equal(serialized.data_requests[0].pathway_step, scenario.target_pathway_step);
+  assert.equal(serialized.data_requests[0].target_mechanism, scenario.mechanism);
+
+  const briefSource = readSource("../src/pages/BriefPage.tsx");
+  assert.match(briefSource, /Modeled pathway step/);
+  assert.match(briefSource, /Assumed mechanism/);
+  assert.match(briefSource, /brief-request-trace/);
+  assert.match(briefSource, /request\.target_mechanism/);
 });

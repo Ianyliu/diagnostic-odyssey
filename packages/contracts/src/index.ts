@@ -254,6 +254,7 @@ export interface DataRequest {
   request_id: string;
   target_question: string;
   pathway_step: string;
+  target_mechanism?: string | null;
   fields_needed: string[];
   likely_source_owner: string;
   granularity_time_window: string;
