@@ -1,5 +1,9 @@
 testthat::test_that("canonical MEPS bootstrap loads into a clean environment", {
+  repo_root <- Sys.getenv("DIAGNOSTIC_ODYSSEY_ROOT")
   clean_environment <- new.env(parent = baseenv())
+  old_wd <- getwd()
+  setwd(repo_root)
+  on.exit(setwd(old_wd), add = TRUE)
   source(
     file.path("analysis", "r", "meps", "bootstrap.R"),
     local = clean_environment
@@ -25,10 +29,11 @@ testthat::test_that("canonical MEPS bootstrap loads into a clean environment", {
 })
 
 testthat::test_that("canonical MEPS callers use bootstrap without parallel module lists", {
+  repo_root <- Sys.getenv("DIAGNOSTIC_ODYSSEY_ROOT")
   caller_files <- c(
-    file.path("analysis", "r", "meps", "run_meps_2024.R"),
-    file.path("analysis", "r", "tests", "testthat", "helper-load.R"),
-    file.path("analysis", "r", "review", "meps_variance_policy_review.R")
+    file.path(repo_root, "analysis", "r", "meps", "run_meps_2024.R"),
+    file.path(repo_root, "analysis", "r", "tests", "testthat", "helper-load.R"),
+    file.path(repo_root, "analysis", "r", "review", "meps_variance_policy_review.R")
   )
 
   for (path in caller_files) {

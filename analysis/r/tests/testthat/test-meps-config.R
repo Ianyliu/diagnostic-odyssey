@@ -196,6 +196,7 @@ testthat::test_that("required HC-256 variable set is unchanged by config refacto
 })
 
 testthat::test_that("estimator modules contain no brittle AHRQ locator literals", {
+  repo_root <- Sys.getenv("DIAGNOSTIC_ODYSSEY_ROOT")
   estimator_files <- c(
     "estimate_population.R",
     "estimate_spending.R",
@@ -204,7 +205,7 @@ testthat::test_that("estimator modules contain no brittle AHRQ locator literals"
     "estimate_mental_health.R"
   )
   for (file in estimator_files) {
-    path <- file.path("analysis", "r", "meps", file)
+    path <- file.path(repo_root, "analysis", "r", "meps", file)
     source_text <- paste(readLines(path, warn = FALSE), collapse = "\n")
     testthat::expect_false(
       grepl("https://meps.ahrq.gov/", source_text, fixed = TRUE),
