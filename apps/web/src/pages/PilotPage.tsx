@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import type { Scenario, ScenarioResult } from "@diagnostic-odyssey/contracts";
 import { ContextBar } from "../components/ContextBar";
+import { InterpretationGuide } from "../components/InterpretationGuide";
 import { PilotDecisionVisuals } from "../components/PilotDecisionVisuals";
 import { SensitivityExplorer } from "../components/SensitivityExplorer";
 import { useArtifact } from "../data/ArtifactContext";
@@ -167,6 +168,16 @@ function PilotPlannerWorkspace({
           <strong>Draft not applied</strong>
           <span>These results still reflect the last valid planning assumptions. Fix the highlighted inputs to apply this draft.</span>
         </div>}
+        <InterpretationGuide
+          id="pilot-result-interpretation"
+          title="How to read these results"
+          whatThisShows="The mechanical planning consequences of the currently applied assumptions."
+          whyItMatters="Whether intended reach, capacity, recognition-window assumptions, and program resources appear operationally feasible together."
+          whatItDoesNotShow="A forecast, observed improvement, treatment effectiveness, causal effect, savings, or ROI."
+          whatToDoNext={invalidDraft
+            ? "Fix the draft inputs, then stress-test an assumption and create a structured data request where uncertainty matters."
+            : "Stress-test an assumption and create a structured data request where uncertainty matters."}
+        />
         <PilotDecisionVisuals scenario={scenario} result={scenarioResult} />
         <dl className="result-list">
           <div><dt>Intended reach</dt><dd>{scenarioResult.intended_reach.toLocaleString()}</dd></div>

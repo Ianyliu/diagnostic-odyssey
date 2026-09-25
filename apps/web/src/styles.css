@@ -63,3 +63,27 @@
 .pathway-boundary-actions{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
 .brief-request-trace{display:block;margin-top:5px;color:var(--do-color-muted);line-height:1.4}
 @media(max-width:640px){.pathway-boundary-facts,.brief-scenario-trace{grid-template-columns:1fr}}
+
+
+/* Issue #14 Phase A: plain-language orientation and interpretation */
+.first-run-orientation{padding:16px 18px;border:1px solid var(--do-color-line);border-radius:var(--do-radius-card);background:var(--do-color-soft-blue)}
+.first-run-orientation h2{margin:0 0 6px;color:var(--do-color-navy);font-size:18px}
+.first-run-orientation p{margin:0;color:var(--do-color-muted);line-height:1.55}
+.journey-card small{color:var(--do-color-muted);font-size:12px;line-height:1.45}
+.interpretation-guide{display:grid;gap:12px;padding:16px 18px;border:1px solid var(--do-color-line);border-radius:var(--do-radius-card);background:var(--do-color-soft-blue)}
+.interpretation-guide h3{margin:0;color:var(--do-color-navy);font-size:17px}
+.interpretation-guide-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:0}
+.interpretation-guide-list div{display:grid;gap:4px;padding:10px 12px;border:1px solid var(--do-color-line);border-radius:7px;background:white}
+.interpretation-guide-list dt,.evidence-use-summary dt,.evidence-status-guide dt{color:var(--do-color-navy);font-size:12px;font-weight:800}
+.interpretation-guide-list dd,.evidence-use-summary dd,.evidence-status-guide dd{margin:0;color:var(--do-color-muted);font-size:13px;line-height:1.5}
+.technical-disclosure{padding:12px 14px;border:1px solid var(--do-color-line);border-radius:8px;background:white;color:var(--do-color-muted);font-size:13px;line-height:1.5}
+.technical-disclosure summary{cursor:pointer;color:var(--do-color-navy);font-weight:800}
+.technical-disclosure p{margin:8px 0 0}
+.evidence-status-guide{display:grid;gap:12px;padding:18px;border:1px solid var(--do-color-line);border-radius:var(--do-radius-card);background:white}
+.evidence-status-guide h2{margin:0;color:var(--do-color-navy);font-size:19px}
+.evidence-status-guide dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:0}
+.evidence-status-guide dl>div{display:grid;gap:4px;padding:10px 12px;border-radius:7px;background:var(--do-color-bg)}
+.evidence-use-summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:0}
+.evidence-use-summary>div{display:grid;gap:4px;padding:12px;background:var(--do-color-bg);border-radius:7px}
+.empty-state-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
+@media(max-width:640px){.interpretation-guide-list,.evidence-status-guide dl,.evidence-use-summary{grid-template-columns:1fr}}
