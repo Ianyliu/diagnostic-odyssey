@@ -28,6 +28,46 @@ validate_candidate_records <- function(measures) {
       stop("Candidate estimate ", record$estimate_id %||% "<unknown>",
            " lacks required fields: ", paste(missing, collapse = ", "), call. = FALSE)
     }
+    estimate_id <- record$estimate_id %||% "<unknown>"
+    for (field in c("value", "standard_error", "interval_low", "interval_high")) {
+      x <- record[[field]]
+      if (!is.numeric(x) || length(x) != 1L || is.na(x) || !is.finite(x)) {
+        stop(
+          "Candidate estimate ", estimate_id,
+          " has invalid ", field,
+          ": expected one finite numeric value.",
+          call. = FALSE
+        )
+      }
+    }
+    if (record$standard_error < 0) {
+      stop(
+        "Candidate estimate ", estimate_id,
+        " has invalid standard_error: must be >= 0.",
+        call. = FALSE
+      )
+    }
+    if (record$interval_low > record$interval_high) {
+      stop(
+        "Candidate estimate ", estimate_id,
+        " has invalid interval ordering: interval_low > interval_high.",
+        call. = FALSE
+      )
+    }
+    if (record$value < record$interval_low) {
+      stop(
+        "Candidate estimate ", estimate_id,
+        " has invalid confidence interval: value is below interval_low.",
+        call. = FALSE
+      )
+    }
+    if (record$value > record$interval_high) {
+      stop(
+        "Candidate estimate ", estimate_id,
+        " has invalid confidence interval: value is above interval_high.",
+        call. = FALSE
+      )
+    }
     if (!identical(record$display_status, "analytical_artifact")) {
       stop("Candidate numeric estimate must have display_status='analytical_artifact'.", call. = FALSE)
     }
