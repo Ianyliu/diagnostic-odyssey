@@ -30,7 +30,13 @@ ROOT = Path(__file__).resolve().parents[2]
 CONFIG_DIR = Path(__file__).resolve().parent / "config"
 HRSA_CONFIG_PATH = CONFIG_DIR / "hrsa_hpsa_fields.v1.json"
 ACS_CONFIG_PATH = CONFIG_DIR / "acs_2024_5year_variables.v1.json"
+EXPECTED_CANDIDATE_OUTPUT_FILES_PATH = (
+    Path(__file__).resolve().parent / "expected_candidate_output_files.txt"
+)
 NATIONAL_ARTIFACT_VERSION = "meps-2024-long-covid-candidate-20260923T020607Z"
+# Keep the union of current guardrails and historical wording aliases. The two
+# aliases below are intentionally retained so wording cleanup cannot silently
+# weaken future-candidate interpretation boundaries.
 PROHIBITED = [
     "West Virginia Long COVID prevalence",
     "West Virginia Long COVID cost",
@@ -42,6 +48,8 @@ PROHIBITED = [
     "attributable cost",
     "savings",
     "ROI",
+    "causal determinant of diagnostic delay",
+    "predicted pilot effect",
 ]
 ACS_SENTINELS = {-999999999, -888888888, -666666666, -555555555, -333333333, -222222222}
 USER_AGENT = "DiagnosticOdyssey/1.0 (+https://github.com/Ianyliu/diagnostic-odyssey)"
@@ -53,6 +61,30 @@ class ContractError(RuntimeError):
 
 def load_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def load_expected_candidate_output_files(
+    path: Path = EXPECTED_CANDIDATE_OUTPUT_FILES_PATH,
+) -> tuple[str, ...]:
+    names = tuple(
+        line.strip()
+        for line in path.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    )
+    if not names:
+        raise ContractError("Expected candidate output file set is empty")
+    if len(names) != len(set(names)):
+        raise ContractError("Expected candidate output file set contains duplicates")
+    invalid = [
+        name
+        for name in names
+        if Path(name).name != name or name in {".", ".."}
+    ]
+    if invalid:
+        raise ContractError(
+            f"Expected candidate output file set contains invalid paths: {invalid}"
+        )
+    return names
 
 
 def utc_now() -> str:
@@ -122,7 +154,7 @@ def sanitize_error_text(value: object) -> str:
     )
 
 
-def is_retryable_network_error(exc: BaseException) -> bool:
+def is_retryable_network_error(exc: Exception) -> bool:
     if isinstance(exc, urllib.error.HTTPError):
         return exc.code == 429 or 500 <= exc.code <= 599
     return isinstance(
@@ -148,7 +180,7 @@ def download_file(
     destination.parent.mkdir(parents=True, exist_ok=True)
     part_path = destination.with_name(destination.name + ".part")
     safe_url = sanitize_url(url)
-    last_error: BaseException | None = None
+    last_error: Exception | None = None
 
     for attempt in range(1, max_attempts + 1):
         if part_path.exists():
@@ -188,7 +220,7 @@ def download_file(
                 "sha256": h.hexdigest(),
                 "published_update_date": published,
             }
-        except BaseException as exc:
+        except Exception as exc:
             if part_path.exists():
                 part_path.unlink()
             last_error = exc
@@ -235,6 +267,7 @@ def summarize_hrsa(path: Path, config: dict[str, Any], dataset_key: str, state_f
     total_rows = 0
     matching_rows = 0
     statuses: Counter[str] = Counter()
+    skipped_invalid_fips_rows = 0
 
     with path.open("r", encoding="utf-8-sig", newline="") as handle:
         reader = csv.DictReader(handle)
@@ -244,6 +277,7 @@ def summarize_hrsa(path: Path, config: dict[str, Any], dataset_key: str, state_f
             try:
                 row_state = normalized_fips(row[field["state_fips"]], 2)
             except ContractError:
+                skipped_invalid_fips_rows += 1
                 continue
             if row_state != state_fips:
                 continue
@@ -414,6 +448,7 @@ def summarize_hrsa(path: Path, config: dict[str, Any], dataset_key: str, state_f
     diagnostics = {
         "dataset_key": dataset_key,
         "total_rows_read": total_rows,
+        "skipped_invalid_fips_rows": skipped_invalid_fips_rows,
         "rows_matching_west_virginia": matching_rows,
         "rows_by_hpsa_status": dict(sorted(statuses.items())),
         "distinct_designated_hpsa_ids": distinct_count,
@@ -437,13 +472,13 @@ def fetch_json(
 ) -> Any:
     """Fetch JSON with bounded transient retries and API-key-safe errors."""
     safe_url = sanitize_url(url)
-    last_error: BaseException | None = None
+    last_error: Exception | None = None
     for attempt in range(1, max_attempts + 1):
         req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
         try:
             with urllib.request.urlopen(req, timeout=60) as response:
                 return json.load(response)
-        except BaseException as exc:
+        except Exception as exc:
             last_error = exc
             if not is_retryable_network_error(exc):
                 raise ContractError(
@@ -650,7 +685,7 @@ def build_acs_request(config: dict[str, Any]) -> tuple[str, str]:
             "Missing required GitHub Actions secret/environment variable CENSUS_API_KEY. "
             "Add repository Actions secret CENSUS_API_KEY before dispatching the local-context workflow."
         )
-    return public_endpoint, f"{public_endpoint}&key={urllib.parse.quote(key)}"
+    return public_endpoint, f"{public_endpoint}&key={urllib.parse.quote(key, safe='')}"
 
 
 def parse_acs(config: dict[str, Any], data: list[list[str]]) -> tuple[list[dict[str, Any]], dict[str, Any]]:
@@ -930,6 +965,16 @@ def main() -> int:
         "acs-source-metadata.json": acs_metadata,
         "github-actions-run-manifest.json": actions_manifest,
     }
+    expected_output_files = load_expected_candidate_output_files()
+    produced_output_files = set(files) | {"SHA256SUMS"}
+    expected_output_set = set(expected_output_files)
+    if produced_output_files != expected_output_set:
+        raise ContractError(
+            "Pipeline candidate output names diverge from governed file set: "
+            f"missing={sorted(expected_output_set - produced_output_files)}, "
+            f"unexpected={sorted(produced_output_files - expected_output_set)}"
+        )
+
     for name, payload in files.items():
         write_json(output_dir / name, payload)
 
@@ -938,12 +983,27 @@ def main() -> int:
         sums.append(f"{sha256_file(output_dir / name)}  {name}")
     (output_dir / "SHA256SUMS").write_text("\n".join(sums) + "\n", encoding="utf-8")
 
-    unexpected = {p.name for p in output_dir.iterdir()} - (set(files) | {"SHA256SUMS"})
-    if unexpected:
-        raise ContractError(f"Unexpected candidate output files: {sorted(unexpected)}")
+    actual_entries = {entry.name: entry for entry in output_dir.iterdir()}
+    actual_names = set(actual_entries)
+    if actual_names != expected_output_set:
+        raise ContractError(
+            "Unexpected candidate output file set after generation: "
+            f"missing={sorted(expected_output_set - actual_names)}, "
+            f"unexpected={sorted(actual_names - expected_output_set)}"
+        )
+    non_regular_entries = sorted(
+        name
+        for name, entry in actual_entries.items()
+        if entry.is_symlink() or not entry.is_file()
+    )
+    if non_regular_entries:
+        raise ContractError(
+            "Candidate output entries must be regular files: "
+            f"{non_regular_entries}"
+        )
 
     print(f"Generated preliminary local-context candidate {artifact_version}")
-    print(f"Output files: {', '.join(sorted(set(files) | {'SHA256SUMS'}))}")
+    print(f"Output files: {', '.join(sorted(expected_output_set))}")
     return 0
 
 

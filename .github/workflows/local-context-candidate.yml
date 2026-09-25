@@ -105,14 +105,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.CANDIDATE_ARTIFACT_NAME }}
-          path: |
-            ${{ env.OUTPUT_DIR }}/local-context.json
-            ${{ env.OUTPUT_DIR }}/diagnostics.json
-            ${{ env.OUTPUT_DIR }}/review-manifest.json
-            ${{ env.OUTPUT_DIR }}/hrsa-source-metadata.json
-            ${{ env.OUTPUT_DIR }}/acs-source-metadata.json
-            ${{ env.OUTPUT_DIR }}/github-actions-run-manifest.json
-            ${{ env.OUTPUT_DIR }}/SHA256SUMS
+          path: ${{ env.OUTPUT_DIR }}/
           if-no-files-found: error
           retention-days: 14
           compression-level: 6
