@@ -3,6 +3,7 @@ import test from "node:test";
 import {
   canExportEstimate,
   validateArtifactBundle,
+  validateDataRequest,
   validateEstimate,
   validateScenario,
   type Estimate
@@ -178,4 +179,91 @@ test("artifact runtime validation requires bundle-level provenance", () => {
   assert.ok(issues.some(issue => issue.path === "artifact.manifest.code_commit"));
   assert.ok(issues.some(issue => issue.path === "artifact.manifest.dataset_releases"));
   assert.ok(issues.some(issue => issue.path === "artifact.sources"));
+});
+
+
+test("data request validation protects pathway and optional mechanism trace fields", () => {
+  const baseRequest = {
+    request_id: "request-1",
+    target_question: "What should be collected?",
+    pathway_step: "recognition-to-referral",
+    target_mechanism: "navigation-support",
+    fields_needed: ["field one"],
+    likely_source_owner: "Program operations",
+    granularity_time_window: "Monthly",
+    rationale: "Reduce operational uncertainty.",
+    feasibility_privacy_notes: "Use aggregate data."
+  };
+
+  assert.deepEqual(validateDataRequest(baseRequest), []);
+  assert.deepEqual(validateDataRequest({...baseRequest, target_mechanism: null}), []);
+  assert.deepEqual(
+    validateDataRequest({...baseRequest, target_mechanism: undefined}),
+    []
+  );
+
+  const badPathway = validateDataRequest({...baseRequest, pathway_step: 42});
+  assert.ok(badPathway.some(issue => issue.path === "data_request.pathway_step"));
+
+  const badMechanism = validateDataRequest({...baseRequest, target_mechanism: 42});
+  assert.ok(
+    badMechanism.some(issue => issue.path === "data_request.target_mechanism")
+  );
+});
+
+test("artifact runtime validation rejects malformed loaded data-request trace fields", () => {
+  const issues = validateArtifactBundle({
+    manifest: {
+      artifact_version: "v1",
+      generated_at: "2026-09-25T00:00:00Z",
+      code_commit: "abc123",
+      run_id: "run-1",
+      dataset_releases: ["test"],
+      display_status: "analytical_artifact"
+    },
+    context: {
+      condition_id: "long-covid",
+      cohort_id: "test",
+      age_range: "18–64",
+      evidence_year: 2024,
+      geography_scope: "United States",
+      local_context_id: null,
+      severity_filter: null,
+      artifact_version: "v1"
+    },
+    burden_domains: [],
+    evidence: [],
+    local_context: [],
+    qualitative_evidence: [],
+    scenario_examples: [],
+    data_requests: [{
+      request_id: "request-1",
+      target_question: "What should be collected?",
+      pathway_step: 42,
+      target_mechanism: {bad: true},
+      fields_needed: ["field one"],
+      likely_source_owner: "Program operations",
+      granularity_time_window: "Monthly",
+      rationale: "Reduce operational uncertainty.",
+      feasibility_privacy_notes: "Use aggregate data."
+    }],
+    sources: [{
+      source_ref: "src",
+      source_name: "Source",
+      official_url: "https://example.test",
+      release_year: 2024,
+      locator: "test"
+    }]
+  });
+
+  assert.ok(
+    issues.some(issue =>
+      issue.path === "artifact.data_requests[0].pathway_step"
+    )
+  );
+  assert.ok(
+    issues.some(issue =>
+      issue.path === "artifact.data_requests[0].target_mechanism"
+    )
+  );
 });

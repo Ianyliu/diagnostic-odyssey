@@ -16,8 +16,9 @@ export function createSensitivityDataRequest(
   if (field === "capacity") {
     return {
       request_id: sensitivityDataRequestId(field),
-      target_question: "What provider/program capacity is actually available for the proposed recognition-to-referral pilot?",
+      target_question: "What provider/program capacity is actually available for this pilot's modeled pathway step?",
       pathway_step: scenario.target_pathway_step,
+      target_mechanism: scenario.mechanism,
       fields_needed: [
         "staffed program capacity",
         "available appointment or navigation slots",
@@ -39,6 +40,7 @@ export function createSensitivityDataRequest(
       request_id: sensitivityDataRequestId(field),
       target_question: "What share of the eligible population can the pilot realistically identify, contact, and enroll?",
       pathway_step: scenario.target_pathway_step,
+      target_mechanism: scenario.mechanism,
       fields_needed: [
         "eligible population denominator",
         "people identified for outreach",
@@ -56,8 +58,9 @@ export function createSensitivityDataRequest(
 
   return {
     request_id: sensitivityDataRequestId(field),
-    target_question: "What recognition-to-referral timing is observed now, and what timing is operationally feasible under the proposed navigation workflow?",
+    target_question: "What timing is observed now within this pilot's modeled pathway step, and what timing is operationally feasible under the assumed workflow?",
     pathway_step: scenario.target_pathway_step,
+    target_mechanism: scenario.mechanism,
     fields_needed: [
       "recognition or qualifying milestone date",
       "referral date",
@@ -101,6 +104,7 @@ export function dataRequestsMatch(
   return stored.request_id === expected.request_id &&
     stored.target_question === expected.target_question &&
     stored.pathway_step === expected.pathway_step &&
+    (stored.target_mechanism ?? null) === (expected.target_mechanism ?? null) &&
     sameStringArray(stored.fields_needed, expected.fields_needed) &&
     stored.likely_source_owner === expected.likely_source_owner &&
     stored.granularity_time_window === expected.granularity_time_window &&

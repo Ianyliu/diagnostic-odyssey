@@ -25,6 +25,7 @@ import {
   PLANNING_DEFAULTS_DESCRIPTION,
   PLANNING_DEFAULTS_LABEL
 } from "../data/planningScenarioDefaults";
+import { getPathwayBoundaryPresentation } from "../data/pathwayBoundary";
 
 export function PilotPage() {
   const {scenario, scenarioResult} = useArtifact();
@@ -75,6 +76,7 @@ function PilotPlannerWorkspace({
     [draft, scenario]
   );
   const invalidDraft = evaluation.candidate === null;
+  const pathwayBoundary = getPathwayBoundaryPresentation(scenario);
 
   const initialResultSignature = useRef(getPilotResultSignature(scenarioResult));
   const [resultAnnouncement, setResultAnnouncement] = useState("");
@@ -140,6 +142,23 @@ function PilotPlannerWorkspace({
           </div>;
         })}
         {evaluation.formError && <p className="field-error form-error" aria-live="polite">{evaluation.formError}</p>}
+        <section className="pathway-boundary" aria-labelledby="pilot-pathway-boundary-title">
+          <div>
+            <p className="visual-kicker">SCIENTIFIC BOUNDARY</p>
+            <h3 id="pilot-pathway-boundary-title">Modeled pathway boundary</h3>
+          </div>
+          <dl className="pathway-boundary-facts">
+            <div><dt>Target step</dt><dd>{pathwayBoundary.pathwayStepLabel}</dd></div>
+            <div><dt>Assumed mechanism</dt><dd>{pathwayBoundary.mechanismLabel}</dd></div>
+          </dl>
+          <p>{pathwayBoundary.modeledBoundaryStatement}</p>
+          <p>{pathwayBoundary.assumptionBoundaryStatement}</p>
+          <p><strong>Outside this model:</strong> {pathwayBoundary.outsideModelItems.join("; ")}.</p>
+          <div className="pathway-boundary-actions" aria-label="Pathway boundary follow-up">
+            <Link className="text-button" to="/pilot#sensitivity">Stress-test these assumptions</Link>
+            <Link className="text-button" to="/evidence">Review evidence limits</Link>
+          </div>
+        </section>
       </form>
       <article className="card result-card">
         <h2>Baseline vs recognition/navigation scenario</h2>
@@ -167,7 +186,6 @@ function PilotPlannerWorkspace({
           onUpsertDataRequest={addSensitivityDataRequest}
           dataRequestStatus={sensitivityDataRequestStatus}
         />}
-        <div className="target-box"><strong>Target pathway step</strong><span>{scenario.target_pathway_step}</span><strong>Mechanism</strong><span>{scenario.mechanism}</span></div>
         <div className="guardrail compact"><strong>Not savings or ROI.</strong><p>The resource requirement is a program input. The person-month difference is a planning exposure quantity, not observed improvement.</p></div>
         {invalidDraft ? <div className="brief-action-paused">
           <button className="button" type="button" disabled>Preview Planning Brief</button>

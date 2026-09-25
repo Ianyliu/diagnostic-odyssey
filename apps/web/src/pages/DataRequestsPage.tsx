@@ -7,6 +7,10 @@ import {
   isDataRequestCurrentForScenario,
   sensitivityFieldFromDataRequestId
 } from "../data/dataRequestTemplates";
+import {
+  formatMechanismLabel,
+  formatPathwayStepLabel
+} from "../data/pathwayBoundary";
 
 export function DataRequestsPage() {
   const {
@@ -56,7 +60,8 @@ export function DataRequestsPage() {
             </span>
           </div>
           <dl className="data-request-details">
-            <div><dt>Pathway step</dt><dd>{request.pathway_step}</dd></div>
+            <div><dt>Pathway step</dt><dd>{formatPathwayStepLabel(request.pathway_step)}</dd></div>
+            {request.target_mechanism && <div><dt>Target mechanism</dt><dd>{formatMechanismLabel(request.target_mechanism)}</dd></div>}
             <div><dt>Fields needed</dt><dd>{request.fields_needed.join(", ")}</dd></div>
             <div><dt>Likely owner</dt><dd>{request.likely_source_owner}</dd></div>
             <div><dt>Granularity / time window</dt><dd>{request.granularity_time_window}</dd></div>

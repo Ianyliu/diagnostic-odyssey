@@ -254,6 +254,7 @@ export interface DataRequest {
   request_id: string;
   target_question: string;
   pathway_step: string;
+  target_mechanism?: string | null;
   fields_needed: string[];
   likely_source_owner: string;
   granularity_time_window: string;
@@ -668,6 +669,51 @@ export function validateScenario(value: unknown, path = "scenario"): ValidationI
   return issues;
 }
 
+export function validateDataRequest(
+  value: unknown,
+  path = "data_request"
+): ValidationIssue[] {
+  if (!isRecord(value)) return [{ path, message: "must be an object" }];
+  const issues: ValidationIssue[] = [];
+
+  for (const key of [
+    "request_id",
+    "target_question",
+    "pathway_step",
+    "likely_source_owner",
+    "granularity_time_window",
+    "rationale",
+    "feasibility_privacy_notes"
+  ]) {
+    if (!isNonEmptyString(value[key])) {
+      issues.push({ path: `${path}.${key}`, message: "must be a non-empty string" });
+    }
+  }
+
+  if (
+    value.target_mechanism !== undefined &&
+    value.target_mechanism !== null &&
+    !isNonEmptyString(value.target_mechanism)
+  ) {
+    issues.push({
+      path: `${path}.target_mechanism`,
+      message: "must be null or a non-empty string"
+    });
+  }
+
+  if (
+    !Array.isArray(value.fields_needed) ||
+    value.fields_needed.some(item => !isNonEmptyString(item))
+  ) {
+    issues.push({
+      path: `${path}.fields_needed`,
+      message: "must be an array of non-empty strings"
+    });
+  }
+
+  return issues;
+}
+
 export function validateArtifactBundle(value: unknown): ValidationIssue[] {
   if (!isRecord(value)) return [{ path: "artifact", message: "must be an object" }];
   const issues: ValidationIssue[] = [];
@@ -792,6 +838,14 @@ export function validateArtifactBundle(value: unknown): ValidationIssue[] {
   } else {
     value.scenario_examples.forEach((scenario, index) => {
       issues.push(...validateScenario(scenario, `artifact.scenario_examples[${index}]`));
+    });
+  }
+
+  if (!Array.isArray(value.data_requests)) {
+    issues.push({ path: "artifact.data_requests", message: "must be an array" });
+  } else {
+    value.data_requests.forEach((request, index) => {
+      issues.push(...validateDataRequest(request, `artifact.data_requests[${index}]`));
     });
   }
 
