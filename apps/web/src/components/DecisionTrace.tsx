@@ -9,6 +9,7 @@ import { buildDecisionTrace } from "../data/decisionTrace";
 export function DecisionTrace({
   burdenEstimateCount,
   pilotLocalContext,
+  localContextStatus,
   scenario,
   currentDataRequestCount,
   evidence,
@@ -16,6 +17,7 @@ export function DecisionTrace({
 }: {
   burdenEstimateCount: number;
   pilotLocalContext: LocalContextRecord | null;
+  localContextStatus: "loading" | "loaded" | "error";
   scenario: Scenario;
   currentDataRequestCount: number;
   evidence: EvidenceRecord[];
@@ -24,6 +26,7 @@ export function DecisionTrace({
   const items = buildDecisionTrace({
     burdenEstimateCount,
     pilotLocalContext,
+    localContextStatus,
     scenario,
     currentDataRequestCount,
     evidence
@@ -41,7 +44,9 @@ export function DecisionTrace({
           <strong>{item.label}</strong>
           <span>{item.detail}</span>
           {item.key === "local-context" && !pilotLocalContext &&
-            <Link className="text-button" to="/local-context">Review Local Context</Link>}
+            <Link className="text-button" to="/local-context">
+              {localContextStatus === "loaded" ? "Review Local Context" : "Open Local Context status"}
+            </Link>}
           {item.key === "measurement" &&
             <Link className="text-button" to={dataRequestHref}>
               {currentDataRequestCount === 0 ? "Create or review a data request" : "Review current data requests"}
