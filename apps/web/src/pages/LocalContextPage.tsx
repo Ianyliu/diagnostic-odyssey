@@ -30,11 +30,17 @@ function SelectableIndicatorRow({
   record,
   selected,
   onSelectedChange,
+  pilotSelected,
+  onPilotSelect,
+  onPilotClear,
   displayLabel
 }: {
   record: LocalContextRecord;
   selected: boolean;
   onSelectedChange: (indicatorId: string, selected: boolean) => void;
+  pilotSelected: boolean;
+  onPilotSelect: (indicatorId: string) => void;
+  onPilotClear: () => void;
   displayLabel?: string;
 }) {
   const selectable = isSelectableLocalContextRecord(record);
@@ -56,6 +62,19 @@ function SelectableIndicatorRow({
         />
         <span id={accessibility.actionLabelId}>Include in Planning Brief</span>
       </label>
+      <div className="pilot-context-action">
+        {pilotSelected ? <>
+          <span className="status status-ok">Used in Pilot planning</span>
+          <button className="text-button" type="button" onClick={onPilotClear}>Remove from Pilot</button>
+        </> : <button
+          className="text-button"
+          type="button"
+          disabled={!selectable}
+          onClick={() => onPilotSelect(record.indicator_id)}
+        >
+          Use in Pilot planning
+        </button>}
+      </div>
     </div>
     <div className="measure-value">
       {formatLocalContextValue(record)}
@@ -67,11 +86,17 @@ function SelectableIndicatorRow({
 function BreakdownList({
   records,
   selectedIds,
-  onSelectedChange
+  onSelectedChange,
+  pilotContextId,
+  onPilotSelect,
+  onPilotClear
 }: {
   records: LocalContextRecord[];
   selectedIds: string[];
   onSelectedChange: (indicatorId: string, selected: boolean) => void;
+  pilotContextId: string | null;
+  onPilotSelect: (indicatorId: string) => void;
+  onPilotClear: () => void;
 }) {
   return <div>
     {records.map(record =>
@@ -80,6 +105,9 @@ function BreakdownList({
         record={record}
         selected={selectedIds.includes(record.indicator_id)}
         onSelectedChange={onSelectedChange}
+        pilotSelected={pilotContextId === record.indicator_id}
+        onPilotSelect={onPilotSelect}
+        onPilotClear={onPilotClear}
       />
     )}
   </div>;
@@ -93,7 +121,10 @@ export function LocalContextPage() {
     localContextError,
     selectedLocalContextIds,
     setLocalContextSelected,
-    clearSelectedLocalContext
+    clearSelectedLocalContext,
+    pilotLocalContextId,
+    setPilotLocalContext,
+    clearPilotLocalContext
   } = useArtifact();
   if (!bundle) return null;
 
@@ -183,11 +214,11 @@ export function LocalContextPage() {
       whatThisShows="Statewide implementation and access context from reviewed Health Resources and Services Administration (HRSA) and U.S. Census Bureau sources."
       whyItMatters="These indicators can identify operational constraints that may matter when planning implementation."
       whatItDoesNotShow="West Virginia Long COVID prevalence, burden, cost, causal effect, savings, ROI, or a composite access-severity score."
-      whatToDoNext="Select reviewed indicators if their value, provenance, and interpretation boundaries should travel into the Planning Brief."
+      whatToDoNext="Choose independently whether a reviewed record should be included in the Planning Brief, used as the one active Pilot planning context, both, or neither."
     />
     <div className="guardrail compact">
       <strong>Missing does not mean zero.</strong>
-      <p>Missing designation/data does not mean no shortage or zero implementation constraint. Selecting an indicator includes its reviewed value, source, geography, vintage, uncertainty, and interpretation boundaries in the Planning Brief. It does not change national burden or Pilot Planner assumptions.</p>
+      <p>Missing designation/data does not mean no shortage or zero implementation constraint. "Include in Planning Brief" and "Use in Pilot planning" are separate analyst choices. Neither changes national burden or Pilot Planner numeric assumptions.</p>
     </div>
 
     <div className="card selection-summary" aria-live="polite">
@@ -215,11 +246,17 @@ export function LocalContextPage() {
         record={primaryCount}
         selected={selectedLocalContextIds.includes(primaryCount.indicator_id)}
         onSelectedChange={setLocalContextSelected}
+        pilotSelected={pilotLocalContextId === primaryCount.indicator_id}
+        onPilotSelect={setPilotLocalContext}
+        onPilotClear={clearPilotLocalContext}
       />
       <SelectableIndicatorRow
         record={primaryScore}
         selected={selectedLocalContextIds.includes(primaryScore.indicator_id)}
         onSelectedChange={setLocalContextSelected}
+        pilotSelected={pilotLocalContextId === primaryScore.indicator_id}
+        onPilotSelect={setPilotLocalContext}
+        onPilotClear={clearPilotLocalContext}
         displayLabel="Maximum source-published HPSA score among included designations"
       />
       <p className="limitations">The maximum score is a maximum across included individual designations; it is not a statewide shortage severity score.</p>
@@ -230,6 +267,9 @@ export function LocalContextPage() {
           records={primaryBreakdowns}
           selectedIds={selectedLocalContextIds}
           onSelectedChange={setLocalContextSelected}
+          pilotContextId={pilotLocalContextId}
+          onPilotSelect={setPilotLocalContext}
+          onPilotClear={clearPilotLocalContext}
         />
       </details>
       <IndicatorDisclosure record={primaryCount} />
@@ -242,11 +282,17 @@ export function LocalContextPage() {
         record={mentalCount}
         selected={selectedLocalContextIds.includes(mentalCount.indicator_id)}
         onSelectedChange={setLocalContextSelected}
+        pilotSelected={pilotLocalContextId === mentalCount.indicator_id}
+        onPilotSelect={setPilotLocalContext}
+        onPilotClear={clearPilotLocalContext}
       />
       <SelectableIndicatorRow
         record={mentalScore}
         selected={selectedLocalContextIds.includes(mentalScore.indicator_id)}
         onSelectedChange={setLocalContextSelected}
+        pilotSelected={pilotLocalContextId === mentalScore.indicator_id}
+        onPilotSelect={setPilotLocalContext}
+        onPilotClear={clearPilotLocalContext}
         displayLabel="Maximum source-published HPSA score among included designations"
       />
       <p className="limitations">The maximum score is a maximum across included individual designations; it is not a statewide shortage severity score.</p>
@@ -257,6 +303,9 @@ export function LocalContextPage() {
           records={mentalBreakdowns}
           selectedIds={selectedLocalContextIds}
           onSelectedChange={setLocalContextSelected}
+          pilotSelected={pilotLocalContextId === record.indicator_id}
+          onPilotSelect={setPilotLocalContext}
+          onPilotClear={clearPilotLocalContext}
         />
       </details>
       <IndicatorDisclosure record={mentalCount} />
