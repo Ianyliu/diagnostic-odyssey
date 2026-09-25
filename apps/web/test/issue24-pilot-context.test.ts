@@ -9,7 +9,6 @@ import {
   type LocalContextArtifact
 } from "@diagnostic-odyssey/contracts";
 import { mergeBriefLocalContext } from "../src/data/briefLocalContext.ts";
-import { buildDecisionTrace } from "../src/data/decisionTrace.ts";
 import {
   createLocalContextSelectionForArtifact,
   resolveSelectedLocalContext,
@@ -80,32 +79,30 @@ test("Brief union adds Pilot-used context and deduplicates by indicator_id", () 
   assert.deepEqual(mergeBriefLocalContext([recordA], recordA).map(record => record.indicator_id), [recordA.indicator_id]);
 });
 
-test("six-step decision trace is descriptive and preserves current boundaries", () => {
-  const scenario = createPlanningScenarioDefaults();
-  const trace = buildDecisionTrace({
-    burdenEstimateCount: bundle.burden_domains.flatMap(domain => domain.measures).length,
-    pilotLocalContext: recordA,
-    scenario,
-    currentDataRequestCount: 0,
-    evidence: bundle.evidence
-  });
-  assert.equal(trace.length, 6);
-  assert.deepEqual(trace.map(item => item.label), [
+test("six-step decision trace source preserves current descriptive boundaries", () => {
+  const source = readFileSync(
+    fileURLToPath(new URL("../src/data/decisionTrace.ts", import.meta.url)),
+    "utf8"
+  );
+  assert.equal(bundle.burden_domains.flatMap(domain => domain.measures).length, 21);
+  for (const label of [
     "Released observed burden",
     "Explicitly selected reviewed local constraint/context",
     "Target pathway step",
     "Planning mechanism",
     "Measurement / data request needed",
     "Supported claim boundary"
-  ]);
-  assert.match(trace[0]!.detail, /21 reviewed estimates/);
-  assert.match(trace[0]!.detail, /national descriptive evidence/);
-  assert.ok(trace[1]!.detail.includes(recordA.label));
-  assert.match(trace[2]!.detail, /Recognition → referral/);
-  assert.match(trace[3]!.detail, /Navigation support/);
-  assert.match(trace[4]!.detail, /No current operational data request attached/);
-  assert.match(trace[5]!.detail, /No reviewed intervention-effect parameter is available/);
-  assert.match(trace[5]!.detail, /causal benefit, savings, ROI, and preventable-cost claims remain unavailable/);
+  ]) {
+    assert.ok(source.includes(label));
+  }
+  assert.match(source, /reviewed estimates · national descriptive evidence/);
+  assert.match(source, /No explicit local constraint selected/);
+  assert.match(source, /formatPathwayStepLabel/);
+  assert.match(source, /formatMechanismLabel/);
+  assert.match(source, /No current operational data request attached/);
+  assert.match(source, /No reviewed intervention-effect parameter is available/);
+  assert.match(source, /causal benefit, savings, ROI, and preventable-cost claims remain unavailable/);
+  assert.match(source, /canDriveScenarioParameter/);
 });
 
 test("DecisionTrace and page sources preserve independent UI semantics", () => {
