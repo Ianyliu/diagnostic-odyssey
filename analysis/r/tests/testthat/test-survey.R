@@ -133,3 +133,60 @@ testthat::test_that("PERSON, ESAQ, and PSAQ estimates use their respective full-
   )))
   testthat::expect_equal(person$ci_df_source, "full PERSON / PERWT24F survey design")
 })
+
+
+testthat::test_that("design-row diagnostics reconcile overlapping exclusion causes", {
+  data <- data.frame(
+    VARSTR = c(1, 1, 1, 1, 1, NA, NA),
+    VARPSU = c(1, 1, 1, 1, NA, 1, NA),
+    w = c(1, NA, 0, -1, 1, 1, 0)
+  )
+  eligibility <- c(TRUE, TRUE, TRUE, TRUE, FALSE, NA, FALSE)
+
+  d <- design_row_filter_diagnostics(
+    data,
+    "w",
+    eligibility = eligibility,
+    eligibility_applies = TRUE
+  )
+
+  testthat::expect_equal(d$total_input_n, 7L)
+  testthat::expect_equal(d$retained_n, 1L)
+  testthat::expect_equal(d$excluded_any_n, 6L)
+  testthat::expect_equal(d$eligibility_excluded_n, 3L)
+  testthat::expect_equal(d$eligibility_missing_n, 1L)
+  testthat::expect_equal(d$eligibility_false_n, 2L)
+  testthat::expect_equal(d$weight_missing_n, 1L)
+  testthat::expect_equal(d$weight_zero_n, 2L)
+  testthat::expect_equal(d$weight_negative_n, 1L)
+  testthat::expect_equal(d$varstr_missing_n, 2L)
+  testthat::expect_equal(d$varpsu_missing_n, 2L)
+  testthat::expect_true(d$criterion_counts_are_non_mutually_exclusive)
+  testthat::expect_true(d$reconciliation$equals_total_input_n)
+  testthat::expect_equal(
+    d$retained_n + d$excluded_any_n,
+    d$total_input_n
+  )
+  testthat::expect_equal(
+    d$exclusion_reason_combinations$eligibility_false.weight_zero.varstr_missing.varpsu_missing,
+    1L
+  )
+  testthat::expect_equal(
+    sum(unlist(d$exclusion_reason_combinations, use.names = FALSE)),
+    d$excluded_any_n
+  )
+})
+
+testthat::test_that("weight-specific row-filter diagnostics are exposed in design metadata", {
+  designs <- build_meps_designs(synthetic_design_data())
+  row_filtering <- designs$metadata$row_filtering
+
+  testthat::expect_named(row_filtering, c("person", "esaq", "psaq"))
+  testthat::expect_equal(row_filtering$person$total_input_n, 8L)
+  testthat::expect_equal(row_filtering$person$retained_n, 8L)
+  testthat::expect_equal(row_filtering$esaq$retained_n, 8L)
+  testthat::expect_equal(row_filtering$psaq$retained_n, 8L)
+  testthat::expect_true(row_filtering$person$reconciliation$equals_total_input_n)
+  testthat::expect_true(row_filtering$esaq$reconciliation$equals_total_input_n)
+  testthat::expect_true(row_filtering$psaq$reconciliation$equals_total_input_n)
+})
