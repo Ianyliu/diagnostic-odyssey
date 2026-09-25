@@ -50,8 +50,9 @@ mkdir "$TMP/unexpected-dir"
 expect_failure "an unexpected directory" env CENSUS_API_KEY="unit-test-secret" bash "$VERIFY" "$TMP"
 
 reset_candidate
-ln -s diagnostics.json "$TMP/unexpected-link"
-expect_failure "a symlink" env CENSUS_API_KEY="unit-test-secret" bash "$VERIFY" "$TMP"
+rm "$TMP/diagnostics.json"
+ln -s local-context.json "$TMP/diagnostics.json"
+expect_failure "a symlink replacing an expected output" env CENSUS_API_KEY="unit-test-secret" bash "$VERIFY" "$TMP"
 
 reset_candidate
 printf 'unit-test-secret\n' >> "$TMP/diagnostics.json"
