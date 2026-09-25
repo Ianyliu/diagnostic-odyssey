@@ -43,3 +43,29 @@ testthat::test_that("canonical MEPS callers use bootstrap without parallel modul
     testthat::expect_match(source_calls[[1]], "meps.*bootstrap\\.R")
   }
 })
+
+testthat::test_that("bootstrap-loaded MEPS modules do not source their own dependencies", {
+  repo_root <- Sys.getenv("DIAGNOSTIC_ODYSSEY_ROOT")
+  module_files <- c(
+    "estimate_population.R",
+    "estimate_spending.R",
+    "estimate_utilization.R",
+    "estimate_admin_burden.R",
+    "estimate_mental_health.R",
+    "cohort_long_covid.R",
+    "survey_designs.R",
+    "cohort_diagnostics.R",
+    "build_candidate_artifact.R"
+  )
+
+  for (file in module_files) {
+    path <- file.path(repo_root, "analysis", "r", "meps", file)
+    source_lines <- readLines(path, warn = FALSE)
+    top_level_source_calls <- grep("^source\\(", source_lines, value = TRUE)
+    testthat::expect_equal(
+      length(top_level_source_calls),
+      0L,
+      label = paste(file, "top-level source() count")
+    )
+  }
+})
