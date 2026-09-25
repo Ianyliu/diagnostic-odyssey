@@ -9,7 +9,6 @@ import {
   formatEstimateValue
 } from "../data/formatEstimateValue";
 import { mergeBriefLocalContext } from "../data/briefLocalContext";
-import { isDataRequestCurrentForScenario } from "../data/dataRequestTemplates";
 import { formatLocalContextValue } from "../data/formatLocalContextValue";
 import {
   deriveBriefContextWithSelectedLocalContext
@@ -48,7 +47,6 @@ export function BriefPage() {
     localContextStatus,
     selectedLocalContext,
     pilotLocalContext,
-    analystDataRequests,
     availableDataRequests,
     briefDataRequestIds,
     selectedDataRequests
@@ -90,11 +88,6 @@ export function BriefPage() {
 
   const localContextAvailable =
     localContextStatus === "loaded" && localContext !== null;
-  const currentOperationalDataRequestCount = scenario
-    ? analystDataRequests.filter(request =>
-        isDataRequestCurrentForScenario(request, scenario)
-      ).length
-    : 0;
 
   const exportJson = () => {
     const blob = new Blob([serializeBriefJson(brief)],{type:"application/json"});
@@ -193,8 +186,9 @@ export function BriefPage() {
               <DecisionTrace
                 burdenEstimateCount={brief.burden_findings.length}
                 pilotLocalContext={pilotLocalContext}
+                localContextStatus={localContextStatus}
                 scenario={brief.scenario.input}
-                currentDataRequestCount={currentOperationalDataRequestCount}
+                currentDataRequestCount={selectedDataRequests.length}
                 evidence={bundle.evidence}
                 dataRequestHref="/data-requests"
               />
