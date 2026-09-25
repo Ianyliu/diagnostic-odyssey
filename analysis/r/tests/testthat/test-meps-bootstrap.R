@@ -39,7 +39,7 @@ testthat::test_that("canonical MEPS callers use bootstrap without parallel modul
   for (path in caller_files) {
     source_lines <- readLines(path, warn = FALSE)
     source_calls <- grep("^source\\(", source_lines, value = TRUE)
-    testthat::expect_length(source_calls, 1L, info = path)
-    testthat::expect_match(source_calls, "meps.*bootstrap\\.R", info = path)
+    testthat::expect_equal(length(source_calls), 1L)
+    testthat::expect_match(source_calls[[1]], "meps.*bootstrap\\.R")
   }
 })
