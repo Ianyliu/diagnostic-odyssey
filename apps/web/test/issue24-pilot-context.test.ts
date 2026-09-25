@@ -125,7 +125,7 @@ test("DecisionTrace and page sources preserve independent UI semantics", () => {
   assert.match(pilotPage, /No local implementation context is currently attached/);
   assert.match(briefPage, /mergeBriefLocalContext/);
   assert.match(briefPage, /Used in Pilot planning/);
-  assert.match(context, /pilotLocalContextId: string \\| null/);
-  assert.match(context, /selectedLocalContextIds: string\\[\\]/);
+  assert.match(context, /pilotLocalContextId: string \| null/);
+  assert.match(context, /selectedLocalContextIds: string\[\]/);
   assert.doesNotMatch(context, /localStorage|sessionStorage/);
 });
