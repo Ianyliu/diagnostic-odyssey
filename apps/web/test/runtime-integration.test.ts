@@ -504,7 +504,8 @@ test("planning brief includes only explicitly supplied release-eligible local co
   assert.match(briefSource, /localContext:\s*selectedLocalContext/);
   assert.doesNotMatch(briefSource, /localContext:\s*\[\]/);
   assert.match(briefSource, /formatLocalContextValue\(record\)/);
-  assert.match(briefSource, /Partial data state/);
+  assert.match(briefSource, /formatDataStateLabel\(record\.state\)/);
+  assert.doesNotMatch(briefSource, /Partial data state/);
   assert.match(briefSource, /source_release_vintage/);
   assert.match(briefSource, /record\.state/);
   assert.match(briefSource, /record\.limitations/);
