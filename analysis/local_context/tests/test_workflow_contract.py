@@ -3,6 +3,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
 WORKFLOW = ROOT / ".github/workflows/local-context-candidate.yml"
+EXPECTED_OUTPUTS = ROOT / "analysis/local_context/expected_candidate_output_files.txt"
+PIPELINE = ROOT / "analysis/local_context/pipeline.py"
+VERIFIER = ROOT / "analysis/local_context/verify_candidate_output.sh"
 
 
 class LocalContextWorkflowContractTests(unittest.TestCase):
@@ -26,6 +29,39 @@ class LocalContextWorkflowContractTests(unittest.TestCase):
             text,
         )
         self.assertIn("sha256sum -c SHA256SUMS", text)
+
+    def test_expected_output_file_set_has_one_governed_source(self):
+        expected_names = [
+            line.strip()
+            for line in EXPECTED_OUTPUTS.read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        ]
+        self.assertEqual(len(expected_names), 7)
+        self.assertEqual(len(expected_names), len(set(expected_names)))
+
+        pipeline = PIPELINE.read_text(encoding="utf-8")
+        verifier = VERIFIER.read_text(encoding="utf-8")
+        workflow = WORKFLOW.read_text(encoding="utf-8")
+
+        self.assertIn("load_expected_candidate_output_files()", pipeline)
+        self.assertIn("expected_candidate_output_files.txt", verifier)
+        self.assertIn(r"path: ${{ env.OUTPUT_DIR }}/", workflow)
+
+        upload_section = workflow.split(
+            "- name: Upload preliminary candidate for independent review", 1
+        )[1]
+        for name in expected_names:
+            self.assertNotIn(f"${{{{ env.OUTPUT_DIR }}}}/{name}", upload_section)
+
+    def test_verifier_runs_before_directory_upload(self):
+        text = WORKFLOW.read_text(encoding="utf-8")
+        verify_index = text.index(
+            'bash analysis/local_context/verify_candidate_output.sh "$OUTPUT_DIR"'
+        )
+        upload_index = text.index(
+            "- name: Upload preliminary candidate for independent review"
+        )
+        self.assertLess(verify_index, upload_index)
 
 
 if __name__ == "__main__":
