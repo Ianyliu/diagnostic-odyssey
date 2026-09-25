@@ -57,7 +57,7 @@
 .pathway-boundary h3{color:var(--do-color-navy)}
 .pathway-boundary p{color:var(--do-color-muted);font-size:13px;line-height:1.5}
 .pathway-boundary-facts,.brief-scenario-trace{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0}
-.pathway-boundary-facts div,.brief-scenario-trace div{display:grid;gap:3px;padding:9px 10px;border:1px solid var(--do-color-line);border-radius:6px;background:var(--do-color-surface)}
+.pathway-boundary-facts div,.brief-scenario-trace div{display:grid;gap:3px;padding:9px 10px;border:1px solid var(--do-color-line);border-radius:6px;background:white}
 .pathway-boundary-facts dt,.brief-scenario-trace dt{color:var(--do-color-muted);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
 .pathway-boundary-facts dd,.brief-scenario-trace dd{margin:0;color:var(--do-color-navy);font-weight:700}
 .pathway-boundary-actions{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
