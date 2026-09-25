@@ -1,9 +1,3 @@
-source(file.path("analysis", "r", "lib", "meps_values.R"))
-source(file.path("analysis", "r", "lib", "survey_helpers.R"))
-source(file.path("analysis", "r", "lib", "result_helpers.R"))
-source(file.path("analysis", "r", "meps", "cohort_long_covid.R"))
-source(file.path("analysis", "r", "meps", "survey_designs.R"))
-
 utilization_any <- function(x) {
   clean <- meps_nonnegative(x)
   ifelse(is.na(clean), NA_real_, as.numeric(clean > 0))
@@ -13,6 +7,7 @@ estimate_utilization <- function(designs, artifact_version) {
   domain <- current_long_covid_domain(designs$person)
   specs <- list(
     list(
+      config_id = "office_visits",
       variable = "OBTOTV24",
       stem = "office-based-provider-visits",
       label = "Office-based provider visits",
@@ -20,6 +15,7 @@ estimate_utilization <- function(designs, artifact_version) {
       unit = "visits/person/year"
     ),
     list(
+      config_id = "outpatient_visits",
       variable = "OPTOTV24",
       stem = "outpatient-provider-visits",
       label = "Outpatient department provider visits",
@@ -27,6 +23,7 @@ estimate_utilization <- function(designs, artifact_version) {
       unit = "visits/person/year"
     ),
     list(
+      config_id = "emergency_visits",
       variable = "ERTOT24",
       stem = "emergency-room-visits",
       label = "Emergency-room visits",
@@ -34,6 +31,7 @@ estimate_utilization <- function(designs, artifact_version) {
       unit = "visits/person/year"
     ),
     list(
+      config_id = "inpatient_discharges",
       variable = "IPDIS24",
       stem = "hospital-discharges",
       label = "Hospital discharges",
@@ -44,10 +42,7 @@ estimate_utilization <- function(designs, artifact_version) {
 
   records <- list()
   for (spec in specs) {
-    source_url <- paste0(
-      "https://meps.ahrq.gov/mepsweb/data_stats/download_data_files_codebook.jsp?",
-      "PUFId=H256&varName=", spec$variable
-    )
+    source_url <- get_meps_measure_source_locator(spec$config_id)
     mean_result <- survey_mean_result(
       domain, spec$variable, meps_nonnegative,
       designs$person, "full PERSON / PERWT24F survey design"

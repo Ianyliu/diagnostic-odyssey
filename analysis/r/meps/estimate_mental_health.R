@@ -1,9 +1,3 @@
-source(file.path("analysis", "r", "lib", "meps_values.R"))
-source(file.path("analysis", "r", "lib", "survey_helpers.R"))
-source(file.path("analysis", "r", "lib", "result_helpers.R"))
-source(file.path("analysis", "r", "meps", "cohort_long_covid.R"))
-source(file.path("analysis", "r", "meps", "survey_designs.R"))
-
 k6_valid <- function(x) meps_bounded_score(x, 0, 24)
 phq2_valid <- function(x) meps_bounded_score(x, 0, 6)
 
@@ -28,8 +22,8 @@ estimate_mental_health <- function(designs, artifact_version) {
   phq_positive <- survey_proportion_result(domain, "PHQ242", phq2_positive_indicator, ci_ref, ci_source)
 
   common_universe <- "U.S. civilian noninstitutionalized adult PSAQ respondent population"
-  k6_url <- "https://meps.ahrq.gov/mepsweb/data_stats/download_data_files_codebook.jsp?PUFId=H256&varName=K6SUM42"
-  phq_url <- "https://meps.ahrq.gov/mepsweb/data_stats/download_data_files_codebook.jsp?PUFId=H256&varName=PHQ242"
+  k6_url <- get_meps_measure_source_locator("k6_score")
+  phq_url <- get_meps_measure_source_locator("phq2_score")
 
   list(
     make_estimate_record(
@@ -64,11 +58,7 @@ estimate_mental_health <- function(designs, artifact_version) {
       denominator = "Adults age 18-64 classified operational-current at the earlier Round 3/1 2024 anchor, with SAQELIG=1, positive SAQWT24F, and valid K6SUM42",
       universe = common_universe,
       system_boundary = "National PSAQ nonspecific psychological distress",
-      source_locator = paste(
-        k6_url,
-        "AHRQ example classification: https://meps.ahrq.gov/data_files/publications/st570/stat570.shtml",
-        sep = "; "
-      ),
+      source_locator = meps_k6_serious_source_locator(),
       weight_variable = "SAQWT24F",
       artifact_version = artifact_version,
       cohort_definition = cohort_definition_text(),
@@ -113,11 +103,7 @@ estimate_mental_health <- function(designs, artifact_version) {
       denominator = "Adults age 18-64 classified operational-current at the earlier Round 3/1 2024 anchor, with SAQELIG=1, positive SAQWT24F, and valid PHQ242",
       universe = common_universe,
       system_boundary = "National PSAQ depressive-symptom screening",
-      source_locator = paste(
-        phq_url,
-        "HC-256 documentation §2.5.7 cites score 3 as the screening cut point",
-        sep = "; "
-      ),
+      source_locator = meps_phq2_positive_source_locator(),
       weight_variable = "SAQWT24F",
       artifact_version = artifact_version,
       cohort_definition = cohort_definition_text(),

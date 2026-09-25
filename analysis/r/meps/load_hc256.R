@@ -1,5 +1,3 @@
-source(file.path("analysis", "r", "lib", "paths.R"))
-
 hc256_zip_path <- function() repo_path("data", "raw", "meps", "2024", "meps_hc256_2024_stata.zip")
 hc256_dta_path <- function() repo_path("data", "raw", "meps", "2024", "h256.dta")
 
@@ -25,16 +23,6 @@ extract_hc256_zip <- function(zip_path = hc256_zip_path(), dta_path = hc256_dta_
     stop("Could not copy extracted HC-256 .dta to ", dta_path, call. = FALSE)
   }
   dta_path
-}
-
-load_variable_map <- function() {
-  if (!requireNamespace("jsonlite", quietly = TRUE)) {
-    stop("Package 'jsonlite' is required. Run Rscript analysis/r/install_dependencies.R", call. = FALSE)
-  }
-  jsonlite::fromJSON(
-    repo_path("analysis", "r", "config", "meps_2024_variable_map.json"),
-    simplifyVector = FALSE
-  )
 }
 
 required_hc256_variables <- function(variable_map = load_variable_map()) {

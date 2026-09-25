@@ -1,19 +1,6 @@
 #!/usr/bin/env Rscript
 
-source(file.path("analysis", "r", "lib", "paths.R"))
-source(file.path("analysis", "r", "lib", "file_integrity.R"))
-source(file.path("analysis", "r", "meps", "load_hc256.R"))
-source(file.path("analysis", "r", "meps", "cohort_long_covid.R"))
-source(file.path("analysis", "r", "meps", "survey_designs.R"))
-source(file.path("analysis", "r", "meps", "estimate_population.R"))
-source(file.path("analysis", "r", "meps", "estimate_spending.R"))
-source(file.path("analysis", "r", "meps", "estimate_utilization.R"))
-source(file.path("analysis", "r", "meps", "estimate_admin_burden.R"))
-source(file.path("analysis", "r", "meps", "estimate_mental_health.R"))
-source(file.path("analysis", "r", "meps", "build_candidate_artifact.R"))
-source(file.path("analysis", "r", "meps", "cohort_diagnostics.R"))
-source(file.path("analysis", "r", "lib", "survey_design_diagnostics.R"))
-source(file.path("analysis", "r", "lib", "warning_capture.R"))
+source(file.path("analysis", "r", "meps", "bootstrap.R"))
 
 required_packages <- c("haven", "jsonlite", "survey")
 missing_packages <- required_packages[!vapply(required_packages, requireNamespace, logical(1), quietly = TRUE)]

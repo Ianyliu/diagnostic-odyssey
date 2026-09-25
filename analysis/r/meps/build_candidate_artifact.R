@@ -1,7 +1,5 @@
 `%||%` <- function(x, y) if (is.null(x)) y else x
 
-source(file.path("analysis", "r", "lib", "paths.R"))
-
 candidate_domain <- function(domain_id, label, measures, limitations = character()) {
   list(
     domain_id = domain_id,
