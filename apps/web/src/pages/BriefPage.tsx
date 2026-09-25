@@ -2,11 +2,14 @@ import { Link } from "react-router-dom";
 import { buildPlanningBrief, serializeBriefJson } from "@diagnostic-odyssey/brief-core";
 import type { Estimate } from "@diagnostic-odyssey/contracts";
 import { ContextBar } from "../components/ContextBar";
+import { DecisionTrace } from "../components/DecisionTrace";
 import { useArtifact } from "../data/ArtifactContext";
 import {
   formatEstimateInterval,
   formatEstimateValue
 } from "../data/formatEstimateValue";
+import { mergeBriefLocalContext } from "../data/briefLocalContext";
+import { isDataRequestCurrentForScenario } from "../data/dataRequestTemplates";
 import { formatLocalContextValue } from "../data/formatLocalContextValue";
 import {
   deriveBriefContextWithSelectedLocalContext
@@ -44,6 +47,8 @@ export function BriefPage() {
     localContext,
     localContextStatus,
     selectedLocalContext,
+    pilotLocalContext,
+    analystDataRequests,
     availableDataRequests,
     briefDataRequestIds,
     selectedDataRequests
@@ -51,18 +56,22 @@ export function BriefPage() {
   if (!bundle) return null;
 
   const estimates = bundle.burden_domains.flatMap(domain => domain.measures);
+  const briefLocalContext = mergeBriefLocalContext(
+    selectedLocalContext,
+    pilotLocalContext
+  );
   const briefContext = deriveBriefContextWithSelectedLocalContext(
     bundle.context,
     localContextStatus,
     localContext,
-    selectedLocalContext
+    briefLocalContext
   );
   const staleSelectedDataRequestCount =
     Math.max(0, briefDataRequestIds.length - selectedDataRequests.length);
   const baseBrief = buildPlanningBrief({
     context: briefContext,
     estimates,
-    localContext: selectedLocalContext,
+    localContext: briefLocalContext,
     scenario: scenario && scenarioResult ? {input:scenario,result:scenarioResult} : null,
     evidence: bundle.evidence,
     dataRequests: selectedDataRequests
@@ -81,6 +90,11 @@ export function BriefPage() {
 
   const localContextAvailable =
     localContextStatus === "loaded" && localContext !== null;
+  const currentOperationalDataRequestCount = scenario
+    ? analystDataRequests.filter(request =>
+        isDataRequestCurrentForScenario(request, scenario)
+      ).length
+    : 0;
 
   const exportJson = () => {
     const blob = new Blob([serializeBriefJson(brief)],{type:"application/json"});
@@ -174,6 +188,17 @@ export function BriefPage() {
             <p><strong>Outside this model:</strong> {scenarioBoundary.outsideModelItems.join("; ")}.</p>
             <p>{brief.scenario.result.reached_participants.toLocaleString()} participants within capacity; {brief.scenario.result.difference_person_months.toLocaleString()} person-month planning exposure difference.</p>
             <p>Program-resource requirement: {new Intl.NumberFormat("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0}).format(brief.scenario.result.program_resource_requirement)}.</p>
+            <section className="brief-decision-trace" aria-labelledby="brief-decision-trace-title">
+              <h3 id="brief-decision-trace-title">Decision trace</h3>
+              <DecisionTrace
+                burdenEstimateCount={brief.burden_findings.length}
+                pilotLocalContext={pilotLocalContext}
+                scenario={brief.scenario.input}
+                currentDataRequestCount={currentOperationalDataRequestCount}
+                evidence={bundle.evidence}
+                dataRequestHref="/data-requests"
+              />
+            </section>
           </> : <div className="empty-state"><strong>No valid planning scenario result is available.</strong><p>This does not alter the reviewed national burden findings.</p></div>}
         </section>
 
@@ -190,6 +215,8 @@ export function BriefPage() {
                       <div>
                         <strong>{record.label}</strong>
                         <span>{record.geography_name} ({record.geography_type})</span>
+                        {pilotLocalContext?.indicator_id === record.indicator_id &&
+                          <span className="status status-ok pilot-used-badge">Used in Pilot planning</span>}
                       </div>
                       <span className={record.state === "partial" ? "status status-scaffold" : "status status-ok"}>
                         {formatDataStateLabel(record.state)}
@@ -212,12 +239,12 @@ export function BriefPage() {
             : <div className="empty-state">
                 <strong>
                   {localContextAvailable
-                    ? "Reviewed West Virginia state context is available, but no local context has been selected for this brief."
+                    ? "Reviewed West Virginia state context is available, but no local context has been selected for this brief or used in Pilot planning."
                     : "No local context has been selected for this brief."}
                 </strong>
                 <p>
                   {localContextAvailable
-                    ? "Review the available state evidence on the Local Context page. An explicit analyst selection is required before any local-context record may enter a Planning Brief."
+                    ? "Review the available state evidence on the Local Context page. A record enters this Brief only through an explicit Include-in-Brief selection or an explicit Use-in-Pilot selection."
                     : "National MEPS burden remains unchanged; no local prevalence or state-specific Long COVID burden is inferred."}
                 </p>
               </div>}
