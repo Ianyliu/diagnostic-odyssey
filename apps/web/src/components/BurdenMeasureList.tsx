@@ -1,9 +1,14 @@
-import { canExportEstimate, type Estimate } from "@diagnostic-odyssey/contracts";
+import {
+  canDisplayDistributionSummary,
+  canExportEstimate,
+  type Estimate
+} from "@diagnostic-odyssey/contracts";
 import {
   formatEstimateInterval,
   formatEstimateValue
 } from "../data/formatEstimateValue";
 import { formatReleaseStatusLabel } from "../data/presentationLabels";
+import { DistributionSummaryText } from "./DistributionSummaryText";
 
 function EstimateIntervalText({estimate}: {estimate: Estimate}) {
   if (!canExportEstimate(estimate)) return null;
@@ -40,7 +45,9 @@ export function BurdenMeasureList({estimates}: {estimates: Estimate[]}) {
         </div>
 
         <div className="measure-value">
-          {formatEstimateValue(estimate)}
+          {canDisplayDistributionSummary(estimate)
+            ? <DistributionSummaryText estimate={estimate} />
+            : formatEstimateValue(estimate)}
           <EstimateIntervalText estimate={estimate} />
           {!reviewed && <small className="measure-release-status">
             {formatReleaseStatusLabel(estimate.release_status)}
