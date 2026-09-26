@@ -164,7 +164,7 @@ diagnostics <- list(
   source_integrity = list(
     metadata_status = source_metadata$status,
     sources = source_metadata$sources,
-    rows_per_source = as.list(as.integer(source_rows))
+    rows_per_source = as.list(source_rows)
   ),
   hc255 = list(
     total_condition_records = nrow(conditions),
