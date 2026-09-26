@@ -1,8 +1,12 @@
 import { Link } from "react-router-dom";
 import { buildPlanningBrief, serializeBriefJson } from "@diagnostic-odyssey/brief-core";
-import type { Estimate } from "@diagnostic-odyssey/contracts";
+import {
+  canDisplayDistributionSummary,
+  type Estimate
+} from "@diagnostic-odyssey/contracts";
 import { ContextBar } from "../components/ContextBar";
 import { DecisionTrace } from "../components/DecisionTrace";
+import { DistributionSummaryText } from "../components/DistributionSummaryText";
 import { useArtifact } from "../data/ArtifactContext";
 import {
   formatEstimateInterval,
@@ -149,7 +153,11 @@ export function BriefPage() {
                   <tbody>
                     {group.findings.map(finding => <tr key={finding.estimate_id}>
                       <th scope="row">{finding.label}</th>
-                      <td>{formatEstimateValue(finding)}</td>
+                      <td>
+                        {canDisplayDistributionSummary(finding)
+                          ? <DistributionSummaryText estimate={finding} />
+                          : formatEstimateValue(finding)}
+                      </td>
                       <td><AccessibleEstimateInterval estimate={finding} /></td>
                     </tr>)}
                   </tbody>
