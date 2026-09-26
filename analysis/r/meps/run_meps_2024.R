@@ -112,6 +112,26 @@ source_metadata <- if (file.exists(source_metadata_path)) {
 
 all_estimate_records <- c(list(population), spending, utilization, admin, mental)
 variance_design_diagnostics <- build_variance_design_diagnostics(designs)
+distribution_summary_diagnostics <- unname(lapply(
+  Filter(function(record) !is.null(record$distribution_summary), all_estimate_records),
+  function(record) {
+    summary <- record$distribution_summary
+    list(
+      parent_estimate_id = record$estimate_id,
+      parent_measure_id = record$measure_id,
+      source_variable = summary$source_variable,
+      p25 = summary$p25,
+      p50 = summary$p50,
+      p75 = summary$p75,
+      unweighted_n = summary$unweighted_n,
+      weighted_denominator = summary$weighted_denominator,
+      statistics_method = summary$statistics_method,
+      weight_variable = summary$weight_variable,
+      variance_stratum_variable = summary$variance_stratum_variable,
+      variance_psu_variable = summary$variance_psu_variable
+    )
+  }
+))
 
 diagnostics <- list(
   run_id = run_id,
@@ -129,6 +149,7 @@ diagnostics <- list(
   cohort = cohort_diagnostics,
   variance = variance_design_diagnostics,
   estimate_ci_degrees_of_freedom = ci_df_diagnostics(all_estimate_records),
+  distribution_summaries = distribution_summary_diagnostics,
   analytical_warnings = warning_registry_records(warning_registry),
   design = designs$metadata,
   package_versions = as.list(vapply(
