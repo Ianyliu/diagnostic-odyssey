@@ -25,7 +25,8 @@ make_estimate_record <- function(
   allowed_interpretation,
   prohibited_interpretation,
   limitations = character(),
-  component_of_measure_id = NULL
+  component_of_measure_id = NULL,
+  distribution_summary = NULL
 ) {
   record <- c(
     list(
@@ -71,6 +72,9 @@ make_estimate_record <- function(
   )
   if (!is.null(result$unweighted_numerator_n)) {
     record$unweighted_numerator_n <- as.integer(result$unweighted_numerator_n)
+  }
+  if (!is.null(distribution_summary)) {
+    record$distribution_summary <- distribution_summary
   }
   record
 }

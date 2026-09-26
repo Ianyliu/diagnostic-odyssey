@@ -57,11 +57,24 @@ const reviewedLocalContextChecksumPath = fileURLToPath(
   )
 );
 
+const reviewedTypicalRangeChecksumPath = fileURLToPath(
+  new URL(
+    "../../../artifacts/reviewed/meps-2024-long-covid-candidate-20260926T011343Z/SHA256SUMS",
+    import.meta.url
+  )
+);
+
 const expectedReviewedChecksums = `f5255710da1b53e5d317d768512319453e6a1dab636f92cb0d95abf6db3082f1  bundle.json
 a00b136193c90e234e0f1c59dbbfe6afdce68948f4318402311e72d1ffb1bdeb  diagnostics.json
 9ce9890fa4234a9be625bfad550034dee60a9ffb0ab64744af34fceef0708567  review-manifest.json
 960a8b7c4a7795f901273b64ed1b7c2166f6aa1db8cbf9f7f083ec0167f503c1  hc256-source-metadata.json
 d67c3c8ed3121c6cddcb65871d110b28befbeb45b85f106e721c5b78e4220174  github-actions-run-manifest.json
+`;
+const expectedReviewedTypicalRangeChecksums = `5b32bfb3288a28ce0a57de4d0c3ec75fe1d83c0f19ad481e687b70af4a91eca0  bundle.json
+6ea703bde35ff3ee2ddc75c21afcaeb9de8b273dec010255dd59174142ac9767  diagnostics.json
+05fa3b743bde8af933bcb52a19cd564038f6416490b444aa073890beccdff994  review-manifest.json
+f0f704df6ee8d082c01175d7107103a255e8d480471bfdc9935c4d21d6c96ee2  hc256-source-metadata.json
+d1bd1cabd4e116a2db0481524e982819c80a7c567a5e1e7e27c06b60ada893a3  github-actions-run-manifest.json
 `;
 const expectedReviewedLocalContextChecksums = `e84a84385162cf8db7e8ed996b7caf7acca84be2b161cc44e802a5792dd15afa  acs-source-metadata.json
 3dbff0ba734d1a80b13d0298ce024181c690c3f3dcd50cea3c4f48704399a54c  diagnostics.json
@@ -213,8 +226,12 @@ test("reviewed national runtime bundle remains 21 estimates with no local-contex
   );
 });
 
-test("both reviewed artifact checksum manifests and payload bytes remain unchanged", () => {
+test("all durable reviewed artifact checksum manifests and payload bytes remain unchanged", () => {
   assertImmutableReviewedArtifact(reviewedChecksumPath, expectedReviewedChecksums);
+  assertImmutableReviewedArtifact(
+    reviewedTypicalRangeChecksumPath,
+    expectedReviewedTypicalRangeChecksums
+  );
   assertImmutableReviewedArtifact(
     reviewedLocalContextChecksumPath,
     expectedReviewedLocalContextChecksums

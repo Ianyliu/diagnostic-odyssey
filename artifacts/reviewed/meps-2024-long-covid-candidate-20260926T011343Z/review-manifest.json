@@ -1,0 +1,72 @@
+{
+  "artifact_version": "meps-2024-long-covid-candidate-20260926T011343Z",
+  "candidate_bundle": "bundle.json",
+  "candidate_bundle_md5": "a0aa0920453f7e70bf9a94a75b142c70",
+  "candidate_bundle_sha256": "ffe6c73c2b831196ec5baa9f1e4d99003ffb233a97802d05aef1708844943f40",
+  "diagnostics": "diagnostics.json",
+  "diagnostics_sha256": "6ea703bde35ff3ee2ddc75c21afcaeb9de8b273dec010255dd59174142ac9767",
+  "code_commit": "7b56517442d75f6ac662e7f8db6bbd44cca3de33",
+  "github_sha": "7b56517442d75f6ac662e7f8db6bbd44cca3de33",
+  "code_commit_matches_github_sha": true,
+  "source_input_sha256": "b4bde859b39f626345561c05570292bb7264dd92eb76ce0c1a14d6b89076aed5",
+  "expected_source_input_sha256": "b4bde859b39f626345561c05570292bb7264dd92eb76ce0c1a14d6b89076aed5",
+  "source_input_sha256_match": true,
+  "release_status": "reviewed_released",
+  "automatic_release": false,
+  "checks": [
+    {
+      "id": "methods_review",
+      "status": "approved"
+    },
+    {
+      "id": "cohort_review",
+      "status": "approved"
+    },
+    {
+      "id": "weighted_unweighted_n_review",
+      "status": "approved"
+    },
+    {
+      "id": "interval_review",
+      "status": "approved"
+    },
+    {
+      "id": "denominator_universe_review",
+      "status": "approved"
+    },
+    {
+      "id": "plausibility_review",
+      "status": "approved"
+    },
+    {
+      "id": "provenance_review",
+      "status": "approved"
+    },
+    {
+      "id": "interpretation_review",
+      "status": "approved"
+    }
+  ],
+  "review_decision": "approved",
+  "review_type": "explicit_reviewed_artifact_promotion",
+  "approved_estimate_count": 21,
+  "suppressed_estimate_count": 0,
+  "ahrq_precision_flagged_estimate_count": 0,
+  "candidate_artifact_id": "10894637150",
+  "candidate_workflow_run_id": "36207596582",
+  "candidate_artifact_name": "meps-2024-long-covid-candidate-36207596582",
+  "candidate_artifact_zip_sha256": "3741d43d1145209d00f16d871d4477f028020def627b9b3e53837ed38dca6e10",
+  "candidate_code_commit": "7b56517442d75f6ac662e7f8db6bbd44cca3de33",
+  "candidate_diagnostics_sha256": "6ea703bde35ff3ee2ddc75c21afcaeb9de8b273dec010255dd59174142ac9767",
+  "candidate_review_manifest_sha256": "d6b4f799ed25e262ce513a0db003e2c1cebee9b8b46f9b927419be863c566892",
+  "candidate_hc256_source_metadata_sha256": "f0f704df6ee8d082c01175d7107103a255e8d480471bfdc9935c4d21d6c96ee2",
+  "candidate_github_actions_run_manifest_sha256": "d1bd1cabd4e116a2db0481524e982819c80a7c567a5e1e7e27c06b60ada893a3",
+  "reviewed_bundle": "bundle.json",
+  "reviewed_bundle_sha256": "5b32bfb3288a28ce0a57de4d0c3ec75fe1d83c0f19ad481e687b70af4a91eca0",
+  "reviewed_diagnostics_sha256": "6ea703bde35ff3ee2ddc75c21afcaeb9de8b273dec010255dd59174142ac9767",
+  "promotion_gate": "passed",
+  "promotion_scope": "release_state_only",
+  "numerical_recomputation_performed": false,
+  "runtime_selection_changed": false,
+  "checks_approved_count": 8
+}

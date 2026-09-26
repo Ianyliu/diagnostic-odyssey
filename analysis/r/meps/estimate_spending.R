@@ -7,6 +7,14 @@ estimate_spending <- function(designs, artifact_version) {
   ci_source <- "full PERSON / PERWT24F survey design"
   total_spend <- survey_total_result(domain, "TOTEXP24", meps_nonnegative, ci_ref, ci_source)
   mean_spend <- survey_mean_result(domain, "TOTEXP24", meps_nonnegative, ci_ref, ci_source)
+  spend_distribution <- survey_distribution_summary(
+    domain,
+    "TOTEXP24",
+    meps_nonnegative,
+    limitations = c(
+      "The distribution remains all-cause, descriptive, national spending and is not attributable to Long COVID or diagnostic delay."
+    )
+  )
   total_oop <- survey_total_result(domain, "TOTSLF24", meps_nonnegative, ci_ref, ci_source)
   mean_oop <- survey_mean_result(domain, "TOTSLF24", meps_nonnegative, ci_ref, ci_source)
 
@@ -59,7 +67,8 @@ estimate_spending <- function(designs, artifact_version) {
         "Current-Long-COVID classification is point-in-time at the Round 3/1 2024 interview and does not establish that symptoms persisted throughout calendar year 2024.",
         "Calendar-year expenditures may occur before or after the status interview and are not restricted to periods when symptoms were present.",
         "Descriptive gross spending; no counterfactual comparator or attributable-cost design."
-      )
+      ),
+      distribution_summary = spend_distribution
     ),
     make_estimate_record(
       total_oop,

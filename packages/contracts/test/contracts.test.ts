@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  canDisplayDistributionSummary,
   canExportEstimate,
   validateArtifactBundle,
   validateDataRequest,
@@ -266,4 +267,122 @@ test("artifact runtime validation rejects malformed loaded data-request trace fi
       issue.path === "artifact.data_requests[0].target_mechanism"
     )
   );
+});
+
+
+const distributionEstimate = (): Estimate => ({
+  estimate_id: "distribution-parent",
+  measure_id: "gross-all-cause-spending-mean",
+  label: "Mean annual all-cause medical spending per person",
+  value: 100,
+  unit: "USD/person/year",
+  interval_low: 80,
+  interval_high: 120,
+  interval_type: "95% t CI",
+  denominator: "reviewed denominator",
+  universe: "reviewed universe",
+  system_boundary: "national descriptive burden",
+  evidence_type: "survey_estimate",
+  release_status: "reviewed_released",
+  display_status: "analytical_artifact",
+  source_ref: "meps-hc256-2024",
+  artifact_version: "v1",
+  allowed_interpretation: "descriptive",
+  prohibited_interpretation: ["causal"],
+  limitations: ["synthetic test"],
+  standard_error: 10,
+  ci_degrees_of_freedom: 159,
+  ci_df_source: "full PERSON / PERWT24F survey design",
+  weighted_denominator: 1000,
+  unweighted_n: 100,
+  weight_variable: "PERWT24F",
+  variance_stratum_variable: "VARSTR",
+  variance_psu_variable: "VARPSU",
+  source_locator: "HC-256",
+  cohort_definition: "reviewed cohort",
+  statistics_method: "Taylor linearization",
+  distribution_summary: {
+    summary_type: "survey_weighted_quantiles",
+    source_variable: "TOTEXP24",
+    p25: 25,
+    p50: 50,
+    p75: 75,
+    unweighted_n: 100,
+    weighted_denominator: 1000,
+    weight_variable: "PERWT24F",
+    variance_stratum_variable: "VARSTR",
+    variance_psu_variable: "VARPSU",
+    statistics_method: "survey::svyquantile qrule='math'",
+    limitations: ["IQR is descriptive, not a confidence interval."]
+  }
+});
+
+test("valid inherited DistributionSummary validates and is display eligible", () => {
+  const estimate = distributionEstimate();
+  assert.deepEqual(validateEstimate(estimate), []);
+  assert.equal(canDisplayDistributionSummary(estimate), true);
+});
+
+test("DistributionSummary fails closed for nonfinite or unordered quantiles", () => {
+  const nonfinite = distributionEstimate();
+  nonfinite.distribution_summary!.p50 = Number.NaN;
+  assert.ok(validateEstimate(nonfinite).some(issue =>
+    issue.path.endsWith(".distribution_summary.p50")
+  ));
+
+  const unordered = distributionEstimate();
+  unordered.distribution_summary!.p25 = 80;
+  assert.ok(validateEstimate(unordered).some(issue =>
+    issue.path.endsWith(".distribution_summary")
+  ));
+});
+
+test("DistributionSummary requires matching survey provenance", () => {
+  const missing = distributionEstimate();
+  missing.distribution_summary!.weight_variable = "";
+  assert.ok(validateEstimate(missing).some(issue =>
+    issue.path.endsWith(".distribution_summary.weight_variable")
+  ));
+
+  const conflict = distributionEstimate();
+  conflict.distribution_summary!.weight_variable = "ESAQWT24F";
+  assert.ok(validateEstimate(conflict).some(issue =>
+    issue.path.endsWith(".distribution_summary.weight_variable")
+  ));
+});
+
+test("DistributionSummary requires the same valid response denominator as parent estimate", () => {
+  const unweightedMismatch = distributionEstimate();
+  unweightedMismatch.distribution_summary!.unweighted_n =
+    unweightedMismatch.unweighted_n! - 1;
+  const unweightedIssues = validateEstimate(unweightedMismatch);
+  assert.ok(unweightedIssues.some(issue =>
+    issue.path.endsWith(".distribution_summary.unweighted_n") &&
+    issue.message.includes("same valid response denominator")
+  ));
+
+  const weightedMismatch = distributionEstimate();
+  weightedMismatch.distribution_summary!.weighted_denominator =
+    weightedMismatch.weighted_denominator! + 1;
+  const weightedIssues = validateEstimate(weightedMismatch);
+  assert.ok(weightedIssues.some(issue =>
+    issue.path.endsWith(".distribution_summary.weighted_denominator") &&
+    issue.message.includes("same valid response denominator")
+  ));
+});
+
+test("legacy Estimate without DistributionSummary still validates", () => {
+  const legacy = distributionEstimate();
+  delete legacy.distribution_summary;
+  assert.deepEqual(validateEstimate(legacy), []);
+});
+
+test("unreleased parent cannot expose DistributionSummary values", () => {
+  const estimate = distributionEstimate();
+  estimate.release_status = "not_released";
+  estimate.value = null;
+  assert.ok(validateEstimate(estimate).some(issue =>
+    issue.path.endsWith(".distribution_summary")
+  ));
+  assert.equal(canDisplayDistributionSummary(estimate), false);
 });
