@@ -270,7 +270,7 @@ test("new reviewed package checksums verify and preservation-required candidate 
   );
 });
 
-test("durable promotion does not switch runtime, rebind WV, or calibrate Pilot", () => {
+test("runtime activation preserves historical WV binding and does not calibrate Pilot", () => {
   const runtime = readFileSync(
     fileURLToPath(new URL("../src/data/reviewedArtifact.ts", import.meta.url)),
     "utf8"
@@ -284,11 +284,14 @@ test("durable promotion does not switch runtime, rebind WV, or calibrate Pilot",
     "utf8"
   );
 
-  assert.match(runtime, /meps-2024-long-covid-candidate-20260923T020607Z/);
-  assert.doesNotMatch(runtime, /meps-2024-long-covid-candidate-20260926T011343Z/);
+  assert.match(runtime, /meps-2024-long-covid-candidate-20260926T011343Z/);
   assert.match(
     localValidation,
     /meps-2024-long-covid-candidate-20260923T020607Z/
+  );
+  assert.match(
+    localValidation,
+    /meps-2024-long-covid-candidate-20260926T011343Z/
   );
   assert.equal(newBundle.scenario_examples.length, 0);
   assert.doesNotMatch(pilot, /inside (?:the )?(?:typical |empirical )?range/i);

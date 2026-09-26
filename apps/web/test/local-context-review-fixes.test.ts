@@ -25,7 +25,7 @@ import {
 
 const reviewedArtifactPath = fileURLToPath(
   new URL(
-    "../../../artifacts/reviewed/meps-2024-long-covid-candidate-20260923T020607Z/bundle.json",
+    "../../../artifacts/reviewed/meps-2024-long-covid-candidate-20260926T011343Z/bundle.json",
     import.meta.url
   )
 );
@@ -73,11 +73,11 @@ test("Brief local-context provenance is exact, selection-bound, and serializable
   assert.deepEqual(zeroBrief.local_context, []);
   assert.equal(
     zeroBrief.context.artifact_version,
-    "meps-2024-long-covid-candidate-20260923T020607Z"
+    "meps-2024-long-covid-candidate-20260926T011343Z"
   );
   assert.equal(
     zeroBrief.artifact_version,
-    "meps-2024-long-covid-candidate-20260923T020607Z"
+    "meps-2024-long-covid-candidate-20260926T011343Z"
   );
 
   const selectedRecord = reviewedLocalContext.indicators.find(
@@ -106,11 +106,11 @@ test("Brief local-context provenance is exact, selection-bound, and serializable
   );
   assert.equal(
     selectedBrief.context.artifact_version,
-    "meps-2024-long-covid-candidate-20260923T020607Z"
+    "meps-2024-long-covid-candidate-20260926T011343Z"
   );
   assert.equal(
     selectedBrief.artifact_version,
-    "meps-2024-long-covid-candidate-20260923T020607Z"
+    "meps-2024-long-covid-candidate-20260926T011343Z"
   );
   assert.deepEqual(
     selectedBrief.local_context.map(record => record.indicator_id),
@@ -128,11 +128,11 @@ test("Brief local-context provenance is exact, selection-bound, and serializable
   );
   assert.equal(
     serialized.context.artifact_version,
-    "meps-2024-long-covid-candidate-20260923T020607Z"
+    "meps-2024-long-covid-candidate-20260926T011343Z"
   );
   assert.equal(
     serialized.artifact_version,
-    "meps-2024-long-covid-candidate-20260923T020607Z"
+    "meps-2024-long-covid-candidate-20260926T011343Z"
   );
   assert.deepEqual(
     serialized.local_context.map(record => record.indicator_id),

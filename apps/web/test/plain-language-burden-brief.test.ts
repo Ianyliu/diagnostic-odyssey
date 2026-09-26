@@ -18,7 +18,7 @@ const readSource = (path: string) =>
 
 const reviewedArtifactPath = fileURLToPath(
   new URL(
-    "../../../artifacts/reviewed/meps-2024-long-covid-candidate-20260923T020607Z/bundle.json",
+    "../../../artifacts/reviewed/meps-2024-long-covid-candidate-20260926T011343Z/bundle.json",
     import.meta.url
   )
 );
