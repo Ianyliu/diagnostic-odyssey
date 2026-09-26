@@ -119,8 +119,8 @@ build_event_index <- function(event_files) {
     data.frame(
       DUPERSID = as.character(x$DUPERSID),
       EVNTIDX = as.character(x$EVNTIDX),
-      event_family = family,
-      EVENTYPE = expected[[family]],
+      event_family = rep(family, nrow(x)),
+      EVENTYPE = rep(expected[[family]], nrow(x)),
       stringsAsFactors = FALSE
     )
   })
