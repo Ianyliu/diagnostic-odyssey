@@ -7,8 +7,34 @@ import {
 export const REVIEWED_WV_LOCAL_CONTEXT_ARTIFACT_VERSION =
   "local-context-wv-hrsa-acs-candidate-20260924T052332Z";
 
-export const REVIEWED_WV_LOCAL_CONTEXT_NATIONAL_MEPS_ARTIFACT_VERSION =
+export const REVIEWED_WV_LOCAL_CONTEXT_DECLARED_NATIONAL_MEPS_ARTIFACT_VERSION =
   "meps-2024-long-covid-candidate-20260923T020607Z";
+
+export const REVIEWED_WV_LOCAL_CONTEXT_COMPATIBLE_NATIONAL_MEPS_ARTIFACT_VERSIONS:
+  readonly string[] = [
+    REVIEWED_WV_LOCAL_CONTEXT_DECLARED_NATIONAL_MEPS_ARTIFACT_VERSION,
+    "meps-2024-long-covid-candidate-20260926T011343Z"
+  ];
+
+// September 26 is explicitly compatible because the reviewed promotion proved
+// no drift in the 21 pre-existing Estimate records after excluding only
+// release_status, artifact_version, and distribution_summary. The only added
+// analytical content is reviewed DistributionSummary metadata on two parent
+// means. Unknown and future MEPS artifacts remain fail-closed.
+export function assertReviewedWvLocalContextRuntimeCompatibility(
+  runtimeMepsArtifactVersion: string
+): void {
+  if (
+    !REVIEWED_WV_LOCAL_CONTEXT_COMPATIBLE_NATIONAL_MEPS_ARTIFACT_VERSIONS.includes(
+      runtimeMepsArtifactVersion
+    )
+  ) {
+    throw new Error(
+      "Selected national MEPS runtime artifact is not explicitly reviewed-compatible " +
+        "with the reviewed WV local-context artifact."
+    );
+  }
+}
 
 const REQUIRED_DECISION_INDICATOR_IDS = [
   "wv.hrsa.primary-care.designated-distinct-count",
@@ -42,7 +68,7 @@ export function assertReviewedWvLocalContextArtifact(
 
   if (
     candidate.manifest.national_meps_artifact_version !==
-    REVIEWED_WV_LOCAL_CONTEXT_NATIONAL_MEPS_ARTIFACT_VERSION
+    REVIEWED_WV_LOCAL_CONTEXT_DECLARED_NATIONAL_MEPS_ARTIFACT_VERSION
   ) {
     throw new Error(
       "Reviewed WV local context is bound to an unexpected national MEPS artifact version."

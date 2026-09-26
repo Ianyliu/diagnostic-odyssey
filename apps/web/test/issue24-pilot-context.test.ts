@@ -22,7 +22,7 @@ import {
 } from "../src/data/pilotLocalContextSelection.ts";
 import { createPlanningScenarioDefaults } from "../src/data/planningScenarioDefaults.ts";
 
-const reviewedBundlePath = fileURLToPath(new URL("../../../artifacts/reviewed/meps-2024-long-covid-candidate-20260923T020607Z/bundle.json", import.meta.url));
+const reviewedBundlePath = fileURLToPath(new URL("../../../artifacts/reviewed/meps-2024-long-covid-candidate-20260926T011343Z/bundle.json", import.meta.url));
 const localContextPath = fileURLToPath(new URL("../../../artifacts/reviewed/local-context-wv-hrsa-acs-candidate-20260924T052332Z/local-context.json", import.meta.url));
 
 const rawBundle: unknown = JSON.parse(readFileSync(reviewedBundlePath, "utf8"));

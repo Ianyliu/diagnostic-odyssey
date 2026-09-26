@@ -42,6 +42,10 @@ jobs:
             sha256sum -c SHA256SUMS
           )
           (
+            cd artifacts/reviewed/meps-2024-long-covid-candidate-20260926T011343Z/
+            sha256sum -c SHA256SUMS
+          )
+          (
             cd artifacts/reviewed/local-context-wv-hrsa-acs-candidate-20260924T052332Z/
             sha256sum -c SHA256SUMS
           )

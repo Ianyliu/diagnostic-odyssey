@@ -33,7 +33,7 @@ ACS_CONFIG_PATH = CONFIG_DIR / "acs_2024_5year_variables.v1.json"
 EXPECTED_CANDIDATE_OUTPUT_FILES_PATH = (
     Path(__file__).resolve().parent / "expected_candidate_output_files.txt"
 )
-NATIONAL_ARTIFACT_VERSION = "meps-2024-long-covid-candidate-20260923T020607Z"
+NATIONAL_ARTIFACT_VERSION = "meps-2024-long-covid-candidate-20260926T011343Z"
 # Keep the union of current guardrails and historical wording aliases. The two
 # aliases below are intentionally retained so wording cleanup cannot silently
 # weaken future-candidate interpretation boundaries.
