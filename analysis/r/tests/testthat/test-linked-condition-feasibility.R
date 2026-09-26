@@ -1,3 +1,30 @@
+make_empty_event_files <- function() {
+  empty <- data.frame(
+    DUPERSID = character(),
+    EVNTIDX = character(),
+    PERWT24F = numeric(),
+    VARSTR = numeric(),
+    VARPSU = numeric(),
+    stringsAsFactors = FALSE
+  )
+  list(
+    office = empty,
+    outpatient = empty,
+    emergency = empty,
+    inpatient = empty
+  )
+}
+
+make_u09_condition <- function(dupersid = "P1", condidx = "P101", condn = "01") {
+  data.frame(
+    DUPERSID = dupersid,
+    CONDN = condn,
+    CONDIDX = condidx,
+    ICD10CDX = "U09",
+    stringsAsFactors = FALSE
+  )
+}
+
 make_linked_condition_fixture <- function() {
   conditions <- data.frame(
     DUPERSID = c("P1", "P1"),
@@ -21,88 +48,187 @@ make_linked_condition_fixture <- function() {
     EVENTYPE = c(1, 1, 2),
     stringsAsFactors = FALSE
   )
-  event_files <- list(
-    office = data.frame(DUPERSID = "P1", EVNTIDX = "E1", PERWT24F = 1, VARSTR = 1, VARPSU = 1),
-    outpatient = data.frame(DUPERSID = "P1", EVNTIDX = "E2", PERWT24F = 1, VARSTR = 1, VARPSU = 1),
-    emergency = data.frame(DUPERSID = character(), EVNTIDX = character(), PERWT24F = numeric(), VARSTR = numeric(), VARPSU = numeric()),
-    inpatient = data.frame(DUPERSID = character(), EVNTIDX = character(), PERWT24F = numeric(), VARSTR = numeric(), VARPSU = numeric())
+  event_files <- make_empty_event_files()
+  event_files$office <- data.frame(
+    DUPERSID = "P1", EVNTIDX = "E1",
+    PERWT24F = 1, VARSTR = 1, VARPSU = 1,
+    stringsAsFactors = FALSE
+  )
+  event_files$outpatient <- data.frame(
+    DUPERSID = "P1", EVNTIDX = "E2",
+    PERWT24F = 1, VARSTR = 1, VARPSU = 1,
+    stringsAsFactors = FALSE
   )
   list(conditions = conditions, links = links, event_files = event_files)
 }
 
-testthat::test_that("canonical many-to-many fixture deduplicates events correctly", {
+testthat::test_that("canonical many-to-many fixture preserves only reconciled U09 encounters", {
   x <- make_linked_condition_fixture()
   quality <- validate_linkage_invariants(x$conditions, x$links, x$event_files)
   footprint <- derive_u09_event_footprint(x$conditions, x$links, x$event_files)
 
   testthat::expect_equal(nrow(x$links), 3L)
+  testthat::expect_equal(nrow(footprint$u09_raw_links), 2L)
+  testthat::expect_equal(nrow(footprint$u09_supported_links), 2L)
+  testthat::expect_equal(nrow(footprint$u09_reconciled_links), 2L)
   testthat::expect_equal(nrow(footprint$unique_u09_events), 2L)
-  testthat::expect_equal(nrow(footprint$u09_links), 2L)
   testthat::expect_equal(nrow(footprint$per_person), 1L)
+  testthat::expect_equal(footprint$per_person$u09_condition_n, 1L)
   testthat::expect_equal(footprint$per_person$u09_event_n, 2L)
   testthat::expect_equal(quality$unmatched_condidx_n, 0L)
+  testthat::expect_equal(quality$condidx_person_mismatch_n, 0L)
   testthat::expect_equal(quality$unmatched_evntidx_n, 0L)
+  testthat::expect_equal(quality$event_family_mismatch_n, 0L)
   testthat::expect_equal(quality$duplicate_condition_event_pair_n, 0L)
   testthat::expect_equal(quality$clnkidx_composition_mismatch_n, 0L)
 })
 
-testthat::test_that("same event linked to multiple conditions is counted once for U09", {
-  x <- make_linked_condition_fixture()
-  footprint <- derive_u09_event_footprint(x$conditions, x$links, x$event_files)
-  testthat::expect_equal(sum(footprint$unique_u09_events$EVNTIDX == "E1"), 1L)
+testthat::test_that("U09 condition presence survives when only excluded links exist", {
+  conditions <- make_u09_condition()
+  links <- data.frame(
+    DUPERSID = "P1",
+    CONDIDX = "P101",
+    EVNTIDX = "RX1",
+    CLNKIDX = "P101RX1",
+    EVENTYPE = 8,
+    stringsAsFactors = FALSE
+  )
+  footprint <- derive_u09_event_footprint(
+    conditions, links, make_empty_event_files()
+  )
+
+  testthat::expect_equal(nrow(footprint$u09_raw_links), 1L)
+  testthat::expect_equal(nrow(footprint$u09_supported_links), 0L)
+  testthat::expect_equal(nrow(footprint$u09_reconciled_links), 0L)
+  testthat::expect_equal(nrow(footprint$unique_u09_events), 0L)
+  testthat::expect_equal(footprint$per_person$u09_condition_n, 1L)
+  testthat::expect_equal(footprint$per_person$u09_event_n, 0L)
+
+  hc256 <- data.frame(DUPERSID = "P1", stringsAsFactors = FALSE)
+  collapsed <- collapse_u09_to_hc256(hc256, footprint)
+  testthat::expect_true(collapsed$do_has_u09_condition)
+  testthat::expect_false(collapsed$do_has_u09_linked_event)
 })
 
-testthat::test_that("one condition linked to multiple events preserves both unique encounters", {
-  x <- make_linked_condition_fixture()
-  footprint <- derive_u09_event_footprint(x$conditions, x$links, x$event_files)
-  testthat::expect_setequal(footprint$unique_u09_events$EVNTIDX, c("E1", "E2"))
+testthat::test_that("missing EVNTIDX remains visible but cannot enter qualifying footprint", {
+  conditions <- make_u09_condition()
+  links <- data.frame(
+    DUPERSID = "P1",
+    CONDIDX = "P101",
+    EVNTIDX = "MISSING",
+    CLNKIDX = "P101MISSING",
+    EVENTYPE = 1,
+    stringsAsFactors = FALSE
+  )
+  event_files <- make_empty_event_files()
+
+  quality <- validate_linkage_invariants(conditions, links, event_files)
+  footprint <- derive_u09_event_footprint(conditions, links, event_files)
+
+  testthat::expect_equal(quality$unmatched_evntidx_n, 1L)
+  testthat::expect_equal(nrow(footprint$u09_supported_links), 1L)
+  testthat::expect_equal(nrow(footprint$u09_reconciled_links), 0L)
+  testthat::expect_equal(nrow(footprint$unique_u09_events), 0L)
+  testthat::expect_equal(footprint$per_person$u09_condition_n, 1L)
+  testthat::expect_equal(footprint$per_person$u09_event_n, 0L)
 })
 
-testthat::test_that("duplicate CLNKIDX is diagnosed", {
-  x <- make_linked_condition_fixture()
-  x$links$CLNKIDX[3] <- x$links$CLNKIDX[1]
-  quality <- validate_linkage_invariants(x$conditions, x$links, x$event_files)
-  testthat::expect_gt(quality$duplicate_clnkidx_n, 0L)
-})
+testthat::test_that("condition-person mismatch is diagnosed and disqualified", {
+  conditions <- make_u09_condition()
+  links <- data.frame(
+    DUPERSID = "P2",
+    CONDIDX = "P101",
+    EVNTIDX = "E1",
+    CLNKIDX = "P101E1",
+    EVENTYPE = 1,
+    stringsAsFactors = FALSE
+  )
+  event_files <- make_empty_event_files()
+  event_files$office <- data.frame(
+    DUPERSID = "P2", EVNTIDX = "E1",
+    PERWT24F = 1, VARSTR = 1, VARPSU = 1,
+    stringsAsFactors = FALSE
+  )
 
-testthat::test_that("condition person mismatch and missing referenced event are diagnosed", {
-  x <- make_linked_condition_fixture()
-  x$links$DUPERSID[1] <- "P9"
-  x$links$EVNTIDX[3] <- "MISSING"
-  quality <- validate_linkage_invariants(x$conditions, x$links, x$event_files)
+  quality <- validate_linkage_invariants(conditions, links, event_files)
+  footprint <- derive_u09_event_footprint(conditions, links, event_files)
+
   testthat::expect_equal(quality$condidx_person_mismatch_n, 1L)
-  testthat::expect_equal(quality$unmatched_evntidx_n, 2L)
+  testthat::expect_equal(quality$unmatched_evntidx_n, 0L)
+  testthat::expect_equal(nrow(footprint$u09_supported_links), 1L)
+  testthat::expect_equal(nrow(footprint$u09_reconciled_links), 0L)
+  testthat::expect_equal(nrow(footprint$unique_u09_events), 0L)
+  testthat::expect_equal(footprint$per_person$u09_condition_n, 1L)
 })
 
-testthat::test_that("unsupported EVENTYPE is diagnosed and home health/Rx are excluded by design", {
-  x <- make_linked_condition_fixture()
-  x$links$EVENTYPE[1] <- 9
-  quality <- validate_linkage_invariants(x$conditions, x$links, x$event_files)
-  testthat::expect_equal(quality$unsupported_eventype_n, 1L)
-  testthat::expect_equal(quality$unsupported_eventype_values, "9")
-  testthat::expect_true(is.na(canonical_event_family(7)))
-  testthat::expect_true(is.na(canonical_event_family(8)))
+testthat::test_that("EVENTYPE-event-family mismatch is diagnosed and disqualified", {
+  conditions <- make_u09_condition()
+  links <- data.frame(
+    DUPERSID = "P1",
+    CONDIDX = "P101",
+    EVNTIDX = "E1",
+    CLNKIDX = "P101E1",
+    EVENTYPE = 2,
+    stringsAsFactors = FALSE
+  )
+  event_files <- make_empty_event_files()
+  event_files$office <- data.frame(
+    DUPERSID = "P1", EVNTIDX = "E1",
+    PERWT24F = 1, VARSTR = 1, VARPSU = 1,
+    stringsAsFactors = FALSE
+  )
+
+  quality <- validate_linkage_invariants(conditions, links, event_files)
+  footprint <- derive_u09_event_footprint(conditions, links, event_files)
+
+  testthat::expect_equal(quality$event_family_mismatch_n, 1L)
+  testthat::expect_equal(quality$unmatched_evntidx_n, 0L)
+  testthat::expect_equal(nrow(footprint$u09_supported_links), 1L)
+  testthat::expect_equal(nrow(footprint$u09_reconciled_links), 0L)
+  testthat::expect_equal(nrow(footprint$unique_u09_events), 0L)
 })
 
-testthat::test_that("duplicated three-character U09 conditions pointing to one event do not multiply event count", {
-  x <- make_linked_condition_fixture()
-  extra_condition <- x$conditions[1, , drop = FALSE]
-  extra_condition$CONDN <- "03"
-  extra_condition$CONDIDX <- "P103"
-  x$conditions <- rbind(x$conditions, extra_condition)
-  extra_link <- x$links[1, , drop = FALSE]
-  extra_link$CONDIDX <- "P103"
-  extra_link$CLNKIDX <- "P103E1"
-  x$links <- rbind(x$links, extra_link)
+testthat::test_that("multiple U09 condition records pointing to one valid event count one encounter", {
+  conditions <- rbind(
+    make_u09_condition("P1", "P101", "01"),
+    make_u09_condition("P1", "P102", "02")
+  )
+  links <- data.frame(
+    DUPERSID = c("P1", "P1"),
+    CONDIDX = c("P101", "P102"),
+    EVNTIDX = c("E1", "E1"),
+    CLNKIDX = c("P101E1", "P102E1"),
+    EVENTYPE = c(1, 1),
+    stringsAsFactors = FALSE
+  )
+  event_files <- make_empty_event_files()
+  event_files$office <- data.frame(
+    DUPERSID = "P1", EVNTIDX = "E1",
+    PERWT24F = 1, VARSTR = 1, VARPSU = 1,
+    stringsAsFactors = FALSE
+  )
 
-  footprint <- derive_u09_event_footprint(x$conditions, x$links, x$event_files)
-  testthat::expect_equal(nrow(footprint$u09_links), 3L)
-  testthat::expect_equal(nrow(footprint$unique_u09_events), 2L)
+  footprint <- derive_u09_event_footprint(conditions, links, event_files)
+  testthat::expect_equal(nrow(footprint$u09_supported_links), 2L)
+  testthat::expect_equal(nrow(footprint$u09_reconciled_links), 2L)
+  testthat::expect_equal(nrow(footprint$unique_u09_events), 1L)
+  testthat::expect_equal(footprint$per_person$u09_condition_n, 2L)
+  testthat::expect_equal(footprint$per_person$u09_event_n, 1L)
 })
 
-testthat::test_that("target cohort person with zero qualifying links is preserved after person-level collapse", {
-  x <- make_linked_condition_fixture()
-  footprint <- derive_u09_event_footprint(x$conditions, x$links, x$event_files)
+testthat::test_that("target person with U09 but zero valid encounter preserves condition flag", {
+  conditions <- make_u09_condition()
+  links <- data.frame(
+    DUPERSID = "P1",
+    CONDIDX = "P101",
+    EVNTIDX = "MISSING",
+    CLNKIDX = "P101MISSING",
+    EVENTYPE = 1,
+    stringsAsFactors = FALSE
+  )
+  footprint <- derive_u09_event_footprint(
+    conditions, links, make_empty_event_files()
+  )
   hc256 <- data.frame(
     DUPERSID = c("P1", "P2"),
     do_current_long_covid = c(TRUE, TRUE),
@@ -112,8 +238,40 @@ testthat::test_that("target cohort person with zero qualifying links is preserve
     stringsAsFactors = FALSE
   )
   collapsed <- collapse_u09_to_hc256(hc256, footprint)
-  testthat::expect_equal(collapsed$do_u09_linked_event_n, c(2L, 0L))
-  testthat::expect_equal(collapsed$do_has_u09_linked_event, c(TRUE, FALSE))
+
+  testthat::expect_equal(collapsed$do_u09_condition_n, c(1L, 0L))
+  testthat::expect_equal(collapsed$do_u09_linked_event_n, c(0L, 0L))
+  testthat::expect_equal(collapsed$do_has_u09_condition, c(TRUE, FALSE))
+  testthat::expect_equal(collapsed$do_has_u09_linked_event, c(FALSE, FALSE))
+})
+
+testthat::test_that("same valid event linked to U09 and another condition counts once for U09", {
+  x <- make_linked_condition_fixture()
+  footprint <- derive_u09_event_footprint(x$conditions, x$links, x$event_files)
+  testthat::expect_equal(sum(footprint$unique_u09_events$EVNTIDX == "E1"), 1L)
+})
+
+testthat::test_that("one U09 condition linked to multiple valid events preserves both encounters", {
+  x <- make_linked_condition_fixture()
+  footprint <- derive_u09_event_footprint(x$conditions, x$links, x$event_files)
+  testthat::expect_setequal(footprint$unique_u09_events$EVNTIDX, c("E1", "E2"))
+})
+
+testthat::test_that("duplicate CLNKIDX remains a link-quality diagnostic", {
+  x <- make_linked_condition_fixture()
+  x$links$CLNKIDX[3] <- x$links$CLNKIDX[1]
+  quality <- validate_linkage_invariants(x$conditions, x$links, x$event_files)
+  testthat::expect_gt(quality$duplicate_clnkidx_n, 0L)
+})
+
+testthat::test_that("unsupported EVENTYPE is diagnosed and home health/Rx remain excluded", {
+  x <- make_linked_condition_fixture()
+  x$links$EVENTYPE[1] <- 9
+  quality <- validate_linkage_invariants(x$conditions, x$links, x$event_files)
+  testthat::expect_equal(quality$unsupported_eventype_n, 1L)
+  testthat::expect_equal(quality$unsupported_eventype_values, "9")
+  testthat::expect_true(is.na(canonical_event_family(7)))
+  testthat::expect_true(is.na(canonical_event_family(8)))
 })
 
 testthat::test_that("U09 is exact and U07 is never substituted", {
@@ -129,7 +287,7 @@ testthat::test_that("U09 is exact and U07 is never substituted", {
   testthat::expect_equal(selected$ICD10CDX, "U09")
 })
 
-testthat::test_that("Phase A source registry fails closed while official hashes are unpinned", {
+testthat::test_that("Phase A source registry still fails closed while hashes are unpinned", {
   cfg <- read_linked_condition_source_config()
   testthat::expect_error(
     assert_linked_condition_source_pins(cfg),
@@ -137,7 +295,7 @@ testthat::test_that("Phase A source registry fails closed while official hashes 
   )
 })
 
-testthat::test_that("Phase A guardrails explicitly prohibit spending attribution and causal/pathway overclaims", {
+testthat::test_that("Phase A guardrails still prohibit spending and pathway overclaims", {
   g <- linked_condition_guardrails()
   testthat::expect_true(any(grepl("no spending estimator", g, ignore.case = TRUE)))
   testthat::expect_true(any(grepl("diagnostic-delay", g, fixed = TRUE)))
