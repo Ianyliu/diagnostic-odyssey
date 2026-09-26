@@ -153,3 +153,20 @@
 .empty-state.compact{padding:12px}
 @media(max-width:640px){.pilot-local-context-heading{display:grid}}
 @media print{.pilot-local-context,.pilot-decision-trace,.brief-decision-trace,.decision-trace li{break-inside:avoid}}
+
+
+.distribution-summary{
+  display:grid;
+  gap:.18rem;
+  text-align:right;
+}
+
+.distribution-summary > span{
+  display:block;
+}
+
+@media (max-width: 720px){
+  .distribution-summary{
+    text-align:left;
+  }
+}
