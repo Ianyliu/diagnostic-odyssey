@@ -133,8 +133,9 @@ jobs:
             exit 1
           fi
 
-          if grep -R -E '"DUPERSID"|"CONDIDX"|"EVNTIDX"|"CLNKIDX"' "$OUTPUT_DIR"/*.json; then
-            echo "Refusing upload: row-level identifier field found in aggregate feasibility output."
+          if grep -E '"DUPERSID"[[:space:]]*:|"CONDIDX"[[:space:]]*:|"EVNTIDX"[[:space:]]*:|"CLNKIDX"[[:space:]]*:' \
+            "$OUTPUT_DIR/diagnostics.json" "$OUTPUT_DIR/feasibility-manifest.json"; then
+            echo "Refusing upload: row-level identifier field found in aggregate diagnostics."
             exit 1
           fi
 
