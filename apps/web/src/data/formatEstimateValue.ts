@@ -23,7 +23,7 @@ const compactPeople = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 1
 });
 
-function formatNativeValue(value: number, unit: string): string {
+export function formatNativeValue(value: number, unit: string): string {
   if (unit === "proportion") return percent.format(value);
   if (unit === "USD/year") return compactCurrency.format(value);
   if (unit === "USD/person/year") return personCurrency.format(value);
