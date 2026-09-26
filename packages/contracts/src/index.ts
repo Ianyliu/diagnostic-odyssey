@@ -52,6 +52,21 @@ export interface AnalysisContext {
   artifact_version: string;
 }
 
+export interface DistributionSummary {
+  summary_type: "survey_weighted_quantiles";
+  source_variable: string;
+  p25: number;
+  p50: number;
+  p75: number;
+  unweighted_n: number;
+  weighted_denominator: number;
+  weight_variable: string;
+  variance_stratum_variable: string;
+  variance_psu_variable: string;
+  statistics_method: string;
+  limitations: string[];
+}
+
 export interface Estimate {
   estimate_id: string;
   measure_id: string;
@@ -89,6 +104,7 @@ export interface Estimate {
   relative_standard_error?: number | null;
   interval_width?: number | null;
   unweighted_excluded_or_missing_n?: number | null;
+  distribution_summary?: DistributionSummary;
 }
 
 export interface BurdenDomain {
@@ -392,6 +408,118 @@ export function validateEstimate(value: unknown, path = "estimate"): ValidationI
         path: `${path}.ci_degrees_of_freedom`,
         message: "must be a positive finite number for a numeric analytical artifact"
       });
+    }
+  }
+
+  if (value.distribution_summary !== undefined) {
+    const summaryPath = `${path}.distribution_summary`;
+    const summary = value.distribution_summary;
+    if (!isRecord(summary)) {
+      issues.push({ path: summaryPath, message: "must be an object" });
+    } else {
+      if (summary.summary_type !== "survey_weighted_quantiles") {
+        issues.push({
+          path: `${summaryPath}.summary_type`,
+          message: "must be survey_weighted_quantiles"
+        });
+      }
+
+      for (const key of [
+        "source_variable",
+        "weight_variable",
+        "variance_stratum_variable",
+        "variance_psu_variable",
+        "statistics_method"
+      ]) {
+        if (!isNonEmptyString(summary[key])) {
+          issues.push({
+            path: `${summaryPath}.${key}`,
+            message: "must be a non-empty string"
+          });
+        }
+      }
+
+      for (const key of ["p25", "p50", "p75", "weighted_denominator"]) {
+        const candidate = summary[key];
+        if (typeof candidate !== "number" || !Number.isFinite(candidate)) {
+          issues.push({
+            path: `${summaryPath}.${key}`,
+            message: "must be a finite number"
+          });
+        }
+      }
+
+      if (
+        typeof summary.weighted_denominator === "number" &&
+        Number.isFinite(summary.weighted_denominator) &&
+        summary.weighted_denominator < 0
+      ) {
+        issues.push({
+          path: `${summaryPath}.weighted_denominator`,
+          message: "must be non-negative"
+        });
+      }
+
+      if (
+        typeof summary.unweighted_n !== "number" ||
+        !Number.isFinite(summary.unweighted_n) ||
+        !Number.isInteger(summary.unweighted_n) ||
+        summary.unweighted_n < 0
+      ) {
+        issues.push({
+          path: `${summaryPath}.unweighted_n`,
+          message: "must be a non-negative integer"
+        });
+      }
+
+      if (
+        typeof summary.p25 === "number" && Number.isFinite(summary.p25) &&
+        typeof summary.p50 === "number" && Number.isFinite(summary.p50) &&
+        summary.p25 > summary.p50
+      ) {
+        issues.push({ path: summaryPath, message: "p25 cannot exceed p50" });
+      }
+      if (
+        typeof summary.p50 === "number" && Number.isFinite(summary.p50) &&
+        typeof summary.p75 === "number" && Number.isFinite(summary.p75) &&
+        summary.p50 > summary.p75
+      ) {
+        issues.push({ path: summaryPath, message: "p50 cannot exceed p75" });
+      }
+
+      if (
+        !Array.isArray(summary.limitations) ||
+        summary.limitations.some(item => !isNonEmptyString(item))
+      ) {
+        issues.push({
+          path: `${summaryPath}.limitations`,
+          message: "must be an array of non-empty strings"
+        });
+      }
+
+      if (!isNumericAnalyticalArtifact) {
+        issues.push({
+          path: summaryPath,
+          message: "requires a numeric analytical parent estimate"
+        });
+      }
+
+      for (const [summaryKey, parentKey] of [
+        ["weight_variable", "weight_variable"],
+        ["variance_stratum_variable", "variance_stratum_variable"],
+        ["variance_psu_variable", "variance_psu_variable"]
+      ] as const) {
+        if (
+          isNonEmptyString(summary[summaryKey]) &&
+          isNonEmptyString(value[parentKey]) &&
+          summary[summaryKey] !== value[parentKey]
+        ) {
+          issues.push({
+            path: `${summaryPath}.${summaryKey}`,
+            message: `must match parent estimate ${parentKey}`
+          });
+        }
+      }
     }
   }
 
