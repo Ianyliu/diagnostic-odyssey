@@ -176,6 +176,57 @@ survey_mean_result <- function(
   )
 }
 
+survey_distribution_summary <- function(
+  design,
+  source_variable,
+  cleaner,
+  limitations = character()
+) {
+  assert_survey_available()
+  tmp <- design_with_clean_value(design, source_variable, cleaner)
+  weight_variable <- attr(design, "do_weight_variable")
+  if (is.null(weight_variable) || length(weight_variable) != 1L || !nzchar(weight_variable)) {
+    stop("Survey design is missing do_weight_variable provenance.", call. = FALSE)
+  }
+
+  stat <- survey::svyquantile(
+    ~.do_value,
+    tmp,
+    quantiles = c(0.25, 0.50, 0.75),
+    na.rm = TRUE,
+    ci = FALSE,
+    qrule = "math"
+  )
+  quantiles <- as.numeric(stats::coef(stat))
+  if (length(quantiles) != 3L || any(!is.finite(quantiles))) {
+    stop("Survey-weighted quantile estimation did not return three finite values.", call. = FALSE)
+  }
+  if (quantiles[[1]] > quantiles[[2]] || quantiles[[2]] > quantiles[[3]]) {
+    stop("Survey-weighted quantiles are not ordered.", call. = FALSE)
+  }
+
+  list(
+    summary_type = "survey_weighted_quantiles",
+    source_variable = source_variable,
+    p25 = quantiles[[1]],
+    p50 = quantiles[[2]],
+    p75 = quantiles[[3]],
+    unweighted_n = as.integer(survey_unweighted_valid_n(tmp, ".do_value")),
+    weighted_denominator = survey_weighted_valid_n(tmp, ".do_value"),
+    weight_variable = weight_variable,
+    variance_stratum_variable = "VARSTR",
+    variance_psu_variable = "VARPSU",
+    statistics_method = paste(
+      "survey::svyquantile on the parent survey domain;",
+      "quantiles=c(0.25,0.50,0.75), na.rm=TRUE, ci=FALSE, qrule='math'"
+    ),
+    limitations = as.list(unique(c(
+      limitations,
+      "The 25th-75th percentile interval is a descriptive interquartile range, not a confidence interval."
+    )))
+  )
+}
+
 survey_proportion_result <- function(
   design,
   source_variable,
