@@ -69,3 +69,60 @@ testthat::test_that("bootstrap-loaded MEPS modules do not source their own depen
     )
   }
 })
+
+
+testthat::test_that("standalone HC-256 downloader loads MEPS config before loader", {
+  repo_root <- Sys.getenv("DIAGNOSTIC_ODYSSEY_ROOT")
+  downloader_path <- file.path(
+    repo_root,
+    "pipelines",
+    "data",
+    "download_meps_hc256.R"
+  )
+  source_lines <- trimws(readLines(downloader_path, warn = FALSE))
+  source_calls <- source_lines[grepl("^source\\(file\\.path", source_lines)]
+
+  expected_sources <- c(
+    'source(file.path("analysis", "r", "lib", "paths.R"))',
+    'source(file.path("analysis", "r", "lib", "meps_config.R"))',
+    'source(file.path("analysis", "r", "meps", "load_hc256.R"))',
+    'source(file.path("analysis", "r", "lib", "file_integrity.R"))'
+  )
+
+  testthat::expect_equal(source_calls, expected_sources)
+})
+
+testthat::test_that("standalone HC-256 loader dependencies resolve in a clean environment without network", {
+  repo_root <- Sys.getenv("DIAGNOSTIC_ODYSSEY_ROOT")
+  clean_environment <- new.env(parent = baseenv())
+  old_wd <- getwd()
+  setwd(repo_root)
+  on.exit(setwd(old_wd), add = TRUE)
+
+  for (path in c(
+    file.path("analysis", "r", "lib", "paths.R"),
+    file.path("analysis", "r", "lib", "meps_config.R"),
+    file.path("analysis", "r", "meps", "load_hc256.R")
+  )) {
+    sys.source(path, envir = clean_environment)
+  }
+
+  testthat::expect_true(
+    exists("load_variable_map", envir = clean_environment, inherits = FALSE)
+  )
+  testthat::expect_true(
+    exists("required_hc256_variables", envir = clean_environment, inherits = FALSE)
+  )
+
+  variable_map <- clean_environment$load_variable_map()
+  required <- clean_environment$required_hc256_variables()
+
+  testthat::expect_type(variable_map, "list")
+  testthat::expect_true(length(required) > 0L)
+  testthat::expect_true(all(c(
+    variable_map$design$variance_stratum,
+    variable_map$design$variance_psu,
+    variable_map$design$person_weight,
+    variable_map$design$esaq_weight
+  ) %in% required))
+})

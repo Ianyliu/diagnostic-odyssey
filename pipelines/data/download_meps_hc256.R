@@ -1,6 +1,7 @@
 #!/usr/bin/env Rscript
 
 source(file.path("analysis", "r", "lib", "paths.R"))
+source(file.path("analysis", "r", "lib", "meps_config.R"))
 source(file.path("analysis", "r", "meps", "load_hc256.R"))
 source(file.path("analysis", "r", "lib", "file_integrity.R"))
 
