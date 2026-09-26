@@ -53,7 +53,7 @@ Phase A selects **exactly `ICD10CDX == "U09"`** after validating the public ICD-
 
 The implementation calls the existing `construct_long_covid_cohort()` and `cohort_definition_text()` functions unchanged. The target cohort therefore remains governed by the current HC-256 Round 3/1 definition.
 
-Linked-event information is derived separately, collapsed to one row per `DUPERSID`, and then joined back to the HC-256 frame with zeros preserved for target-cohort persons who have no qualifying U09 condition/event link.
+U09 condition presence and qualifying event presence are derived separately. Exact U09 condition counts are collapsed to one row per `DUPERSID` even when no Phase-A encounter link reconciles. Reconciled linked-event counts are then added to that same person table before it is joined back to HC-256. A person can therefore have `do_has_u09_condition == TRUE` while `do_has_u09_linked_event == FALSE`.
 
 No event row or condition-event row is treated as an independently sampled person.
 
@@ -73,6 +73,8 @@ The reusable validation layer checks:
 - person mismatches;
 - event-family mismatches.
 
+A **qualifying U09-linked event** must pass every reconciliation rule: the link resolves to an exact-U09 HC-255 condition; the condition and link have the same `DUPERSID`; `EVENTYPE` is 1–4; the link's `DUPERSID × EVNTIDX` exists in the corresponding D/E/F/G event index; and the event-file family agrees with `EVENTYPE`. Supported links that fail any reconciliation rule remain visible in link-quality diagnostics but cannot enter qualifying event totals, person event counts, event-family counts, or specialty/provider diagnostics.
+
 The 2024 HC-254I EVENTYPE mapping used in Phase A is:
 
 | EVENTYPE | family |
@@ -86,7 +88,8 @@ The 2024 HC-254I EVENTYPE mapping used in Phase A is:
 
 - A condition-event link is identified by unique `CLNKIDX` / `CONDIDX × EVNTIDX`.
 - A healthcare encounter is a unique `DUPERSID × EVNTIDX`.
-- A qualifying U09 encounter is counted once when one or more U09 condition records point to it.
+- A qualifying U09 encounter is counted once only after the U09 condition/person/event/family reconciliation rules pass.
+- Multiple exact-U09 condition records may point to the same valid encounter without multiplying the encounter count.
 - Additional non-U09 conditions attached to that same event do not increase the U09 encounter count.
 - Per-person linked-event count is the number of distinct qualifying `EVNTIDX` values.
 - No expenditure is summed across CLNK rows.
@@ -100,7 +103,7 @@ The eventual manual workflow writes aggregate diagnostics/provenance only. The i
 - source identities, hashes, required-variable validation, and row counts;
 - total HC-255 condition records, U09 condition records, unique U09 persons, and duplicate U09 patterns;
 - HC-256 target cohort size and U09 overlap;
-- U09 link count, unique linked events, event-family counts, and target persons with/without qualifying events;
+- exact-U09 condition-event links across all event types, Phase-A-supported U09 links (EVENTYPE 1–4), successfully reconciled U09 links, supported-but-unreconciled links, unique qualifying events, event-family counts, and target persons with/without qualifying events;
 - conditions per event and events per condition;
 - events carrying multiple conditions and U09 events carrying additional non-U09 conditions;
 - unmatched identifiers, person inconsistencies, unsupported event types, duplicate link IDs, duplicate condition-event pairs, and CLNKIDX composition failures;
@@ -108,6 +111,15 @@ The eventual manual workflow writes aggregate diagnostics/provenance only. The i
 - office/outpatient provider/specialty cell counts when the fields are available.
 
 These are internal methods-review diagnostics, not released estimates.
+
+The link-count stages are intentionally distinct:
+
+- **all-event-type U09 links**: HC-254I rows whose `CONDIDX` resolves to exact U09, including excluded Rx/home-health or unsupported event types;
+- **supported U09 links**: exact-U09 links whose `EVENTYPE` is one of the initial Phase-A families 1–4, before person/event reconciliation;
+- **reconciled U09 links**: supported links that also pass condition-person, event existence/person, and EVENTYPE↔event-family reconciliation;
+- **unique U09-linked events**: distinct `DUPERSID × EVNTIDX` encounters derived only from reconciled U09 links.
+
+This separation ensures bad/unmatched links remain visible as feasibility findings without contaminating the qualifying event footprint.
 
 ## Source-integrity gate
 
