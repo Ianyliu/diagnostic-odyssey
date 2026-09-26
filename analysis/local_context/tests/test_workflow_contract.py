@@ -25,10 +25,21 @@ class LocalContextWorkflowContractTests(unittest.TestCase):
             text,
         )
         self.assertIn(
-            "artifacts/reviewed/meps-2024-long-covid-candidate-20260923T020607Z/",
+            "artifacts/reviewed/meps-2024-long-covid-candidate-20260926T011343Z/",
             text,
         )
         self.assertIn("sha256sum -c SHA256SUMS", text)
+
+    def test_future_candidates_bind_to_active_reviewed_meps_version(self):
+        pipeline = PIPELINE.read_text(encoding="utf-8")
+        self.assertIn(
+            'NATIONAL_ARTIFACT_VERSION = "meps-2024-long-covid-candidate-20260926T011343Z"',
+            pipeline,
+        )
+        self.assertNotIn(
+            'NATIONAL_ARTIFACT_VERSION = "meps-2024-long-covid-candidate-20260923T020607Z"',
+            pipeline,
+        )
 
     def test_expected_output_file_set_has_one_governed_source(self):
         expected_names = [

@@ -87,9 +87,9 @@ jobs:
             and ([.indicators[].release_status] | all(. == "preliminary"))
             and ([.indicators[].context_type] | all(. == "contextual_indicator"))
           ' "$OUTPUT_DIR/local-context.json" >/dev/null
-          git diff --exit-code -- artifacts/reviewed/meps-2024-long-covid-candidate-20260923T020607Z/
+          git diff --exit-code -- artifacts/reviewed/meps-2024-long-covid-candidate-20260926T011343Z/
           (
-            cd artifacts/reviewed/meps-2024-long-covid-candidate-20260923T020607Z/
+            cd artifacts/reviewed/meps-2024-long-covid-candidate-20260926T011343Z/
             sha256sum -c SHA256SUMS
           )
 
