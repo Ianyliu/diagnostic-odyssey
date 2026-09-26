@@ -30,13 +30,27 @@ estimate_admin_burden <- function(designs, artifact_version) {
 
   records <- list()
   for (spec in time_specs) {
+    cleaner <- function(x) meps_bounded_score(x, 0, spec$maximum)
     result <- survey_mean_result(
       domain,
       spec$variable,
-      cleaner = function(x) meps_bounded_score(x, 0, spec$maximum),
+      cleaner = cleaner,
       ci_reference_design = designs$esaq,
       ci_df_source = "full ESAQ / ESAQWT24F survey design"
     )
+    distribution_summary <- if (identical(spec$variable, "EQPPAM53")) {
+      survey_distribution_summary(
+        domain,
+        spec$variable,
+        cleaner,
+        limitations = c(
+          "The distribution remains the AHRQ annualized ESAQ paperwork/navigation time measure; it is not diagnostic-delay time or time caused by Long COVID.",
+          "EQPPAM53 is top-coded at 520 annualized hours and is subject to item nonresponse."
+        )
+      )
+    } else {
+      NULL
+    }
     records[[length(records) + 1L]] <- make_estimate_record(
       result,
       estimate_id = paste0("meps24-", spec$measure_id, "-mean"),
@@ -69,7 +83,8 @@ estimate_admin_burden <- function(designs, artifact_version) {
         "EQMVAM53, EQMBAM53, and EQPPAM53 are AHRQ annualized hours-per-year measures derived from the original reported period; they are not necessarily hours observed during calendar year 2024.",
         "This time domain is reported separately and is not added to the other ESAQ time measures.",
         "Operational-current status was measured at the earlier Round 3/1 2024 interview; ESAQ was administered later in Panel 28 Round 5 / Panel 29 Round 3, and that later response does not establish continued current Long COVID at supplement administration."
-      )
+      ),
+      distribution_summary = distribution_summary
     )
   }
 
