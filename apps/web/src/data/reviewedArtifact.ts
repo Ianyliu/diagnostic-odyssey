@@ -2,7 +2,7 @@ import {
   assertValidArtifactBundle,
   type ArtifactBundle
 } from "@diagnostic-odyssey/contracts";
-import reviewedArtifactJson from "../../../../artifacts/reviewed/meps-2024-long-covid-candidate-20260926T011343Z/bundle.json";
+import reviewedArtifactJson from "../../../../artifacts/reviewed/meps-2024-long-covid-candidate-20260926T011343Z/bundle.json" with { type: "json" };
 
 export const REVIEWED_MEPS_ARTIFACT_VERSION =
   "meps-2024-long-covid-candidate-20260926T011343Z";
