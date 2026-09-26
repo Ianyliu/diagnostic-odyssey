@@ -18,10 +18,10 @@ assert_linked_condition_source_pins <- function(cfg = read_linked_condition_sour
   unpinned <- vapply(
     new_sources,
     function(x) {
-      is.null(x$expected_zip_sha256) ||
-        is.null(x$expected_extracted_dta_sha256) ||
-        !grepl("^[0-9a-fA-F]{64}$", x$expected_zip_sha256 %||% "") ||
-        !grepl("^[0-9a-fA-F]{64}$", x$expected_extracted_dta_sha256 %||% "")
+      zip_hash <- if (is.null(x$expected_zip_sha256)) "" else x$expected_zip_sha256
+      dta_hash <- if (is.null(x$expected_extracted_dta_sha256)) "" else x$expected_extracted_dta_sha256
+      !grepl("^[0-9a-fA-F]{64}$", zip_hash) ||
+        !grepl("^[0-9a-fA-F]{64}$", dta_hash)
     },
     logical(1)
   )
