@@ -174,33 +174,84 @@ derive_u09_event_footprint <- function(conditions, links, event_files) {
 
   u09 <- select_u09_conditions(conditions)
   u09_ids <- unique(as.character(u09$CONDIDX))
-  supported <- as.character(links$EVENTYPE) %in% c("1", "2", "3", "4")
-  u09_links <- links[as.character(links$CONDIDX) %in% u09_ids & supported, , drop = FALSE]
-
-  if (!nrow(u09_links)) {
-    return(list(
-      u09_conditions = u09,
-      u09_links = u09_links,
-      unique_u09_events = data.frame(
-        DUPERSID = character(), EVNTIDX = character(), event_family = character(),
-        stringsAsFactors = FALSE
-      ),
-      per_person = data.frame(
-        DUPERSID = character(), u09_condition_n = integer(), u09_event_n = integer(),
-        stringsAsFactors = FALSE
-      )
-    ))
-  }
-
-  key <- paste(as.character(u09_links$DUPERSID), as.character(u09_links$EVNTIDX), sep = "::")
-  first <- !duplicated(key)
-  unique_events <- data.frame(
-    DUPERSID = as.character(u09_links$DUPERSID[first]),
-    EVNTIDX = as.character(u09_links$EVNTIDX[first]),
-    event_family = canonical_event_family(u09_links$EVENTYPE[first]),
-    stringsAsFactors = FALSE
+  u09_condition_person <- setNames(
+    as.character(u09$DUPERSID),
+    as.character(u09$CONDIDX)
   )
 
+  # Preserve all links whose condition resolves to exact U09 so excluded or bad
+  # links remain visible for feasibility diagnostics. Only EVENTYPE 1-4 links
+  # are eligible to proceed to event reconciliation.
+  u09_raw_links <- links[
+    as.character(links$CONDIDX) %in% u09_ids,
+    ,
+    drop = FALSE
+  ]
+  supported <- as.character(u09_raw_links$EVENTYPE) %in% c("1", "2", "3", "4")
+  u09_supported_links <- u09_raw_links[supported, , drop = FALSE]
+
+  if (nrow(u09_supported_links)) {
+    condition_person <- unname(
+      u09_condition_person[as.character(u09_supported_links$CONDIDX)]
+    )
+    condition_person_matches <-
+      !is.na(condition_person) &
+      condition_person == as.character(u09_supported_links$DUPERSID)
+
+    event_key <- paste(
+      event_index$DUPERSID,
+      event_index$EVNTIDX,
+      sep = "::"
+    )
+    link_event_key <- paste(
+      as.character(u09_supported_links$DUPERSID),
+      as.character(u09_supported_links$EVNTIDX),
+      sep = "::"
+    )
+    event_match <- match(link_event_key, event_key)
+    event_exists <- !is.na(event_match)
+    expected_family <- canonical_event_family(u09_supported_links$EVENTYPE)
+    actual_family <- ifelse(
+      event_exists,
+      event_index$event_family[event_match],
+      NA_character_
+    )
+    event_family_matches <-
+      event_exists &
+      !is.na(expected_family) &
+      expected_family == actual_family
+
+    reconciled <- condition_person_matches & event_exists & event_family_matches
+    u09_reconciled_links <- u09_supported_links[reconciled, , drop = FALSE]
+  } else {
+    u09_reconciled_links <- u09_supported_links
+  }
+
+  if (nrow(u09_reconciled_links)) {
+    key <- paste(
+      as.character(u09_reconciled_links$DUPERSID),
+      as.character(u09_reconciled_links$EVNTIDX),
+      sep = "::"
+    )
+    first <- !duplicated(key)
+    unique_events <- data.frame(
+      DUPERSID = as.character(u09_reconciled_links$DUPERSID[first]),
+      EVNTIDX = as.character(u09_reconciled_links$EVNTIDX[first]),
+      event_family = canonical_event_family(u09_reconciled_links$EVENTYPE[first]),
+      stringsAsFactors = FALSE
+    )
+  } else {
+    unique_events <- data.frame(
+      DUPERSID = character(),
+      EVNTIDX = character(),
+      event_family = character(),
+      stringsAsFactors = FALSE
+    )
+  }
+
+  # Condition presence is independent of whether any qualifying Phase-A event
+  # reconciles. This preserves U09-positive persons with zero valid D/E/F/G
+  # encounter links.
   cond_by_person <- table(as.character(u09$DUPERSID))
   event_by_person <- table(unique_events$DUPERSID)
   persons <- union(names(cond_by_person), names(event_by_person))
@@ -215,7 +266,9 @@ derive_u09_event_footprint <- function(conditions, links, event_files) {
 
   list(
     u09_conditions = u09,
-    u09_links = u09_links,
+    u09_raw_links = u09_raw_links,
+    u09_supported_links = u09_supported_links,
+    u09_reconciled_links = u09_reconciled_links,
     unique_u09_events = unique_events,
     per_person = per_person
   )
