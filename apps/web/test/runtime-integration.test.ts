@@ -22,9 +22,16 @@ import {
 import { formatLocalContextValue } from "../src/data/formatLocalContextValue.ts";
 import {
   assertReviewedWvLocalContextArtifact,
+  assertReviewedWvLocalContextRuntimeCompatibility,
   REVIEWED_WV_LOCAL_CONTEXT_ARTIFACT_VERSION,
-  REVIEWED_WV_LOCAL_CONTEXT_NATIONAL_MEPS_ARTIFACT_VERSION
+  REVIEWED_WV_LOCAL_CONTEXT_COMPATIBLE_NATIONAL_MEPS_ARTIFACT_VERSIONS,
+  REVIEWED_WV_LOCAL_CONTEXT_DECLARED_NATIONAL_MEPS_ARTIFACT_VERSION
 } from "../src/data/reviewedLocalContextValidation.ts";
+import {
+  loadReviewedMepsArtifact,
+  REVIEWED_MEPS_ARTIFACT_VERSION
+} from "../src/data/reviewedArtifact.ts";
+import { loadReviewedWvLocalContextArtifact } from "../src/data/reviewedLocalContext.ts";
 import {
   createPlanningScenarioDefaults,
   PLANNING_DEFAULTS_DESCRIPTION,
@@ -33,7 +40,7 @@ import {
 
 const reviewedArtifactPath = fileURLToPath(
   new URL(
-    "../../../artifacts/reviewed/meps-2024-long-covid-candidate-20260923T020607Z/bundle.json",
+    "../../../artifacts/reviewed/meps-2024-long-covid-candidate-20260926T011343Z/bundle.json",
     import.meta.url
   )
 );
@@ -125,11 +132,11 @@ test("runtime analytical source points only to the exact reviewed national artif
 
   assert.match(
     source,
-    /artifacts\/reviewed\/meps-2024-long-covid-candidate-20260923T020607Z\/bundle\.json/
+    /artifacts\/reviewed\/meps-2024-long-covid-candidate-20260926T011343Z\/bundle\.json/
   );
   assert.match(
     source,
-    /REVIEWED_MEPS_ARTIFACT_VERSION\s*=\s*\n?\s*"meps-2024-long-covid-candidate-20260923T020607Z"/
+    /REVIEWED_MEPS_ARTIFACT_VERSION\s*=\s*\n?\s*"meps-2024-long-covid-candidate-20260926T011343Z"/
   );
   assert.doesNotMatch(source, /artifacts\/examples|fixture-2026-09-v1/);
   assert.doesNotMatch(vite, /artifacts\/examples/);
@@ -148,8 +155,15 @@ test("runtime local-context source points only to the exact reviewed WV artifact
     "local-context-wv-hrsa-acs-candidate-20260924T052332Z"
   );
   assert.equal(
-    REVIEWED_WV_LOCAL_CONTEXT_NATIONAL_MEPS_ARTIFACT_VERSION,
+    REVIEWED_WV_LOCAL_CONTEXT_DECLARED_NATIONAL_MEPS_ARTIFACT_VERSION,
     "meps-2024-long-covid-candidate-20260923T020607Z"
+  );
+  assert.deepEqual(
+    REVIEWED_WV_LOCAL_CONTEXT_COMPATIBLE_NATIONAL_MEPS_ARTIFACT_VERSIONS,
+    [
+      "meps-2024-long-covid-candidate-20260923T020607Z",
+      "meps-2024-long-covid-candidate-20260926T011343Z"
+    ]
   );
   assert.match(validation, /exact West Virginia state geography/);
   assert.doesNotMatch(source, /artifacts\/examples|fixture-2026-09-v1/);
@@ -158,6 +172,24 @@ test("runtime local-context source points only to the exact reviewed WV artifact
 test("reviewed WV loader validation fails closed on release or MEPS-binding mismatch", () => {
   assert.equal(canLoadReviewedLocalContextArtifact(reviewedLocalContext), true);
   assert.doesNotThrow(() => assertReviewedWvLocalContextArtifact(reviewedLocalContext));
+  assert.doesNotThrow(() =>
+    assertReviewedWvLocalContextRuntimeCompatibility(
+      "meps-2024-long-covid-candidate-20260923T020607Z"
+    )
+  );
+  assert.doesNotThrow(() =>
+    assertReviewedWvLocalContextRuntimeCompatibility(
+      "meps-2024-long-covid-candidate-20260926T011343Z"
+    )
+  );
+  assert.throws(
+    () =>
+      assertReviewedWvLocalContextRuntimeCompatibility(
+        "meps-2024-long-covid-candidate-20990101T000000Z"
+      ),
+    /not explicitly reviewed-compatible/
+  );
+  assert.doesNotThrow(() => loadReviewedWvLocalContextArtifact());
 
   const preliminaryArtifact = structuredClone(reviewedLocalContext);
   preliminaryArtifact.manifest.release_status = "preliminary";
@@ -201,7 +233,12 @@ test("reviewed WV runtime layer contains exactly 34 reviewed state indicators", 
 test("reviewed national runtime bundle remains 21 estimates with no local-context mutation", () => {
   assert.equal(
     reviewedBundle.manifest.artifact_version,
-    "meps-2024-long-covid-candidate-20260923T020607Z"
+    "meps-2024-long-covid-candidate-20260926T011343Z"
+  );
+  assert.equal(REVIEWED_MEPS_ARTIFACT_VERSION, reviewedBundle.manifest.artifact_version);
+  assert.equal(
+    loadReviewedMepsArtifact().manifest.artifact_version,
+    REVIEWED_MEPS_ARTIFACT_VERSION
   );
   assert.equal(reviewedEstimates.length, 21);
   assert.equal(reviewedBundle.local_context.length, 0);
@@ -224,6 +261,91 @@ test("reviewed national runtime bundle remains 21 estimates with no local-contex
     ).length,
     0
   );
+});
+
+test("activated runtime exposes exactly the two reviewed Typical Ranges", () => {
+  const summaries = reviewedEstimates
+    .filter(estimate => estimate.distribution_summary !== undefined)
+    .sort((a, b) => a.estimate_id.localeCompare(b.estimate_id));
+
+  assert.deepEqual(
+    summaries.map(estimate => estimate.estimate_id),
+    [
+      "meps24-gross-all-cause-spending-mean",
+      "meps24-healthcare-paperwork-time-mean"
+    ]
+  );
+  assert.deepEqual(
+    [
+      summaries[0]!.distribution_summary!.p25,
+      summaries[0]!.distribution_summary!.p50,
+      summaries[0]!.distribution_summary!.p75
+    ],
+    [1116, 3624, 14840]
+  );
+  assert.deepEqual(
+    [
+      summaries[1]!.distribution_summary!.p25,
+      summaries[1]!.distribution_summary!.p50,
+      summaries[1]!.distribution_summary!.p75
+    ],
+    [0, 3, 12]
+  );
+  for (const estimate of summaries) {
+    assert.ok(
+      estimate.distribution_summary!.limitations.some(limitation =>
+        /not a confidence interval/i.test(limitation)
+      )
+    );
+  }
+
+  const brief = buildPlanningBrief({
+    context: reviewedBundle.context,
+    estimates: reviewedEstimates,
+    localContext: [],
+    scenario: null,
+    evidence: reviewedBundle.evidence,
+    dataRequests: reviewedBundle.data_requests,
+    generatedAt: "2026-09-26T00:00:00Z"
+  });
+  assert.deepEqual(
+    brief.burden_findings
+      .filter(estimate => estimate.distribution_summary !== undefined)
+      .map(estimate => estimate.estimate_id)
+      .sort(),
+    summaries.map(estimate => estimate.estimate_id)
+  );
+  assert.match(serializeBriefJson(brief), /"distribution_summary"/);
+
+  const presentation = readSource("../src/components/DistributionSummaryText.tsx");
+  assert.match(presentation, /Typical Range \(25th–75th percentile\)/);
+  assert.match(presentation, /Median:/);
+});
+
+test("WV context does not mutate Typical Range or Pilot planning assumptions", () => {
+  const summarySnapshot = reviewedEstimates
+    .filter(estimate => estimate.distribution_summary !== undefined)
+    .map(estimate => structuredClone(estimate.distribution_summary));
+  const scenario = createPlanningScenarioDefaults();
+  const scenarioSnapshot = structuredClone(scenario);
+  const selectedLocal = reviewedLocalContext.indicators[0]!;
+
+  const brief = buildPlanningBrief({
+    context: reviewedBundle.context,
+    estimates: reviewedEstimates,
+    localContext: [selectedLocal],
+    scenario: null,
+    evidence: reviewedBundle.evidence,
+    dataRequests: reviewedBundle.data_requests,
+    generatedAt: "2026-09-26T00:00:00Z"
+  });
+  const summaryAfter = brief.burden_findings
+    .filter(estimate => estimate.distribution_summary !== undefined)
+    .map(estimate => estimate.distribution_summary);
+
+  assert.deepEqual(summaryAfter, summarySnapshot);
+  assert.deepEqual(scenario, scenarioSnapshot);
+  assert.equal(brief.local_context.length, 1);
 });
 
 test("all durable reviewed artifact checksum manifests and payload bytes remain unchanged", () => {

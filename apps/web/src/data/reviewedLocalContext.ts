@@ -3,21 +3,14 @@ import reviewedLocalContextJson from "../../../../artifacts/reviewed/local-conte
 import { REVIEWED_MEPS_ARTIFACT_VERSION } from "./reviewedArtifact";
 import {
   assertReviewedWvLocalContextArtifact,
-  REVIEWED_WV_LOCAL_CONTEXT_ARTIFACT_VERSION,
-  REVIEWED_WV_LOCAL_CONTEXT_NATIONAL_MEPS_ARTIFACT_VERSION
+  assertReviewedWvLocalContextRuntimeCompatibility,
+  REVIEWED_WV_LOCAL_CONTEXT_ARTIFACT_VERSION
 } from "./reviewedLocalContextValidation";
 
 export { REVIEWED_WV_LOCAL_CONTEXT_ARTIFACT_VERSION };
 
 export function loadReviewedWvLocalContextArtifact(): LocalContextArtifact {
-  if (
-    REVIEWED_WV_LOCAL_CONTEXT_NATIONAL_MEPS_ARTIFACT_VERSION !==
-    REVIEWED_MEPS_ARTIFACT_VERSION
-  ) {
-    throw new Error(
-      "Reviewed WV local-context binding does not match the selected national MEPS runtime artifact."
-    );
-  }
+  assertReviewedWvLocalContextRuntimeCompatibility(REVIEWED_MEPS_ARTIFACT_VERSION);
 
   const candidate: unknown = reviewedLocalContextJson;
   return assertReviewedWvLocalContextArtifact(candidate);
