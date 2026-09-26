@@ -81,8 +81,12 @@ validate_link_table <- function(links) {
   missing <- setdiff(required, names(links))
   if (length(missing)) stop("HC-254I validation missing: ", paste(missing, collapse = ", "), call. = FALSE)
 
-  duplicate_clnk <- duplicated(as.character(links$CLNKIDX)) |
-    duplicated(as.character(links$CLNKIDX), fromLast = TRUE)
+  clnk <- as.character(links$CLNKIDX)
+  pair_key <- paste(as.character(links$CONDIDX), as.character(links$EVNTIDX), sep = "::")
+  duplicate_clnk <- duplicated(clnk) | duplicated(clnk, fromLast = TRUE)
+  duplicate_pair <- duplicated(pair_key) | duplicated(pair_key, fromLast = TRUE)
+  expected_clnk <- paste0(as.character(links$CONDIDX), as.character(links$EVNTIDX))
+  clnk_composition_mismatch <- !is.na(clnk) & clnk != expected_clnk
 
   supported <- as.character(links$EVENTYPE) %in% c("1", "2", "3", "4")
   excluded <- as.character(links$EVENTYPE) %in% c("7", "8")
@@ -91,6 +95,8 @@ validate_link_table <- function(links) {
   list(
     duplicate_clnkidx_n = sum(duplicate_clnk),
     duplicate_clnkidx_values = unique(as.character(links$CLNKIDX[duplicate_clnk])),
+    duplicate_condition_event_pair_n = sum(duplicate_pair),
+    clnkidx_composition_mismatch_n = sum(clnk_composition_mismatch),
     unsupported_eventype_n = sum(unsupported),
     unsupported_eventype_values = sort(unique(as.character(links$EVENTYPE[unsupported])))
   )
@@ -153,6 +159,8 @@ validate_linkage_invariants <- function(conditions, links, event_files) {
     unmatched_evntidx_n = sum(unmatched_event),
     event_family_mismatch_n = sum(event_family_mismatch),
     duplicate_clnkidx_n = link_diag$duplicate_clnkidx_n,
+    duplicate_condition_event_pair_n = link_diag$duplicate_condition_event_pair_n,
+    clnkidx_composition_mismatch_n = link_diag$clnkidx_composition_mismatch_n,
     unsupported_eventype_n = link_diag$unsupported_eventype_n,
     unsupported_eventype_values = link_diag$unsupported_eventype_values
   )
