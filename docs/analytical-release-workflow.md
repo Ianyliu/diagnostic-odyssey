@@ -186,12 +186,17 @@ separate sampling-confidence intervals around the quantile cutpoints. The
 the reported IQR, but it remains a documented limitation for the upper tail and
 mean.
 
-Runtime selection is intentionally unchanged by this promotion. The web runtime
-continues to select
-`meps-2024-long-covid-candidate-20260923T020607Z`, because the reviewed West
-Virginia local-context artifact remains explicitly bound to that national MEPS
-version. A separate follow-up change must review compatibility/rebinding before
-the national runtime selector can move.
+The Phase A runtime activation follow-up selects
+`meps-2024-long-covid-candidate-20260926T011343Z` without rewriting the
+historical reviewed West Virginia artifact. That artifact continues to declare
+its original September 23 national-MEPS binding. Runtime compatibility is
+instead fail-closed through an explicit allowlist containing only the original
+September 23 artifact and the September 26 artifact. The September 26 version is
+admitted because the reviewed promotion proved 21-estimate no-drift after
+excluding release/version/distribution fields, with only additive reviewed
+DistributionSummary content on the two approved parent means. Unknown or future
+MEPS versions are not implicitly compatible. Future local-context candidates
+are stamped with the September 26 national artifact version.
 
 Phase 2 Pilot calibration remains unsupported: no current reviewed MEPS
 distribution exactly matches a Pilot assumption in construct,

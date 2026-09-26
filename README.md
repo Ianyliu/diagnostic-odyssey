@@ -93,7 +93,7 @@ The other routes show the intended product boundary. Some are deliberately scaff
 
 ### Working now
 
-- Reviewed national 2024 MEPS HC-256 Long COVID artifact with **21 `reviewed_released` estimates**, loaded by the web runtime from `artifacts/reviewed/meps-2024-long-covid-candidate-20260923T020607Z/`.
+- Reviewed national 2024 MEPS HC-256 Long COVID artifact with **21 `reviewed_released` estimates**, loaded by the web runtime from `artifacts/reviewed/meps-2024-long-covid-candidate-20260926T011343Z/`.
 - Survey-aware MEPS analytical pipeline with reviewed variable map, cohort construction, weight-specific survey designs, burden domains, candidate generation, methods review, and explicit promotion gates.
 - Reviewed West Virginia **state-level** HRSA + 2024 ACS 5-year local context, runtime-loaded from `artifacts/reviewed/local-context-wv-hrsa-acs-candidate-20260924T052332Z/` as a separate implementation-context layer with fail-closed runtime validation. Analysts can explicitly select eligible reviewed records into the Planning Brief; selection does not rescale national burden or alter Pilot Planner assumptions.
 
