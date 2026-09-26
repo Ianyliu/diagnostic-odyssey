@@ -129,8 +129,22 @@ source_metadata <- jsonlite::fromJSON(source_metadata_path, simplifyVector = FAL
 
 specialty_counts <- function(x, family) {
   x <- normalize_meps_names(x)
-  ids <- target_u09_events$EVNTIDX[target_u09_events$event_family == family]
-  y <- x[as.character(x$EVNTIDX) %in% ids, , drop = FALSE]
+  qualifying <- target_u09_events[
+    target_u09_events$event_family == family,
+    ,
+    drop = FALSE
+  ]
+  qualifying_keys <- paste(
+    qualifying$DUPERSID,
+    qualifying$EVNTIDX,
+    sep = "::"
+  )
+  event_keys <- paste(
+    as.character(x$DUPERSID),
+    as.character(x$EVNTIDX),
+    sep = "::"
+  )
+  y <- x[event_keys %in% qualifying_keys, , drop = FALSE]
   out <- list(event_n = nrow(y))
   for (field in c("MEDPTYPE_M18", "DRSPLTY_M18")) {
     if (field %in% names(y)) {
@@ -183,7 +197,11 @@ diagnostics <- list(
     unique_u09_persons_overlapping_target_n = length(unique(as.character(target_u09_conditions$DUPERSID)))
   ),
   linkage = list(
-    total_u09_condition_event_links = nrow(footprint$u09_links),
+    u09_condition_event_links_all_event_types = nrow(footprint$u09_raw_links),
+    u09_supported_condition_event_links = nrow(footprint$u09_supported_links),
+    u09_reconciled_condition_event_links = nrow(footprint$u09_reconciled_links),
+    u09_supported_but_unreconciled_condition_event_links =
+      nrow(footprint$u09_supported_links) - nrow(footprint$u09_reconciled_links),
     unique_u09_linked_events = nrow(footprint$unique_u09_events),
     target_unique_u09_linked_events = nrow(target_u09_events),
     target_u09_linked_events_by_family = event_family_counts,
