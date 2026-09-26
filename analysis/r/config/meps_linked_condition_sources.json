@@ -1,0 +1,167 @@
+{
+  "schema_version": "1.0",
+  "analysis_id": "meps-2024-linked-condition-feasibility",
+  "status": "feasibility-only",
+  "source_pin_policy": "New PUF hashes remain unpinned until exact official AHRQ archive and extracted Stata bytes are independently verified. Downloader must fail closed while any pin is null.",
+  "sources": [
+    {
+      "source_id": "meps-hc255-2024",
+      "puf_id": "HC-255",
+      "label": "2024 Medical Conditions",
+      "release": "July 2026",
+      "official_page": "https://meps.ahrq.gov/data_stats/download_data_files_detail.jsp?cboPufNumber=HC-255",
+      "documentation": "https://meps.ahrq.gov/data_stats/download_data/pufs/h255/h255doc.shtml",
+      "download_url": "https://meps.ahrq.gov/data_files/pufs/h255/h255dta.zip",
+      "expected_archive_filename": "h255dta.zip",
+      "expected_data_filename": "h255.dta",
+      "expected_zip_sha256": null,
+      "expected_extracted_dta_sha256": null,
+      "required_variables": [
+        "DUPERSID",
+        "CONDN",
+        "CONDIDX",
+        "ICD10CDX",
+        "CCSR1X",
+        "CCSR2X",
+        "CCSR3X",
+        "CCSR4X",
+        "PERWT24F",
+        "VARSTR",
+        "VARPSU"
+      ]
+    },
+    {
+      "source_id": "meps-hc254i-2024",
+      "puf_id": "HC-254I",
+      "label": "2024 Condition-Event Link",
+      "release": "July 2026",
+      "official_page": "https://meps.ahrq.gov/data_stats/download_data_files_detail.jsp?cboPufNumber=HC-254I",
+      "documentation": "https://meps.ahrq.gov/data_stats/download_data/pufs/h254i/h254idoc.shtml",
+      "download_url": "https://meps.ahrq.gov/data_files/pufs/h254i/h254idta.zip",
+      "expected_archive_filename": "h254idta.zip",
+      "expected_data_filename": "h254i.dta",
+      "expected_zip_sha256": null,
+      "expected_extracted_dta_sha256": null,
+      "required_variables": [
+        "DUPERSID",
+        "CONDIDX",
+        "EVNTIDX",
+        "CLNKIDX",
+        "EVENTYPE"
+      ]
+    },
+    {
+      "source_id": "meps-hc254g-2024",
+      "puf_id": "HC-254G",
+      "label": "2024 Office-Based Medical Provider Visits",
+      "release": "July 2026",
+      "official_page": "https://meps.ahrq.gov/data_stats/download_data_files_detail.jsp?cboPufNumber=HC-254G",
+      "documentation": "https://meps.ahrq.gov/data_stats/download_data/pufs/h254g/h254gdoc.shtml",
+      "download_url": "https://meps.ahrq.gov/data_files/pufs/h254g/h254gdta.zip",
+      "expected_archive_filename": "h254gdta.zip",
+      "expected_data_filename": "h254g.dta",
+      "expected_zip_sha256": null,
+      "expected_extracted_dta_sha256": null,
+      "required_variables": [
+        "DUPERSID",
+        "EVNTIDX",
+        "PERWT24F",
+        "VARSTR",
+        "VARPSU"
+      ],
+      "diagnostic_optional_variables": [
+        "MEDPTYPE_M18",
+        "DRSPLTY_M18"
+      ]
+    },
+    {
+      "source_id": "meps-hc254f-2024",
+      "puf_id": "HC-254F",
+      "label": "2024 Outpatient Department Visits",
+      "release": "July 2026",
+      "official_page": "https://meps.ahrq.gov/data_stats/download_data_files_detail.jsp?cboPufNumber=HC-254F",
+      "documentation": "https://meps.ahrq.gov/data_stats/download_data/pufs/h254f/h254fdoc.shtml",
+      "download_url": "https://meps.ahrq.gov/data_files/pufs/h254f/h254fdta.zip",
+      "expected_archive_filename": "h254fdta.zip",
+      "expected_data_filename": "h254f.dta",
+      "expected_zip_sha256": null,
+      "expected_extracted_dta_sha256": null,
+      "required_variables": [
+        "DUPERSID",
+        "EVNTIDX",
+        "PERWT24F",
+        "VARSTR",
+        "VARPSU"
+      ],
+      "diagnostic_optional_variables": [
+        "MEDPTYPE_M18",
+        "DRSPLTY_M18"
+      ]
+    },
+    {
+      "source_id": "meps-hc254e-2024",
+      "puf_id": "HC-254E",
+      "label": "2024 Emergency Room Visits",
+      "release": "July 2026",
+      "official_page": "https://meps.ahrq.gov/data_stats/download_data_files_detail.jsp?cboPufNumber=HC-254E",
+      "documentation": "https://meps.ahrq.gov/data_stats/download_data/pufs/h254e/h254edoc.shtml",
+      "download_url": "https://meps.ahrq.gov/data_files/pufs/h254e/h254edta.zip",
+      "expected_archive_filename": "h254edta.zip",
+      "expected_data_filename": "h254e.dta",
+      "expected_zip_sha256": null,
+      "expected_extracted_dta_sha256": null,
+      "required_variables": [
+        "DUPERSID",
+        "EVNTIDX",
+        "PERWT24F",
+        "VARSTR",
+        "VARPSU"
+      ]
+    },
+    {
+      "source_id": "meps-hc254d-2024",
+      "puf_id": "HC-254D",
+      "label": "2024 Hospital Inpatient Stays",
+      "release": "July 2026",
+      "official_page": "https://meps.ahrq.gov/data_stats/download_data_files_detail.jsp?cboPufNumber=HC-254D",
+      "documentation": "https://meps.ahrq.gov/data_stats/download_data/pufs/h254d/h254ddoc.shtml",
+      "download_url": "https://meps.ahrq.gov/data_files/pufs/h254d/h254ddta.zip",
+      "expected_archive_filename": "h254ddta.zip",
+      "expected_data_filename": "h254d.dta",
+      "expected_zip_sha256": null,
+      "expected_extracted_dta_sha256": null,
+      "required_variables": [
+        "DUPERSID",
+        "EVNTIDX",
+        "PERWT24F",
+        "VARSTR",
+        "VARPSU"
+      ]
+    },
+    {
+      "source_id": "meps-hc256-2024",
+      "puf_id": "HC-256",
+      "label": "2024 Full Year Consolidated",
+      "release": "August 2026",
+      "official_page": "https://meps.ahrq.gov/data_stats/download_data_files_detail.jsp?cboPufNumber=HC-256",
+      "documentation": "https://meps.ahrq.gov/data_stats/download_data/pufs/h256/h256doc.shtml",
+      "governance": "reuse existing meps_hc256_source_integrity.json and current cohort code unchanged"
+    }
+  ],
+  "event_types": {
+    "1": "office",
+    "2": "outpatient",
+    "3": "emergency",
+    "4": "inpatient"
+  },
+  "excluded_event_types": {
+    "7": "home_health",
+    "8": "prescribed_medicine"
+  },
+  "condition_selection": {
+    "field": "ICD10CDX",
+    "included_code": "U09",
+    "excluded_substitute": "U07",
+    "interpretation": "reported/coded post-COVID condition marker; not equivalent to the HC-256 operational-current Long COVID cohort"
+  }
+}
