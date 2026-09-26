@@ -17,7 +17,7 @@ make_linked_condition_fixture <- function() {
     DUPERSID = c("P1", "P1", "P1"),
     CONDIDX = c("P101", "P102", "P101"),
     EVNTIDX = c("E1", "E1", "E2"),
-    CLNKIDX = c("L1", "L2", "L3"),
+    CLNKIDX = c("P101E1", "P102E1", "P101E2"),
     EVENTYPE = c(1, 1, 2),
     stringsAsFactors = FALSE
   )
@@ -42,6 +42,8 @@ testthat::test_that("canonical many-to-many fixture deduplicates events correctl
   testthat::expect_equal(footprint$per_person$u09_event_n, 2L)
   testthat::expect_equal(quality$unmatched_condidx_n, 0L)
   testthat::expect_equal(quality$unmatched_evntidx_n, 0L)
+  testthat::expect_equal(quality$duplicate_condition_event_pair_n, 0L)
+  testthat::expect_equal(quality$clnkidx_composition_mismatch_n, 0L)
 })
 
 testthat::test_that("same event linked to multiple conditions is counted once for U09", {
@@ -90,7 +92,7 @@ testthat::test_that("duplicated three-character U09 conditions pointing to one e
   x$conditions <- rbind(x$conditions, extra_condition)
   extra_link <- x$links[1, , drop = FALSE]
   extra_link$CONDIDX <- "P103"
-  extra_link$CLNKIDX <- "L4"
+  extra_link$CLNKIDX <- "P103E1"
   x$links <- rbind(x$links, extra_link)
 
   footprint <- derive_u09_event_footprint(x$conditions, x$links, x$event_files)
