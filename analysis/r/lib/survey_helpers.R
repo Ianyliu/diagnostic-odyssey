@@ -176,6 +176,23 @@ survey_mean_result <- function(
   )
 }
 
+survey_design_provenance_variable <- function(design, attribute) {
+  value <- attr(design, attribute, exact = TRUE)
+  if (
+    !is.character(value) ||
+      length(value) != 1L ||
+      is.na(value) ||
+      !nzchar(trimws(value)) ||
+      !(value %in% names(design$variables))
+  ) {
+    stop(
+      sprintf("Survey design is missing or malformed %s provenance.", attribute),
+      call. = FALSE
+    )
+  }
+  value
+}
+
 survey_distribution_summary <- function(
   design,
   source_variable,
@@ -184,10 +201,15 @@ survey_distribution_summary <- function(
 ) {
   assert_survey_available()
   tmp <- design_with_clean_value(design, source_variable, cleaner)
-  weight_variable <- attr(design, "do_weight_variable")
-  if (is.null(weight_variable) || length(weight_variable) != 1L || !nzchar(weight_variable)) {
-    stop("Survey design is missing do_weight_variable provenance.", call. = FALSE)
-  }
+  weight_variable <- survey_design_provenance_variable(design, "do_weight_variable")
+  variance_stratum_variable <- survey_design_provenance_variable(
+    design,
+    "do_variance_stratum"
+  )
+  variance_psu_variable <- survey_design_provenance_variable(
+    design,
+    "do_variance_psu"
+  )
 
   stat <- survey::svyquantile(
     ~.do_value,
@@ -214,8 +236,8 @@ survey_distribution_summary <- function(
     unweighted_n = as.integer(survey_unweighted_valid_n(tmp, ".do_value")),
     weighted_denominator = survey_weighted_valid_n(tmp, ".do_value"),
     weight_variable = weight_variable,
-    variance_stratum_variable = "VARSTR",
-    variance_psu_variable = "VARPSU",
+    variance_stratum_variable = variance_stratum_variable,
+    variance_psu_variable = variance_psu_variable,
     statistics_method = paste(
       "survey::svyquantile on the parent survey domain;",
       "quantiles=c(0.25,0.50,0.75), na.rm=TRUE, ci=FALSE, qrule='math'"

@@ -520,6 +520,33 @@ export function validateEstimate(value: unknown, path = "estimate"): ValidationI
           });
         }
       }
+
+      if (
+        typeof summary.unweighted_n === "number" &&
+        Number.isFinite(summary.unweighted_n) &&
+        Number.isInteger(summary.unweighted_n) &&
+        typeof value.unweighted_n === "number" &&
+        Number.isFinite(value.unweighted_n) &&
+        summary.unweighted_n !== value.unweighted_n
+      ) {
+        issues.push({
+          path: `${summaryPath}.unweighted_n`,
+          message: "must equal parent estimate unweighted_n and use the same valid response denominator as the parent estimate"
+        });
+      }
+
+      if (
+        typeof summary.weighted_denominator === "number" &&
+        Number.isFinite(summary.weighted_denominator) &&
+        typeof value.weighted_denominator === "number" &&
+        Number.isFinite(value.weighted_denominator) &&
+        summary.weighted_denominator !== value.weighted_denominator
+      ) {
+        issues.push({
+          path: `${summaryPath}.weighted_denominator`,
+          message: "must match parent estimate weighted_denominator and use the same valid response denominator as the parent estimate"
+        });
+      }
     }
   }
 

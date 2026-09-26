@@ -33,6 +33,70 @@ testthat::test_that("survey distribution summary is design-aware and uses the re
   testthat::expect_lte(summary$p50, summary$p75)
 })
 
+testthat::test_that("survey distribution summary derives provenance from MEPS design attributes", {
+  data <- synthetic_design_data()
+  data$do_current_long_covid <- TRUE
+  designs <- build_meps_designs(data)
+
+  person <- current_long_covid_domain(designs$person)
+  esaq <- current_long_covid_domain(designs$esaq)
+
+  person_summary <- survey_distribution_summary(person, "x", meps_nonnegative)
+  esaq_summary <- survey_distribution_summary(esaq, "x", meps_nonnegative)
+
+  testthat::expect_equal(person_summary$weight_variable, "PERWT24F")
+  testthat::expect_equal(esaq_summary$weight_variable, "ESAQWT24F")
+  testthat::expect_equal(person_summary$variance_stratum_variable, "VARSTR")
+  testthat::expect_equal(person_summary$variance_psu_variable, "VARPSU")
+  testthat::expect_equal(esaq_summary$variance_stratum_variable, "VARSTR")
+  testthat::expect_equal(esaq_summary$variance_psu_variable, "VARPSU")
+
+  person$variables$ALTSTR <- person$variables$VARSTR
+  person$variables$ALTPSU <- person$variables$VARPSU
+  attr(person, "do_variance_stratum") <- "ALTSTR"
+  attr(person, "do_variance_psu") <- "ALTPSU"
+  alternate <- survey_distribution_summary(person, "x", meps_nonnegative)
+
+  testthat::expect_equal(alternate$variance_stratum_variable, "ALTSTR")
+  testthat::expect_equal(alternate$variance_psu_variable, "ALTPSU")
+})
+
+testthat::test_that("survey distribution summary fails closed when design provenance attrs are missing", {
+  data <- synthetic_design_data()
+  data$do_current_long_covid <- TRUE
+  design <- current_long_covid_domain(build_meps_design(data, "PERWT24F"))
+
+  for (attribute in c(
+    "do_weight_variable",
+    "do_variance_stratum",
+    "do_variance_psu"
+  )) {
+    broken <- design
+    attr(broken, attribute) <- NULL
+    testthat::expect_error(
+      survey_distribution_summary(broken, "x", meps_nonnegative),
+      paste0("missing or malformed ", attribute, " provenance"),
+      fixed = TRUE
+    )
+  }
+
+  empty <- design
+  attr(empty, "do_variance_stratum") <- ""
+  testthat::expect_error(
+    survey_distribution_summary(empty, "x", meps_nonnegative),
+    "missing or malformed do_variance_stratum provenance",
+    fixed = TRUE
+  )
+
+  malformed <- design
+  attr(malformed, "do_variance_psu") <- 42
+  testthat::expect_error(
+    survey_distribution_summary(malformed, "x", meps_nonnegative),
+    "missing or malformed do_variance_psu provenance",
+    fixed = TRUE
+  )
+})
+
 testthat::test_that("survey distribution summary uses the parent cleaner and valid denominator", {
   data <- synthetic_design_data()
   data$do_current_long_covid <- TRUE

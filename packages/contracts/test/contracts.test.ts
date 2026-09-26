@@ -351,6 +351,32 @@ test("DistributionSummary requires matching survey provenance", () => {
   ));
 });
 
+test("DistributionSummary requires the same valid response denominator as parent estimate", () => {
+  const unweightedMismatch = distributionEstimate();
+  unweightedMismatch.distribution_summary!.unweighted_n =
+    unweightedMismatch.unweighted_n! - 1;
+  const unweightedIssues = validateEstimate(unweightedMismatch);
+  assert.ok(unweightedIssues.some(issue =>
+    issue.path.endsWith(".distribution_summary.unweighted_n") &&
+    issue.message.includes("same valid response denominator")
+  ));
+
+  const weightedMismatch = distributionEstimate();
+  weightedMismatch.distribution_summary!.weighted_denominator =
+    weightedMismatch.weighted_denominator! + 1;
+  const weightedIssues = validateEstimate(weightedMismatch);
+  assert.ok(weightedIssues.some(issue =>
+    issue.path.endsWith(".distribution_summary.weighted_denominator") &&
+    issue.message.includes("same valid response denominator")
+  ));
+});
+
+test("legacy Estimate without DistributionSummary still validates", () => {
+  const legacy = distributionEstimate();
+  delete legacy.distribution_summary;
+  assert.deepEqual(validateEstimate(legacy), []);
+});
+
 test("unreleased parent cannot expose DistributionSummary values", () => {
   const estimate = distributionEstimate();
   estimate.release_status = "not_released";
