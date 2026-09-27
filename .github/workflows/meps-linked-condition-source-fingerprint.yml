@@ -6,6 +6,7 @@ on:
       - methods/meps-linked-condition-feasibility
     paths:
       - .github/workflows/meps-linked-condition-source-fingerprint.yml
+      - analysis/r/config/meps_linked_condition_sources.json
 
 permissions:
   contents: read
@@ -117,9 +118,12 @@ jobs:
               tolower(basename(members$Name)) == expected_name
             ]
             if (length(matching) != 1L) {
+              safe_members <- paste(as.character(members$Name), collapse = ", ")
               stop(
-                source$puf_id, " expected exactly one ", source$expected_data_filename,
-                " ZIP member; found ", length(matching), ".",
+                source$puf_id,
+                " expected exactly one ", source$expected_data_filename,
+                " ZIP member; found ", length(matching),
+                ". ZIP members: ", safe_members,
                 call. = FALSE
               )
             }

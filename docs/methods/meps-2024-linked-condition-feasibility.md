@@ -16,7 +16,7 @@ Phase A uses:
 
 - HC-256 — 2024 Full Year Consolidated, for the already-governed operational-current Long-COVID cohort and person-level survey design.
 - HC-255 — 2024 Medical Conditions.
-- HC-254I — 2024 Condition-Event Link.
+- HC-254I — 2024 Condition-Event Link. The public MEPS release identifier remains **HC-254I**; its configured official Stata archive contains the analytical/programming member **H254IF1.DTA**. These identifiers are intentionally kept distinct.
 - HC-254G — office-based visits.
 - HC-254F — outpatient visits.
 - HC-254E — emergency-room visits.

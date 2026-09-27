@@ -39,7 +39,7 @@
       "documentation": "https://meps.ahrq.gov/data_stats/download_data/pufs/h254i/h254idoc.shtml",
       "download_url": "https://meps.ahrq.gov/data_files/pufs/h254i/h254idta.zip",
       "expected_archive_filename": "h254idta.zip",
-      "expected_data_filename": "h254i.dta",
+      "expected_data_filename": "h254if1.dta",
       "expected_zip_sha256": null,
       "expected_extracted_dta_sha256": null,
       "required_variables": [
