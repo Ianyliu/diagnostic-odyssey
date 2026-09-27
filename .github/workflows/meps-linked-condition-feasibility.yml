@@ -1,0 +1,163 @@
+name: MEPS 2024 Linked-Condition Feasibility
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  linked-condition-feasibility:
+    name: Build aggregate-only linked-condition feasibility diagnostics
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    env:
+      OUTPUT_DIR: artifacts/generated/meps-2024-linked-condition-feasibility-${{ github.run_id }}
+      FEASIBILITY_ARTIFACT_NAME: meps-2024-linked-condition-feasibility-${{ github.run_id }}
+
+    steps:
+      - name: Checkout exact requested revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+
+      - name: Assert checkout matches dispatched GitHub SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          ACTUAL_SHA="$(git rev-parse HEAD)"
+          test "$ACTUAL_SHA" = "$GITHUB_SHA" || {
+            echo "Checkout SHA mismatch: HEAD=$ACTUAL_SHA GITHUB_SHA=$GITHUB_SHA"
+            exit 1
+          }
+
+      - name: Record GitHub Actions provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUTPUT_DIR"
+          jq -n             --arg repository "$GITHUB_REPOSITORY"             --arg sha "$GITHUB_SHA"             --arg ref "$GITHUB_REF"             --arg ref_name "$GITHUB_REF_NAME"             --arg run_id "$GITHUB_RUN_ID"             --arg run_attempt "$GITHUB_RUN_ATTEMPT"             --arg workflow "$GITHUB_WORKFLOW"             --arg timestamp "$(date -u +'%Y-%m-%dT%H:%M:%SZ')"             '{
+              repository: $repository,
+              github_sha: $sha,
+              github_ref: $ref,
+              github_ref_name: $ref_name,
+              workflow: $workflow,
+              workflow_run_id: $run_id,
+              workflow_run_attempt: $run_attempt,
+              started_at_utc: $timestamp,
+              phase: "feasibility-only"
+            }' > "$OUTPUT_DIR/github-actions-run-manifest.json"
+
+      - name: Set up Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install JavaScript dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Re-run repository checks before real data
+        run: |
+          npm run typecheck
+          npm test
+
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      - name: Install R analytical dependencies
+        run: Rscript analysis/r/install_dependencies.R
+
+      - name: Run synthetic linkage tests before real data
+        run: Rscript analysis/r/tests/run_tests.R
+
+      - name: Acquire governed HC-256 source
+        run: Rscript pipelines/data/download_meps_hc256.R
+
+      - name: Acquire governed linked-condition sources
+        run: Rscript pipelines/data/download_meps_linked_condition.R
+
+      - name: Build aggregate-only feasibility diagnostics
+        run: |
+          Rscript analysis/r/meps/run_linked_condition_feasibility.R             --output="$OUTPUT_DIR"
+
+      - name: Copy safe linked-condition source metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          SOURCE_METADATA="data/raw/meps/2024/linked-condition/linked-condition-source-metadata.json"
+          test -s "$SOURCE_METADATA"
+          cp "$SOURCE_METADATA" "$OUTPUT_DIR/linked-condition-source-metadata.json"
+
+      - name: Assert feasibility-only manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          jq -e '
+            .status == "preliminary-feasibility-only"
+            and .automatic_release == false
+            and .product_estimates_generated == false
+            and .runtime_selection_changed == false
+            and .reviewed_artifact_modified == false
+            and .bundle_generated == false
+            and .spending_estimator_present == false
+            and .hc256_cohort_definition_reused == true
+          ' "$OUTPUT_DIR/feasibility-manifest.json" >/dev/null
+
+          jq -e '
+            .status == "preliminary-feasibility-only"
+            and .product_estimates_generated == false
+            and .spending_estimator_present == false
+            and .bundle_generated == false
+            and .runtime_selection_changed == false
+            and .reviewed_artifact_modified == false
+          ' "$OUTPUT_DIR/diagnostics.json" >/dev/null
+
+      - name: Verify aggregate-only output
+        shell: bash
+        run: |
+          set -euo pipefail
+          for required in             diagnostics.json             feasibility-manifest.json             linked-condition-source-metadata.json             github-actions-run-manifest.json
+          do
+            test -s "$OUTPUT_DIR/$required"
+          done
+
+          test ! -e "$OUTPUT_DIR/bundle.json"
+
+          if find "$OUTPUT_DIR" -type f \(             -name '*.dta' -o             -name '*.zip' -o             -name '*.csv' -o             -name '*.rds' -o             -name '*.RData' -o             -name '*.parquet' -o             -name '*.feather'           \) | grep -q .; then
+            echo "Refusing upload: raw/respondent/event-level data-like file found."
+            find "$OUTPUT_DIR" -type f -print
+            exit 1
+          fi
+
+          if grep -E '"DUPERSID"[[:space:]]*:|"CONDIDX"[[:space:]]*:|"EVNTIDX"[[:space:]]*:|"CLNKIDX"[[:space:]]*:' \
+            "$OUTPUT_DIR/diagnostics.json" "$OUTPUT_DIR/feasibility-manifest.json"; then
+            echo "Refusing upload: row-level identifier field found in aggregate diagnostics."
+            exit 1
+          fi
+
+      - name: Write checksums
+        shell: bash
+        run: |
+          set -euo pipefail
+          (
+            cd "$OUTPUT_DIR"
+            sha256sum               diagnostics.json               feasibility-manifest.json               linked-condition-source-metadata.json               github-actions-run-manifest.json               > SHA256SUMS
+          )
+
+      - name: Upload feasibility diagnostics for methods review
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.FEASIBILITY_ARTIFACT_NAME }}
+          path: |
+            ${{ env.OUTPUT_DIR }}/diagnostics.json
+            ${{ env.OUTPUT_DIR }}/feasibility-manifest.json
+            ${{ env.OUTPUT_DIR }}/linked-condition-source-metadata.json
+            ${{ env.OUTPUT_DIR }}/github-actions-run-manifest.json
+            ${{ env.OUTPUT_DIR }}/SHA256SUMS
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 6

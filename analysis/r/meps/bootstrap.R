@@ -15,6 +15,7 @@
   file.path("analysis", "r", "meps", "cohort_long_covid.R"),
   file.path("analysis", "r", "meps", "survey_designs.R"),
   file.path("analysis", "r", "meps", "cohort_diagnostics.R"),
+  file.path("analysis", "r", "meps", "linked_condition_feasibility.R"),
   file.path("analysis", "r", "meps", "estimate_population.R"),
   file.path("analysis", "r", "meps", "estimate_spending.R"),
   file.path("analysis", "r", "meps", "estimate_utilization.R"),

@@ -1,0 +1,184 @@
+{
+  "schema_version": "1.0",
+  "analysis_id": "meps-2024-linked-condition-feasibility",
+  "status": "feasibility-only",
+  "source_pin_policy": "New linked-condition PUF hashes are pinned only to independently reviewed fingerprints of the configured official AHRQ archive and extracted Stata bytes. Production acquisition must fail closed on missing, malformed, or mismatched hashes.",
+  "sources": [
+    {
+      "source_id": "meps-hc255-2024",
+      "puf_id": "HC-255",
+      "label": "2024 Medical Conditions",
+      "release": "2026",
+      "official_page": "https://meps.ahrq.gov/data_stats/download_data_files_detail.jsp?cboPufNumber=HC-255",
+      "documentation": "https://meps.ahrq.gov/data_stats/download_data/pufs/h255/h255doc.shtml",
+      "download_url": "https://meps.ahrq.gov/data_files/pufs/h255/h255dta.zip",
+      "expected_archive_filename": "h255dta.zip",
+      "expected_data_filename": "h255.dta",
+      "expected_zip_sha256": "2068c1c5481f615c1275374f881d6b3db09df7e516ef1f859a4223639c41ba7e",
+      "expected_extracted_dta_sha256": "7ec48af4a8ad924b9a1214fc92e7c1f1cab02b6144eaf43b737a5932de3f38f3",
+      "required_variables": [
+        "DUPERSID",
+        "CONDN",
+        "CONDIDX",
+        "ICD10CDX",
+        "CCSR1X",
+        "CCSR2X",
+        "CCSR3X",
+        "CCSR4X",
+        "PERWT24F",
+        "VARSTR",
+        "VARPSU"
+      ]
+    },
+    {
+      "source_id": "meps-hc254i-2024",
+      "puf_id": "HC-254I",
+      "label": "2024 Condition-Event Link",
+      "release": "2026",
+      "official_page": "https://meps.ahrq.gov/data_stats/download_data_files_detail.jsp?cboPufNumber=HC-254I",
+      "documentation": "https://meps.ahrq.gov/data_stats/download_data/pufs/h254i/h254idoc.shtml",
+      "download_url": "https://meps.ahrq.gov/data_files/pufs/h254i/h254idta.zip",
+      "expected_archive_filename": "h254idta.zip",
+      "expected_data_filename": "h254if1.dta",
+      "expected_zip_sha256": "42adefd0ec70466cd5fe4a4925e33c2d69f97cab42fa63dcb597e4fa594be663",
+      "expected_extracted_dta_sha256": "c32ebf66c97234aba4ceeeda9a8fed59b1162de594674238ee58ad72721ecd02",
+      "required_variables": [
+        "DUPERSID",
+        "CONDIDX",
+        "EVNTIDX",
+        "CLNKIDX",
+        "EVENTYPE"
+      ]
+    },
+    {
+      "source_id": "meps-hc254g-2024",
+      "puf_id": "HC-254G",
+      "label": "2024 Office-Based Medical Provider Visits",
+      "release": "2026",
+      "official_page": "https://meps.ahrq.gov/data_stats/download_data_files_detail.jsp?cboPufNumber=HC-254G",
+      "documentation": "https://meps.ahrq.gov/data_stats/download_data/pufs/h254g/h254gdoc.shtml",
+      "download_url": "https://meps.ahrq.gov/data_files/pufs/h254g/h254gdta.zip",
+      "expected_archive_filename": "h254gdta.zip",
+      "expected_data_filename": "h254g.dta",
+      "expected_zip_sha256": "b753f4eb816ecc3bfffd71596febdf07efc0469aeb1415af89e2f5e42fb0b087",
+      "expected_extracted_dta_sha256": "19e81a7f816ea8bf518dd0a47ac6087bb747f5f0feffb3dd64d36c250864cda4",
+      "required_variables": [
+        "DUPERSID",
+        "EVNTIDX",
+        "PERWT24F",
+        "VARSTR",
+        "VARPSU"
+      ],
+      "diagnostic_optional_variables": [
+        "MEDPTYPE_M18",
+        "DRSPLTY_M18"
+      ]
+    },
+    {
+      "source_id": "meps-hc254f-2024",
+      "puf_id": "HC-254F",
+      "label": "2024 Outpatient Department Visits",
+      "release": "2026",
+      "official_page": "https://meps.ahrq.gov/data_stats/download_data_files_detail.jsp?cboPufNumber=HC-254F",
+      "documentation": "https://meps.ahrq.gov/data_stats/download_data/pufs/h254f/h254fdoc.shtml",
+      "download_url": "https://meps.ahrq.gov/data_files/pufs/h254f/h254fdta.zip",
+      "expected_archive_filename": "h254fdta.zip",
+      "expected_data_filename": "h254f.dta",
+      "expected_zip_sha256": "e45b43cea4d38ab775fbc94e4dfee9675cb48a286d174b0963f61c33fdc1aa39",
+      "expected_extracted_dta_sha256": "dd76d6426c5f06e8435c85c7b8bb3b46db731ac0c40972dee60af22b4f65bc7b",
+      "required_variables": [
+        "DUPERSID",
+        "EVNTIDX",
+        "PERWT24F",
+        "VARSTR",
+        "VARPSU"
+      ],
+      "diagnostic_optional_variables": [
+        "MEDPTYPE_M18",
+        "DRSPLTY_M18"
+      ]
+    },
+    {
+      "source_id": "meps-hc254e-2024",
+      "puf_id": "HC-254E",
+      "label": "2024 Emergency Room Visits",
+      "release": "2026",
+      "official_page": "https://meps.ahrq.gov/data_stats/download_data_files_detail.jsp?cboPufNumber=HC-254E",
+      "documentation": "https://meps.ahrq.gov/data_stats/download_data/pufs/h254e/h254edoc.shtml",
+      "download_url": "https://meps.ahrq.gov/data_files/pufs/h254e/h254edta.zip",
+      "expected_archive_filename": "h254edta.zip",
+      "expected_data_filename": "h254e.dta",
+      "expected_zip_sha256": "35d5a9ce677e7a9f0e9ae62a1e5a375f6c5b448ffee12e81df405bca391009f6",
+      "expected_extracted_dta_sha256": "23071ad1ffa7a2abf46721f4388be6b462f2fc6413dbef8323282db276081723",
+      "required_variables": [
+        "DUPERSID",
+        "EVNTIDX",
+        "PERWT24F",
+        "VARSTR",
+        "VARPSU"
+      ]
+    },
+    {
+      "source_id": "meps-hc254d-2024",
+      "puf_id": "HC-254D",
+      "label": "2024 Hospital Inpatient Stays",
+      "release": "2026",
+      "official_page": "https://meps.ahrq.gov/data_stats/download_data_files_detail.jsp?cboPufNumber=HC-254D",
+      "documentation": "https://meps.ahrq.gov/data_stats/download_data/pufs/h254d/h254ddoc.shtml",
+      "download_url": "https://meps.ahrq.gov/data_files/pufs/h254d/h254ddta.zip",
+      "expected_archive_filename": "h254ddta.zip",
+      "expected_data_filename": "h254d.dta",
+      "expected_zip_sha256": "c9be532d0bfba870e41d80d0962554bf5e07738883c09d1567d0a41cbae0dc89",
+      "expected_extracted_dta_sha256": "5a71c7680f11ebb7dfc5e579ea8b63e6fb090b2ff2eb9a943c7abccdc13cb464",
+      "required_variables": [
+        "DUPERSID",
+        "EVNTIDX",
+        "PERWT24F",
+        "VARSTR",
+        "VARPSU"
+      ]
+    },
+    {
+      "source_id": "meps-hc256-2024",
+      "puf_id": "HC-256",
+      "label": "2024 Full Year Consolidated",
+      "release": "August 2026",
+      "official_page": "https://meps.ahrq.gov/data_stats/download_data_files_detail.jsp?cboPufNumber=HC-256",
+      "documentation": "https://meps.ahrq.gov/data_stats/download_data/pufs/h256/h256doc.shtml",
+      "governance": "reuse existing meps_hc256_source_integrity.json and current cohort code unchanged"
+    }
+  ],
+  "event_types": {
+    "1": "office",
+    "2": "outpatient",
+    "3": "emergency",
+    "4": "inpatient"
+  },
+  "excluded_event_types": {
+    "7": "home_health",
+    "8": "prescribed_medicine"
+  },
+  "condition_selection": {
+    "field": "ICD10CDX",
+    "included_code": "U09",
+    "excluded_substitute": "U07",
+    "interpretation": "reported/coded post-COVID condition marker; not equivalent to the HC-256 operational-current Long COVID cohort"
+  },
+  "source_pin_provenance": {
+    "status": "source-integrity-reviewed",
+    "fingerprint_workflow_run_id": "36288202030",
+    "fingerprint_head_sha": "4e4f914d70b01ac55945fd9f0d10ab4d54874e77",
+    "fingerprint_artifact_id": "10921052434",
+    "fingerprint_artifact_name": "meps-linked-condition-source-fingerprint-36288202030",
+    "fingerprint_artifact_digest": "sha256:e72f209e779350bd9d8fe56648f72e53c64764f1f802b5b8a7bb56cd8147883f",
+    "review_date": "2026-09-27",
+    "scope": "source-integrity provenance only; not analytical review or release approval",
+    "review_checks": [
+      "six configured official AHRQ URLs acquired successfully",
+      "six expected DTA members resolved exactly",
+      "all twelve fingerprints are 64-hex SHA-256 values",
+      "all six required-variable contracts passed",
+      "fingerprint artifact contained metadata only and no raw source data"
+    ]
+  }
+}
