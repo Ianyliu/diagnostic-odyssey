@@ -43,16 +43,17 @@ download_one <- function(source) {
   )
 
   listing <- utils::unzip(archive_path, list = TRUE)
-  dta_entries <- listing$Name[grepl("\\.dta$", listing$Name, ignore.case = TRUE)]
-  if (length(dta_entries) != 1L) {
-    stop(source$puf_id, " expected exactly one Stata file; found ", length(dta_entries), ".", call. = FALSE)
-  }
+  selected_member <- select_expected_dta_member(
+    listing,
+    source$expected_data_filename,
+    source$puf_id
+  )
 
   temp_dir <- tempfile(paste0(tolower(gsub("-", "", source$puf_id)), "-"))
   dir.create(temp_dir, recursive = TRUE)
   on.exit(unlink(temp_dir, recursive = TRUE, force = TRUE), add = TRUE)
-  utils::unzip(archive_path, files = dta_entries[[1]], exdir = temp_dir)
-  extracted <- file.path(temp_dir, dta_entries[[1]])
+  utils::unzip(archive_path, files = selected_member, exdir = temp_dir)
+  extracted <- file.path(temp_dir, selected_member)
   dir.create(dirname(dta_path), recursive = TRUE, showWarnings = FALSE)
   if (file.exists(dta_path)) unlink(dta_path)
   if (!file.copy(extracted, dta_path, overwrite = TRUE)) {

@@ -287,11 +287,80 @@ testthat::test_that("U09 is exact and U07 is never substituted", {
   testthat::expect_equal(selected$ICD10CDX, "U09")
 })
 
-testthat::test_that("Phase A source registry still fails closed while hashes are unpinned", {
+testthat::test_that("committed linked-condition source registry passes pin validation", {
   cfg <- read_linked_condition_source_config()
+  testthat::expect_invisible(assert_linked_condition_source_pins(cfg))
+})
+
+testthat::test_that("linked-condition source pins fail closed for null and malformed hashes", {
+  cfg <- read_linked_condition_source_config()
+
+  null_zip <- cfg
+  null_zip$sources[[1]]$expected_zip_sha256 <- NULL
   testthat::expect_error(
-    assert_linked_condition_source_pins(cfg),
+    assert_linked_condition_source_pins(null_zip),
     "not fully pinned from verified official bytes"
+  )
+
+  null_dta <- cfg
+  null_dta$sources[[1]]$expected_extracted_dta_sha256 <- NULL
+  testthat::expect_error(
+    assert_linked_condition_source_pins(null_dta),
+    "not fully pinned from verified official bytes"
+  )
+
+  malformed_zip <- cfg
+  malformed_zip$sources[[1]]$expected_zip_sha256 <- "not-a-hash"
+  testthat::expect_error(
+    assert_linked_condition_source_pins(malformed_zip),
+    "not fully pinned from verified official bytes"
+  )
+
+  malformed_dta <- cfg
+  malformed_dta$sources[[1]]$expected_extracted_dta_sha256 <- "xyz"
+  testthat::expect_error(
+    assert_linked_condition_source_pins(malformed_dta),
+    "not fully pinned from verified official bytes"
+  )
+
+  short_zip <- cfg
+  short_zip$sources[[1]]$expected_zip_sha256 <- paste(rep("a", 63), collapse = "")
+  testthat::expect_error(
+    assert_linked_condition_source_pins(short_zip),
+    "not fully pinned from verified official bytes"
+  )
+
+  long_dta <- cfg
+  long_dta$sources[[1]]$expected_extracted_dta_sha256 <- paste(rep("b", 65), collapse = "")
+  testthat::expect_error(
+    assert_linked_condition_source_pins(long_dta),
+    "not fully pinned from verified official bytes"
+  )
+})
+
+testthat::test_that("configured analytical member selection is exact and case-insensitive", {
+  listing <- data.frame(Name = c("README.txt", "nested/H254IF1.DTA"), stringsAsFactors = FALSE)
+  testthat::expect_equal(
+    select_expected_dta_member(listing, "h254if1.dta", "HC-254I"),
+    "nested/H254IF1.DTA"
+  )
+  testthat::expect_error(
+    select_expected_dta_member(listing, "h254i.dta", "HC-254I"),
+    "expected exactly one configured analytical Stata member"
+  )
+})
+
+testthat::test_that("zero qualifying U09 events produce an explicit zero multiplicity diagnostic", {
+  empty_links <- data.frame(
+    DUPERSID = character(),
+    CONDIDX = character(),
+    EVNTIDX = character(),
+    stringsAsFactors = FALSE
+  )
+  codes <- setNames(character(), character())
+  testthat::expect_identical(
+    count_qualifying_u09_events_with_additional_non_u09_links(empty_links, codes),
+    0L
   )
 })
 

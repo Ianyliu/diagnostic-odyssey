@@ -125,9 +125,13 @@ This separation ensures bad/unmatched links remain visible as feasibility findin
 
 The new source registry is `analysis/r/config/meps_linked_condition_sources.json`.
 
-The registry contains exact official AHRQ pages, documentation locators, archive URLs, expected filenames, and required-variable contracts. At initial PR construction, this execution environment could not independently retrieve the official archive bytes. Therefore the new archive/data SHA-256 fields are intentionally unpinned rather than guessed.
+The registry contains exact official AHRQ pages, documentation locators, archive URLs, expected filenames, required-variable contracts, and reviewed archive/extracted-DTA SHA-256 pins.
 
-`assert_linked_condition_source_pins()` fails closed until all exact official archive and extracted-Stata hashes have been independently verified and deliberately pinned. The manual workflow must not be dispatched before that source-pin review is complete.
+The six source pairs were observed from the configured official AHRQ URLs by source-fingerprint workflow run **36288202030** at GitHub SHA `4e4f914d70b01ac55945fd9f0d10ab4d54874e77`. The reviewed metadata artifact is ID **10921052434**, `meps-linked-condition-source-fingerprint-36288202030`, with GitHub artifact digest `sha256:e72f209e779350bd9d8fe56648f72e53c64764f1f802b5b8a7bb56cd8147883f`. The artifact recorded successful acquisition of all six configured sources, exact resolution of all six expected DTA members, twelve 64-hex SHA-256 fingerprints, and successful required-variable validation for all six sources; no raw source data were uploaded.
+
+This provenance is **source-integrity review only**. It is not analytical review or release approval.
+
+`assert_linked_condition_source_pins()` requires valid configured archive and extracted-DTA pins before production acquisition. The downloader then verifies the exact downloaded ZIP hash, requires exactly the configured analytical DTA member, verifies the exact extracted-DTA hash, and validates required variables. Any mismatch fails closed; observed values are never substituted automatically.
 
 This is intentional scientific governance: a hash must never be changed merely to make a workflow pass.
 

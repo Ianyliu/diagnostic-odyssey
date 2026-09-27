@@ -50,6 +50,43 @@ validate_required_variables <- function(data, source) {
   invisible(TRUE)
 }
 
+select_expected_dta_member <- function(listing, expected_data_filename, puf_id) {
+  if (!is.data.frame(listing) || !"Name" %in% names(listing)) {
+    stop(puf_id, " ZIP listing is missing a Name field.", call. = FALSE)
+  }
+  matching <- listing$Name[
+    tolower(basename(as.character(listing$Name))) == tolower(expected_data_filename)
+  ]
+  if (length(matching) != 1L) {
+    stop(
+      puf_id, " expected exactly one configured analytical Stata member ",
+      expected_data_filename, "; found ", length(matching), ".",
+      call. = FALSE
+    )
+  }
+  as.character(matching[[1]])
+}
+
+count_qualifying_u09_events_with_additional_non_u09_links <- function(
+  all_u09_links,
+  u09_link_condition_codes
+) {
+  if (!nrow(all_u09_links)) {
+    return(0L)
+  }
+  event_keys <- paste(
+    as.character(all_u09_links$DUPERSID),
+    as.character(all_u09_links$EVNTIDX),
+    sep = "::"
+  )
+  flags <- tapply(
+    as.character(all_u09_links$CONDIDX),
+    event_keys,
+    function(ids) any(unname(u09_link_condition_codes[ids]) != "U09", na.rm = TRUE)
+  )
+  as.integer(sum(flags, na.rm = TRUE))
+}
+
 normalize_meps_names <- function(data) {
   names(data) <- toupper(names(data))
   data

@@ -67,12 +67,45 @@ testthat::test_that("required variable contracts preserve identifiers and design
   }
 })
 
-testthat::test_that("new source hashes are deliberately unpinned rather than guessed", {
+testthat::test_that("reviewed linked-condition fingerprints are pinned with provenance", {
   cfg <- read_linked_condition_source_config()
   new_sources <- Filter(function(x) !identical(x$puf_id, "HC-256"), cfg$sources)
   testthat::expect_true(all(vapply(
     new_sources,
-    function(x) is.null(x$expected_zip_sha256) && is.null(x$expected_extracted_dta_sha256),
+    function(x) {
+      is.character(x$expected_zip_sha256) &&
+        grepl("^[0-9a-f]{64}$", x$expected_zip_sha256) &&
+        is.character(x$expected_extracted_dta_sha256) &&
+        grepl("^[0-9a-f]{64}$", x$expected_extracted_dta_sha256)
+    },
     logical(1)
   )))
+  testthat::expect_identical(
+    cfg$source_pin_provenance$fingerprint_workflow_run_id,
+    "36288202030"
+  )
+  testthat::expect_identical(
+    cfg$source_pin_provenance$fingerprint_artifact_id,
+    "10921052434"
+  )
+  testthat::expect_identical(
+    cfg$source_pin_provenance$fingerprint_artifact_digest,
+    "sha256:e72f209e779350bd9d8fe56648f72e53c64764f1f802b5b8a7bb56cd8147883f"
+  )
+})
+
+testthat::test_that("production linked-condition downloader remains exact and fail-closed", {
+  downloader <- read_linked_condition_repo_text(
+    file.path("pipelines", "data", "download_meps_linked_condition.R")
+  )
+  testthat::expect_true(grepl("source$download_url", downloader, fixed = TRUE))
+  testthat::expect_equal(
+    lengths(regmatches(downloader, gregexpr("assert_sha256_matches\\(", downloader))),
+    2L
+  )
+  testthat::expect_true(grepl("select_expected_dta_member(", downloader, fixed = TRUE))
+  testthat::expect_true(grepl("validate_required_variables(probe, source)", downloader, fixed = TRUE))
+  testthat::expect_false(grepl("skip_hash_validation", downloader, fixed = TRUE))
+  testthat::expect_false(grepl("fallback", downloader, ignore.case = TRUE))
+  testthat::expect_false(grepl("auto.pin", downloader, ignore.case = TRUE))
 })

@@ -83,11 +83,11 @@ u09_link_condition_codes <- setNames(
   toupper(trimws(as.character(conditions$ICD10CDX))),
   as.character(conditions$CONDIDX)
 )
-qualifying_event_has_non_u09 <- tapply(
-  as.character(all_u09_links$CONDIDX),
-  paste(as.character(all_u09_links$DUPERSID), as.character(all_u09_links$EVNTIDX), sep = "::"),
-  function(ids) any(unname(u09_link_condition_codes[ids]) != "U09", na.rm = TRUE)
-)
+qualifying_u09_events_with_additional_non_u09_condition_links_n <-
+  count_qualifying_u09_events_with_additional_non_u09_links(
+    all_u09_links,
+    u09_link_condition_codes
+  )
 
 distribution_summary <- function(x) {
   x <- as.numeric(x)
@@ -213,7 +213,7 @@ diagnostics <- list(
     events_per_condition = distribution_summary(events_per_condition),
     events_with_multiple_condition_links_n = sum(conditions_per_event > 1),
     qualifying_u09_events_with_additional_non_u09_condition_links_n =
-      sum(qualifying_event_has_non_u09, na.rm = TRUE)
+      qualifying_u09_events_with_additional_non_u09_condition_links_n
   ),
   link_quality = quality,
   survey_feasibility = list(
