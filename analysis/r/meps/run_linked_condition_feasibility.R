@@ -50,11 +50,7 @@ quality <- validate_linkage_invariants(conditions, links, event_files)
 footprint <- derive_u09_event_footprint(conditions, links, event_files)
 combined <- collapse_u09_to_hc256(hc256, footprint)
 
-target <- !is.na(combined$do_current_long_covid) &
-  combined$do_current_long_covid &
-  combined$do_age_18_64 &
-  !is.na(combined$PERWT24F) &
-  as.numeric(combined$PERWT24F) > 0
+target <- build_linked_condition_target(combined)
 
 target_data <- combined[target, , drop = FALSE]
 target_ids <- as.character(target_data$DUPERSID)

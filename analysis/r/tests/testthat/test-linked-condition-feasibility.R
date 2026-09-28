@@ -216,7 +216,7 @@ testthat::test_that("multiple U09 condition records pointing to one valid event 
   testthat::expect_equal(footprint$per_person$u09_event_n, 1L)
 })
 
-testthat::test_that("target person with U09 but zero valid encounter preserves condition flag", {
+testthat::test_that("collapse preserves governed HC-256 cohort fields and zero-link target persons", {
   conditions <- make_u09_condition()
   links <- data.frame(
     DUPERSID = "P1",
@@ -231,18 +231,93 @@ testthat::test_that("target person with U09 but zero valid encounter preserves c
   )
   hc256 <- data.frame(
     DUPERSID = c("P1", "P2"),
-    do_current_long_covid = c(TRUE, TRUE),
     PERWT24F = c(1, 2),
     VARSTR = c(1, 1),
     VARPSU = c(1, 2),
+    do_current_long_covid = c(TRUE, TRUE),
+    do_age_18_64 = c(TRUE, TRUE),
+    do_current_long_covid_known = c(TRUE, TRUE),
     stringsAsFactors = FALSE
   )
+  original <- hc256
   collapsed <- collapse_u09_to_hc256(hc256, footprint)
+
+  testthat::expect_equal(nrow(collapsed), nrow(original))
+  testthat::expect_identical(as.character(collapsed$DUPERSID), as.character(original$DUPERSID))
+  testthat::expect_identical(
+    names(collapsed)[seq_along(names(original))],
+    names(original)
+  )
+  for (field in names(original)) {
+    testthat::expect_identical(collapsed[[field]], original[[field]])
+  }
+
+  testthat::expect_true("do_current_long_covid" %in% names(collapsed))
+  testthat::expect_true("do_age_18_64" %in% names(collapsed))
+  testthat::expect_true("do_current_long_covid_known" %in% names(collapsed))
+  testthat::expect_false("DO_CURRENT_LONG_COVID" %in% names(collapsed))
+  testthat::expect_false("DO_AGE_18_64" %in% names(collapsed))
+  testthat::expect_false("DO_CURRENT_LONG_COVID_KNOWN" %in% names(collapsed))
 
   testthat::expect_equal(collapsed$do_u09_condition_n, c(1L, 0L))
   testthat::expect_equal(collapsed$do_u09_linked_event_n, c(0L, 0L))
   testthat::expect_equal(collapsed$do_has_u09_condition, c(TRUE, FALSE))
   testthat::expect_equal(collapsed$do_has_u09_linked_event, c(FALSE, FALSE))
+})
+
+
+testthat::test_that("post-collapse target contract reproduces governed target membership", {
+  conditions <- make_u09_condition()
+  links <- data.frame(
+    DUPERSID = "P1",
+    CONDIDX = "P101",
+    EVNTIDX = "MISSING",
+    CLNKIDX = "P101MISSING",
+    EVENTYPE = 1,
+    stringsAsFactors = FALSE
+  )
+  footprint <- derive_u09_event_footprint(
+    conditions, links, make_empty_event_files()
+  )
+  hc256 <- data.frame(
+    DUPERSID = c("P1", "P2", "P3"),
+    PERWT24F = c(1, 2, 3),
+    VARSTR = c(1, 1, 2),
+    VARPSU = c(1, 2, 1),
+    do_current_long_covid = c(TRUE, TRUE, FALSE),
+    do_age_18_64 = c(TRUE, TRUE, TRUE),
+    do_current_long_covid_known = c(TRUE, TRUE, TRUE),
+    stringsAsFactors = FALSE
+  )
+
+  combined <- collapse_u09_to_hc256(hc256, footprint)
+  target <- build_linked_condition_target(combined)
+
+  testthat::expect_length(target, nrow(combined))
+  testthat::expect_identical(target, c(TRUE, TRUE, FALSE))
+  testthat::expect_true(target[1])
+  testthat::expect_true(combined$do_has_u09_condition[1])
+  testthat::expect_false(combined$do_has_u09_linked_event[1])
+  testthat::expect_true(target[2])
+  testthat::expect_false(combined$do_has_u09_condition[2])
+  testthat::expect_false(combined$do_has_u09_linked_event[2])
+})
+
+testthat::test_that("post-collapse target contract fails fast on missing governed fields", {
+  combined <- data.frame(
+    DUPERSID = "P1",
+    PERWT24F = 1,
+    VARSTR = 1,
+    VARPSU = 1,
+    do_current_long_covid = TRUE,
+    do_has_u09_condition = FALSE,
+    do_has_u09_linked_event = FALSE,
+    stringsAsFactors = FALSE
+  )
+  testthat::expect_error(
+    build_linked_condition_target(combined),
+    "missing post-collapse HC-256 fields: do_age_18_64"
+  )
 })
 
 testthat::test_that("same valid event linked to U09 and another condition counts once for U09", {
