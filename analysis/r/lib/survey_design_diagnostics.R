@@ -114,3 +114,42 @@ ci_df_diagnostics <- function(records) {
     )
   })
 }
+
+
+survey_representation_support <- function(data, mask = rep(TRUE, nrow(data)), label = "survey support") {
+  if (!all(c("VARSTR", "VARPSU") %in% names(data))) {
+    stop("Survey support diagnostics require VARSTR and VARPSU.", call. = FALSE)
+  }
+  if (length(mask) != nrow(data)) {
+    stop("Survey support mask must have one value per row.", call. = FALSE)
+  }
+  mask <- !is.na(mask) & as.logical(mask)
+  selected <- data[mask, c("VARSTR", "VARPSU"), drop = FALSE]
+  selected <- selected[!is.na(selected$VARSTR) & !is.na(selected$VARPSU), , drop = FALSE]
+
+  if (!nrow(selected)) {
+    return(list(
+      label = label,
+      unweighted_person_n = 0L,
+      represented_strata_n = 0L,
+      represented_stratum_psu_pairs_n = 0L,
+      represented_singleton_strata_n = 0L
+    ))
+  }
+
+  combos <- unique(selected)
+  counts <- stats::aggregate(
+    VARPSU ~ VARSTR,
+    data = combos,
+    FUN = function(x) length(unique(x))
+  )
+  names(counts)[2] <- "n_psu"
+
+  list(
+    label = label,
+    unweighted_person_n = as.integer(sum(mask)),
+    represented_strata_n = as.integer(length(unique(selected$VARSTR))),
+    represented_stratum_psu_pairs_n = as.integer(nrow(combos)),
+    represented_singleton_strata_n = as.integer(sum(counts$n_psu == 1L))
+  )
+}
