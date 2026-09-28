@@ -312,8 +312,9 @@ derive_u09_event_footprint <- function(conditions, links, event_files) {
 }
 
 collapse_u09_to_hc256 <- function(hc256, footprint) {
-  hc256 <- normalize_meps_names(hc256)
-  if (!"DUPERSID" %in% names(hc256)) stop("HC-256 requires DUPERSID.", call. = FALSE)
+  if (!"DUPERSID" %in% names(hc256)) {
+    stop("HC-256 requires DUPERSID.", call. = FALSE)
+  }
 
   per <- footprint$per_person
   idx <- match(as.character(hc256$DUPERSID), as.character(per$DUPERSID))

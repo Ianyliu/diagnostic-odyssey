@@ -216,7 +216,7 @@ testthat::test_that("multiple U09 condition records pointing to one valid event 
   testthat::expect_equal(footprint$per_person$u09_event_n, 1L)
 })
 
-testthat::test_that("target person with U09 but zero valid encounter preserves condition flag", {
+testthat::test_that("collapse preserves governed HC-256 cohort fields and zero-link target persons", {
   conditions <- make_u09_condition()
   links <- data.frame(
     DUPERSID = "P1",
@@ -231,13 +231,33 @@ testthat::test_that("target person with U09 but zero valid encounter preserves c
   )
   hc256 <- data.frame(
     DUPERSID = c("P1", "P2"),
-    do_current_long_covid = c(TRUE, TRUE),
     PERWT24F = c(1, 2),
     VARSTR = c(1, 1),
     VARPSU = c(1, 2),
+    do_current_long_covid = c(TRUE, TRUE),
+    do_age_18_64 = c(TRUE, TRUE),
+    do_current_long_covid_known = c(TRUE, TRUE),
     stringsAsFactors = FALSE
   )
+  original <- hc256
   collapsed <- collapse_u09_to_hc256(hc256, footprint)
+
+  testthat::expect_equal(nrow(collapsed), nrow(original))
+  testthat::expect_identical(as.character(collapsed$DUPERSID), as.character(original$DUPERSID))
+  testthat::expect_identical(
+    names(collapsed)[seq_along(names(original))],
+    names(original)
+  )
+  for (field in names(original)) {
+    testthat::expect_identical(collapsed[[field]], original[[field]])
+  }
+
+  testthat::expect_true("do_current_long_covid" %in% names(collapsed))
+  testthat::expect_true("do_age_18_64" %in% names(collapsed))
+  testthat::expect_true("do_current_long_covid_known" %in% names(collapsed))
+  testthat::expect_false("DO_CURRENT_LONG_COVID" %in% names(collapsed))
+  testthat::expect_false("DO_AGE_18_64" %in% names(collapsed))
+  testthat::expect_false("DO_CURRENT_LONG_COVID_KNOWN" %in% names(collapsed))
 
   testthat::expect_equal(collapsed$do_u09_condition_n, c(1L, 0L))
   testthat::expect_equal(collapsed$do_u09_linked_event_n, c(0L, 0L))
