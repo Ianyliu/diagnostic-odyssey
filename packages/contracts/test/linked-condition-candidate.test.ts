@@ -5,8 +5,9 @@ import {
   linkedConditionCandidateSourceRefs,
   validateLinkedConditionCandidateDiagnostics,
   validateLinkedConditionCandidateFile,
-  validateLinkedConditionCandidateManifest
-} from "./linked-condition-candidate.ts";
+  validateLinkedConditionCandidateManifest,
+  type LinkedConditionCandidateManifest
+} from "../src/linked-condition-candidate.ts";
 
 const support = (n = 4) => ({
   label: "support",
@@ -92,7 +93,15 @@ const file = () => ({
   ]
 });
 
-const manifest = () => ({
+type ManifestFixture = Omit<
+  LinkedConditionCandidateManifest,
+  "github_sha" | "code_commit_matches_github_sha"
+> & {
+  github_sha: string | null;
+  code_commit_matches_github_sha: boolean | null;
+};
+
+const manifest = (): ManifestFixture => ({
   schema_version: "1.0",
   artifact_family: "linked_condition_service_use_candidate",
   status: "preliminary-candidate-only",
@@ -110,6 +119,20 @@ const manifest = () => ({
   hc256_source_metadata_file: "hc256-source-metadata.json",
   linked_condition_source_metadata_file: "linked-condition-source-metadata.json"
 });
+
+type CandidateFileFixture = ReturnType<typeof file>;
+
+const candidateAt = (value: CandidateFileFixture, index: number) => {
+  const item = value.candidates[index];
+  assert.ok(item);
+  return item;
+};
+
+const sourceRefAt = (index: number): string => {
+  const sourceRef = linkedConditionCandidateSourceRefs[index];
+  assert.ok(sourceRef);
+  return sourceRef;
+};
 
 const familyCounts = () => ({office: 2, outpatient: 1, emergency: 0, inpatient: 0});
 
@@ -223,13 +246,13 @@ test("rejects unexpected candidate-file top-level property", () => {
 
 test("rejects unexpected candidate-record property and arbitrary person_values array", () => {
   const value = file();
-  (value.candidates[0] as Record<string, unknown>).person_values = [1, 2, 3];
+  (candidateAt(value, 0) as Record<string, unknown>).person_values = [1, 2, 3];
   assert.ok(hasPath(validateLinkedConditionCandidateFile(value), "person_values"));
 });
 
 test("rejects unexpected support-object property", () => {
   const value = file();
-  (value.candidates[0].target_support as Record<string, unknown>).extra = 1;
+  (candidateAt(value, 0).target_support as Record<string, unknown>).extra = 1;
   assert.ok(hasPath(validateLinkedConditionCandidateFile(value), "target_support.extra"));
 });
 
@@ -241,72 +264,76 @@ test("rejects unexpected manifest property", () => {
 
 test("rejects incomplete, duplicate, or wrong source refs", () => {
   const missing = file();
-  missing.candidates[0].source_refs = missing.candidates[0].source_refs.slice(0, -1);
+  const missingCandidate = candidateAt(missing, 0);
+  missingCandidate.source_refs = missingCandidate.source_refs.slice(0, -1);
   assert.ok(hasPath(validateLinkedConditionCandidateFile(missing), "source_refs"));
 
   const wrong = file();
-  wrong.candidates[0].source_refs = [...linkedConditionCandidateSourceRefs.slice(0, -1), "wrong-source"];
+  candidateAt(wrong, 0).source_refs = [...linkedConditionCandidateSourceRefs.slice(0, -1), "wrong-source"];
   assert.ok(hasPath(validateLinkedConditionCandidateFile(wrong), "source_refs"));
 
   const duplicate = file();
-  duplicate.candidates[0].source_refs = [...linkedConditionCandidateSourceRefs.slice(0, -1), linkedConditionCandidateSourceRefs[0]];
+  candidateAt(duplicate, 0).source_refs = [
+    ...linkedConditionCandidateSourceRefs.slice(0, -1),
+    sourceRefAt(0)
+  ];
   assert.ok(hasPath(validateLinkedConditionCandidateFile(duplicate), "source_refs"));
 });
 
 test("rejects wrong unit for Candidate A", () => {
   const value = file();
-  value.candidates[0].unit = "encounters/person/year";
+  candidateAt(value, 0).unit = "encounters/person/year";
   assert.ok(hasPath(validateLinkedConditionCandidateFile(value), ".unit"));
 });
 
 test("rejects wrong unit for Candidate B or C", () => {
   const value = file();
-  value.candidates[1].unit = "proportion";
+  candidateAt(value, 1).unit = "proportion";
   assert.ok(hasPath(validateLinkedConditionCandidateFile(value), ".unit"));
 });
 
 test("rejects target-support N mismatch", () => {
   const value = file();
-  value.candidates[0].target_support.unweighted_person_n = 3;
+  candidateAt(value, 0).target_support.unweighted_person_n = 3;
   assert.ok(hasPath(validateLinkedConditionCandidateFile(value), "target_support.unweighted_person_n"));
 });
 
 test("rejects nonzero-support N mismatch", () => {
   const value = file();
-  value.candidates[0].nonzero_support.unweighted_person_n = 1;
+  candidateAt(value, 0).nonzero_support.unweighted_person_n = 1;
   assert.ok(hasPath(validateLinkedConditionCandidateFile(value), "nonzero_support.unweighted_person_n"));
 });
 
 test("rejects zero-person support with nonzero representation", () => {
   const value = file();
-  value.candidates[5].nonzero_support.represented_strata_n = 1;
+  candidateAt(value, 5).nonzero_support.represented_strata_n = 1;
   assert.ok(hasPath(validateLinkedConditionCandidateFile(value), "nonzero_support.represented_strata_n"));
 });
 
 test("rejects nonzero representation exceeding target representation", () => {
   const value = file();
-  value.candidates[2].nonzero_support.represented_stratum_psu_pairs_n = 4;
+  candidateAt(value, 2).nonzero_support.represented_stratum_psu_pairs_n = 4;
   assert.ok(hasPath(validateLinkedConditionCandidateFile(value), "nonzero_support.represented_stratum_psu_pairs_n"));
 });
 
 test("rejects Candidate B event count that does not equal summed C family counts", () => {
   const value = file();
-  value.candidates[1].observed_qualifying_event_n = 4;
-  value.candidates[0].observed_qualifying_event_n = 4;
+  candidateAt(value, 1).observed_qualifying_event_n = 4;
+  candidateAt(value, 0).observed_qualifying_event_n = 4;
   assert.ok(validateLinkedConditionCandidateFile(value).some(issue => issue.message.includes("sum of Candidate C")));
 });
 
 test("rejects Candidate A/B nonzero-person inconsistency", () => {
   const value = file();
-  value.candidates[1].unweighted_nonzero_person_n = 1;
-  value.candidates[1].nonzero_support = support(1);
+  candidateAt(value, 1).unweighted_nonzero_person_n = 1;
+  candidateAt(value, 1).nonzero_support = support(1);
   assert.ok(validateLinkedConditionCandidateFile(value).some(issue => issue.message.includes("Candidate A and B")));
 });
 
 test("rejects cross-candidate target denominator or support inconsistency", () => {
   const value = file();
-  value.candidates[3].weighted_denominator = 99;
-  value.candidates[4].target_support.represented_strata_n = 1;
+  candidateAt(value, 3).weighted_denominator = 99;
+  candidateAt(value, 4).target_support.represented_strata_n = 1;
   const issues = validateLinkedConditionCandidateFile(value);
   assert.ok(issues.some(issue => issue.message.includes("must match")));
   assert.ok(issues.some(issue => issue.message.includes("target-support counts")));
@@ -357,8 +384,8 @@ test("rejects diagnostics provenance mismatch with candidate and manifest", () =
 
 test("rejects release eligibility and reliability adjudication", () => {
   const value = file();
-  value.candidates[0].release_eligible = true;
-  value.candidates[0].reliability_status = "reliable";
+  candidateAt(value, 0).release_eligible = true;
+  candidateAt(value, 0).reliability_status = "reliable";
   assert.ok(validateLinkedConditionCandidateFile(value).length >= 2);
 });
 
