@@ -11,6 +11,14 @@ testthat::test_that("linked-condition candidate workflow is manual-only and aggr
   testthat::expect_false(grepl("push:", workflow, fixed = TRUE))
   testthat::expect_true(grepl("run_linked_condition_candidate.R", workflow, fixed = TRUE))
   testthat::expect_true(grepl("validate-linked-condition-candidate-cli.ts", workflow, fixed = TRUE))
+  cli_invocation <- paste(
+    "packages/contracts/src/validate-linked-condition-candidate-cli.ts \\",
+    '            "$OUTPUT_DIR/linked-condition-candidate-estimates.json" \\',
+    '            "$OUTPUT_DIR/candidate-manifest.json" \\',
+    '            "$OUTPUT_DIR/diagnostics.json"',
+    sep = "\n"
+  )
+  testthat::expect_true(grepl(cli_invocation, workflow, fixed = TRUE))
   testthat::expect_true(grepl('test ! -e "$OUTPUT_DIR/bundle.json"', workflow, fixed = TRUE))
   testthat::expect_true(grepl("hc256-source-metadata.json", workflow, fixed = TRUE))
   testthat::expect_true(grepl("linked-condition-source-metadata.json", workflow, fixed = TRUE))

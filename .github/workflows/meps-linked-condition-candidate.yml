@@ -100,7 +100,8 @@ jobs:
           node --experimental-strip-types \
             packages/contracts/src/validate-linked-condition-candidate-cli.ts \
             "$OUTPUT_DIR/linked-condition-candidate-estimates.json" \
-            "$OUTPUT_DIR/candidate-manifest.json"
+            "$OUTPUT_DIR/candidate-manifest.json" \
+            "$OUTPUT_DIR/diagnostics.json"
 
       - name: Assert reviewed Issue 20 reconciliation gates
         shell: bash

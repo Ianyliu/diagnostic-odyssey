@@ -250,7 +250,8 @@ validation_status <- system2(
     "--experimental-strip-types",
     repo_path("packages", "contracts", "src", "validate-linked-condition-candidate-cli.ts"),
     candidate_path,
-    manifest_path
+    manifest_path,
+    diagnostics_path
   )
 )
 if (!identical(validation_status, 0L)) {

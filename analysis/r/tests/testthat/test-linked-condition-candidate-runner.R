@@ -14,6 +14,11 @@ testthat::test_that("linked-condition candidate runner remains candidate-only an
   testthat::expect_true(grepl("automatic_release = FALSE", runner, fixed = TRUE))
   testthat::expect_true(grepl("runtime_eligible = FALSE", runner, fixed = TRUE))
   testthat::expect_true(grepl("reliability_rule_reviewed = FALSE", runner, fixed = TRUE))
+  testthat::expect_true(grepl(
+    "candidate_path,\n    manifest_path,\n    diagnostics_path",
+    runner,
+    fixed = TRUE
+  ))
 })
 
 testthat::test_that("linked-condition candidate runner freezes reviewed real-data reconciliation gates", {
