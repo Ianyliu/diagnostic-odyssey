@@ -53,7 +53,7 @@ const candidate = (
   variance_psu_variable: "VARPSU",
   cohort_definition: "governed cohort",
   statistics_method: "Taylor linearization",
-  source_refs: [...linkedConditionCandidateSourceRefs],
+  source_refs: [...linkedConditionCandidateSourceRefs] as string[],
   ...overrides
 });
 
