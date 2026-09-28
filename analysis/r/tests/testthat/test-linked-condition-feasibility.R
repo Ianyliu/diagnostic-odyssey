@@ -446,3 +446,64 @@ testthat::test_that("Phase A guardrails still prohibit spending and pathway over
   testthat::expect_true(any(grepl("referral", g, fixed = TRUE)))
   testthat::expect_true(any(grepl("provider-recognition-rate", g, fixed = TRUE)))
 })
+
+
+testthat::test_that("candidate service-use attachment preserves reviewed collapse and adds family counts", {
+  x <- make_linked_condition_fixture()
+  footprint <- derive_u09_event_footprint(x$conditions, x$links, x$event_files)
+  hc256 <- data.frame(
+    DUPERSID = c("P1", "P2"),
+    PERWT24F = c(1, 2),
+    VARSTR = c(1, 1),
+    VARPSU = c(1, 2),
+    do_current_long_covid = c(TRUE, TRUE),
+    do_age_18_64 = c(TRUE, TRUE),
+    do_current_long_covid_known = c(TRUE, TRUE),
+    stringsAsFactors = FALSE
+  )
+  reviewed <- collapse_u09_to_hc256(hc256, footprint)
+  original <- reviewed
+  candidate <- derive_u09_person_service_use(reviewed, footprint)
+
+  testthat::expect_identical(
+    names(candidate)[seq_along(names(original))],
+    names(original)
+  )
+  for (field in names(original)) {
+    testthat::expect_identical(candidate[[field]], original[[field]])
+  }
+  testthat::expect_identical(candidate$do_u09_linked_event_n, c(2L, 0L))
+  testthat::expect_identical(candidate$do_has_u09_linked_event, c(TRUE, FALSE))
+  testthat::expect_identical(candidate$do_u09_linked_office_event_n, c(1L, 0L))
+  testthat::expect_identical(candidate$do_u09_linked_outpatient_event_n, c(1L, 0L))
+  testthat::expect_identical(candidate$do_u09_linked_emergency_event_n, c(0L, 0L))
+  testthat::expect_identical(candidate$do_u09_linked_inpatient_event_n, c(0L, 0L))
+  testthat::expect_identical(
+    candidate$do_u09_linked_event_n,
+    candidate$do_u09_linked_office_event_n +
+      candidate$do_u09_linked_outpatient_event_n +
+      candidate$do_u09_linked_emergency_event_n +
+      candidate$do_u09_linked_inpatient_event_n
+  )
+})
+
+testthat::test_that("candidate service-use attachment fails closed if family counts diverge from reviewed totals", {
+  x <- make_linked_condition_fixture()
+  footprint <- derive_u09_event_footprint(x$conditions, x$links, x$event_files)
+  hc256 <- data.frame(
+    DUPERSID = "P1",
+    PERWT24F = 1,
+    VARSTR = 1,
+    VARPSU = 1,
+    do_current_long_covid = TRUE,
+    do_age_18_64 = TRUE,
+    do_current_long_covid_known = TRUE,
+    stringsAsFactors = FALSE
+  )
+  reviewed <- collapse_u09_to_hc256(hc256, footprint)
+  reviewed$do_u09_linked_event_n <- reviewed$do_u09_linked_event_n + 1L
+  testthat::expect_error(
+    derive_u09_person_service_use(reviewed, footprint),
+    "do not reconcile to reviewed distinct-event totals"
+  )
+})
