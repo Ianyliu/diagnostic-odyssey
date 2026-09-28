@@ -1,0 +1,213 @@
+/* Shared presentation roles for the evidence workspace. Page-specific layouts live
+   with their pages; the older styles.css stays in place during migration. */
+html {
+  font-family: var(--do-font-body);
+  color: var(--do-text);
+  background: var(--do-canvas);
+  font-variant-numeric: tabular-nums;
+}
+
+body {
+  color: var(--do-text);
+  background: var(--do-canvas);
+  line-height: 1.5;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+:where(button, a, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 3px solid var(--do-focus);
+  outline-offset: 3px;
+}
+
+.page {
+  padding-block: var(--do-space-5) var(--do-space-7);
+}
+
+.page-stack {
+  gap: var(--do-space-5);
+}
+
+.page-heading h1,
+.error-boundary-fallback h1 {
+  color: var(--do-text);
+  font-family: var(--do-font-display);
+  font-weight: 600;
+  font-size: clamp(2rem, 3.3vw, 2.8rem);
+  line-height: 1.12;
+  letter-spacing: -.025em;
+  text-wrap: balance;
+}
+
+.page-heading p {
+  color: var(--do-text-muted);
+  max-width: 72ch;
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
+.eyebrow,
+.visual-kicker,
+.decision-state-card .visual-kicker {
+  color: var(--do-accent) !important;
+  font-size: .76rem !important;
+  letter-spacing: .11em;
+  line-height: 1.3;
+}
+
+.card {
+  color: var(--do-text);
+  background: var(--do-surface);
+  border: 1px solid var(--do-border);
+  border-radius: var(--do-radius-card);
+  box-shadow: none;
+}
+
+.card h2,
+.card h3,
+.interpretation-guide h3,
+.error-boundary-fallback h1 {
+  color: var(--do-text);
+}
+
+.subtle,
+.limitations,
+.visual-note {
+  color: var(--do-text-muted);
+}
+
+.status {
+  border-radius: 3px;
+  padding: 3px 7px;
+  font-size: .76rem;
+  line-height: 1.3;
+  white-space: normal;
+  text-align: left;
+}
+
+.status-ok {
+  color: var(--do-reviewed-text);
+  background: var(--do-reviewed-bg);
+}
+
+.status-scaffold,
+.status-fixture {
+  color: var(--do-warning-text);
+  background: var(--do-warning-bg);
+}
+
+.caution,
+.state-card.error {
+  color: var(--do-warning-text);
+  background: var(--do-warning-bg);
+  border: 1px solid var(--do-border);
+  border-left: 3px solid var(--do-warning-text);
+}
+
+.caution.cool,
+.empty-state,
+.state-card,
+.uncertainty-note {
+  color: var(--do-selection-text);
+  background: var(--do-selection-bg);
+  border: 1px solid var(--do-border);
+  border-radius: var(--do-radius-card);
+}
+
+.guardrail {
+  color: var(--do-assumption-text);
+  background: var(--do-assumption-bg);
+  border-left-color: var(--do-assumption-text);
+  border-radius: 0 var(--do-radius-card) var(--do-radius-card) 0;
+}
+
+.guardrail strong,
+.uncertainty-note strong {
+  color: inherit;
+}
+
+.button {
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  color: var(--do-accent-contrast);
+  background: var(--do-accent);
+  border: 1px solid var(--do-accent);
+  border-radius: var(--do-radius-control);
+  font-size: .9rem;
+  line-height: 1.25;
+  text-align: center;
+}
+
+.button.secondary {
+  color: var(--do-accent);
+  background: var(--do-surface);
+  border-color: var(--do-accent);
+}
+
+.button:hover,
+.text-button:hover,
+a:hover {
+  text-decoration-thickness: 2px;
+  text-underline-offset: .18em;
+}
+
+.button:disabled,
+button:disabled {
+  cursor: not-allowed;
+  opacity: .6;
+}
+
+input,
+select,
+textarea {
+  color: var(--do-text);
+  background: var(--do-surface-elevated);
+  border-color: var(--do-control-border);
+  accent-color: var(--do-accent);
+}
+
+summary {
+  cursor: pointer;
+}
+
+.technical-disclosure {
+  color: var(--do-text-muted);
+  background: var(--do-surface);
+  border-color: var(--do-border);
+  border-radius: var(--do-radius-card);
+}
+
+.technical-disclosure summary {
+  color: var(--do-accent);
+}
+
+table {
+  font-variant-numeric: tabular-nums;
+}
+
+th,
+td {
+  overflow-wrap: anywhere;
+}
+
+@media (forced-colors: active) {
+  .status,
+  .button,
+  .card,
+  .guardrail,
+  .caution,
+  .empty-state,
+  .state-card {
+    border: 1px solid CanvasText;
+  }
+
+  :where(button, a, input, select, textarea, summary, [tabindex]):focus-visible {
+    outline-color: Highlight;
+  }
+}
