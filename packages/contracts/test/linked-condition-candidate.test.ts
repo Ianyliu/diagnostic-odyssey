@@ -322,7 +322,7 @@ test("requires non-null manifest github_sha to match candidate code commit", () 
   const m = manifest();
   m.github_sha = "different";
   m.code_commit_matches_github_sha = true;
-  assert.throws(() => assertValidLinkedConditionCandidate(file(), m, diagostics()), /github_sha/);
+  assert.throws(() => assertValidLinkedConditionCandidate(file(), m, diagnostics()), /github_sha/);
 });
 
 test("rejects diagnostics unexpected top-level property", () => {
@@ -339,4 +339,31 @@ test("rejects diagnostics arbitrary row-level object array", () => {
 
 test("rejects diagnostics forbidden identifier key", () => {
   const value = diagnostics();
-  (value.linkage_quality as Record<string, unknown>).DUPERSID2Ò²%%Ó°¢76W'Bæö²††5F‚‡fÆ–FFTÆ–æ¶VD6öæF—F–öä6æF–FFTF–væ÷7F–72‡fÇVR’Â$EUU%4”B"’“°§Ò“° §FW7B‚'&V¦V7G2F–væ÷7F–72æW7FVBVæ¶æ÷vâ&÷W'F–W2"Â‚’Óâ°¢6öç7BfÇVRÒF–væ÷7F–72‚“°¢‡fÇVRç&VÆ–&–Æ—G’2&V6÷&CÇ7G&–ærÂVæ¶æ÷vãâ’çW'6öå÷fÇVW2Ò³Ó°¢76W'Bæö²††5F‚‡fÆ–FFTÆ–æ¶VD6öæF—F–öä6æF–FFTF–væ÷7F–72‡fÇVR’Â'&VÆ–&–Æ—G’çW'6öå÷fÇVW2"’“°§Ò“° §FW7B‚'&V¦V7G2F–væ÷7F–72&÷fVææ6RÖ—6ÖF6‚v—F‚6æF–FFRæBÖæ–fW7B"Â‚’Óâ°¢6öç7BBÒF–væ÷7F–72‚“°¢Bæ6öFUö6öÖÖ—BÒ&F–ffW&VçB#°¢76W'BçF‡&÷w2‚‚’Óâ76W'EfÆ–DÆ–æ¶VD6öæF—F–öä6æF–FFR†f–ÆR‚’ÂÖæ–fW7B‚’ÂB’ÂöF–væ÷7F–75Âæ6öFUö6öÖÖ—Bò“°§Ò“° §FW7B‚'&V¦V7G2&VÆV6RVÆ–v–&–Æ—G’æB&VÆ–&–Æ—G’F§VF–6F–öâ"Â‚’Óâ°¢6öç7BfÇVRÒf–ÆR‚“°¢fÇVRæ6æF–FFW5³Òç&VÆV6UöVÆ–v–&ÆRÒG'VS°¢fÇVRæ6æF–FFW5³Òç&VÆ–&–Æ—G•÷7FGW2Ò'&VÆ–&ÆR#°¢76W'Bæö²‡fÆ–FFTÆ–æ¶VD6öæF—F–öä6æF–FFTf–ÆR‡fÇVR’æÆVæwF‚ãÒ"“°§Ò“° §FW7B‚'&V¦V7G2&W7öæFVçBöWfVçB–FVçF–f–W"f–VÆG2–â6æF–FFR6¶vR"Â‚’Óâ°¢6öç7BfÇVRÒf–ÆR‚’2&WGW&åG—SÇG—Vöbf–ÆSâb´EUU%4”Có¢7G&–æuµ×Ó°¢fÇVRäEUU%4”BÒ²%%Ó°¢76W'Bæö²††5F‚‡fÆ–FFTÆ–æ¶VD6öæF—F–öä6æF–FFTf–ÆR‡fÇVR’Â$EUU%4”B"’“°§Ò“°
+  (value.linkage_quality as Record<string, unknown>).DUPERSID = ["P1"];
+  assert.ok(hasPath(validateLinkedConditionCandidateDiagnostics(value), "DUPERSID"));
+});
+
+test("rejects diagnostics nested unknown properties", () => {
+  const value = diagnostics();
+  (value.reliability as Record<string, unknown>).person_values = [1];
+  assert.ok(hasPath(validateLinkedConditionCandidateDiagnostics(value), "reliability.person_values"));
+});
+
+test("rejects diagnostics provenance mismatch with candidate and manifest", () => {
+  const d = diagnostics();
+  d.code_commit = "different";
+  assert.throws(() => assertValidLinkedConditionCandidate(file(), manifest(), d), /diagnostics\.code_commit/);
+});
+
+test("rejects release eligibility and reliability adjudication", () => {
+  const value = file();
+  value.candidates[0].release_eligible = true;
+  value.candidates[0].reliability_status = "reliable";
+  assert.ok(validateLinkedConditionCandidateFile(value).length >= 2);
+});
+
+test("rejects respondent/event identifier fields in candidate package", () => {
+  const value = file() as ReturnType<typeof file> & {DUPERSID?: string[]};
+  value.DUPERSID = ["P1"];
+  assert.ok(hasPath(validateLinkedConditionCandidateFile(value), "DUPERSID"));
+});
