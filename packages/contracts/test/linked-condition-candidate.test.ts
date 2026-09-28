@@ -88,8 +88,10 @@ test("linked-condition candidate contract permits structural null RSE", () => {
 
 test("linked-condition candidate contract rejects release eligibility and reliability adjudication", () => {
   const value = file();
-  value.candidates[0].release_eligible = true;
-  value.candidates[0].reliability_status = "reliable";
+  const first = value.candidates[0];
+  assert.ok(first);
+  first.release_eligible = true;
+  first.reliability_status = "reliable";
   assert.ok(validateLinkedConditionCandidateFile(value).length >= 2);
 });
 
