@@ -291,6 +291,10 @@ A U09-linked event does not establish:
 
 The reviewed real-data structure supports a narrow descriptive service-use footprint. It does **not** support treating U09 linkage as prevalence, attribution, recognition, referral, diagnostic-delay, causal-treatment, savings, or ROI evidence.
 
+The governed HC-256 current-status classification is a **point-in-time Round 3/1 assessment**, whereas the linked HC-254D/E/F/G encounters are **annual 2024 events**. Annual encounters can occur before or after that Round 3/1 anchor. The observed linked-event footprint therefore does **not** establish temporal sequence, recognition timing, referral timing, or utilization specifically occurring while current Long COVID was contemporaneously present.
+
+Absence of exact U09 is **not** evidence of absence of Long COVID. Absence of a qualifying U09-linked encounter is **not** evidence of absence of healthcare.
+
 Candidate methods estimands for a later implementation task are documented separately in [MEPS 2024 linked-condition candidate contract](./meps-2024-linked-condition-candidate-contract.md).
 
 ## Governance

@@ -24,6 +24,20 @@ Target persons with no qualifying linked encounter remain in the universe with v
 
 Encounter rows must not be treated as independent sampled observations.
 
+## Temporal alignment
+
+The governed HC-256 target classification is anchored to the **Round 3/1 point-in-time current-Long-COVID assessment**. Candidates A–C summarize reconciled exact-U09-linked HC-254D/E/F/G encounters observed across the **2024 annual event files**.
+
+Those annual encounters can occur **before or after** the Round 3/1 current-status anchor. Candidates A–C therefore represent annual documented U09-linked service-use footprints among persons classified in the governed target at that anchor.
+
+They must **not** be interpreted as utilization occurring specifically:
+
+- after Long-COVID recognition;
+- after diagnosis;
+- after referral;
+- while current Long COVID was contemporaneously present;
+- or as a temporally ordered disease/treatment pathway.
+
 ## Candidate A — person share with documented U09-linked service use
 
 Working name:
@@ -181,6 +195,10 @@ A later implementation task must preserve all current Phase-A scientific boundar
 - exact `ICD10CDX == "U09"` condition selection;
 - no U07 substitution;
 - unchanged HC-256 Round 3/1 operational-current Long-COVID cohort;
+- U09 is not equivalent to the governed HC-256 operational-current Long-COVID definition;
+- absence of exact U09 is not evidence of absence of Long COVID;
+- absence of a qualifying U09-linked encounter is not evidence of absence of healthcare;
+- annual D/E/F/G encounters may occur before or after the Round 3/1 current-status anchor and must not be interpreted as a temporally ordered recognition/diagnosis/referral/treatment pathway;
 - full-design-before-domain survey semantics;
 - exact condition/person/event/family reconciliation;
 - distinct-person/distinct-encounter de-duplication;
