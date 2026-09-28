@@ -325,6 +325,42 @@ collapse_u09_to_hc256 <- function(hc256, footprint) {
   hc256
 }
 
+build_linked_condition_target <- function(combined) {
+  required <- c(
+    "DUPERSID",
+    "PERWT24F",
+    "VARSTR",
+    "VARPSU",
+    "do_current_long_covid",
+    "do_age_18_64",
+    "do_has_u09_condition",
+    "do_has_u09_linked_event"
+  )
+  missing <- setdiff(required, names(combined))
+  if (length(missing)) {
+    stop(
+      "Cannot construct linked-condition target; missing post-collapse HC-256 fields: ",
+      paste(missing, collapse = ", "),
+      call. = FALSE
+    )
+  }
+
+  target <- !is.na(combined$do_current_long_covid) &
+    combined$do_current_long_covid &
+    combined$do_age_18_64 &
+    !is.na(combined$PERWT24F) &
+    as.numeric(combined$PERWT24F) > 0
+
+  if (length(target) != nrow(combined)) {
+    stop(
+      "Linked-condition target length mismatch: expected ",
+      nrow(combined), " values but constructed ", length(target), ".",
+      call. = FALSE
+    )
+  }
+  target
+}
+
 linked_condition_guardrails <- function() {
   c(
     "HC-255 U09 frequency is not Long COVID prevalence.",

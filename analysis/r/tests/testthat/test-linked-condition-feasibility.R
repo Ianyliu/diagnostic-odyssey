@@ -265,6 +265,61 @@ testthat::test_that("collapse preserves governed HC-256 cohort fields and zero-l
   testthat::expect_equal(collapsed$do_has_u09_linked_event, c(FALSE, FALSE))
 })
 
+
+testthat::test_that("post-collapse target contract reproduces governed target membership", {
+  conditions <- make_u09_condition()
+  links <- data.frame(
+    DUPERSID = "P1",
+    CONDIDX = "P101",
+    EVNTIDX = "MISSING",
+    CLNKIDX = "P101MISSING",
+    EVENTYPE = 1,
+    stringsAsFactors = FALSE
+  )
+  footprint <- derive_u09_event_footprint(
+    conditions, links, make_empty_event_files()
+  )
+  hc256 <- data.frame(
+    DUPERSID = c("P1", "P2", "P3"),
+    PERWT24F = c(1, 2, 3),
+    VARSTR = c(1, 1, 2),
+    VARPSU = c(1, 2, 1),
+    do_current_long_covid = c(TRUE, TRUE, FALSE),
+    do_age_18_64 = c(TRUE, TRUE, TRUE),
+    do_current_long_covid_known = c(TRUE, TRUE, TRUE),
+    stringsAsFactors = FALSE
+  )
+
+  combined <- collapse_u09_to_hc256(hc256, footprint)
+  target <- build_linked_condition_target(combined)
+
+  testthat::expect_length(target, nrow(combined))
+  testthat::expect_identical(target, c(TRUE, TRUE, FALSE))
+  testthat::expect_true(target[1])
+  testthat::expect_true(combined$do_has_u09_condition[1])
+  testthat::expect_false(combined$do_has_u09_linked_event[1])
+  testthat::expect_true(target[2])
+  testthat::expect_false(combined$do_has_u09_condition[2])
+  testthat::expect_false(combined$do_has_u09_linked_event[2])
+})
+
+testthat::test_that("post-collapse target contract fails fast on missing governed fields", {
+  combined <- data.frame(
+    DUPERSID = "P1",
+    PERWT24F = 1,
+    VARSTR = 1,
+    VARPSU = 1,
+    do_current_long_covid = TRUE,
+    do_has_u09_condition = FALSE,
+    do_has_u09_linked_event = FALSE,
+    stringsAsFactors = FALSE
+  )
+  testthat::expect_error(
+    build_linked_condition_target(combined),
+    "missing post-collapse HC-256 fields: do_age_18_64"
+  )
+})
+
 testthat::test_that("same valid event linked to U09 and another condition counts once for U09", {
   x <- make_linked_condition_fixture()
   footprint <- derive_u09_event_footprint(x$conditions, x$links, x$event_files)
