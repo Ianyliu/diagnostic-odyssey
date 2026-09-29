@@ -42,7 +42,9 @@ testthat::test_that("linked-condition candidate workflow enforces privacy and no
     ".runtime_eligible == false",
     ".runtime_selection_changed == false",
     ".reviewed_artifact_modified == false",
-    ".reliability_rule_reviewed == false"
+    '.schema_version == "2.0"',
+    '.precision_rule_version == "meps_hc_precision_v1"',
+    ".precision_rule_reviewed == true"
   )) {
     testthat::expect_true(grepl(needle, workflow, fixed = TRUE), info = needle)
   }
@@ -55,4 +57,23 @@ testthat::test_that("linked-condition candidate workflow does not reuse ordinary
   testthat::expect_false(grepl("run_meps_2024.R", workflow, fixed = TRUE))
   testthat::expect_false(grepl("run_linked_condition_feasibility.R", workflow, fixed = TRUE))
   testthat::expect_false(grepl("validate-artifact-cli.ts", workflow, fixed = TRUE))
+})
+
+
+testthat::test_that("linked-condition candidate workflow freezes schema-v2 precision governance without product release", {
+  workflow <- read_linked_condition_candidate_repo_text(
+    file.path(".github", "workflows", "meps-linked-condition-candidate.yml")
+  )
+  for (needle in c(
+    '.schema_version == "2.0"',
+    '.precision_rule_version == "meps_hc_precision_v1"',
+    ".precision_rule_reviewed == true",
+    '.precision_governance.rule_version == "meps_hc_precision_v1"',
+    ".precision_governance.rule_reviewed == true",
+    ".precision_governance.product_release_eligible == false",
+    "[.candidates[].product_release_eligible] | all(. == false)"
+  )) {
+    testthat::expect_true(grepl(needle, workflow, fixed = TRUE), info = needle)
+  }
+  testthat::expect_false(grepl("reliability_rule_reviewed", workflow, fixed = TRUE))
 })

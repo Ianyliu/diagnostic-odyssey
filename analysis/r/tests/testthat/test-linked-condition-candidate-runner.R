@@ -13,7 +13,11 @@ testthat::test_that("linked-condition candidate runner remains candidate-only an
   testthat::expect_true(grepl('status = "preliminary-candidate-only"', runner, fixed = TRUE))
   testthat::expect_true(grepl("automatic_release = FALSE", runner, fixed = TRUE))
   testthat::expect_true(grepl("runtime_eligible = FALSE", runner, fixed = TRUE))
-  testthat::expect_true(grepl("reliability_rule_reviewed = FALSE", runner, fixed = TRUE))
+  testthat::expect_true(grepl('schema_version = "2.0"', runner, fixed = TRUE))
+  testthat::expect_true(grepl("adjudicate_linked_condition_precision(candidate)", runner, fixed = TRUE))
+  testthat::expect_true(grepl("precision_rule_reviewed = TRUE", runner, fixed = TRUE))
+  testthat::expect_true(grepl("product_release_eligible = FALSE", runner, fixed = TRUE))
+  testthat::expect_false(grepl("reliability_rule_reviewed", runner, fixed = TRUE))
   testthat::expect_true(grepl(
     "candidate_path,\n    manifest_path,\n    diagnostics_path",
     runner,
@@ -112,4 +116,27 @@ testthat::test_that("linked-condition reconciliation family counts serialize as 
     serialized,
     perl = TRUE
   ))
+})
+
+
+testthat::test_that("linked-condition candidate runner writes governed precision v2 metadata after estimation", {
+  path <- file.path(repo_root, "analysis", "r", "meps", "run_linked_condition_candidate.R")
+  runner <- paste(readLines(path, warn = FALSE), collapse = "\n")
+
+  for (needle in c(
+    'schema_version = "2.0"',
+    "candidates <- estimate_linked_condition_service_use(person_design)",
+    "adjudicate_linked_condition_precision(candidate)",
+    "precision_governance = list(",
+    "rule_version = linked_condition_precision_rule_version()",
+    "rule_reviewed = TRUE",
+    "product_release_eligible = FALSE",
+    "precision_rule_version = linked_condition_precision_rule_version()",
+    "precision_rule_reviewed = TRUE"
+  )) {
+    testthat::expect_true(grepl(needle, runner, fixed = TRUE), info = needle)
+  }
+
+  testthat::expect_false(grepl('schema_version = "1.0"', runner, fixed = TRUE))
+  testthat::expect_false(grepl("reliability_rule_reviewed", runner, fixed = TRUE))
 })

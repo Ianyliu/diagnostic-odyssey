@@ -17,6 +17,7 @@
   file.path("analysis", "r", "meps", "cohort_diagnostics.R"),
   file.path("analysis", "r", "meps", "linked_condition_feasibility.R"),
   file.path("analysis", "r", "meps", "linked_condition_service_use.R"),
+  file.path("analysis", "r", "meps", "linked_condition_precision.R"),
   file.path("analysis", "r", "meps", "estimate_linked_condition_service_use.R"),
   file.path("analysis", "r", "meps", "estimate_population.R"),
   file.path("analysis", "r", "meps", "estimate_spending.R"),

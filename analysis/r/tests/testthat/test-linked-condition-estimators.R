@@ -95,8 +95,9 @@ testthat::test_that("zero-support family preserves null RSE and zero support wit
   testthat::expect_equal(inpatient$unweighted_nonzero_person_n, 0L)
   testthat::expect_equal(inpatient$nonzero_support$represented_strata_n, 0L)
   testthat::expect_equal(inpatient$nonzero_support$represented_stratum_psu_pairs_n, 0L)
-  testthat::expect_identical(inpatient$reliability_status, "not_adjudicated")
-  testthat::expect_false(inpatient$release_eligible)
+  testthat::expect_false("reliability_status" %in% names(inpatient))
+  testthat::expect_false("reliability_rule_version" %in% names(inpatient))
+  testthat::expect_false("release_eligible" %in% names(inpatient))
 })
 
 testthat::test_that("candidate generation fails closed for governed target missing design fields", {
