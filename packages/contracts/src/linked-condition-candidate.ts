@@ -1,4 +1,44 @@
-export type LinkedConditionReliabilityStatus = "not_adjudicated";
+export const linkedConditionPrecisionRuleVersion = "meps_hc_precision_v1" as const;
+
+export const linkedConditionPrecisionStatuses = [
+  "meps_precise",
+  "meps_questionable_precision",
+  "meps_low_percentage_exception",
+  "meps_unstable_precision",
+  "insufficient_sample",
+  "unsupported_zero",
+  "review_required"
+] as const;
+export type LinkedConditionPrecisionStatus = typeof linkedConditionPrecisionStatuses[number];
+
+export const linkedConditionPrecisionReportingStatuses = [
+  "reportable",
+  "reportable_with_caution",
+  "suppress_precision",
+  "suppress_insufficient_sample",
+  "suppress_unsupported_zero",
+  "suppress_pending_review"
+] as const;
+export type LinkedConditionPrecisionReportingStatus = typeof linkedConditionPrecisionReportingStatuses[number];
+
+export const linkedConditionPrecisionReasonCodes = [
+  "sample_n_below_60",
+  "rse_30_to_50",
+  "rse_above_50",
+  "low_percentage_exception",
+  "zero_positive_support",
+  "precision_input_invalid"
+] as const;
+export type LinkedConditionPrecisionReasonCode = typeof linkedConditionPrecisionReasonCodes[number];
+
+export interface LinkedConditionPrecisionDecision {
+  computationally_valid: boolean;
+  precision_status: LinkedConditionPrecisionStatus;
+  precision_reason_codes: LinkedConditionPrecisionReasonCode[];
+  precision_reporting_status: LinkedConditionPrecisionReportingStatus;
+  precision_rule_version: typeof linkedConditionPrecisionRuleVersion;
+  product_release_eligible: false;
+}
 
 export const linkedConditionCandidateIds = [
   "u09_linked_service_use_person_share",
@@ -48,9 +88,12 @@ export interface LinkedConditionCandidateEstimate {
   nonzero_support: LinkedConditionSupport;
   relative_standard_error: number | null;
   interval_width: number | null;
-  reliability_status: LinkedConditionReliabilityStatus;
-  reliability_rule_version: string | null;
-  release_eligible: false;
+  computationally_valid: boolean;
+  precision_status: LinkedConditionPrecisionStatus;
+  precision_reason_codes: LinkedConditionPrecisionReasonCode[];
+  precision_reporting_status: LinkedConditionPrecisionReportingStatus;
+  precision_rule_version: typeof linkedConditionPrecisionRuleVersion;
+  product_release_eligible: false;
   allowed_interpretation: string;
   prohibited_interpretation: string[];
   limitations: string[];
@@ -63,7 +106,7 @@ export interface LinkedConditionCandidateEstimate {
 }
 
 export interface LinkedConditionCandidateFile {
-  schema_version: "1.0";
+  schema_version: "2.0";
   artifact_family: "linked_condition_service_use_candidate";
   status: "preliminary-candidate-only";
   generated_at: string;
@@ -72,7 +115,7 @@ export interface LinkedConditionCandidateFile {
 }
 
 export interface LinkedConditionCandidateManifest {
-  schema_version: "1.0";
+  schema_version: "2.0";
   artifact_family: "linked_condition_service_use_candidate";
   status: "preliminary-candidate-only";
   candidate_estimates_generated: true;
@@ -80,7 +123,8 @@ export interface LinkedConditionCandidateManifest {
   runtime_eligible: false;
   runtime_selection_changed: false;
   reviewed_artifact_modified: false;
-  reliability_rule_reviewed: false;
+  precision_rule_version: typeof linkedConditionPrecisionRuleVersion;
+  precision_rule_reviewed: true;
   code_commit: string;
   github_sha: string | null;
   code_commit_matches_github_sha: boolean | null;
@@ -112,7 +156,8 @@ const candidateKeys = [
   "interval_high", "interval_type", "unweighted_target_n", "unweighted_nonzero_person_n",
   "observed_qualifying_event_n", "weighted_denominator", "ci_degrees_of_freedom",
   "ci_df_source", "target_support", "nonzero_support", "relative_standard_error",
-  "interval_width", "reliability_status", "reliability_rule_version", "release_eligible",
+  "interval_width", "computationally_valid", "precision_status", "precision_reason_codes",
+  "precision_reporting_status", "precision_rule_version", "product_release_eligible",
   "allowed_interpretation", "prohibited_interpretation", "limitations", "weight_variable",
   "variance_stratum_variable", "variance_psu_variable", "cohort_definition",
   "statistics_method", "source_refs"
@@ -125,15 +170,15 @@ const candidateFileKeys = [
 const manifestKeys = [
   "schema_version", "artifact_family", "status", "candidate_estimates_generated",
   "automatic_release", "runtime_eligible", "runtime_selection_changed",
-  "reviewed_artifact_modified", "reliability_rule_reviewed", "code_commit", "github_sha",
+  "reviewed_artifact_modified", "precision_rule_version", "precision_rule_reviewed", "code_commit", "github_sha",
   "code_commit_matches_github_sha", "estimates_file", "diagnostics_file",
   "hc256_source_metadata_file", "linked_condition_source_metadata_file"
 ] as const;
 
 const diagnosticsKeys = [
-  "status", "code_commit", "github_sha", "code_commit_matches_github_sha",
+  "schema_version", "status", "code_commit", "github_sha", "code_commit_matches_github_sha",
   "design_integrity", "full_person_design", "target_support", "reconciliation",
-  "linkage_quality", "reliability", "scientific_guardrails"
+  "linkage_quality", "precision_governance", "scientific_guardrails"
 ] as const;
 
 const designIntegrityKeys = [
@@ -167,7 +212,11 @@ const linkageQualityKeys = [
   "event_family_mismatch_n", "duplicate_clnkidx_n", "duplicate_condition_event_pair_n",
   "clnkidx_composition_mismatch_n", "unsupported_eventype_n", "unsupported_eventype_values"
 ] as const;
-const reliabilityKeys = ["status", "rule_version", "rule_reviewed", "release_eligible"] as const;
+const precisionGovernanceKeys = ["rule_version", "rule_reviewed", "product_release_eligible"] as const;
+
+const precisionStatusSet = new Set<string>(linkedConditionPrecisionStatuses);
+const precisionReportingStatusSet = new Set<string>(linkedConditionPrecisionReportingStatuses);
+const precisionReasonCodeSet = new Set<string>(linkedConditionPrecisionReasonCodes);
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null && !Array.isArray(value);
@@ -180,6 +229,190 @@ const isNonnegativeInteger = (value: unknown): value is number =>
 
 const isNonEmptyString = (value: unknown): value is string =>
   typeof value === "string" && value.trim().length > 0;
+
+const canonicalPrecisionReasonCodes = (
+  values: readonly LinkedConditionPrecisionReasonCode[]
+): LinkedConditionPrecisionReasonCode[] =>
+  linkedConditionPrecisionReasonCodes.filter(code => values.includes(code));
+
+export function evaluateLinkedConditionPrecision(
+  value: unknown
+): LinkedConditionPrecisionDecision {
+  const reasons: LinkedConditionPrecisionReasonCode[] = [];
+  if (!isRecord(value)) {
+    return {
+      computationally_valid: false,
+      precision_status: "review_required",
+      precision_reason_codes: ["precision_input_invalid"],
+      precision_reporting_status: "suppress_pending_review",
+      precision_rule_version: linkedConditionPrecisionRuleVersion,
+      product_release_eligible: false
+    };
+  }
+
+  const unitValid = value.unit === "proportion" || value.unit === "encounters/person/year";
+  const targetNValid = isNonnegativeInteger(value.unweighted_target_n);
+  const valueValid = isFiniteNumber(value.value) &&
+    value.value >= 0 &&
+    (value.unit !== "proportion" || value.value <= 1);
+  const standardErrorValid = isFiniteNumber(value.standard_error) && value.standard_error >= 0;
+  const intervalHighValid = isFiniteNumber(value.interval_high);
+  const nonzeroNValid = isNonnegativeInteger(value.unweighted_nonzero_person_n);
+  const eventNValid = isNonnegativeInteger(value.observed_qualifying_event_n);
+  const rseValid = value.relative_standard_error === null ||
+    (isFiniteNumber(value.relative_standard_error) && value.relative_standard_error >= 0);
+
+  if (targetNValid && value.unweighted_target_n < 60) reasons.push("sample_n_below_60");
+
+  let invalid = !unitValid ||
+    !targetNValid ||
+    !valueValid ||
+    !standardErrorValid ||
+    !intervalHighValid ||
+    !nonzeroNValid ||
+    !eventNValid ||
+    !rseValid;
+
+  if (
+    targetNValid &&
+    nonzeroNValid &&
+    value.unweighted_nonzero_person_n > value.unweighted_target_n
+  ) invalid = true;
+
+  if (valueValid && intervalHighValid && value.interval_high < value.value) invalid = true;
+
+  const supportConsistent = nonzeroNValid &&
+    eventNValid &&
+    (
+      (value.unweighted_nonzero_person_n === 0 && value.observed_qualifying_event_n === 0) ||
+      (value.unweighted_nonzero_person_n > 0 && value.observed_qualifying_event_n > 0)
+    );
+  if (nonzeroNValid && eventNValid && !supportConsistent) invalid = true;
+
+  const exactZeroSupport = valueValid &&
+    standardErrorValid &&
+    rseValid &&
+    nonzeroNValid &&
+    eventNValid &&
+    value.value === 0 &&
+    value.standard_error === 0 &&
+    value.relative_standard_error === null &&
+    value.unweighted_nonzero_person_n === 0 &&
+    value.observed_qualifying_event_n === 0;
+
+  if (exactZeroSupport) reasons.push("zero_positive_support");
+
+  if (
+    nonzeroNValid &&
+    eventNValid &&
+    value.unweighted_nonzero_person_n === 0 &&
+    value.observed_qualifying_event_n === 0 &&
+    !exactZeroSupport
+  ) invalid = true;
+
+  if (valueValid && value.value !== 0 && value.relative_standard_error === null) invalid = true;
+
+  if (
+    valueValid &&
+    value.value === 0 &&
+    nonzeroNValid &&
+    eventNValid &&
+    (value.unweighted_nonzero_person_n > 0 || value.observed_qualifying_event_n > 0)
+  ) invalid = true;
+
+  if (invalid) {
+    reasons.push("precision_input_invalid");
+    return {
+      computationally_valid: false,
+      precision_status: "review_required",
+      precision_reason_codes: canonicalPrecisionReasonCodes(reasons),
+      precision_reporting_status: "suppress_pending_review",
+      precision_rule_version: linkedConditionPrecisionRuleVersion,
+      product_release_eligible: false
+    };
+  }
+
+  if (exactZeroSupport) {
+    return {
+      computationally_valid: true,
+      precision_status: "unsupported_zero",
+      precision_reason_codes: canonicalPrecisionReasonCodes(reasons),
+      precision_reporting_status: "suppress_unsupported_zero",
+      precision_rule_version: linkedConditionPrecisionRuleVersion,
+      product_release_eligible: false
+    };
+  }
+
+  if (!isFiniteNumber(value.relative_standard_error)) {
+    reasons.push("precision_input_invalid");
+    return {
+      computationally_valid: false,
+      precision_status: "review_required",
+      precision_reason_codes: canonicalPrecisionReasonCodes(reasons),
+      precision_reporting_status: "suppress_pending_review",
+      precision_rule_version: linkedConditionPrecisionRuleVersion,
+      product_release_eligible: false
+    };
+  }
+
+  let precisionStatus: LinkedConditionPrecisionStatus;
+  let reportingStatus: LinkedConditionPrecisionReportingStatus;
+  const rse = value.relative_standard_error;
+
+  if (rse < 0.30) {
+    precisionStatus = "meps_precise";
+    reportingStatus = "reportable";
+  } else if (rse <= 0.50) {
+    reasons.push("rse_30_to_50");
+    precisionStatus = "meps_questionable_precision";
+    reportingStatus = "reportable_with_caution";
+  } else {
+    reasons.push("rse_above_50");
+    if (value.unit === "proportion" && value.interval_high <= 0.10) {
+      reasons.push("low_percentage_exception");
+      precisionStatus = "meps_low_percentage_exception";
+      reportingStatus = "reportable_with_caution";
+    } else {
+      precisionStatus = "meps_unstable_precision";
+      reportingStatus = "suppress_precision";
+    }
+  }
+
+  if (value.unweighted_target_n < 60) {
+    precisionStatus = "insufficient_sample";
+    reportingStatus = "suppress_insufficient_sample";
+  }
+
+  return {
+    computationally_valid: true,
+    precision_status: precisionStatus,
+    precision_reason_codes: canonicalPrecisionReasonCodes(reasons),
+    precision_reporting_status: reportingStatus,
+    precision_rule_version: linkedConditionPrecisionRuleVersion,
+    product_release_eligible: false
+  };
+}
+
+const validatePrecisionReasonCodes = (
+  value: unknown,
+  path: string
+): LinkedConditionCandidateValidationIssue[] => {
+  if (!Array.isArray(value)) return [{path, message: "must be an array"}];
+  const issues: LinkedConditionCandidateValidationIssue[] = [];
+  if (value.some(item => !isNonEmptyString(item) || !precisionReasonCodeSet.has(item))) {
+    issues.push({path, message: "must contain only governed precision reason codes"});
+    return issues;
+  }
+  const strings = value as string[];
+  if (new Set(strings).size !== strings.length) {
+    issues.push({path, message: "must not contain duplicate reason codes"});
+  }
+  const canonical = linkedConditionPrecisionReasonCodes.filter(code => strings.includes(code));
+  if (strings.length === canonical.length && strings.some((entry, index) => entry !== canonical[index])) {
+    issues.push({path, message: "must use deterministic governed reason-code order"});
+  }
+  return issues;
+};
 
 const closedObjectIssues = (
   value: Record<string, unknown>,
@@ -398,14 +631,45 @@ export function validateLinkedConditionCandidateEstimate(
     issues.push({path: `${path}.interval_width`, message: "must be null or a non-negative finite number"});
   }
 
-  if (value.reliability_status !== "not_adjudicated") {
-    issues.push({path: `${path}.reliability_status`, message: "must remain not_adjudicated"});
+  if (typeof value.computationally_valid !== "boolean") {
+    issues.push({path: `${path}.computationally_valid`, message: "must be boolean"});
   }
-  if (value.reliability_rule_version !== null) {
-    issues.push({path: `${path}.reliability_rule_version`, message: "must remain null before governed reliability review"});
+  if (!isNonEmptyString(value.precision_status) || !precisionStatusSet.has(value.precision_status)) {
+    issues.push({path: `${path}.precision_status`, message: "must be a governed precision status"});
   }
-  if (value.release_eligible !== false) {
-    issues.push({path: `${path}.release_eligible`, message: "must remain false"});
+  issues.push(...validatePrecisionReasonCodes(value.precision_reason_codes, `${path}.precision_reason_codes`));
+  if (!isNonEmptyString(value.precision_reporting_status) || !precisionReportingStatusSet.has(value.precision_reporting_status)) {
+    issues.push({path: `${path}.precision_reporting_status`, message: "must be a governed precision reporting status"});
+  }
+  if (value.precision_rule_version !== linkedConditionPrecisionRuleVersion) {
+    issues.push({path: `${path}.precision_rule_version`, message: `must be ${linkedConditionPrecisionRuleVersion}`});
+  }
+  if (value.product_release_eligible !== false) {
+    issues.push({path: `${path}.product_release_eligible`, message: "must remain false"});
+  }
+
+  const expectedPrecision = evaluateLinkedConditionPrecision(value);
+  for (const key of [
+    "computationally_valid",
+    "precision_status",
+    "precision_reporting_status",
+    "precision_rule_version",
+    "product_release_eligible"
+  ] as const) {
+    if (value[key] !== expectedPrecision[key]) {
+      issues.push({path: `${path}.${key}`, message: "must match independent meps_hc_precision_v1 recomputation"});
+    }
+  }
+  if (
+    Array.isArray(value.precision_reason_codes) &&
+    (
+      value.precision_reason_codes.length !== expectedPrecision.precision_reason_codes.length ||
+      value.precision_reason_codes.some(
+        (entry, index) => entry !== expectedPrecision.precision_reason_codes[index]
+      )
+    )
+  ) {
+    issues.push({path: `${path}.precision_reason_codes`, message: "must match independent meps_hc_precision_v1 recomputation"});
   }
 
   if (value.weight_variable !== "PERWT24F") issues.push({path: `${path}.weight_variable`, message: "must be PERWT24F"});
@@ -426,7 +690,7 @@ export function validateLinkedConditionCandidateFile(
   const issues: LinkedConditionCandidateValidationIssue[] = [];
   if (!isRecord(value)) return [{path: "candidate_file", message: "must be an object"}];
   issues.push(...closedObjectIssues(value, candidateFileKeys, "candidate_file"));
-  if (value.schema_version !== "1.0") issues.push({path: "candidate_file.schema_version", message: "must be 1.0"});
+  if (value.schema_version !== "2.0") issues.push({path: "candidate_file.schema_version", message: "must be 2.0"});
   if (value.artifact_family !== "linked_condition_service_use_candidate") {
     issues.push({path: "candidate_file.artifact_family", message: "invalid artifact family"});
   }
@@ -506,7 +770,7 @@ export function validateLinkedConditionCandidateManifest(
   if (!isRecord(value)) return [{path: "candidate_manifest", message: "must be an object"}];
   issues.push(...closedObjectIssues(value, manifestKeys, "candidate_manifest"));
   const exact = {
-    schema_version: "1.0",
+    schema_version: "2.0",
     artifact_family: "linked_condition_service_use_candidate",
     status: "preliminary-candidate-only",
     candidate_estimates_generated: true,
@@ -514,7 +778,8 @@ export function validateLinkedConditionCandidateManifest(
     runtime_eligible: false,
     runtime_selection_changed: false,
     reviewed_artifact_modified: false,
-    reliability_rule_reviewed: false,
+    precision_rule_version: linkedConditionPrecisionRuleVersion,
+    precision_rule_reviewed: true,
     estimates_file: "linked-condition-candidate-estimates.json",
     diagnostics_file: "diagnostics.json",
     hc256_source_metadata_file: "hc256-source-metadata.json",
@@ -540,6 +805,7 @@ export function validateLinkedConditionCandidateDiagnostics(
   const issues: LinkedConditionCandidateValidationIssue[] = [];
   if (!isRecord(value)) return [{path: "diagnostics", message: "must be an object"}];
   issues.push(...closedObjectIssues(value, diagnosticsKeys, "diagnostics"));
+  if (value.schema_version !== "2.0") issues.push({path: "diagnostics.schema_version", message: "must be 2.0"});
   if (value.status !== "preliminary-candidate-only") issues.push({path: "diagnostics.status", message: "must remain preliminary-candidate-only"});
   if (!isNonEmptyString(value.code_commit)) issues.push({path: "diagnostics.code_commit", message: "must be non-empty"});
   if (!(value.github_sha === null || isNonEmptyString(value.github_sha))) issues.push({path: "diagnostics.github_sha", message: "must be null or non-empty"});
@@ -609,14 +875,19 @@ export function validateLinkedConditionCandidateDiagnostics(
     issues.push(...validateStringArray(value.linkage_quality.unsupported_eventype_values, "diagnostics.linkage_quality.unsupported_eventype_values", true));
   }
 
-  if (!isRecord(value.reliability)) {
-    issues.push({path: "diagnostics.reliability", message: "must be an object"});
+  if (!isRecord(value.precision_governance)) {
+    issues.push({path: "diagnostics.precision_governance", message: "must be an object"});
   } else {
-    issues.push(...closedObjectIssues(value.reliability, reliabilityKeys, "diagnostics.reliability"));
-    if (value.reliability.status !== "not_adjudicated") issues.push({path: "diagnostics.reliability.status", message: "must remain not_adjudicated"});
-    if (value.reliability.rule_version !== null) issues.push({path: "diagnostics.reliability.rule_version", message: "must remain null"});
-    if (value.reliability.rule_reviewed !== false) issues.push({path: "diagnostics.reliability.rule_reviewed", message: "must remain false"});
-    if (value.reliability.release_eligible !== false) issues.push({path: "diagnostics.reliability.release_eligible", message: "must remain false"});
+    issues.push(...closedObjectIssues(value.precision_governance, precisionGovernanceKeys, "diagnostics.precision_governance"));
+    if (value.precision_governance.rule_version !== linkedConditionPrecisionRuleVersion) {
+      issues.push({path: "diagnostics.precision_governance.rule_version", message: `must be ${linkedConditionPrecisionRuleVersion}`});
+    }
+    if (value.precision_governance.rule_reviewed !== true) {
+      issues.push({path: "diagnostics.precision_governance.rule_reviewed", message: "must be true"});
+    }
+    if (value.precision_governance.product_release_eligible !== false) {
+      issues.push({path: "diagnostics.precision_governance.product_release_eligible", message: "must remain false"});
+    }
   }
 
   issues.push(...validateStringArray(value.scientific_guardrails, "diagnostics.scientific_guardrails"));
