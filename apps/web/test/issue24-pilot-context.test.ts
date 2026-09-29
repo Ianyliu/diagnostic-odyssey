@@ -119,7 +119,7 @@ test("DecisionTrace and page sources preserve independent UI semantics", () => {
   assert.match(traceComponent, /<ol>/);
   assert.match(localPage, /Include in Planning Brief/);
   assert.match(localPage, /Use in Pilot planning/);
-  assert.match(localPage, /Used in Pilot planning/);
+  assert.match(localPage, /Active Pilot planning context/);
   assert.match(localPage, /Remove from Pilot/);
   assert.match(localPage, /active Pilot-used context will also appear in the Planning Brief/);
   assert.match(pilotPage, /does not alter reach, capacity, timing, cost, pathway, or mechanism parameters/);

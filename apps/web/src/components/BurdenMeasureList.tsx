@@ -36,9 +36,9 @@ export function BurdenMeasureList({estimates}: {estimates: Estimate[]}) {
         ? parentLabels.get(estimate.component_of_measure_id)
         : null;
 
-      return <article className="measure burden-measure-row" key={estimate.estimate_id}>
+      return <article className="measure burden-measure-row" aria-labelledby={`burden-measure-${estimate.estimate_id}`} key={estimate.estimate_id}>
         <div className="burden-measure-summary">
-          <strong>{estimate.label}</strong>
+          <h3 id={`burden-measure-${estimate.estimate_id}`}>{estimate.label}</h3>
           {estimate.component_of_measure_id && <span className="component-note">
             Component of {parentLabel ?? "a parent measure"} — do not add this value to the parent total.
           </span>}

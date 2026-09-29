@@ -1,3 +1,4 @@
+import { useId } from "react";
 import "./IntervalWhiskerPlot.css";
 import { canExportEstimate, type Estimate } from "@diagnostic-odyssey/contracts";
 
@@ -12,6 +13,7 @@ export function IntervalWhiskerPlot({
   title: string;
   description: string;
 }) {
+  const titleId = useId();
   const rows = estimates.filter(estimate =>
     canExportEstimate(estimate) &&
     typeof estimate.value === "number" &&
@@ -24,13 +26,16 @@ export function IntervalWhiskerPlot({
   const scaleMax = Math.max(1, Math.ceil(rawMax / 25) * 25);
   const pct = (value: number) => Math.max(0, Math.min(100, (value / scaleMax) * 100));
 
-  return <figure className="interval-figure" aria-labelledby="admin-hours-interval-title">
+  return <figure className="interval-figure" aria-labelledby={titleId}>
     <figcaption>
       <p className="visual-kicker">NATIVE-UNIT COMPARISON</p>
-      <h3 id="admin-hours-interval-title">{title}</h3>
+      <h3 id={titleId}>{title}</h3>
       <p>{description}</p>
     </figcaption>
-    <div className="whisker-axis" aria-hidden="true"><span>0</span><span>{scaleMax} hours/person/year</span></div>
+    <div className="whisker-axis-row" aria-hidden="true">
+      <span />
+      <div className="whisker-axis"><span>0</span><span>{scaleMax} hours/person/year</span></div>
+    </div>
     <div className="whisker-plot">
       {rows.map(estimate => {
         const low = estimate.interval_low as number;
