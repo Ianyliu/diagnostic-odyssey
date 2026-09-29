@@ -31,6 +31,29 @@ import {
   PLANNING_DEFAULTS_LABEL
 } from "../data/planningScenarioDefaults";
 import { getPathwayBoundaryPresentation } from "../data/pathwayBoundary";
+import "./PilotPage.css";
+
+const assumptionGroups: ReadonlyArray<{
+  title: string;
+  description: string;
+  fields: readonly PilotNumericField[];
+}> = [
+  {
+    title: "Population and reach",
+    description: "Who the pilot could serve, and the share it intends to reach.",
+    fields: ["eligible_population", "reach"]
+  },
+  {
+    title: "Delivery and timing",
+    description: "Operational capacity and the recognition windows used in the scenario.",
+    fields: ["capacity", "baseline_window_months", "alternative_window_months", "horizon_months"]
+  },
+  {
+    title: "Program resources",
+    description: "Budget inputs for this planning scenario; these are not savings or ROI.",
+    fields: ["fixed_cost", "per_participant_cost"]
+  }
+];
 
 export function PilotPage() {
   const {scenario, scenarioResult} = useArtifact();
@@ -118,17 +141,28 @@ function PilotPlannerWorkspace({
   const sensitivityDataRequestStatus = (field: SensitivityField) =>
     getSensitivityDataRequestStatus(scenario, field, analystDataRequests);
 
-  return <section className="page page-stack">
+  return <section className="page page-stack pilot-page">
     <ContextBar />
     <div className="heading-row">
       <header className="page-heading"><p className="eyebrow">PILOT PLANNER</p><h1>Scope a feasible pilot</h1><p>Transparent recognition/navigation arithmetic from analyst-supplied assumptions. This is not a prediction or causal ROI estimate.</p></header>
       <div className="caution cool"><strong>Plan · Test · Learn</strong><span>Every scenario names the pathway step and mechanism it is allowed to change.</span></div>
     </div>
+    <nav className="pilot-section-nav" aria-label="Pilot Planner sections">
+      <a href="#pilot-assumptions">Assumptions</a>
+      <a href="#pilot-results">Results</a>
+      <a href="#sensitivity">Sensitivity</a>
+      <a href="#pilot-context">Local context</a>
+      <a href="#pilot-trace">Decision trace</a>
+    </nav>
     <div className="pilot-grid">
-      <form className="card assumption-card" onSubmit={event => event.preventDefault()}>
+      <div className="pilot-input-column">
+      <form id="pilot-assumptions" className="card assumption-card" onSubmit={event => event.preventDefault()}>
         <h2>Planning assumptions</h2>
         <p className="subtle"><strong>{PLANNING_DEFAULTS_LABEL}</strong><br />{PLANNING_DEFAULTS_DESCRIPTION}</p>
-        {pilotInputFields.map(field => {
+        {assumptionGroups.map(group => <fieldset className="pilot-assumption-group" key={group.title}>
+          <legend>{group.title}</legend>
+          <p>{group.description}</p>
+          {pilotInputFields.filter(field => group.fields.includes(field.key)).map(field => {
           const inputId = "pilot-" + field.key;
           const helperId = inputId + "-helper";
           const errorId = inputId + "-error";
@@ -155,7 +189,9 @@ function PilotPlannerWorkspace({
             </div>
           </div>;
         })}
+        </fieldset>)}
         {evaluation.formError && <p className="field-error form-error" aria-live="polite">{evaluation.formError}</p>}
+      </form>
         <section className="pathway-boundary" aria-labelledby="pilot-pathway-boundary-title">
           <div>
             <p className="visual-kicker">SCIENTIFIC BOUNDARY</p>
@@ -173,12 +209,57 @@ function PilotPlannerWorkspace({
             <Link className="text-button" to="/evidence">Review evidence limits</Link>
           </div>
         </section>
+      </div>
+      <article id="pilot-results" className="card result-card">
+        <p className="visual-kicker pilot-result-kicker">APPLIED PLANNING SCENARIO</p>
+        <h2>Baseline vs recognition/navigation scenario</h2>
+        <p className="subtle">Deterministic planning arithmetic · not observed evidence or an evidence-derived effect</p>
+        {invalidDraft && <div className="draft-not-applied" role="status">
+          <strong>Draft not applied</strong>
+          <span>These results still reflect the last valid planning assumptions. Fix the highlighted inputs to apply this draft.</span>
+        </div>}
+        <InterpretationGuide
+          id="pilot-result-interpretation"
+          title="How to read these results"
+          whatThisShows="The mechanical planning consequences of the currently applied assumptions."
+          whyItMatters="Whether intended reach, capacity, recognition-window assumptions, and program resources appear operationally feasible together."
+          whatItDoesNotShow="A forecast, observed improvement, treatment effectiveness, causal effect, savings, or ROI."
+          whatToDoNext={invalidDraft
+            ? "Fix the draft inputs, then stress-test an assumption and create a structured data request where uncertainty matters."
+            : "Stress-test an assumption and create a structured data request where uncertainty matters."}
+        />
+        <PilotDecisionVisuals scenario={scenario} result={scenarioResult} />
+        <dl className="result-list pilot-result-ledger">
+          <div><dt>Intended reach</dt><dd>{scenarioResult.intended_reach.toLocaleString()}</dd></div>
+          <div><dt>Reached participants</dt><dd>{scenarioResult.reached_participants.toLocaleString()}</dd></div>
+          <div><dt>Capacity gap</dt><dd>{scenarioResult.capacity_gap.toLocaleString()}</dd></div>
+          <div><dt>Baseline person-month exposure</dt><dd>{scenarioResult.baseline_person_months.toLocaleString()}</dd></div>
+          <div><dt>Planning person-month exposure</dt><dd>{scenarioResult.alternative_person_months.toLocaleString()}</dd></div>
+          <div><dt>Difference in person-month exposure</dt><dd>{scenarioResult.difference_person_months.toLocaleString()}</dd></div>
+          <div><dt>Program-resource requirement</dt><dd>{new Intl.NumberFormat("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0}).format(scenarioResult.program_resource_requirement)}</dd></div>
+        </dl>
+        <div className="sr-only" aria-live="polite" aria-atomic="true">{resultAnnouncement}</div>
+        {invalidDraft ? <section id="sensitivity" className="sensitivity-paused-state" aria-labelledby="sensitivity-paused-title">
+          <h3 id="sensitivity-paused-title">Sensitivity analysis paused</h3>
+          <p>Fix the Pilot Planner inputs before running sensitivity analysis or creating data requests.</p>
+        </section> : <SensitivityExplorer
+          scenario={scenario}
+          onUpsertDataRequest={addSensitivityDataRequest}
+          dataRequestStatus={sensitivityDataRequestStatus}
+        />}
+        <div className="guardrail compact"><strong>Not savings or ROI.</strong><p>The resource requirement is a program input. The person-month difference is a planning exposure quantity, not observed improvement.</p></div>
+        {invalidDraft ? <div className="brief-action-paused">
+          <button className="button" type="button" disabled>Preview Planning Brief</button>
+          <span>Apply valid planning inputs before continuing from this draft.</span>
+        </div> : <Link className="button" to="/brief">Preview Planning Brief</Link>}
+      </article>
+    </div>
 
-        <section className="pilot-local-context" aria-labelledby="pilot-local-context-title">
+        <section id="pilot-context" className="pilot-local-context" aria-labelledby="pilot-local-context-title">
           <div className="pilot-local-context-heading">
             <div>
               <p className="visual-kicker">ANALYST-SELECTED CONTEXT</p>
-              <h3 id="pilot-local-context-title">Local planning context</h3>
+              <h2 id="pilot-local-context-title">Local planning context</h2>
             </div>
             <Link className="text-button" to="/local-context">
               {pilotLocalContext ? "Replace in Local Context" : "Review Local Context"}
@@ -205,8 +286,8 @@ function PilotPlannerWorkspace({
           </p>
         </section>
 
-        <section className="pilot-decision-trace" aria-labelledby="pilot-decision-trace-title">
-          <h3 id="pilot-decision-trace-title">Decision trace</h3>
+        <section id="pilot-trace" className="pilot-decision-trace" aria-labelledby="pilot-decision-trace-title">
+          <h2 id="pilot-decision-trace-title">Decision trace</h2>
           <DecisionTrace
             burdenEstimateCount={burdenEstimateCount}
             pilotLocalContext={pilotLocalContext}
@@ -217,49 +298,5 @@ function PilotPlannerWorkspace({
             dataRequestHref="/pilot#sensitivity"
           />
         </section>
-      </form>
-      <article className="card result-card">
-        <h2>Baseline vs recognition/navigation scenario</h2>
-        <p className="subtle">Deterministic planning arithmetic · not observed evidence or an evidence-derived effect</p>
-        {invalidDraft && <div className="draft-not-applied" role="status">
-          <strong>Draft not applied</strong>
-          <span>These results still reflect the last valid planning assumptions. Fix the highlighted inputs to apply this draft.</span>
-        </div>}
-        <InterpretationGuide
-          id="pilot-result-interpretation"
-          title="How to read these results"
-          whatThisShows="The mechanical planning consequences of the currently applied assumptions."
-          whyItMatters="Whether intended reach, capacity, recognition-window assumptions, and program resources appear operationally feasible together."
-          whatItDoesNotShow="A forecast, observed improvement, treatment effectiveness, causal effect, savings, or ROI."
-          whatToDoNext={invalidDraft
-            ? "Fix the draft inputs, then stress-test an assumption and create a structured data request where uncertainty matters."
-            : "Stress-test an assumption and create a structured data request where uncertainty matters."}
-        />
-        <PilotDecisionVisuals scenario={scenario} result={scenarioResult} />
-        <dl className="result-list">
-          <div><dt>Intended reach</dt><dd>{scenarioResult.intended_reach.toLocaleString()}</dd></div>
-          <div><dt>Reached participants</dt><dd>{scenarioResult.reached_participants.toLocaleString()}</dd></div>
-          <div><dt>Capacity gap</dt><dd>{scenarioResult.capacity_gap.toLocaleString()}</dd></div>
-          <div><dt>Baseline person-month exposure</dt><dd>{scenarioResult.baseline_person_months.toLocaleString()}</dd></div>
-          <div><dt>Planning person-month exposure</dt><dd>{scenarioResult.alternative_person_months.toLocaleString()}</dd></div>
-          <div><dt>Difference in person-month exposure</dt><dd>{scenarioResult.difference_person_months.toLocaleString()}</dd></div>
-          <div><dt>Program-resource requirement</dt><dd>{new Intl.NumberFormat("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0}).format(scenarioResult.program_resource_requirement)}</dd></div>
-        </dl>
-        <div className="sr-only" aria-live="polite" aria-atomic="true">{resultAnnouncement}</div>
-        {invalidDraft ? <section id="sensitivity" className="sensitivity-paused-state" aria-labelledby="sensitivity-paused-title">
-          <h3 id="sensitivity-paused-title">Sensitivity analysis paused</h3>
-          <p>Fix the Pilot Planner inputs before running sensitivity analysis or creating data requests.</p>
-        </section> : <SensitivityExplorer
-          scenario={scenario}
-          onUpsertDataRequest={addSensitivityDataRequest}
-          dataRequestStatus={sensitivityDataRequestStatus}
-        />}
-        <div className="guardrail compact"><strong>Not savings or ROI.</strong><p>The resource requirement is a program input. The person-month difference is a planning exposure quantity, not observed improvement.</p></div>
-        {invalidDraft ? <div className="brief-action-paused">
-          <button className="button" type="button" disabled>Preview Planning Brief</button>
-          <span>Apply valid planning inputs before continuing from this draft.</span>
-        </div> : <Link className="button" to="/brief">Preview Planning Brief</Link>}
-      </article>
-    </div>
   </section>;
 }

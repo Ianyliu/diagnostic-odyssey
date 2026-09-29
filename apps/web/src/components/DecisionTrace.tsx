@@ -32,14 +32,14 @@ export function DecisionTrace({
     evidence
   });
 
-  return <div className="decision-trace" aria-label="Six-step decision trace">
+  return <div className="decision-trace" aria-label="Decision provenance ledger">
     <p className="decision-trace-boundary">
       Evidence → explicit analyst context → planning scope → evidence/data gap.
       This is a provenance and decision ledger, not a proven causal chain.
     </p>
     <ol>
       {items.map((item, index) => <li key={item.key}>
-        <span className="decision-trace-step" aria-hidden="true">{index + 1}</span>
+        <span className="decision-trace-step" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
         <div>
           <strong>{item.label}</strong>
           <span>{item.detail}</span>

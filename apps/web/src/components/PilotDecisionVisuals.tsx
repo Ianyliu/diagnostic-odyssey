@@ -4,6 +4,7 @@ import {
   formatRecognitionWindowDifference,
   getCapacityCoveragePresentation
 } from "../data/pilotDecisionPresentation";
+import { formatPathwayStepLabel } from "../data/pathwayBoundary";
 
 const integer = new Intl.NumberFormat("en-US", {maximumFractionDigits: 0});
 const currency = new Intl.NumberFormat("en-US", {
@@ -89,7 +90,7 @@ export function PilotDecisionVisuals({
           <strong>{scenario.alternative_window_months} mo</strong>
         </div>
       </div>
-      <p className="visual-note">The difference is a scenario assumption tied to <strong>{scenario.target_pathway_step}</strong>; it is not an observed program effect.</p>
+      <p className="visual-note">The difference is a scenario assumption tied to <strong>{formatPathwayStepLabel(scenario.target_pathway_step)}</strong>; it is not an observed program effect.</p>
     </section>
 
     <section className="decision-visual" aria-labelledby="resource-composition-title">
