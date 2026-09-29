@@ -66,3 +66,76 @@
   --do-color-amber: var(--do-warning-text);
   --do-color-white: var(--do-surface);
 }
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --do-canvas: #191b1a;
+  --do-surface: #222523;
+  --do-surface-elevated: #2b302d;
+  --do-text: #f1eee7;
+  --do-text-muted: #b6bab2;
+  --do-border: #434943;
+  --do-control-border: #858d81;
+  --do-accent: #dea2aa;
+  --do-accent-contrast: #201818;
+  --do-focus: #9cc7f3;
+  --do-reviewed-text: #a6d2b4;
+  --do-reviewed-bg: #24392e;
+  --do-reviewed-border: #55725e;
+  --do-warning-text: #eac477;
+  --do-warning-bg: #3a3020;
+  --do-warning-border: #79633d;
+  --do-selection-text: #b8cddf;
+  --do-selection-bg: #273440;
+  --do-selection-border: #526b7a;
+  --do-assumption-text: #d4c8a1;
+  --do-assumption-bg: #343126;
+  --do-assumption-border: #777057;
+  --do-error-text: #ffa799;
+  --do-error-bg: #422823;
+  --do-error-border: #8b554b;
+  --do-chart-1: #9bbcd1;
+  --do-chart-2: #c3c68f;
+  --do-chart-3: #c6afca;
+  --do-chart-4: #cfb799;
+  --do-chart-track: #353c38;
+  --do-chart-grid: #59625a;
+}
+
+@media print {
+  :root,
+  :root[data-theme="dark"] {
+    color-scheme: light;
+    --do-canvas: #ffffff;
+    --do-surface: #ffffff;
+    --do-surface-elevated: #ffffff;
+    --do-text: #20231f;
+    --do-text-muted: #414741;
+    --do-border: #929990;
+    --do-control-border: #6c746a;
+    --do-accent: #612b35;
+    --do-accent-contrast: #ffffff;
+    --do-focus: #285d8a;
+    --do-reviewed-text: #23533d;
+    --do-reviewed-bg: #ffffff;
+    --do-reviewed-border: #929990;
+    --do-warning-text: #684404;
+    --do-warning-bg: #ffffff;
+    --do-warning-border: #929990;
+    --do-selection-text: #354b60;
+    --do-selection-bg: #ffffff;
+    --do-selection-border: #929990;
+    --do-assumption-text: #51472f;
+    --do-assumption-bg: #ffffff;
+    --do-assumption-border: #929990;
+    --do-error-text: #822b21;
+    --do-error-bg: #ffffff;
+    --do-error-border: #929990;
+    --do-chart-1: #3e5b70;
+    --do-chart-2: #656839;
+    --do-chart-3: #6e5872;
+    --do-chart-4: #6c5a49;
+    --do-chart-track: #e5e7e2;
+    --do-chart-grid: #919890;
+  }
+}

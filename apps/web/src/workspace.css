@@ -75,6 +75,41 @@ textarea {
   color: var(--do-text);
 }
 
+.context-bar {
+  color: var(--do-text-muted);
+  background: var(--do-surface);
+  border-color: var(--do-border);
+}
+
+.context-bar strong {
+  color: var(--do-text);
+}
+
+.chip {
+  color: var(--do-selection-text);
+  background: var(--do-selection-bg);
+  border-color: var(--do-selection-border);
+  border-radius: 3px;
+}
+
+.theme-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: inherit;
+  font-size: .8rem;
+  font-weight: 600;
+}
+
+.theme-control select {
+  min-height: 44px;
+  padding: 8px 28px 8px 10px;
+  color: var(--do-text);
+  background: var(--do-surface);
+  border: 1px solid var(--do-control-border);
+  border-radius: var(--do-radius-control);
+}
+
 .subtle,
 .limitations,
 .visual-note {
@@ -185,6 +220,27 @@ summary {
 
 .technical-disclosure summary {
   color: var(--do-accent);
+}
+
+.input-wrap {
+  overflow: visible;
+  border-color: var(--do-control-border);
+}
+
+.input-wrap:focus-within {
+  outline: 3px solid var(--do-focus);
+  outline-offset: 2px;
+}
+
+.input-wrap input:focus-visible {
+  outline: none;
+}
+
+.visual-data-table th,
+.visual-data-table td,
+.brief-burden-table th,
+.brief-burden-table td {
+  border-color: var(--do-border);
 }
 
 table {

@@ -1,5 +1,6 @@
 import { NavLink, Outlet } from "react-router-dom";
 import { useArtifact } from "../data/ArtifactContext";
+import { ThemeControl } from "./ThemeControl";
 
 const nav = [
   ["/", "Overview"],
@@ -35,7 +36,7 @@ export function AppShell() {
             </NavLink>
           ))}
         </nav>
-        <span className="header-meta">Federal data · public evidence</span>
+        <ThemeControl />
       </header>
       <div className="prototype-strip" role="note">
         <strong>Reviewed national MEPS burden loaded · planning assumptions remain analyst-editable</strong>
