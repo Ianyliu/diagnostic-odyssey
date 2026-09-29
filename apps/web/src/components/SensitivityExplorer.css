@@ -68,13 +68,15 @@
 
 .sensitivity-bars {
   display: grid;
-  gap: 0;
+  grid-template-columns: minmax(170px, 0.72fr) minmax(120px, 1fr) minmax(58px, auto);
+  gap: 0 12px;
   border-top: 1px solid var(--do-border);
 }
 
 .sensitivity-row {
   display: grid;
-  grid-template-columns: minmax(135px, .75fr) minmax(70px, 1fr) auto;
+  grid-template-columns: subgrid;
+  grid-column: 1 / -1;
   gap: 12px;
   align-items: center;
   min-width: 0;
@@ -83,7 +85,7 @@
 }
 
 .sensitivity-row.current {
-  margin-inline: -8px;
+  margin-inline: 0;
   padding-inline: 8px;
   background: var(--do-selection-surface);
   box-shadow: inset 3px 0 var(--do-selection-border);
@@ -244,6 +246,10 @@
   .sensitivity-action {
     display: grid;
     justify-content: stretch;
+  }
+
+  .sensitivity-bars {
+    display: block;
   }
 
   .sensitivity-row {

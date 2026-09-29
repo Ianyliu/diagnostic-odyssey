@@ -175,6 +175,9 @@
 }
 
 .planning-brief-page .brief-burden-table-wrap {
+  position: relative;
+  max-width: 100%;
+  overflow-x: auto;
   border-color: var(--brief-rule);
   border-radius: var(--do-radius-control);
 }

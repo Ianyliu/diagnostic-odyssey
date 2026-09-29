@@ -292,3 +292,8 @@
     display: none;
   }
 }
+
+.pilot-page .pilot-field-control small,
+.pilot-page .input-wrap small {
+  white-space: nowrap;
+}
