@@ -61,7 +61,7 @@ export function OverviewPage() {
           </p>
           <h1 id="overview-title">
             From invisible burden
-            <span> to traceable action.</span>
+            <span>to traceable <em>action.</em></span>
           </h1>
           <p className="overview-lede">
             Diagnostic Odyssey keeps reviewed national burden, local implementation context, and analyst assumptions visibly separate—then carries their provenance into one planning workflow.
