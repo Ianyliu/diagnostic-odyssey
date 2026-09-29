@@ -5,6 +5,11 @@ html {
   color: var(--do-text);
   background: var(--do-canvas);
   font-variant-numeric: tabular-nums;
+  scroll-padding-block-start: var(--do-sticky-offset);
+}
+
+:where([id]) {
+  scroll-margin-block-start: var(--do-sticky-offset);
 }
 
 body {
@@ -31,6 +36,282 @@ textarea {
 
 .page-stack {
   gap: var(--do-space-5);
+}
+
+/* Shell and route orientation */
+.site-header {
+  display: block;
+  min-height: 0;
+  padding: 0;
+  color: var(--do-text);
+  background: var(--do-surface);
+  border-bottom: 1px solid var(--do-border);
+}
+
+.header-inner {
+  display: grid;
+  grid-template-columns: minmax(190px, 232px) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  width: min(1440px, 100%);
+  min-height: var(--do-shell-height);
+  margin-inline: auto;
+  padding-inline: 24px;
+}
+
+.brand {
+  color: var(--do-text);
+  text-decoration: none;
+}
+
+.brand strong {
+  color: var(--do-accent);
+  font-family: var(--do-font-display);
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -.025em;
+  line-height: 1.1;
+}
+
+.brand span {
+  margin-top: 3px;
+  color: var(--do-text-muted);
+  font-size: .57rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  line-height: 1.3;
+  opacity: 1;
+}
+
+.primary-nav {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: 2px;
+  min-width: 0;
+  overflow: visible;
+  white-space: normal;
+}
+
+.primary-nav a {
+  display: inline-flex;
+  min-width: 0;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 9px;
+  color: var(--do-text-muted);
+  border-bottom: 2px solid transparent;
+  font-size: .79rem;
+  font-weight: 650;
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
+  opacity: 1;
+}
+
+.primary-nav a:hover,
+.primary-nav a:focus-visible {
+  color: var(--do-accent);
+}
+
+.primary-nav a.active {
+  color: var(--do-text);
+  border-bottom-color: var(--do-accent);
+  font-weight: 750;
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+}
+
+.menu-toggle {
+  display: none;
+  min-height: 44px;
+  padding: 7px 12px;
+  color: var(--do-accent);
+  background: var(--do-surface);
+  border: 1px solid var(--do-control-border);
+  border-radius: var(--do-radius-control);
+  cursor: pointer;
+}
+
+.prototype-strip {
+  min-height: 0;
+  gap: 6px 20px;
+  flex-wrap: wrap;
+  padding: 8px max(24px, calc((100vw - 1392px) / 2));
+  color: var(--do-text-muted);
+  background: var(--do-canvas);
+  border-bottom: 1px solid var(--do-border);
+  font-size: .76rem;
+  line-height: 1.4;
+}
+
+.prototype-strip strong {
+  color: var(--do-text);
+  font-weight: 650;
+}
+
+.skip-link {
+  z-index: var(--do-z-skip);
+  color: var(--do-text);
+  background: var(--do-surface-elevated);
+  border: 1px solid var(--do-focus);
+  box-shadow: none;
+}
+
+footer {
+  color: var(--do-text-muted);
+  background: var(--do-surface);
+  border-color: var(--do-border);
+}
+
+/* Analytical metadata is a ruled scope strip, not a collection of status chips. */
+.context-bar {
+  display: grid;
+  grid-template-columns: minmax(152px, 210px) minmax(0, 1fr);
+  align-items: stretch;
+  gap: 16px;
+  min-height: 0;
+  padding: 12px 0;
+  color: var(--do-text-muted);
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--do-border);
+  border-bottom: 1px solid var(--do-border);
+  border-radius: 0;
+  font-size: .8rem;
+}
+
+.context-bar-title {
+  display: grid;
+  align-content: center;
+  gap: 1px;
+}
+
+.context-bar-title span,
+.context-meta dt {
+  color: var(--do-text-muted);
+  font-size: .66rem;
+  font-weight: 750;
+  letter-spacing: .08em;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+.context-bar .context-bar-title strong {
+  color: var(--do-text);
+  font-size: .95rem;
+  font-weight: 750;
+}
+
+.context-meta {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px 16px;
+  align-items: center;
+  min-width: 0;
+  margin: 0;
+}
+
+.context-meta div {
+  min-width: 0;
+}
+
+.context-meta dd {
+  margin: 2px 0 0;
+  color: var(--do-text);
+  font-weight: 600;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+@media (min-width: 1200px) and (min-height: 800px) {
+  :root { --do-sticky-offset: calc(var(--do-shell-height) + 16px); }
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: var(--do-z-header);
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1199px) {
+  .header-inner {
+    grid-template-columns: 1fr auto;
+    gap: 0 12px;
+    padding-block: 9px 0;
+  }
+
+  .primary-nav {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 767px) {
+  .header-inner {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0 12px;
+    padding: 10px 16px;
+  }
+
+  .brand strong { font-size: 1.26rem; }
+  .brand span { font-size: .53rem; }
+
+  .menu-toggle { display: inline-flex; align-items: center; }
+
+  .primary-nav,
+  .header-controls { display: none; }
+
+  .primary-nav.open {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    justify-content: stretch;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid var(--do-border);
+  }
+
+  .primary-nav a,
+  .primary-nav a.active {
+    justify-content: flex-start;
+    min-width: 0;
+    padding: 11px 8px;
+    border-bottom-width: 1px;
+    text-align: left;
+    white-space: normal;
+  }
+
+  .header-controls.open {
+    display: flex;
+    grid-column: 1 / -1;
+    justify-content: flex-start;
+    padding-block: 10px 2px;
+  }
+
+  .prototype-strip {
+    padding: 8px 16px;
+    gap: 4px;
+  }
+
+  .context-bar {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    overflow: visible;
+    white-space: normal;
+  }
+
+  .context-meta { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 440px) {
+  .context-meta { grid-template-columns: 1fr; }
 }
 
 .page-heading h1,
@@ -72,16 +353,6 @@ textarea {
 .card h3,
 .interpretation-guide h3,
 .error-boundary-fallback h1 {
-  color: var(--do-text);
-}
-
-.context-bar {
-  color: var(--do-text-muted);
-  background: var(--do-surface);
-  border-color: var(--do-border);
-}
-
-.context-bar strong {
   color: var(--do-text);
 }
 

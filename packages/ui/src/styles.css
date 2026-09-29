@@ -48,10 +48,11 @@
   --do-motion-short: 140ms;
   --do-motion-medium: 220ms;
   --do-z-header: 20;
+  --do-z-sticky: 5;
   --do-z-menu: 30;
   --do-z-skip: 40;
   --do-shell-height: 68px;
-  --do-sticky-offset: calc(var(--do-shell-height) + 16px);
+  --do-sticky-offset: 16px;
 
   /* Temporary aliases for unchanged legacy rules. New styles use roles above. */
   --do-color-navy: var(--do-text);

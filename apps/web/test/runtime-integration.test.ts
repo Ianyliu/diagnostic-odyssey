@@ -527,7 +527,8 @@ test("reviewed burden UI has no development-fixture labels", () => {
 test("ContextBar keeps national evidence and WV implementation context visibly separate", () => {
   const context = readSource("../src/components/ContextBar.tsx");
   assert.match(context, /bundle\.context\.geography_scope/);
-  assert.match(context, /Implementation context:/);
+  assert.match(context, /<dt>National burden<\/dt>/);
+  assert.match(context, /<dt>Local implementation context<\/dt>/);
   assert.match(context, /localContext\.geography\.geography_name/);
   assert.match(context, /localContext\.geography\.geography_type/);
   assert.doesNotMatch(context, /geography_scope\s*=|bundle\.context\.geography_scope\s*=/);
