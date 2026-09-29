@@ -58,7 +58,8 @@ test("Overview explains the evidence-to-planning workflow across six destination
 
   for (const phrase of [
     "From invisible burden",
-    "to traceable action.",
+    "to traceable",
+    "action.",
     "reviewed national burden",
     "local implementation context",
     "analyst assumptions",

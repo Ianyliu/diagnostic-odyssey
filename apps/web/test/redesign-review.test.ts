@@ -13,6 +13,9 @@ test("brand palette is navy and teal rather than a red primary theme", () => {
   assert.match(tokens, /--do-accent:\s*#0f7476/);
   assert.match(tokens, /--do-canvas:\s*#f5f2eb/);
   assert.doesNotMatch(tokens, /--do-accent:\s*#762f3c/);
+  assert.match(tokens, /:root\[data-theme="dark"\][\s\S]*--do-canvas:\s*#09131b/);
+  assert.match(tokens, /:root\[data-theme="dark"\][\s\S]*--do-surface:\s*#111d26/);
+  assert.match(tokens, /:root\[data-theme="dark"\][\s\S]*--do-chart-4:\s*#d2ad68/);
 });
 
 test("landing page uses startup-style hero, proof, workflow and conversion sections", () => {
@@ -25,6 +28,9 @@ test("landing page uses startup-style hero, proof, workflow and conversion secti
   assert.match(overview, /overview-final-cta/);
   assert.match(css, /radial-gradient/);
   assert.match(css, /workspace-preview/);
+  assert.match(css, /overview-hero h1 em/);
+  assert.match(css, /\.overview-destinations\s*\{[\s\S]*background:\s*#f3f0e8/);
+  assert.match(css, /\.overview-final-cta\s*\{[\s\S]*linear-gradient\(135deg, #153552, #102a3d 72%\)/);
   assert.match(css, /@media \(prefers-reduced-motion: reduce\)/);
 });
 
@@ -68,4 +74,23 @@ test("Planning Brief print repeats product provenance and moves decision state o
   assert.match(css, /\.planning-brief-page \.brief-aside\s*\{\s*display:\s*none !important/s);
   assert.match(css, /\.planning-brief-page \.brief-print-footer\s*\{[^}]*position:\s*fixed/s);
   assert.match(css, /\.brief-burden-table-wrap\s*\{[^}]*position:\s*relative/s);
+});
+
+
+test("workflow cards use restrained semantic variety instead of one teal treatment", () => {
+  const css = readSource("../src/pages/OverviewPage.css");
+  for (const accent of ["#3f765f", "#3e6f91", "#8a6d2c", "#397d7b", "#687486", "#153552"]) {
+    assert.ok(css.includes(accent), accent);
+  }
+  assert.match(css, /journey-card:nth-child\(1\)/);
+  assert.match(css, /journey-card:nth-child\(6\)/);
+  assert.match(css, /--journey-accent/);
+});
+
+test("dark overview keeps teal as emphasis instead of the dominant field color", () => {
+  const css = readSource("../src/pages/OverviewPage.css");
+  assert.match(css, /:root\[data-theme="dark"\] \.overview-hero\s*\{[\s\S]*linear-gradient\(145deg, #101d27 0%, #09131b 66%, #0d1821 100%\)/);
+  assert.match(css, /rgba\(88, 195, 189, \.055\)/);
+  assert.match(css, /\.overview-hero h1 em\s*\{[^}]*color:\s*var\(--do-accent\)/s);
+  assert.match(css, /:root\[data-theme="dark"\] \.overview-lede\s*\{[^}]*color:\s*#c1c9cd/s);
 });
