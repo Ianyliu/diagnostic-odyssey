@@ -3,6 +3,7 @@ import type { LocalContextRecord } from "@diagnostic-odyssey/contracts";
 import { ContextBar } from "../components/ContextBar";
 import { HpsaRuralComposition } from "../components/HpsaRuralComposition";
 import { InterpretationGuide } from "../components/InterpretationGuide";
+import { MetricVisual } from "../components/MetricVisual";
 import { useArtifact } from "../data/ArtifactContext";
 import { formatLocalContextValue } from "../data/formatLocalContextValue";
 import { isSelectableLocalContextRecord } from "../data/localContextSelection";
@@ -82,6 +83,16 @@ function SelectableIndicatorRow({
     </div>
     <div className="measure-value ledger-record-value">
       {formatLocalContextValue(record)}
+      {typeof record.value === "number" && <MetricVisual
+        label={accessibility.displayTitle}
+        value={record.value}
+        unit={record.unit}
+        low={record.margin_of_error === null ? null : record.value - record.margin_of_error}
+        high={record.margin_of_error === null ? null : record.value + record.margin_of_error}
+        intervalLabel={record.margin_of_error === null ? null : `${record.confidence_level === null ? "" : `${(record.confidence_level * 100).toFixed(0)}% `}published margin`}
+        source={record.source_agency}
+        universe={record.universe}
+      />}
       <small>{formatReleaseStatusLabel(record.release_status)} · {formatDataStateLabel(record.state)}</small>
     </div>
   </div>;

@@ -9,6 +9,7 @@ import {
 } from "../data/formatEstimateValue";
 import { formatReleaseStatusLabel } from "../data/presentationLabels";
 import { DistributionSummaryText } from "./DistributionSummaryText";
+import { MetricVisual } from "./MetricVisual";
 
 function EstimateIntervalText({estimate}: {estimate: Estimate}) {
   if (!canExportEstimate(estimate)) return null;
@@ -49,6 +50,16 @@ export function BurdenMeasureList({estimates}: {estimates: Estimate[]}) {
             ? <DistributionSummaryText estimate={estimate} />
             : formatEstimateValue(estimate)}
           <EstimateIntervalText estimate={estimate} />
+          {typeof estimate.value === "number" && <MetricVisual
+            label={estimate.label}
+            value={estimate.distribution_summary?.p50 ?? estimate.value}
+            unit={estimate.unit}
+            low={estimate.distribution_summary?.p25 ?? estimate.interval_low}
+            high={estimate.distribution_summary?.p75 ?? estimate.interval_high}
+            intervalLabel={estimate.distribution_summary ? "Interquartile range" : estimate.interval_type}
+            source={estimate.source_ref}
+            universe={estimate.universe}
+          />}
           {!reviewed && <small className="measure-release-status">
             {formatReleaseStatusLabel(estimate.release_status)}
           </small>}
