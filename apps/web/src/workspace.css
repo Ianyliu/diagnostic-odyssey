@@ -407,6 +407,67 @@ footer {
   background: var(--do-warning-bg);
 }
 
+.status-reviewed {
+  color: var(--do-reviewed-text);
+  background: var(--do-reviewed-bg);
+}
+
+.status-assumption {
+  color: var(--do-assumption-text);
+  background: var(--do-assumption-bg);
+}
+
+.status-selection {
+  color: var(--do-selection-text);
+  background: var(--do-selection-bg);
+}
+
+.status-unavailable {
+  color: var(--do-text-muted);
+  background: var(--do-surface-elevated);
+  border: 1px solid var(--do-border);
+}
+
+.status-warning {
+  color: var(--do-warning-text);
+  background: var(--do-warning-bg);
+}
+
+.status-error {
+  color: var(--do-error-text);
+  background: var(--do-error-bg);
+}
+
+.artifact-state-page {
+  min-height: 60vh;
+}
+
+.artifact-state-page .state-card,
+.error-boundary-fallback {
+  max-width: 720px;
+  margin: 4vh auto 0;
+  padding: clamp(20px, 4vw, 40px);
+  color: var(--do-text);
+  background: var(--do-surface);
+  border: 1px solid var(--do-border);
+  border-top: 3px solid var(--do-selection-text);
+  border-radius: var(--do-radius-card);
+}
+
+.artifact-state-page .state-card.error,
+.error-boundary-fallback.error {
+  border-top-color: var(--do-error-text);
+}
+
+.artifact-state-page .state-card h1 {
+  margin: 0;
+  font-family: var(--do-font-display);
+  font-size: clamp(1.8rem, 3vw, 2.3rem);
+  line-height: 1.2;
+}
+
+.artifact-state-page .state-card p { margin: 0; }
+
 .caution,
 .state-card.error {
   color: var(--do-warning-text);
@@ -492,6 +553,40 @@ summary {
 .technical-disclosure summary {
   color: var(--do-accent);
 }
+
+.interpretation-guide {
+  display: grid;
+  gap: 14px;
+  padding: 16px 0;
+  color: var(--do-text);
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--do-border);
+  border-bottom: 1px solid var(--do-border);
+  border-radius: 0;
+}
+
+.interpretation-guide h2,
+.interpretation-guide h3 {
+  margin: 0;
+  color: var(--do-text);
+  font-size: 1.05rem;
+}
+
+.interpretation-guide-list {
+  gap: 0 20px;
+}
+
+.interpretation-guide-list div {
+  padding: 9px 0;
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--do-border);
+  border-radius: 0;
+}
+
+.interpretation-guide-list dt { color: var(--do-text); font-size: .76rem; }
+.interpretation-guide-list dd { color: var(--do-text-muted); font-size: .85rem; }
 
 .input-wrap {
   overflow: visible;

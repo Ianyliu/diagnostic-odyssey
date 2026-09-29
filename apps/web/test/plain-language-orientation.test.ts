@@ -53,7 +53,7 @@ test("presentation labels cover every current DataState and ReleaseStatus withou
   }
 });
 
-test("Overview provides first-run workflow semantics and outcomes on all five links", () => {
+test("Overview provides first-run workflow semantics and outcomes across six destinations", () => {
   const source = readSource("../src/pages/OverviewPage.tsx");
 
   for (const phrase of [
@@ -66,6 +66,7 @@ test("Overview provides first-run workflow semantics and outcomes on all five li
     "Review implementation and access context without turning national burden into a local disease estimate.",
     "Set explicit planning assumptions and stress-test reach, capacity, timing, and resources.",
     "See what intervention-effect evidence can and cannot support for the current scenario.",
+    "Keep operational questions and explicit Brief selections visible.",
     "Export reviewed evidence, selected context, assumptions, boundaries, and remaining data needs."
   ]) {
     assert.ok(source.includes(phrase), phrase);

@@ -23,7 +23,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     if (!this.state.error) return this.props.children;
 
     return <main id="main-content" className="page error-boundary-page" tabIndex={-1}>
-      <section className="state-card error-boundary-fallback" role="alert" aria-labelledby="unexpected-error-title">
+      <section className="state-card error error-boundary-fallback" role="alert" aria-labelledby="unexpected-error-title">
         <p className="eyebrow">INTERFACE ERROR</p>
         <h1 id="unexpected-error-title">The interface encountered an unexpected error.</h1>
         <p>No substitute evidence or estimate has been created. Reload the interface to retry the current route.</p>

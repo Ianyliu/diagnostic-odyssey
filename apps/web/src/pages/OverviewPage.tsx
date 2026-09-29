@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { ContextBar } from "../components/ContextBar";
 import { DecisionStateRail } from "../components/DecisionStateRail";
+import "./OverviewPage.css";
 
 const journey: ReadonlyArray<readonly [
   step: string,
@@ -12,35 +13,48 @@ const journey: ReadonlyArray<readonly [
   ["2", "Review local constraints", "Review implementation and access context without turning national burden into a local disease estimate.", "/local-context"],
   ["3", "Scope a feasible pilot", "Set explicit planning assumptions and stress-test reach, capacity, timing, and resources.", "/pilot"],
   ["4", "Test evidence claims", "See what intervention-effect evidence can and cannot support for the current scenario.", "/evidence"],
-  ["5", "Create a planning brief", "Export reviewed evidence, selected context, assumptions, boundaries, and remaining data needs.", "/brief"]
+  ["5", "Record data needs", "Keep operational questions and explicit Brief selections visible.", "/data-requests"],
+  ["6", "Create a planning brief", "Export reviewed evidence, selected context, assumptions, boundaries, and remaining data needs.", "/brief"]
 ];
 
 export function OverviewPage() {
   return (
-    <section className="page page-stack">
+    <section className="page page-stack overview-page">
+      <div className="overview-hero">
+        <header className="page-heading">
+          <p className="eyebrow">DIAGNOSTIC ODYSSEY / OVERVIEW</p>
+          <h1>Evidence you can trace.<br />Decisions you can explain.</h1>
+          <p>Start with reviewed descriptive burden, add local implementation context, then test explicit planning assumptions. The source and limits of each layer stay visible.</p>
+        </header>
+        <aside className="overview-layer-key" aria-label="Workspace information layers">
+          <p className="visual-kicker">READING KEY</p>
+          <dl>
+            <div><dt>01 · Evidence</dt><dd>Reviewed national measurements and uncertainty</dd></div>
+            <div><dt>02 · Context</dt><dd>Local implementation conditions, kept separate from burden</dd></div>
+            <div><dt>03 · Assumptions</dt><dd>Editable Pilot inputs, not observed effects</dd></div>
+            <div><dt>04 · Outputs</dt><dd>Scenario arithmetic and a traceable Brief, not forecasts</dd></div>
+          </dl>
+        </aside>
+      </div>
       <ContextBar />
-      <header className="page-heading">
-        <p className="eyebrow">OVERVIEW</p>
-        <h1>Start with evidence, then scope the decision.</h1>
-        <p>
-          Diagnostic Odyssey separates measured burden, local implementation context,
-          planning assumptions, admissible evidence, and unanswered data needs.
-        </p>
-      </header>
       <section className="first-run-orientation" aria-labelledby="first-run-orientation-title">
-        <h2 id="first-run-orientation-title">How the workspace fits together</h2>
+        <h2 id="first-run-orientation-title">Read each layer on its own terms</h2>
         <p><strong>Burden</strong> is reviewed descriptive national evidence. <strong>Local Context</strong> describes implementation conditions, not localized disease burden. <strong>Pilot</strong> uses explicit planning assumptions. <strong>Evidence</strong> governs what intervention-effect claims may drive scenario parameters. <strong>Brief</strong> exports the current decision state and remaining gaps.</p>
       </section>
       <DecisionStateRail />
-      <div className="journey-grid" aria-label="Workspace navigation">
+      <nav className="overview-destinations" aria-label="Workspace navigation">
+        <div className="overview-destinations-heading"><p className="visual-kicker">EXPLORE THE WORKSPACE</p><h2>Follow a question through the evidence</h2></div>
+      <div className="journey-grid">
         {journey.map(([step, title, outcome, to]) => (
-          <Link key={step} className="card journey-card" to={to}>
-            <span>{step}</span>
+          <Link key={step} className="journey-card" to={to}>
+            <span className="journey-index" aria-hidden="true">{step.padStart(2, "0")}</span>
             <strong>{title}</strong>
             <small>{outcome}</small>
+            <span className="journey-arrow" aria-hidden="true">↗</span>
           </Link>
         ))}
       </div>
+      </nav>
     </section>
   );
 }

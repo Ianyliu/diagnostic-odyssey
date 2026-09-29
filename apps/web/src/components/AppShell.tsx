@@ -35,7 +35,7 @@ function scrollToFragment(hash: string): boolean {
 }
 
 export function AppShell() {
-  const {localContextStatus} = useArtifact();
+  const {bundle, localContextStatus} = useArtifact();
   const location = useLocation();
   const navigationType = useNavigationType();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -81,10 +81,11 @@ export function AppShell() {
 
   const localContextMessage =
     localContextStatus === "loading"
-      ? "Local implementation context is loading; intervention-effect evidence is not yet loaded."
+      ? "Local implementation context · loading"
       : localContextStatus === "loaded"
-        ? "Reviewed West Virginia state implementation context loaded; intervention-effect evidence is not yet loaded."
-        : "Local implementation context is unavailable; intervention-effect evidence is not yet loaded.";
+        ? "West Virginia implementation context · reviewed state data"
+        : "Local implementation context · unavailable";
+  const approvedEvidenceCount = bundle?.evidence.filter(record => record.reviewer_status === "approved").length ?? 0;
 
   return (
     <div className="app-shell">
@@ -120,8 +121,12 @@ export function AppShell() {
         </div>
       </header>
       <div className="prototype-strip" role="note">
-        <strong>Reviewed national MEPS burden loaded · planning assumptions remain analyst-editable</strong>
+        <strong>National MEPS burden · reviewed</strong>
         <span>{localContextMessage}</span>
+        <span>Pilot · analyst assumptions</span>
+        <span>{approvedEvidenceCount === 0
+          ? "Intervention effect · no approved record loaded"
+          : `Intervention evidence · ${approvedEvidenceCount} approved record${approvedEvidenceCount === 1 ? "" : "s"}; check scenario eligibility`}</span>
       </div>
       <main id="main-content" tabIndex={-1}>
         <Outlet />

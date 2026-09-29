@@ -4,7 +4,7 @@ import { canExportEstimate } from "@diagnostic-odyssey/contracts";
 import { useArtifact } from "../data/ArtifactContext";
 import { formatPathwayStepLabel } from "../data/pathwayBoundary";
 
-type StateTone = "ready" | "context" | "assumption" | "gap";
+type StateTone = "reviewed" | "assumption" | "unavailable" | "selection";
 
 interface DecisionState {
   label: string;
@@ -41,16 +41,16 @@ export function DecisionStateRail() {
       status: "Reviewed",
       detail: `${releasedEstimates} released national estimates`,
       to: "/burden",
-      tone: "ready"
+      tone: "reviewed"
     },
     {
       label: "Implementation context",
-      status: localContextStatus === "loaded" ? "Reviewed state context" : "Unavailable",
+      status: localContextStatus === "loaded" ? "Reviewed state context" : localContextStatus === "loading" ? "Loading" : "Unavailable",
       detail: localContextStatus === "loaded"
         ? `${reviewedLocal} reviewed ${localContext?.geography.geography_name ?? "local"} indicators`
         : "National burden remains unchanged",
       to: "/local-context",
-      tone: localContextStatus === "loaded" ? "context" : "gap"
+      tone: localContextStatus === "loaded" ? "reviewed" : "unavailable"
     },
     {
       label: "Pilot assumptions",
@@ -59,23 +59,23 @@ export function DecisionStateRail() {
         ? `Target: ${formatPathwayStepLabel(scenario.target_pathway_step)}`
         : "No valid scenario result",
       to: "/pilot",
-      tone: scenarioResult ? "assumption" : "gap"
+      tone: scenarioResult ? "assumption" : "unavailable"
     },
     {
       label: "Intervention evidence",
-      status: reviewedEvidence > 0 ? "Reviewed evidence available" : "No reviewed effect parameter",
+      status: reviewedEvidence > 0 ? "Approved record present" : "No reviewed effect parameter",
       detail: reviewedEvidence > 0
-        ? `${reviewedEvidence} approved evidence record${reviewedEvidence === 1 ? "" : "s"}`
+        ? `${reviewedEvidence} approved record${reviewedEvidence === 1 ? "" : "s"}; current-scenario eligibility is checked separately`
         : "Scenario remains assumption-based",
       to: "/evidence",
-      tone: reviewedEvidence > 0 ? "ready" : "gap"
+      tone: reviewedEvidence > 0 ? "selection" : "unavailable"
     },
     {
       label: "Planning brief",
-      status: scenarioResult ? "Draftable" : "Waiting on scenario",
+      status: scenarioResult ? "Draft available" : "Waiting on scenario",
       detail: "Released evidence and explicit assumptions only",
       to: "/brief",
-      tone: scenarioResult ? "ready" : "gap"
+      tone: scenarioResult ? "selection" : "unavailable"
     }
   ];
 
@@ -83,21 +83,20 @@ export function DecisionStateRail() {
     <div className="decision-state-heading">
       <div>
         <p className="visual-kicker">CURRENT DECISION STATE</p>
-        <h2 id="decision-state-title">What is known, assumed, and still missing?</h2>
+        <h2 id="decision-state-title">Current decision state</h2>
       </div>
       <Link className="button secondary" to="/pilot#sensitivity">Stress-test assumptions</Link>
     </div>
-    <ol className="decision-state-rail">
-      {states.map((state, index) => <li key={state.label} className={`decision-state ${state.tone}`}>
-        <span className="decision-state-marker" aria-hidden="true">{index + 1}</span>
+    <ul className="decision-state-rail">
+      {states.map(state => <li key={state.label} className={`decision-state ${state.tone}`}>
         <div>
           <span className="decision-state-label">{state.label}</span>
-          <strong>{state.status}</strong>
+          <strong className={`status status-${state.tone}`}>{state.status}</strong>
           <small>{state.detail}</small>
         </div>
-        <Link to={state.to}>Open <span className="sr-only">{state.label}</span> →</Link>
+        <Link to={state.to}>Review {state.label}<span aria-hidden="true"> →</span></Link>
       </li>)}
-    </ol>
+    </ul>
     <p className="visual-note">This is a workflow state summary, not a readiness score. No stage is weighted or converted into a composite rating.</p>
   </section>;
 }
