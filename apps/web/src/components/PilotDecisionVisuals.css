@@ -66,6 +66,7 @@
 .window-bar {
   display: block;
   height: 100%;
+  transition: width var(--do-motion-medium) ease-out;
 }
 
 .capacity-fill,

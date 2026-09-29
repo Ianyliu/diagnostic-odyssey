@@ -185,6 +185,7 @@
 .local-ledger-page .ledger-indicator-row > div:first-child > strong { color: var(--do-text); font-size: 0.93rem; line-height: 1.35; }
 .local-ledger-page .ledger-record-universe { color: var(--do-text-muted); font-size: 0.8rem; }
 .local-ledger-page .ledger-row-selected { background: var(--do-selection-bg); }
+.local-ledger-page .ledger-indicator-row { transition: background-color var(--do-motion-short) ease-out; }
 .local-ledger-page .ledger-row-pilot { box-shadow: inset 3px 0 var(--do-selection-text); }
 
 .local-ledger-page .selection-control {

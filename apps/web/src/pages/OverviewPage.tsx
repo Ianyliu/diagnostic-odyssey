@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { ContextBar } from "../components/ContextBar";
 import { DecisionStateRail } from "../components/DecisionStateRail";
+import { OpeningProvenance } from "./OpeningProvenance";
 import "./OverviewPage.css";
 
 const journey: ReadonlyArray<readonly [
@@ -26,15 +27,7 @@ export function OverviewPage() {
           <h1>Evidence you can trace.<br />Decisions you can explain.</h1>
           <p>Start with reviewed descriptive burden, add local implementation context, then test explicit planning assumptions. The source and limits of each layer stay visible.</p>
         </header>
-        <aside className="overview-layer-key" aria-label="Workspace information layers">
-          <p className="visual-kicker">READING KEY</p>
-          <dl>
-            <div><dt>01 · Evidence</dt><dd>Reviewed national measurements and uncertainty</dd></div>
-            <div><dt>02 · Context</dt><dd>Local implementation conditions, kept separate from burden</dd></div>
-            <div><dt>03 · Assumptions</dt><dd>Editable Pilot inputs, not observed effects</dd></div>
-            <div><dt>04 · Outputs</dt><dd>Scenario arithmetic and a traceable Brief, not forecasts</dd></div>
-          </dl>
-        </aside>
+        <OpeningProvenance />
       </div>
       <ContextBar />
       <section className="first-run-orientation" aria-labelledby="first-run-orientation-title">

@@ -100,7 +100,7 @@ export function SensitivityExplorer({
         </table>
       </div>
     </details>
-    {onUpsertDataRequest && <div className="sensitivity-action">
+    {onUpsertDataRequest && <div className={"sensitivity-action" + (requestAnnouncement ? " request-acknowledged" : "")}>
       <div>
         <strong>{requestStatus === "stale"
           ? "Scenario changed since this request was created."

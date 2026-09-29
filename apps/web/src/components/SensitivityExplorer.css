@@ -117,6 +117,7 @@
   display: block;
   height: 100%;
   background: var(--do-chart-1);
+  transition: width var(--do-motion-medium) ease-out;
 }
 
 .sensitivity-row.current .sensitivity-fill {
@@ -192,6 +193,15 @@
   align-items: center;
   padding-top: 14px;
   border-top: 1px solid var(--do-border);
+}
+
+.sensitivity-action.request-acknowledged {
+  animation: request-acknowledged var(--do-motion-medium) ease-out both;
+}
+
+@keyframes request-acknowledged {
+  from { background: var(--do-selection-bg); box-shadow: inset 3px 0 var(--do-selection-text); }
+  to { background: transparent; box-shadow: inset 0 0 var(--do-selection-text); }
 }
 
 .sensitivity-action > div:first-child {
