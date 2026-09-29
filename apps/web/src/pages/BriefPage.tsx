@@ -167,6 +167,15 @@ export function BriefPage() {
       <span><b>Generated:</b> {brief.generated_at}</span>
     </div>
 
+    <section className="brief-print-decision-state" aria-label="Decision state summary">
+      <h2>Decision state</h2>
+      <div><strong>Burden estimates</strong><span>{burdenReadiness.briefStatus}</span></div>
+      <div><strong>Scenario arithmetic</strong><span>{brief.scenario ? "Planning assumptions" : "No applied scenario"}</span></div>
+      <div><strong>Evidence parameter</strong><span>{evidenceReadiness.status}</span></div>
+      <div><strong>Local context</strong><span>{brief.local_context.length > 0 ? `${brief.local_context.length} selected` : localContextAvailable ? "Available, not selected" : "Not selected"}</span></div>
+      <div><strong>Data requests</strong><span>{selectedDataRequests.length > 0 ? `${selectedDataRequests.length} selected` : "None selected"}</span></div>
+    </section>
+
     <div className="brief-grid">
       <aside className="brief-aside" aria-label="Planning Brief contents and actions">
         <nav className="brief-contents" aria-label="Planning Brief contents">
@@ -180,7 +189,7 @@ export function BriefPage() {
           <a href="#brief-data-requests">Data requests</a>
         </nav>
         <div className="brief-readiness">
-        <h2>Decision readiness</h2>
+        <h2>Decision state</h2>
         <div className="readiness"><strong>Burden estimates</strong><span className={`status status-${burdenReadiness.tone}`}>{burdenReadiness.briefStatus}</span></div>
         <div className="readiness"><strong>Scenario arithmetic</strong><span className={`status ${brief.scenario ? "status-assumption" : "status-unavailable"}`}>{brief.scenario ? "Planning assumptions" : "No applied scenario"}</span></div>
         <div className="readiness"><strong>Evidence parameter</strong><span className={`status status-${evidenceReadiness.tone}`}>{evidenceReadiness.status}</span></div>
@@ -217,7 +226,7 @@ export function BriefPage() {
             <p>The release/display gate remains active; no unreleased or illustrative value is substituted.</p>
           </div> : <div className="brief-burden-groups">
             {burdenGroups.map(group => <section
-              className="brief-burden-group"
+              className={`brief-burden-group${group.findings.length <= 8 ? " brief-burden-group-short" : ""}`}
               aria-labelledby={`brief-burden-${group.group_id}`}
               key={group.group_id}
             >
@@ -266,7 +275,7 @@ export function BriefPage() {
           <h2>Pilot planning assumptions</h2>
           <p className="subtle"><strong>{PLANNING_DEFAULTS_LABEL}</strong> These inputs are planning assumptions, not observed evidence.</p>
           {brief.scenario && scenarioBoundary ? <>
-            <dl className="brief-applied-assumptions" aria-label="Eight applied planning assumptions">
+            <dl className="brief-applied-assumptions" aria-label={`${pilotInputFields.length} applied planning assumptions`}>
               {pilotInputFields.map(field => <div key={field.key}>
                 <dt>{field.label}</dt>
                 <dd>{formatAppliedAssumption(brief.scenario!.input, field)}</dd>
@@ -317,7 +326,7 @@ export function BriefPage() {
                         <strong>{record.label}</strong>
                         <span>{record.geography_name} ({record.geography_type})</span>
                         {pilotLocalContext?.indicator_id === record.indicator_id &&
-                          <span className="status status-selection pilot-used-badge">Used in Pilot planning</span>}
+                          <span className="status status-selection pilot-used-badge">Active Pilot planning context</span>}
                       </div>
                       <span className={record.state === "partial" ? "status status-partial" : "status status-reviewed"}>
                         {formatDataStateLabel(record.state)}
@@ -384,6 +393,11 @@ export function BriefPage() {
       </article>
 
 
+    </div>
+    <div className="brief-print-footer" aria-hidden="true">
+      <span>Diagnostic Odyssey</span>
+      <span>{brief.artifact_version}</span>
+      <span>{brief.generated_at}</span>
     </div>
   </section>;
 }

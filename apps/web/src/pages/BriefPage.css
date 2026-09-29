@@ -391,16 +391,34 @@
   }
 
   .planning-brief-page .brief-aside {
-    position: static;
-    order: 2;
-    width: 100%;
-    margin-top: 10pt;
-    padding: 8pt 0 0;
-    border: 0;
-    border-top: 1px solid #9da39c;
-    border-radius: 0;
-    background: #ffffff;
-    break-inside: auto;
+    display: none !important;
+  }
+
+  .planning-brief-page .brief-print-decision-state {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4pt 16pt;
+    margin: 0 0 10pt;
+    padding: 7pt 0;
+    border-bottom: 1px solid #9da39c;
+    break-inside: avoid;
+    font-size: 8pt;
+  }
+
+  .planning-brief-page .brief-print-decision-state h2 {
+    grid-column: 1 / -1;
+    margin: 0 0 3pt;
+    font-size: 9.5pt;
+  }
+
+  .planning-brief-page .brief-print-decision-state div {
+    display: flex;
+    justify-content: space-between;
+    gap: 8pt;
+  }
+
+  .planning-brief-page .brief-print-decision-state span {
+    text-align: right;
   }
 
   .planning-brief-page .brief-contents,
@@ -442,6 +460,10 @@
 
   .planning-brief-page .brief-burden-group + .brief-burden-group {
     margin-top: 12pt;
+  }
+
+  .planning-brief-page .brief-burden-group-short {
+    break-inside: avoid;
   }
 
   .planning-brief-page .brief-burden-group-heading,
@@ -510,4 +532,29 @@
   .planning-brief-page .empty-state {
     background: #ffffff;
   }
+
+  .planning-brief-page .button,
+  .planning-brief-page .text-button {
+    display: none !important;
+  }
+
+  .planning-brief-page .brief-print-footer {
+    position: fixed;
+    right: 0;
+    bottom: -1pt;
+    left: 0;
+    display: flex;
+    justify-content: space-between;
+    gap: 10pt;
+    padding-top: 4pt;
+    border-top: 1px solid #b2b8b3;
+    color: #4b5750;
+    font-size: 6.8pt;
+    line-height: 1.2;
+  }
+}
+
+.brief-print-decision-state,
+.brief-print-footer {
+  display: none;
 }
