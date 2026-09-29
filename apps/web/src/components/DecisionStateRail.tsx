@@ -4,7 +4,7 @@ import { canExportEstimate } from "@diagnostic-odyssey/contracts";
 import { useArtifact } from "../data/ArtifactContext";
 import { formatPathwayStepLabel } from "../data/pathwayBoundary";
 
-type StateTone = "reviewed" | "assumption" | "unavailable" | "selection";
+type StateTone = "reviewed" | "assumption" | "unavailable" | "neutral";
 
 interface DecisionState {
   label: string;
@@ -68,14 +68,14 @@ export function DecisionStateRail() {
         ? `${reviewedEvidence} approved record${reviewedEvidence === 1 ? "" : "s"}; current-scenario eligibility is checked separately`
         : "Scenario remains assumption-based",
       to: "/evidence",
-      tone: reviewedEvidence > 0 ? "selection" : "unavailable"
+      tone: reviewedEvidence > 0 ? "neutral" : "unavailable"
     },
     {
       label: "Planning brief",
       status: scenarioResult ? "Draft available" : "Waiting on scenario",
       detail: "Released evidence and explicit assumptions only",
       to: "/brief",
-      tone: scenarioResult ? "selection" : "unavailable"
+      tone: scenarioResult ? "neutral" : "unavailable"
     }
   ];
 
