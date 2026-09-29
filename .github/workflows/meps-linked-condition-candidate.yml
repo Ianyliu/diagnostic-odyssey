@@ -1,0 +1,223 @@
+name: MEPS 2024 Linked-Condition Candidate
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  linked-condition-candidate:
+    name: Build aggregate-only linked-condition candidate
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    env:
+      OUTPUT_DIR: artifacts/generated/meps-2024-linked-condition-candidate-${{ github.run_id }}
+      CANDIDATE_ARTIFACT_NAME: meps-2024-linked-condition-candidate-${{ github.run_id }}
+
+    steps:
+      - name: Checkout exact requested revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+
+      - name: Assert checkout matches dispatched GitHub SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          ACTUAL_SHA="$(git rev-parse HEAD)"
+          test "$ACTUAL_SHA" = "$GITHUB_SHA" || {
+            echo "Checkout SHA mismatch: HEAD=$ACTUAL_SHA GITHUB_SHA=$GITHUB_SHA"
+            exit 1
+          }
+
+      - name: Record GitHub Actions provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUTPUT_DIR"
+          jq -n \
+            --arg repository "$GITHUB_REPOSITORY" \
+            --arg sha "$GITHUB_SHA" \
+            --arg ref "$GITHUB_REF" \
+            --arg ref_name "$GITHUB_REF_NAME" \
+            --arg run_id "$GITHUB_RUN_ID" \
+            --arg run_attempt "$GITHUB_RUN_ATTEMPT" \
+            --arg workflow "$GITHUB_WORKFLOW" \
+            --arg timestamp "$(date -u +'%Y-%m-%dT%H:%M:%SZ')" \
+            '{
+              repository: $repository,
+              github_sha: $sha,
+              github_ref: $ref,
+              github_ref_name: $ref_name,
+              workflow: $workflow,
+              workflow_run_id: $run_id,
+              workflow_run_attempt: $run_attempt,
+              started_at_utc: $timestamp,
+              phase: "candidate-only"
+            }' > "$OUTPUT_DIR/github-actions-run-manifest.json"
+
+      - name: Set up Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install JavaScript dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Run repository TypeScript and unit checks
+        run: |
+          npm run typecheck
+          npm test
+
+      - name: Set up R 4.6.1
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: '4.6.1'
+          use-public-rspm: true
+
+      - name: Install R analytical dependencies
+        run: Rscript analysis/r/install_dependencies.R
+
+      - name: Run complete synthetic MEPS suite
+        run: Rscript analysis/r/tests/run_tests.R
+
+      - name: Acquire governed HC-256 source
+        run: Rscript pipelines/data/download_meps_hc256.R
+
+      - name: Acquire pinned linked-condition sources
+        run: Rscript pipelines/data/download_meps_linked_condition.R
+
+      - name: Generate candidate-only linked-condition estimates
+        run: |
+          Rscript analysis/r/meps/run_linked_condition_candidate.R \
+            --output="$OUTPUT_DIR"
+
+      - name: Revalidate dedicated candidate contract
+        run: |
+          node --experimental-strip-types \
+            packages/contracts/src/validate-linked-condition-candidate-cli.ts \
+            "$OUTPUT_DIR/linked-condition-candidate-estimates.json" \
+            "$OUTPUT_DIR/candidate-manifest.json" \
+            "$OUTPUT_DIR/diagnostics.json"
+
+      - name: Assert reviewed Issue 20 reconciliation gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          jq -e '
+            .reconciliation.passed == true
+            and .reconciliation.actual.target_n == 380
+            and .reconciliation.actual.target_nonzero_person_n == 22
+            and .reconciliation.actual.target_zero_person_n == 358
+            and .reconciliation.actual.target_unique_events_n == 109
+            and .reconciliation.actual.family_counts.office == 86
+            and .reconciliation.actual.family_counts.outpatient == 21
+            and .reconciliation.actual.family_counts.emergency == 2
+            and .reconciliation.actual.family_counts.inpatient == 0
+            and .reconciliation.actual.overall_unique_events_n == 259
+            and .reconciliation.actual.multiplicity_n == 116
+            and .reconciliation.actual.represented_strata_n == 99
+            and .reconciliation.actual.represented_stratum_psu_pairs_n == 185
+          ' "$OUTPUT_DIR/diagnostics.json" >/dev/null
+
+      - name: Assert candidate-only manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          jq -e '
+            .status == "preliminary-candidate-only"
+            and .candidate_estimates_generated == true
+            and .automatic_release == false
+            and .runtime_eligible == false
+            and .runtime_selection_changed == false
+            and .reviewed_artifact_modified == false
+            and .reliability_rule_reviewed == false
+          ' "$OUTPUT_DIR/candidate-manifest.json" >/dev/null
+          test ! -e "$OUTPUT_DIR/bundle.json"
+
+      - name: Verify aggregate-only privacy boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          for required in \
+            linked-condition-candidate-estimates.json \
+            diagnostics.json \
+            candidate-manifest.json \
+            hc256-source-metadata.json \
+            linked-condition-source-metadata.json \
+            github-actions-run-manifest.json
+          do
+            test -s "$OUTPUT_DIR/$required"
+          done
+
+          if find "$OUTPUT_DIR" -type f \( \
+            -name '*.dta' -o \
+            -name '*.zip' -o \
+            -name '*.csv' -o \
+            -name '*.rds' -o \
+            -name '*.RData' -o \
+            -name '*.parquet' -o \
+            -name '*.feather' \
+          \) | grep -q .; then
+            echo "Refusing upload: raw/respondent/event-level data-like file found."
+            find "$OUTPUT_DIR" -type f -print
+            exit 1
+          fi
+
+          if grep -R -E '"(DUPERSID|CONDIDX|EVNTIDX|CLNKIDX)"[[:space:]]*:' "$OUTPUT_DIR"/*.json; then
+            echo "Refusing upload: respondent/event identifier field found in aggregate JSON."
+            exit 1
+          fi
+
+      - name: Assert candidate provenance matches GitHub SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          jq -e --arg sha "$GITHUB_SHA" '
+            .code_commit == $sha
+          ' "$OUTPUT_DIR/linked-condition-candidate-estimates.json" >/dev/null
+          jq -e --arg sha "$GITHUB_SHA" '
+            .code_commit == $sha
+            and .github_sha == $sha
+            and .code_commit_matches_github_sha == true
+          ' "$OUTPUT_DIR/diagnostics.json" >/dev/null
+          jq -e --arg sha "$GITHUB_SHA" '
+            .code_commit == $sha
+            and .github_sha == $sha
+            and .code_commit_matches_github_sha == true
+          ' "$OUTPUT_DIR/candidate-manifest.json" >/dev/null
+
+      - name: Write checksums
+        shell: bash
+        run: |
+          set -euo pipefail
+          (
+            cd "$OUTPUT_DIR"
+            sha256sum \
+              linked-condition-candidate-estimates.json \
+              diagnostics.json \
+              candidate-manifest.json \
+              hc256-source-metadata.json \
+              linked-condition-source-metadata.json \
+              github-actions-run-manifest.json \
+              > SHA256SUMS
+          )
+
+      - name: Upload preliminary candidate for methods review
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.CANDIDATE_ARTIFACT_NAME }}
+          path: |
+            ${{ env.OUTPUT_DIR }}/linked-condition-candidate-estimates.json
+            ${{ env.OUTPUT_DIR }}/diagnostics.json
+            ${{ env.OUTPUT_DIR }}/candidate-manifest.json
+            ${{ env.OUTPUT_DIR }}/hc256-source-metadata.json
+            ${{ env.OUTPUT_DIR }}/linked-condition-source-metadata.json
+            ${{ env.OUTPUT_DIR }}/github-actions-run-manifest.json
+            ${{ env.OUTPUT_DIR }}/SHA256SUMS
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 6

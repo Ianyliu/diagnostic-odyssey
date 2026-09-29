@@ -1023,3 +1023,5 @@ export const canDisplayDistributionSummary = (estimate: Estimate): boolean =>
   canExportEstimate(estimate) &&
   estimate.distribution_summary !== undefined &&
   validateEstimate(estimate).length === 0;
+
+export * from "./linked-condition-candidate.ts";
