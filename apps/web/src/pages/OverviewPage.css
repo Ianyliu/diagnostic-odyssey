@@ -838,3 +838,67 @@
   background: #0e1820;
   border-color: #2d3c45;
 }
+
+
+/* Workflow steps use restrained semantic accents so the section is not six teal cards. */
+.overview-page .journey-card {
+  --journey-accent: #315e7a;
+  --journey-tint: #eef3f5;
+}
+
+.overview-page .journey-card:nth-child(1) {
+  --journey-accent: #3f765f;
+  --journey-tint: #edf5f0;
+}
+
+.overview-page .journey-card:nth-child(2) {
+  --journey-accent: #3e6f91;
+  --journey-tint: #edf3f7;
+}
+
+.overview-page .journey-card:nth-child(3) {
+  --journey-accent: #8a6d2c;
+  --journey-tint: #f7f1e3;
+}
+
+.overview-page .journey-card:nth-child(4) {
+  --journey-accent: #397d7b;
+  --journey-tint: #edf5f4;
+}
+
+.overview-page .journey-card:nth-child(5) {
+  --journey-accent: #687486;
+  --journey-tint: #f0f1f4;
+}
+
+.overview-page .journey-card:nth-child(6) {
+  --journey-accent: #153552;
+  --journey-tint: #edf1f4;
+}
+
+.overview-page .journey-index {
+  color: var(--journey-accent);
+  border-color: color-mix(in srgb, var(--journey-accent) 32%, #d8d3c9);
+  background: var(--journey-tint);
+}
+
+.overview-page .journey-arrow {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  color: #fff;
+  border-radius: 50%;
+  background: var(--journey-accent);
+}
+
+.overview-page .journey-card:hover,
+.overview-page .journey-card:focus-visible {
+  border-color: color-mix(in srgb, var(--journey-accent) 48%, #d8d3c9);
+  box-shadow: 0 15px 34px rgba(21, 53, 82, .09);
+}
+
+.overview-page .journey-card:hover strong,
+.overview-page .journey-card:focus-visible strong {
+  color: var(--journey-accent);
+}
