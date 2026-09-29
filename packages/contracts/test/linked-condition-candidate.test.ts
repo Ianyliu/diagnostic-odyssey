@@ -239,7 +239,7 @@ test("independent TypeScript evaluator covers every governed status and reportin
   const cases = [
     [candidate("u09_linked_service_use_encounters_mean"), "meps_precise", "reportable"],
     [candidate("u09_linked_service_use_encounters_mean", {relative_standard_error: 0.30}), "meps_questionable_precision", "reportable_with_caution"],
-    [candidate("u09_linked_service_use_person_share", {relative_standard_error: 0.51, interval_high: 0.10}), "meps_low_percentage_exception", "reportable_with_caution"],
+    [candidate("u09_linked_service_use_person_share", {value: 0.05, interval_low: 0.01, relative_standard_error: 0.51, interval_high: 0.10}), "meps_low_percentage_exception", "reportable_with_caution"],
     [candidate("u09_linked_service_use_encounters_mean", {relative_standard_error: 0.51}), "meps_unstable_precision", "suppress_precision"],
     [candidate("u09_linked_service_use_encounters_mean", {unweighted_target_n: 59, target_support: support(59)}), "insufficient_sample", "suppress_insufficient_sample"],
     [zeroFamily("u09_linked_service_use_inpatient_encounters_mean"), "unsupported_zero", "suppress_unsupported_zero"],
