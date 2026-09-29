@@ -169,7 +169,7 @@ adjudicate_linked_condition_precision <- function(candidate) {
     return(list(
       computationally_valid = FALSE,
       precision_status = "review_required",
-      precision_reason_codes = as.list(reasons),
+      precision_reason_codes = I(as.character(reasons)),
       precision_reporting_status = "suppress_pending_review",
       precision_rule_version = linked_condition_precision_rule_version(),
       product_release_eligible = FALSE
@@ -180,7 +180,7 @@ adjudicate_linked_condition_precision <- function(candidate) {
     return(list(
       computationally_valid = TRUE,
       precision_status = "unsupported_zero",
-      precision_reason_codes = as.list(linked_condition_precision_reason_codes(reasons)),
+      precision_reason_codes = I(as.character(linked_condition_precision_reason_codes(reasons))),
       precision_reporting_status = "suppress_unsupported_zero",
       precision_rule_version = linked_condition_precision_rule_version(),
       product_release_eligible = FALSE
@@ -192,7 +192,7 @@ adjudicate_linked_condition_precision <- function(candidate) {
     return(list(
       computationally_valid = FALSE,
       precision_status = "review_required",
-      precision_reason_codes = as.list(reasons),
+      precision_reason_codes = I(as.character(reasons)),
       precision_reporting_status = "suppress_pending_review",
       precision_rule_version = linked_condition_precision_rule_version(),
       product_release_eligible = FALSE
@@ -227,7 +227,7 @@ adjudicate_linked_condition_precision <- function(candidate) {
     return(list(
       computationally_valid = TRUE,
       precision_status = "insufficient_sample",
-      precision_reason_codes = as.list(reasons),
+      precision_reason_codes = I(as.character(reasons)),
       precision_reporting_status = "suppress_insufficient_sample",
       precision_rule_version = linked_condition_precision_rule_version(),
       product_release_eligible = FALSE
@@ -237,7 +237,7 @@ adjudicate_linked_condition_precision <- function(candidate) {
   list(
     computationally_valid = TRUE,
     precision_status = rse_status,
-    precision_reason_codes = as.list(reasons),
+    precision_reason_codes = I(as.character(reasons)),
     precision_reporting_status = reporting_status,
     precision_rule_version = linked_condition_precision_rule_version(),
     product_release_eligible = FALSE
