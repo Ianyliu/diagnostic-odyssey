@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link, NavLink, Outlet, useLocation, useNavigationType } from "react-router-dom";
 import { useArtifact } from "../data/ArtifactContext";
 import { focusTarget, scrollToFragment } from "../data/fragmentNavigation";
@@ -24,6 +24,7 @@ export function AppShell() {
   const initialRoute = useRef(true);
   const menuToggle = useRef<HTMLButtonElement>(null);
   const preFragmentScroll = useRef<number | null>(null);
+  const lastScrollY = useRef(0);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -69,6 +70,16 @@ export function AppShell() {
     };
   }, [location.pathname]);
 
+  useLayoutEffect(() => {
+    const recordScroll = () => { lastScrollY.current = window.scrollY; };
+    recordScroll();
+    window.addEventListener("scroll", recordScroll, {passive: true});
+    return () => {
+      window.removeEventListener("scroll", recordScroll);
+      savedScroll.set(location.key, lastScrollY.current);
+    };
+  }, [location.key]);
+
   useEffect(() => {
     setMenuOpen(false);
     const frame = requestAnimationFrame(() => {
@@ -85,7 +96,6 @@ export function AppShell() {
     });
     return () => {
       cancelAnimationFrame(frame);
-      savedScroll.set(location.key, window.scrollY);
     };
   }, [location.key, location.hash, navigationType]);
 

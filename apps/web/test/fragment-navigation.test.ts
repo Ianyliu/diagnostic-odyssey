@@ -38,3 +38,11 @@ test("shell handles native same-page fragment clicks and history hash changes", 
   assert.match(shell, /addEventListener\("click", onFragmentClick\)/);
   assert.match(shell, /scrollToFragment\(hash\)/);
 });
+
+test("route restoration saves the last observed scroll before replacing route content", () => {
+  const shell = readFileSync(fileURLToPath(new URL("../src/components/AppShell.tsx", import.meta.url)), "utf8");
+  assert.match(shell, /useLayoutEffect\(\(\) => \{[\s\S]*?addEventListener\("scroll", recordScroll/);
+  assert.match(shell, /savedScroll\.set\(location\.key, lastScrollY\.current\)/);
+  assert.match(shell, /navigationType === "POP" && savedScroll\.has\(location\.key\)/);
+  assert.doesNotMatch(shell, /savedScroll\.set\(location\.key, window\.scrollY\)/);
+});
