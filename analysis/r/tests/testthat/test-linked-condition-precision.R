@@ -283,3 +283,53 @@ testthat::test_that("reviewed six real-data-shaped outcomes are frozen", {
     )
   }
 })
+
+
+testthat::test_that("precision reason codes serialize as JSON arrays at the runner boundary", {
+  testthat::skip_if_not_installed("jsonlite")
+
+  cases <- list(
+    empty = adjudicate_linked_condition_precision(precision_candidate(rse = 0.25)),
+    singleton = adjudicate_linked_condition_precision(precision_candidate(rse = 0.30)),
+    multiple = adjudicate_linked_condition_precision(precision_candidate(
+      unit = "proportion",
+      value = 0.05,
+      standard_error = 0.01,
+      interval_high = 0.10,
+      rse = 0.51,
+      nonzero_n = 22L,
+      event_n = 109L
+    ))
+  )
+
+  serialized <- jsonlite::toJSON(
+    cases,
+    pretty = FALSE,
+    auto_unbox = TRUE,
+    null = "null",
+    na = "null",
+    digits = 15
+  )
+
+  testthat::expect_match(
+    serialized,
+    '"empty":\\{[^}]*"precision_reason_codes":\\[\\]',
+    perl = TRUE
+  )
+  testthat::expect_match(
+    serialized,
+    '"singleton":\\{[^}]*"precision_reason_codes":\\["rse_30_to_50"\\]',
+    perl = TRUE
+  )
+  testthat::expect_match(
+    serialized,
+    '"multiple":\\{[^}]*"precision_reason_codes":\\["rse_above_50","low_percentage_exception"\\]',
+    perl = TRUE
+  )
+
+  testthat::expect_false(grepl(
+    '"precision_reason_codes":\\{',
+    serialized,
+    perl = TRUE
+  ))
+})
