@@ -94,17 +94,26 @@ For an all-zero family such as the reviewed inpatient footprint, numerical outpu
 
 The emergency and inpatient candidates remain non-substantive pending later methods/reliability review.
 
-## Reliability state
+## Precision governance state
 
-No numeric reliability or suppression rule is introduced.
+Future candidate artifacts use candidate schema `2.0` and implement the independently reviewed rule `meps_hc_precision_v1` from [MEPS 2024 linked-condition reliability and precision governance](./meps-2024-linked-condition-reliability-governance.md).
 
-Every candidate remains:
+Precision adjudication is applied only after the survey estimate and its design-based diagnostics are computed. Candidate records now separate:
 
-- `reliability_status="not_adjudicated"`
-- `reliability_rule_version=null`
-- `release_eligible=false`
+- `computationally_valid`;
+- `precision_status`;
+- `precision_reason_codes`;
+- `precision_reporting_status`;
+- `precision_rule_version`;
+- `product_release_eligible`.
 
-The candidate manifest separately records `reliability_rule_reviewed=false`. Issue #57 therefore remains open after implementation until its later reliability/independent-review criteria are satisfied.
+The candidate manifest records `precision_rule_version="meps_hc_precision_v1"` and `precision_rule_reviewed=true`.
+
+Statistical reportability does not authorize Diagnostic Odyssey product/runtime release. For all six candidates, `product_release_eligible=false` remains mandatory until a separate product/release review explicitly changes it.
+
+The successful workflow-run `36521347390` artifact `11012682354` remains historical schema-`1.0` evidence produced by analytical SHA `7726a580b551dd35a27530beaf9ac847bbff9ace`; it is not rewritten or reinterpreted as schema `2.0`. After this implementation is merged, a new manually dispatched real-data candidate run on the new exact `main` SHA will be required to generate schema-`2.0` output for independent review.
+
+Issue #57 therefore remains open pending merge/post-merge verification, a new schema-`2.0` real-data run, and independent review of that new artifact.
 
 ## Real-data reconciliation gates
 
