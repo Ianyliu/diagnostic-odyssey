@@ -195,7 +195,7 @@ function PilotPlannerWorkspace({
         <section className="pathway-boundary" aria-labelledby="pilot-pathway-boundary-title">
           <div>
             <p className="visual-kicker">SCIENTIFIC BOUNDARY</p>
-            <h3 id="pilot-pathway-boundary-title">Modeled pathway boundary</h3>
+            <h2 id="pilot-pathway-boundary-title">Modeled pathway boundary</h2>
           </div>
           <dl className="pathway-boundary-facts">
             <div><dt>Target step</dt><dd>{pathwayBoundary.pathwayStepLabel}</dd></div>

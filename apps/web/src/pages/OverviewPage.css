@@ -45,7 +45,6 @@
 .opening-junction { fill: var(--do-accent); }
 .opening-identity path { fill: none; stroke: var(--do-accent); stroke-width: 3; }
 .opening-identity-kicker { fill: var(--do-text-muted); font-family: var(--do-font-body); font-size: 10px; font-weight: 750; letter-spacing: .1em; }
-.opening-identity-main { fill: var(--do-accent); font-family: var(--do-font-display); font-size: 29px; font-weight: 700; letter-spacing: -.025em; }
 
 .overview-provenance.is-playing .opening-evidence { animation: opening-fragment .46s cubic-bezier(.2,.7,.2,1) both; }
 .overview-provenance.is-playing .opening-context { animation: opening-fragment .46s cubic-bezier(.2,.7,.2,1) .09s both; }

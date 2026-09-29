@@ -127,11 +127,13 @@
   border-color: var(--do-assumption-border);
 }
 
-.pilot-page .pathway-boundary h3,
+.pilot-page .pathway-boundary h2,
 .pilot-page .pathway-boundary strong,
 .pilot-page .pathway-boundary-facts dd {
   color: var(--do-assumption-text);
 }
+
+.pilot-page .pathway-boundary h2 { margin: 0; }
 
 .pilot-page .pathway-boundary-facts div {
   background: var(--do-surface);

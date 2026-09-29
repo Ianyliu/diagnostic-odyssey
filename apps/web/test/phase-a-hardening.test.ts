@@ -17,6 +17,8 @@ test("unexpected render failures use an accessible evidence-honest fallback", ()
   const boundary = readSource("../src/components/ErrorBoundary.tsx");
   const app = readSource("../src/App.tsx");
   assert.match(app, /<ErrorBoundary><ArtifactProvider>/);
+  assert.match(boundary, /className="skip-link" href="#main-content"/);
+  assert.match(boundary, /<main id="main-content"[^>]*tabIndex=\{-1\}/);
   assert.match(boundary, /role="alert"/);
   assert.match(boundary, /unexpected error/i);
   assert.match(boundary, /No substitute evidence or estimate has been created/);
@@ -26,6 +28,8 @@ test("unexpected render failures use an accessible evidence-honest fallback", ()
 
 test("Planning Brief print contract hides chrome but retains substantive content and provenance", () => {
   const styles = readSource("../src/styles.css");
+  const tokens = readSource("../../../packages/ui/src/styles.css");
+  const briefStyles = readSource("../src/pages/BriefPage.css");
   const brief = readSource("../src/pages/BriefPage.tsx");
   assert.match(styles, /@media print/);
   for (const selector of [
@@ -38,6 +42,13 @@ test("Planning Brief print contract hides chrome but retains substantive content
     assert.match(styles, new RegExp(selector));
   }
   assert.doesNotMatch(styles, /\.brief-content\s*\{[^}]*display:\s*none/i);
+  assert.match(tokens, /@media print\s*\{\s*:root,\s*:root\[data-theme="dark"\]\s*\{/);
+  assert.match(tokens, /--do-canvas:\s*#ffffff/);
+  assert.match(briefStyles, /@media print\s*\{/);
+  assert.match(briefStyles, /\.planning-brief-page \.brief-burden-table-wrap\s*\{\s*overflow:\s*visible/);
+  assert.match(briefStyles, /\.planning-brief-page \.brief-burden-table\s*\{[^}]*table-layout:\s*fixed/);
+  assert.match(briefStyles, /\.planning-brief-page \.brief-burden-group,[\s\S]*?break-inside:\s*auto/);
+  assert.match(briefStyles, /\.planning-brief-page \.brief-burden-details::details-content\s*\{\s*content-visibility:\s*visible\s*!important/);
   assert.match(brief, /className="print-provenance"/);
   assert.match(brief, /National reviewed artifact:<\/b> \{brief\.artifact_version\}/);
   assert.match(brief, /brief\.context\.local_context_id &&/);
@@ -54,13 +65,29 @@ test("JSON companion remains derived from the same gated brief object and artifa
   assert.match(brief, /withStaleSelectedDataRequestWarning/);
 });
 
-test("shell CSS respects reduced motion and keeps narrow nav/context content available", () => {
+test("shell keeps navigation and context available at narrow widths without sticky overlap", () => {
+  const shell = readSource("../src/components/AppShell.tsx");
+  const workspace = readSource("../src/workspace.css");
   const styles = readSource("../src/styles.css");
+  const main = readSource("../src/main.tsx");
+
+  assert.match(shell, /aria-expanded=\{menuOpen\}/);
+  assert.match(shell, /aria-controls="primary-navigation"/);
+  assert.match(shell, /event\.key !== "Escape"/);
+  assert.match(shell, /menuToggle\.current\?\.focus\(\)/);
+  assert.match(workspace, /@media \(max-width: 767px\)\s*\{/);
+  assert.match(workspace, /\.primary-nav\.open\s*\{[^}]*display:\s*grid/);
+  assert.match(workspace, /\.context-bar\s*\{[^}]*grid-template-columns:\s*1fr;[^}]*overflow:\s*visible;[^}]*white-space:\s*normal/);
+  assert.match(workspace, /@media \(min-width: 1200px\) and \(min-height: 800px\)\s*\{/);
+  assert.ok(main.indexOf('import "./styles.css"') < main.indexOf('import "./workspace.css"'));
   assert.match(styles, /@media\(prefers-reduced-motion:reduce\)/);
   assert.match(styles, /scroll-behavior:auto!important/);
-  assert.match(styles, /\.primary-nav\{white-space:nowrap;scrollbar-width:thin\}/);
-  assert.match(styles, /\.primary-nav a\{flex:0 0 auto;white-space:nowrap/);
-  assert.match(styles, /\.context-bar\{flex-wrap:nowrap;overflow-x:auto;white-space:nowrap/);
+});
+
+test("focusable Brief burden tables expose a named scroll region and table caption", () => {
+  const brief = readSource("../src/pages/BriefPage.tsx");
+  assert.match(brief, /className="brief-burden-table-wrap" role="region" tabIndex=\{0\} aria-label=/);
+  assert.match(brief, /<caption className="sr-only">\{group\.label\} reviewed national burden findings<\/caption>/);
 });
 
 test("existing decision visual text/table alternatives remain present", () => {

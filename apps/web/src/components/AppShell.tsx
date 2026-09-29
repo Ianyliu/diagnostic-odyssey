@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, Outlet, useLocation, useNavigationType } from "react-router-dom";
 import { useArtifact } from "../data/ArtifactContext";
+import { focusTarget, scrollToFragment } from "../data/fragmentNavigation";
 import { ThemeControl } from "./ThemeControl";
 
 const nav = [
@@ -15,25 +16,6 @@ const nav = [
 
 const savedScroll = new Map<string, number>();
 
-function focusTarget(target: HTMLElement) {
-  const focusElement = target.matches("h1, h2, h3")
-    ? target
-    : target.querySelector<HTMLElement>("h1, h2, h3") ?? target;
-  if (!focusElement.hasAttribute("tabindex")) focusElement.tabIndex = -1;
-  focusElement.focus({ preventScroll: true });
-}
-
-function scrollToFragment(hash: string): boolean {
-  if (!hash) return false;
-  let id = hash.slice(1);
-  try { id = decodeURIComponent(id); } catch { /* Use literal fragment. */ }
-  const target = document.getElementById(id);
-  if (!target) return false;
-  focusTarget(target);
-  target.scrollIntoView({ block: "start" });
-  return true;
-}
-
 export function AppShell() {
   const {bundle, localContextStatus} = useArtifact();
   const location = useLocation();
@@ -41,6 +23,7 @@ export function AppShell() {
   const [menuOpen, setMenuOpen] = useState(false);
   const initialRoute = useRef(true);
   const menuToggle = useRef<HTMLButtonElement>(null);
+  const preFragmentScroll = useRef<number | null>(null);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -58,6 +41,33 @@ export function AppShell() {
     window.history.scrollRestoration = "manual";
     return () => { window.history.scrollRestoration = previous; };
   }, []);
+
+  useEffect(() => {
+    const onHashChange = () => {
+      if (window.location.pathname === location.pathname) {
+        if (window.location.hash) {
+          scrollToFragment(window.location.hash);
+        } else if (preFragmentScroll.current !== null) {
+          window.scrollTo(0, preFragmentScroll.current);
+        }
+      }
+    };
+    const onFragmentClick = (event: MouseEvent) => {
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      if (!(event.target instanceof Element)) return;
+      const link = event.target.closest<HTMLAnchorElement>('a[href^="#"]');
+      if (!link || !link.hash) return;
+      const hash = link.hash;
+      if (!window.location.hash) preFragmentScroll.current = window.scrollY;
+      if (window.location.hash === hash) requestAnimationFrame(() => scrollToFragment(hash));
+    };
+    window.addEventListener("hashchange", onHashChange);
+    document.addEventListener("click", onFragmentClick);
+    return () => {
+      window.removeEventListener("hashchange", onHashChange);
+      document.removeEventListener("click", onFragmentClick);
+    };
+  }, [location.pathname]);
 
   useEffect(() => {
     setMenuOpen(false);
@@ -93,8 +103,10 @@ export function AppShell() {
       <header className="site-header">
         <div className="header-inner">
           <Link className="brand" to="/" aria-label="Diagnostic Odyssey, Overview">
-            <strong>Diagnostic Odyssey</strong>
-            <span>PUBLIC HEALTH EVIDENCE WORKSPACE</span>
+            <picture>
+              <source media="(max-width: 767px)" srcSet="/diagnostic-odyssey-icon.png" />
+              <img src="/diagnostic-odyssey-horizontal.png" width="954" height="161" alt="" />
+            </picture>
           </Link>
           <button
             ref={menuToggle}

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { canExportEstimate } from "@diagnostic-odyssey/contracts";
 import { useArtifact } from "../data/ArtifactContext";
 import { formatPathwayStepLabel } from "../data/pathwayBoundary";
+import { getNationalBurdenReadiness } from "../data/workspaceReadiness";
 
 type StateTone = "reviewed" | "assumption" | "unavailable" | "neutral";
 
@@ -28,6 +29,7 @@ export function DecisionStateRail() {
   const releasedEstimates = bundle.burden_domains
     .flatMap(domain => domain.measures)
     .filter(canExportEstimate).length;
+  const burdenReadiness = getNationalBurdenReadiness(releasedEstimates);
   const reviewedLocal = localContext?.indicators.filter(
     record => record.release_status === "reviewed_released"
   ).length ?? 0;
@@ -38,10 +40,12 @@ export function DecisionStateRail() {
   const states: DecisionState[] = [
     {
       label: "National burden",
-      status: "Reviewed",
-      detail: `${releasedEstimates} released national estimates`,
+      status: burdenReadiness.railStatus,
+      detail: releasedEstimates > 0
+        ? `${releasedEstimates} released national estimates`
+        : "Release/display gate remains active",
       to: "/burden",
-      tone: "reviewed"
+      tone: burdenReadiness.tone
     },
     {
       label: "Implementation context",

@@ -5,6 +5,7 @@ import {
   canDisplayDistributionSummary,
   type Estimate
 } from "@diagnostic-odyssey/contracts";
+import { getEvidenceParameterReadiness, getNationalBurdenReadiness } from "../data/workspaceReadiness";
 import { ContextBar } from "../components/ContextBar";
 import { DecisionTrace } from "../components/DecisionTrace";
 import { DistributionSummaryText } from "../components/DistributionSummaryText";
@@ -115,6 +116,11 @@ export function BriefPage() {
     baseBrief,
     staleSelectedDataRequestCount
   );
+  const burdenReadiness = getNationalBurdenReadiness(brief.burden_findings.length);
+  const evidenceReadiness = getEvidenceParameterReadiness(
+    bundle.evidence,
+    brief.scenario?.input ?? null
+  );
   const burdenGroups = groupBriefBurdenFindings(
     bundle.burden_domains,
     brief.burden_findings
@@ -175,9 +181,9 @@ export function BriefPage() {
         </nav>
         <div className="brief-readiness">
         <h2>Decision readiness</h2>
-        <div className="readiness"><strong>Burden estimates</strong><span className="status status-reviewed">Reviewed national</span></div>
-        <div className="readiness"><strong>Scenario arithmetic</strong><span className="status status-assumption">Planning assumptions</span></div>
-        <div className="readiness"><strong>Evidence parameter</strong><span className="status status-unavailable">Not loaded</span></div>
+        <div className="readiness"><strong>Burden estimates</strong><span className={`status status-${burdenReadiness.tone}`}>{burdenReadiness.briefStatus}</span></div>
+        <div className="readiness"><strong>Scenario arithmetic</strong><span className={`status ${brief.scenario ? "status-assumption" : "status-unavailable"}`}>{brief.scenario ? "Planning assumptions" : "No applied scenario"}</span></div>
+        <div className="readiness"><strong>Evidence parameter</strong><span className={`status status-${evidenceReadiness.tone}`}>{evidenceReadiness.status}</span></div>
         <div className="readiness">
           <strong>Local context</strong>
           <span className={brief.local_context.length > 0 ? "status status-selection" : localContextAvailable ? "status status-neutral" : "status status-unavailable"}>
@@ -219,7 +225,7 @@ export function BriefPage() {
                 <h3 id={`brief-burden-${group.group_id}`}>{group.label}</h3>
                 <span className="status status-ok">{group.findings.length} reviewed</span>
               </div>
-              <div className="brief-burden-table-wrap" tabIndex={0} aria-label={`${group.label} burden findings table`}>
+              <div className="brief-burden-table-wrap" role="region" tabIndex={0} aria-label={`${group.label} burden findings table`}>
                 <table className="brief-burden-table">
                   <caption className="sr-only">{group.label} reviewed national burden findings</caption>
                   <thead>

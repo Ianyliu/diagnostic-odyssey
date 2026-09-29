@@ -78,8 +78,7 @@ export function OpeningProvenance() {
       <g className="opening-identity">
         <path d="M300 76 H477 V216 H300" />
         <text className="opening-identity-kicker" x="319" y="113">TRACEABLE PLANNING</text>
-        <text className="opening-identity-main" x="318" y="154">Diagnostic</text>
-        <text className="opening-identity-main" x="318" y="187">Odyssey</text>
+        <image href="/diagnostic-odyssey-icon.png" x="340" y="115" width="96" height="96" />
       </g>
       <text className="opening-footline" x="25" y="278">CONCEPTUAL LAYERS  ·  NO DATA VALUES SHOWN</text>
     </svg>

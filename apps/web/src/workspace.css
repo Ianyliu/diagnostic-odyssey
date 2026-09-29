@@ -50,7 +50,7 @@ textarea {
 
 .header-inner {
   display: grid;
-  grid-template-columns: minmax(190px, 232px) minmax(0, 1fr) auto;
+  grid-template-columns: 242px minmax(0, 1fr) auto;
   align-items: center;
   gap: 14px;
   width: min(1440px, 100%);
@@ -60,27 +60,26 @@ textarea {
 }
 
 .brand {
-  color: var(--do-text);
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  min-height: 48px;
+  padding: 4px;
+  /* The supplied marks have an opaque white ground in both themes. */
+  background: #fff;
+  border: 1px solid var(--do-border);
+  border-radius: 3px;
   text-decoration: none;
 }
 
-.brand strong {
-  color: var(--do-accent);
-  font-family: var(--do-font-display);
-  font-size: 1.35rem;
-  font-weight: 700;
-  letter-spacing: -.025em;
-  line-height: 1.1;
+.brand picture,
+.brand img {
+  display: block;
 }
 
-.brand span {
-  margin-top: 3px;
-  color: var(--do-text-muted);
-  font-size: .57rem;
-  font-weight: 700;
-  letter-spacing: .12em;
-  line-height: 1.3;
-  opacity: 1;
+.brand img {
+  width: 232px;
+  height: auto;
 }
 
 .primary-nav {
@@ -185,6 +184,8 @@ footer {
   border-bottom: 1px solid var(--do-border);
   border-radius: 0;
   font-size: .8rem;
+  overflow: visible;
+  white-space: normal;
 }
 
 .context-bar-title {
@@ -201,6 +202,7 @@ footer {
   letter-spacing: .08em;
   line-height: 1.3;
   text-transform: uppercase;
+  overflow-wrap: anywhere;
 }
 
 .context-bar .context-bar-title strong {
@@ -240,6 +242,8 @@ footer {
 }
 
 @media (min-width: 768px) and (max-width: 1199px) {
+  .context-meta { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
   .header-inner {
     grid-template-columns: 1fr auto;
     gap: 0 12px;
@@ -261,8 +265,7 @@ footer {
     padding: 10px 16px;
   }
 
-  .brand strong { font-size: 1.26rem; }
-  .brand span { font-size: .53rem; }
+  .brand img { width: 44px; height: 44px; }
 
   .menu-toggle { display: inline-flex; align-items: center; }
 

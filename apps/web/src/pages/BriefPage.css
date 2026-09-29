@@ -430,9 +430,24 @@
     break-inside: auto;
   }
 
+  /* Let long tables fragment in normal document flow. A grid item can paint
+     its following disclosure over the table's continuation on the next page. */
+  .planning-brief-page .brief-burden-groups,
+  .planning-brief-page .brief-burden-group {
+    display: block;
+  }
+
+  .planning-brief-page .brief-burden-group + .brief-burden-group {
+    margin-top: 12pt;
+  }
+
   .planning-brief-page .brief-burden-group-heading,
   .planning-brief-page .brief-local-context .card-title-row {
     break-after: avoid-page;
+  }
+
+  .planning-brief-page .brief-burden-group-heading {
+    margin-bottom: 6pt;
   }
 
   .planning-brief-page .brief-burden-table-wrap {
@@ -462,8 +477,17 @@
     break-inside: avoid;
   }
 
+  .planning-brief-page .brief-burden-details {
+    margin-top: 6pt;
+  }
+
   .planning-brief-page .brief-burden-details[open] > :not(summary) {
     display: block;
+  }
+
+  /* Browser Print may snapshot before beforeprint listeners have opened details. */
+  .planning-brief-page .brief-burden-details::details-content {
+    content-visibility: visible !important;
   }
 
   .planning-brief-page .brief-applied-assumptions,
