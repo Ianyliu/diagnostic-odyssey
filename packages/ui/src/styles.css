@@ -73,40 +73,41 @@
 
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --do-brand-navy: #9fc9df;
-  --do-brand-teal: #67cfca;
-  --do-brand-teal-bright: #8ce3df;
-  --do-canvas: #0b1822;
-  --do-surface: #112531;
-  --do-surface-elevated: #173240;
-  --do-text: #eff5f3;
-  --do-text-muted: #aab9bf;
-  --do-border: #2c4a58;
-  --do-control-border: #6b8490;
-  --do-accent: #67cfca;
-  --do-accent-contrast: #092126;
-  --do-focus: #8de9e5;
-  --do-reviewed-text: #99d8b9;
-  --do-reviewed-bg: #17382f;
-  --do-reviewed-border: #527965;
-  --do-warning-text: #e6c878;
-  --do-warning-bg: #3a311b;
-  --do-warning-border: #75643b;
-  --do-selection-text: #aed2ea;
-  --do-selection-bg: #19374a;
-  --do-selection-border: #54758a;
-  --do-assumption-text: #d8c690;
-  --do-assumption-bg: #39321f;
-  --do-assumption-border: #756b47;
+  /* Dark mode is ink/navy-led; teal is an accent rather than the page wash. */
+  --do-brand-navy: #d7e4ec;
+  --do-brand-teal: #58c3bd;
+  --do-brand-teal-bright: #75d4cf;
+  --do-canvas: #09131b;
+  --do-surface: #111d26;
+  --do-surface-elevated: #182732;
+  --do-text: #f2f4f1;
+  --do-text-muted: #b0bac0;
+  --do-border: #31414b;
+  --do-control-border: #6f8089;
+  --do-accent: #58c3bd;
+  --do-accent-contrast: #071b1e;
+  --do-focus: #83ddd8;
+  --do-reviewed-text: #8dc9a5;
+  --do-reviewed-bg: #183027;
+  --do-reviewed-border: #496b58;
+  --do-warning-text: #e2c17c;
+  --do-warning-bg: #352d1d;
+  --do-warning-border: #71613f;
+  --do-selection-text: #8cbad8;
+  --do-selection-bg: #172a39;
+  --do-selection-border: #486477;
+  --do-assumption-text: #ddbf7a;
+  --do-assumption-bg: #332c1f;
+  --do-assumption-border: #6f603f;
   --do-error-text: #ff9a8c;
   --do-error-bg: #432822;
   --do-error-border: #8a554c;
-  --do-chart-1: #83b9d2;
-  --do-chart-2: #67cfca;
-  --do-chart-3: #b0c3d0;
-  --do-chart-4: #9fc3b0;
-  --do-chart-track: #203b48;
-  --do-chart-grid: #4d6875;
+  --do-chart-1: #7aa9c7;
+  --do-chart-2: #58c3bd;
+  --do-chart-3: #83bd9e;
+  --do-chart-4: #d2ad68;
+  --do-chart-track: #23313a;
+  --do-chart-grid: #52616a;
 }
 
 @media print {
