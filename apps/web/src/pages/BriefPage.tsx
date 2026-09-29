@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { buildPlanningBrief, serializeBriefJson } from "@diagnostic-odyssey/brief-core";
 import {
@@ -29,6 +30,12 @@ import {
 import { formatDataStateLabel } from "../data/presentationLabels";
 import { withStaleSelectedDataRequestWarning } from "../data/briefDataRequestWarnings";
 import { groupBriefBurdenFindings } from "../data/briefBurdenPresentation";
+import {
+  pilotInputFields
+} from "../data/pilotInputDraft";
+import { formatAppliedAssumption } from "./briefAssumptions";
+import { createBriefPrintDisclosureState } from "./briefPrint";
+import "./BriefPage.css";
 
 function AccessibleEstimateInterval({estimate}: {estimate: Estimate}) {
   const interval = formatEstimateInterval(estimate);
@@ -43,6 +50,8 @@ function AccessibleEstimateInterval({estimate}: {estimate: Estimate}) {
 }
 
 export function BriefPage() {
+  const pageRef = useRef<HTMLElement>(null);
+  const printDisclosureState = useRef<ReturnType<typeof createBriefPrintDisclosureState> | null>(null);
   const {
     bundle,
     scenario,
@@ -55,6 +64,30 @@ export function BriefPage() {
     briefDataRequestIds,
     selectedDataRequests
   } = useArtifact();
+
+  useEffect(() => {
+    const page = pageRef.current;
+    if (!page) return;
+    const state = createBriefPrintDisclosureState(
+      () => Array.from(page.querySelectorAll<HTMLDetailsElement>("details"))
+    );
+    printDisclosureState.current = state;
+    window.addEventListener("beforeprint", state.prepare);
+    window.addEventListener("afterprint", state.restore);
+    const printMedia = window.matchMedia?.("print");
+    const onPrintMediaChange = () => {
+      if (!printMedia?.matches) state.restore();
+    };
+    printMedia?.addEventListener?.("change", onPrintMediaChange);
+    return () => {
+      window.removeEventListener("beforeprint", state.prepare);
+      window.removeEventListener("afterprint", state.restore);
+      printMedia?.removeEventListener?.("change", onPrintMediaChange);
+      state.restore();
+      if (printDisclosureState.current === state) printDisclosureState.current = null;
+    };
+  }, [bundle]);
+
   if (!bundle) return null;
 
   const estimates = bundle.burden_domains.flatMap(domain => domain.measures);
@@ -103,7 +136,17 @@ export function BriefPage() {
     URL.revokeObjectURL(url);
   };
 
-  return <section className="page page-stack planning-brief-page">
+  const printBrief = () => {
+    printDisclosureState.current?.prepare();
+    try {
+      window.print();
+    } catch (error) {
+      printDisclosureState.current?.restore();
+      throw error;
+    }
+  };
+
+  return <section className="page page-stack planning-brief-page" ref={pageRef}>
     <ContextBar />
     <header className="page-heading">
       <p className="eyebrow">PLANNING BRIEF</p>
@@ -119,13 +162,49 @@ export function BriefPage() {
     </div>
 
     <div className="brief-grid">
-      <article className="card brief-content">
-        <section className="interpretation-boundaries">
+      <aside className="brief-aside" aria-label="Planning Brief contents and actions">
+        <nav className="brief-contents" aria-label="Planning Brief contents">
+          <h2>Contents</h2>
+          <a href="#brief-interpretation-boundaries">Interpretation boundaries</a>
+          <a href="#brief-national-burden">Reviewed national burden</a>
+          <a href="#brief-pilot-assumptions">Planning assumptions</a>
+          {brief.scenario && <a href="#brief-scenario-outputs">Scenario outputs</a>}
+          <a href="#brief-local-context">Local context</a>
+          <a href="#brief-intervention-evidence">Intervention evidence</a>
+          <a href="#brief-data-requests">Data requests</a>
+        </nav>
+        <div className="brief-readiness">
+        <h2>Decision readiness</h2>
+        <div className="readiness"><strong>Burden estimates</strong><span className="status status-reviewed">Reviewed national</span></div>
+        <div className="readiness"><strong>Scenario arithmetic</strong><span className="status status-assumption">Planning assumptions</span></div>
+        <div className="readiness"><strong>Evidence parameter</strong><span className="status status-unavailable">Not loaded</span></div>
+        <div className="readiness">
+          <strong>Local context</strong>
+          <span className={brief.local_context.length > 0 ? "status status-selection" : localContextAvailable ? "status status-neutral" : "status status-unavailable"}>
+            {brief.local_context.length > 0
+              ? brief.local_context.length + " selected"
+              : localContextAvailable ? "Available, not selected" : "Not selected"}
+          </span>
+        </div>
+        <div className="readiness">
+          <strong>Data requests</strong>
+          <span className={`status ${selectedDataRequests.length > 0 ? "status-selection" : "status-neutral"}`}>
+            {selectedDataRequests.length > 0 ? `${selectedDataRequests.length} selected` : "None selected"}
+          </span>
+        </div>
+        </div>
+        <div className="brief-export-actions">
+          <button className="button" onClick={exportJson}>Export JSON companion</button>
+          <button className="button secondary" onClick={printBrief}>Print / save PDF</button>
+        </div>
+      </aside>
+      <article className="brief-content" aria-label="Planning Brief document">
+        <section id="brief-interpretation-boundaries" className="interpretation-boundaries">
           <h2>Interpretation boundaries</h2>
           <ul>{brief.warnings.map(warning => <li key={warning}>{warning}</li>)}</ul>
         </section>
 
-        <section>
+        <section id="brief-national-burden">
           <h2>Reviewed national burden findings</h2>
           {brief.burden_findings.length === 0 ? <div className="empty-state">
             <strong>No reviewed analytical estimate is currently export-eligible.</strong>
@@ -177,18 +256,33 @@ export function BriefPage() {
           </div>}
         </section>
 
-        <section>
+        <section id="brief-pilot-assumptions">
           <h2>Pilot planning assumptions</h2>
           <p className="subtle"><strong>{PLANNING_DEFAULTS_LABEL}</strong> These inputs are planning assumptions, not observed evidence.</p>
           {brief.scenario && scenarioBoundary ? <>
+            <dl className="brief-applied-assumptions" aria-label="Eight applied planning assumptions">
+              {pilotInputFields.map(field => <div key={field.key}>
+                <dt>{field.label}</dt>
+                <dd>{formatAppliedAssumption(brief.scenario!.input, field)}</dd>
+              </div>)}
+            </dl>
             <dl className="brief-scenario-trace">
               <div><dt>Modeled pathway step</dt><dd>{scenarioBoundary.pathwayStepLabel}</dd></div>
               <div><dt>Assumed mechanism</dt><dd>{scenarioBoundary.mechanismLabel}</dd></div>
             </dl>
             <p>{scenarioBoundary.assumptionBoundaryStatement}</p>
             <p><strong>Outside this model:</strong> {scenarioBoundary.outsideModelItems.join("; ")}.</p>
-            <p>{brief.scenario.result.reached_participants.toLocaleString()} participants within capacity; {brief.scenario.result.difference_person_months.toLocaleString()} person-month planning exposure difference.</p>
-            <p>Program-resource requirement: {new Intl.NumberFormat("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0}).format(brief.scenario.result.program_resource_requirement)}.</p>
+          </> : <div className="empty-state"><strong>No valid planning scenario result is available.</strong><p>This does not alter the reviewed national burden findings.</p></div>}
+        </section>
+
+        {brief.scenario && <section id="brief-scenario-outputs" className="brief-output-section">
+          <h2>Scenario outputs</h2>
+          <p className="subtle">Deterministic planning quantities from the applied assumptions above; these are not a forecast or observed evidence.</p>
+          <dl className="brief-output-list">
+            <div><dt>Participants within capacity</dt><dd>{brief.scenario.result.reached_participants.toLocaleString()}</dd></div>
+            <div><dt>Person-month planning exposure difference</dt><dd>{brief.scenario.result.difference_person_months.toLocaleString()}</dd></div>
+            <div><dt>Program-resource requirement</dt><dd>{new Intl.NumberFormat("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0}).format(brief.scenario.result.program_resource_requirement)}</dd></div>
+          </dl>
             <section className="brief-decision-trace" aria-labelledby="brief-decision-trace-title">
               <h3 id="brief-decision-trace-title">Decision trace</h3>
               <DecisionTrace
@@ -201,10 +295,9 @@ export function BriefPage() {
                 dataRequestHref="/data-requests"
               />
             </section>
-          </> : <div className="empty-state"><strong>No valid planning scenario result is available.</strong><p>This does not alter the reviewed national burden findings.</p></div>}
-        </section>
+        </section>}
 
-        <section>
+        <section id="brief-local-context">
           <h2>Local implementation context</h2>
           {brief.local_context.length > 0
             ? <div className="brief-local-context-list">
@@ -218,9 +311,9 @@ export function BriefPage() {
                         <strong>{record.label}</strong>
                         <span>{record.geography_name} ({record.geography_type})</span>
                         {pilotLocalContext?.indicator_id === record.indicator_id &&
-                          <span className="status status-ok pilot-used-badge">Used in Pilot planning</span>}
+                          <span className="status status-selection pilot-used-badge">Used in Pilot planning</span>}
                       </div>
-                      <span className={record.state === "partial" ? "status status-scaffold" : "status status-ok"}>
+                      <span className={record.state === "partial" ? "status status-partial" : "status status-reviewed"}>
                         {formatDataStateLabel(record.state)}
                       </span>
                     </div>
@@ -252,14 +345,14 @@ export function BriefPage() {
               </div>}
         </section>
 
-        <section>
+        <section id="brief-intervention-evidence">
           <h2>Intervention-effect evidence</h2>
           {brief.evidence.length > 0
             ? brief.evidence.map(x => <p key={x.evidence_id}><strong>{x.allowed_use}</strong> — {x.source}</p>)
             : <div className="empty-state"><strong>No reviewed intervention-effect parameter is loaded.</strong><p>Causal benefit, savings, ROI, and preventable-cost claims remain unavailable.</p></div>}
         </section>
 
-        <section>
+        <section id="brief-data-requests">
           <h2>What to collect next</h2>
           {brief.data_requests.length > 0
             ? <>
@@ -284,30 +377,7 @@ export function BriefPage() {
         </section>
       </article>
 
-      <aside className="card brief-aside">
-        <h2>Decision readiness</h2>
-        <div className="readiness"><strong>Burden estimates</strong><span className="status status-ok">Reviewed national</span></div>
-        <div className="readiness"><strong>Scenario arithmetic</strong><span className="status status-scaffold">Planning assumptions</span></div>
-        <div className="readiness"><strong>Evidence parameter</strong><span className="status status-scaffold">Not loaded</span></div>
-        <div className="readiness">
-          <strong>Local context</strong>
-          <span className={brief.local_context.length > 0 ? "status status-ok" : "status status-scaffold"}>
-            {brief.local_context.length > 0
-              ? brief.local_context.length + " selected"
-              : localContextAvailable ? "Available, not selected" : "Not selected"}
-          </span>
-        </div>
-        <div className="readiness">
-          <strong>Data requests</strong>
-          <span className={`status ${selectedDataRequests.length > 0 ? "status-ok" : "status-scaffold"}`}>
-            {selectedDataRequests.length > 0 ? `${selectedDataRequests.length} selected` : "None selected"}
-          </span>
-        </div>
-        <div className="brief-export-actions">
-          <button className="button" onClick={exportJson}>Export JSON companion</button>
-          <button className="button secondary" onClick={()=>window.print()}>Print / save PDF</button>
-        </div>
-      </aside>
+
     </div>
   </section>;
 }
