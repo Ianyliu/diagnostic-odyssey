@@ -7,11 +7,11 @@ import { ThemeControl } from "./ThemeControl";
 const nav = [
   ["/", "Overview"],
   ["/burden", "Burden"],
-  ["/local-context", "Local Context"],
-  ["/pilot", "Pilot Planner"],
+  ["/local-context", "Local context"],
+  ["/pilot", "Pilot planner"],
   ["/evidence", "Evidence"],
-  ["/data-requests", "Data Requests"],
-  ["/brief", "Planning Brief"]
+  ["/data-requests", "Data requests"],
+  ["/brief", "Planning brief"]
 ] as const;
 
 const savedScroll = new Map<string, number>();
@@ -103,10 +103,13 @@ export function AppShell() {
       <header className="site-header">
         <div className="header-inner">
           <Link className="brand" to="/" aria-label="Diagnostic Odyssey, Overview">
-            <picture>
-              <source media="(max-width: 767px)" srcSet="/diagnostic-odyssey-icon.png" />
-              <img src="/diagnostic-odyssey-horizontal.png" width="954" height="161" alt="" />
-            </picture>
+            <span className="brand-mark" aria-hidden="true">
+              <img src="/diagnostic-odyssey-icon.png" width="192" height="192" alt="" />
+            </span>
+            <span className="brand-copy">
+              <strong>Diagnostic Odyssey</strong>
+              <span>Evidence workspace</span>
+            </span>
           </Link>
           <button
             ref={menuToggle}
