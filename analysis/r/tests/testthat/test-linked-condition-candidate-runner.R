@@ -42,3 +42,74 @@ testthat::test_that("linked-condition candidate runner freezes reviewed real-dat
     testthat::expect_true(grepl(needle, runner, fixed = TRUE), info = needle)
   }
 })
+
+
+testthat::test_that("linked-condition reconciliation family counts serialize as keyed JSON objects", {
+  testthat::skip_if_not_installed("jsonlite")
+
+  helper_path <- file.path(
+    repo_root,
+    "analysis",
+    "r",
+    "meps",
+    "linked_condition_candidate_serialization.R"
+  )
+  source(helper_path, local = TRUE)
+
+  expected_family_counts <- as_linked_condition_family_count_object(c(
+    office = 86L,
+    outpatient = 21L,
+    emergency = 2L,
+    inpatient = 0L
+  ))
+  actual_family_counts <- as_linked_condition_family_count_object(list(
+    office = 86L,
+    outpatient = 21L,
+    emergency = 2L,
+    inpatient = 0L
+  ))
+
+  payload <- list(
+    reconciliation = list(
+      expected = list(family_counts = expected_family_counts),
+      actual = list(family_counts = actual_family_counts)
+    )
+  )
+
+  serialized <- jsonlite::toJSON(
+    payload,
+    pretty = TRUE,
+    auto_unbox = TRUE,
+    null = "null",
+    na = "null",
+    digits = 15
+  )
+  parsed <- jsonlite::fromJSON(serialized, simplifyVector = FALSE)
+
+  families <- c("office", "outpatient", "emergency", "inpatient")
+  expected_json <- parsed$reconciliation$expected$family_counts
+  actual_json <- parsed$reconciliation$actual$family_counts
+
+  testthat::expect_type(expected_json, "list")
+  testthat::expect_type(actual_json, "list")
+  testthat::expect_identical(names(expected_json), families)
+  testthat::expect_identical(names(actual_json), families)
+  testthat::expect_identical(
+    as.integer(unlist(expected_json, use.names = FALSE)),
+    c(86L, 21L, 2L, 0L)
+  )
+  testthat::expect_identical(
+    as.integer(unlist(actual_json, use.names = FALSE)),
+    c(86L, 21L, 2L, 0L)
+  )
+  testthat::expect_match(
+    serialized,
+    '"family_counts"\\s*:\\s*\\{',
+    perl = TRUE
+  )
+  testthat::expect_false(grepl(
+    '"family_counts"\\s*:\\s*\\[',
+    serialized,
+    perl = TRUE
+  ))
+})

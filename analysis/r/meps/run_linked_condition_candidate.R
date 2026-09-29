@@ -1,6 +1,7 @@
 #!/usr/bin/env Rscript
 
 source(file.path("analysis", "r", "meps", "bootstrap.R"))
+source(file.path("analysis", "r", "meps", "linked_condition_candidate_serialization.R"))
 
 required_packages <- c("haven", "jsonlite", "survey")
 missing_packages <- required_packages[!vapply(required_packages, requireNamespace, logical(1), quietly = TRUE)]
@@ -96,7 +97,12 @@ expected <- list(
   target_nonzero_person_n = 22L,
   target_zero_person_n = 358L,
   target_unique_events_n = 109L,
-  family_counts = c(office = 86L, outpatient = 21L, emergency = 2L, inpatient = 0L),
+  family_counts = as_linked_condition_family_count_object(c(
+    office = 86L,
+    outpatient = 21L,
+    emergency = 2L,
+    inpatient = 0L
+  )),
   overall_unique_events_n = 259L,
   multiplicity_n = 116L,
   represented_strata_n = 99L,
@@ -110,7 +116,7 @@ actual <- list(
   target_nonzero_person_n = sum(target_data$do_has_u09_linked_event),
   target_zero_person_n = sum(!target_data$do_has_u09_linked_event),
   target_unique_events_n = nrow(target_events),
-  family_counts = unlist(family_counts, use.names = TRUE),
+  family_counts = as_linked_condition_family_count_object(family_counts),
   overall_unique_events_n = nrow(footprint$unique_u09_events),
   multiplicity_n = multiplicity_n,
   represented_strata_n = target_support$represented_strata_n,
@@ -127,7 +133,10 @@ for (field in c(
     stop("Reviewed Issue #20 reconciliation failed for ", field, call. = FALSE)
   }
 }
-if (!identical(as.integer(actual$family_counts), as.integer(expected$family_counts))) {
+if (!identical(
+  unlist(actual$family_counts, use.names = TRUE),
+  unlist(expected$family_counts, use.names = TRUE)
+)) {
   stop("Reviewed Issue #20 family-count reconciliation failed.", call. = FALSE)
 }
 if (
