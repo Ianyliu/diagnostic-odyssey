@@ -37,7 +37,7 @@ export function OpeningProvenance() {
     window.addEventListener("keydown", settle);
     window.addEventListener("wheel", settle, { passive: true });
     window.addEventListener("touchstart", settle, { passive: true });
-    const timer = window.setTimeout(settle, 1200);
+    const timer = window.setTimeout(settle, 1450);
     return () => {
       window.clearTimeout(timer);
       media.removeEventListener("change", settle);
@@ -49,39 +49,60 @@ export function OpeningProvenance() {
   }, [playing]);
 
   return <figure className={"overview-provenance" + (playing ? " is-playing" : "")}>
-    <svg viewBox="0 0 520 292" aria-hidden="true" focusable="false">
-      <rect className="opening-paper" x="1" y="1" width="518" height="290" rx="5" />
-      <path className="opening-rule" d="M22 33 H498 M22 259 H498" />
-      <text className="opening-topline" x="25" y="24">DIAGNOSTIC ODYSSEY  /  WORKSPACE MAP</text>
-
-      <g className="opening-fragment opening-evidence">
-        <rect x="30" y="52" width="145" height="54" rx="3" />
-        <path d="M44 72 H111 M44 82 H149 M44 92 H133" />
-        <text x="30" y="48">EVIDENCE</text>
-      </g>
-      <g className="opening-fragment opening-context">
-        <rect x="30" y="119" width="145" height="54" rx="3" />
-        <path d="M44 137 H84 M44 147 H150 M44 157 H119" />
-        <text x="30" y="115">LOCAL CONTEXT</text>
-      </g>
-      <g className="opening-fragment opening-assumptions">
-        <rect x="30" y="186" width="145" height="54" rx="3" />
-        <path d="M44 204 H150 M44 214 H91 M44 224 H135" />
-        <text x="30" y="182">ASSUMPTIONS</text>
-      </g>
-
-      <path className="opening-connector" d="M175 79 H225 Q237 79 237 91 V144 H271" />
-      <path className="opening-connector" d="M175 146 H271" />
-      <path className="opening-connector" d="M175 213 H225 Q237 213 237 201 V148 H271" />
-      <circle className="opening-junction" cx="274" cy="146" r="4" />
-
-      <g className="opening-identity">
-        <path d="M300 76 H477 V216 H300" />
-        <text className="opening-identity-kicker" x="319" y="113">TRACEABLE PLANNING</text>
-        <image href="/diagnostic-odyssey-icon.png" x="340" y="115" width="96" height="96" />
-      </g>
-      <text className="opening-footline" x="25" y="278">CONCEPTUAL LAYERS  ·  NO DATA VALUES SHOWN</text>
-    </svg>
-    <figcaption>Evidence, local context, and analyst assumptions remain distinct as the planning workspace is composed. This diagram contains no data values.</figcaption>
+    <div className="workspace-preview">
+      <div className="preview-chrome">
+        <span className="preview-brand-dot" />
+        <strong>Decision workspace</strong>
+        <span className="preview-status">Reviewed + traceable</span>
+      </div>
+      <div className="preview-body">
+        <div className="preview-lanes" aria-label="Evidence roles remain separate">
+          <div className="opening-lane lane-evidence">
+            <span className="lane-kicker">Reviewed evidence</span>
+            <strong>National burden</strong>
+            <span className="lane-rule"><i /></span>
+            <small>survey estimate · CI · source</small>
+          </div>
+          <div className="opening-lane lane-context">
+            <span className="lane-kicker">Local context</span>
+            <strong>Implementation constraints</strong>
+            <span className="lane-rule"><i /></span>
+            <small>selected record · provenance</small>
+          </div>
+          <div className="opening-lane lane-assumption">
+            <span className="lane-kicker">Analyst assumptions</span>
+            <strong>Pilot scenario</strong>
+            <span className="lane-rule"><i /></span>
+            <small>reach · capacity · timing</small>
+          </div>
+        </div>
+        <div className="preview-output">
+          <div className="preview-output-topline">
+            <span>Planning brief</span>
+            <i />
+          </div>
+          <strong>Traceable decision state</strong>
+          <div className="preview-mini-chart" aria-hidden="true">
+            <span style={{height: "42%"}} />
+            <span style={{height: "74%"}} />
+            <span style={{height: "58%"}} />
+            <span style={{height: "88%"}} />
+          </div>
+          <ul>
+            <li><span /> Evidence boundary retained</li>
+            <li><span /> Assumptions labeled</li>
+            <li><span /> Data gaps visible</li>
+          </ul>
+        </div>
+      </div>
+      <div className="preview-footer">
+        <span>Distinct inputs</span>
+        <i aria-hidden="true">→</i>
+        <span>one auditable planning artifact</span>
+      </div>
+    </div>
+    <figcaption>
+      Conceptual workspace preview. The three lanes stay distinct all the way into the Planning brief; no data values are combined into a composite score.
+    </figcaption>
   </figure>;
 }
