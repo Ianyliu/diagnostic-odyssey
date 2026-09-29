@@ -58,6 +58,14 @@ combined <- derive_u09_person_service_use(combined, footprint)
 person_design <- build_meps_design(combined, "PERWT24F")
 design_integrity <- assert_linked_condition_candidate_design_integrity(combined, person_design)
 candidates <- estimate_linked_condition_service_use(person_design)
+candidates <- lapply(candidates, function(candidate) {
+  precision <- adjudicate_linked_condition_precision(candidate)
+  candidate[names(precision)] <- precision
+  candidate
+})
+if (any(!vapply(candidates, function(candidate) isTRUE(candidate$computationally_valid), logical(1)))) {
+  stop("Governed precision adjudication returned a computationally invalid candidate.", call. = FALSE)
+}
 
 target <- design_integrity$governed_target
 target_data <- combined[target, , drop = FALSE]
@@ -156,7 +164,7 @@ github_sha <- Sys.getenv("GITHUB_SHA", unset = "")
 assert_code_commit_matches_github_sha(code_commit, github_sha)
 
 candidate_file <- list(
-  schema_version = "1.0",
+  schema_version = "2.0",
   artifact_family = "linked_condition_service_use_candidate",
   status = "preliminary-candidate-only",
   generated_at = generated_at,
@@ -175,6 +183,7 @@ jsonlite::write_json(
 )
 
 diagnostics <- list(
+  schema_version = "2.0",
   status = "preliminary-candidate-only",
   code_commit = code_commit,
   github_sha = if (nzchar(github_sha)) github_sha else NULL,
@@ -191,11 +200,10 @@ diagnostics <- list(
     passed = TRUE
   ),
   linkage_quality = quality,
-  reliability = list(
-    status = "not_adjudicated",
-    rule_version = NULL,
-    rule_reviewed = FALSE,
-    release_eligible = FALSE
+  precision_governance = list(
+    rule_version = linked_condition_precision_rule_version(),
+    rule_reviewed = TRUE,
+    product_release_eligible = FALSE
   ),
   scientific_guardrails = as.list(linked_condition_guardrails())
 )
@@ -211,7 +219,7 @@ jsonlite::write_json(
 )
 
 manifest <- list(
-  schema_version = "1.0",
+  schema_version = "2.0",
   artifact_family = "linked_condition_service_use_candidate",
   status = "preliminary-candidate-only",
   candidate_estimates_generated = TRUE,
@@ -219,7 +227,8 @@ manifest <- list(
   runtime_eligible = FALSE,
   runtime_selection_changed = FALSE,
   reviewed_artifact_modified = FALSE,
-  reliability_rule_reviewed = FALSE,
+  precision_rule_version = linked_condition_precision_rule_version(),
+  precision_rule_reviewed = TRUE,
   code_commit = code_commit,
   github_sha = if (nzchar(github_sha)) github_sha else NULL,
   code_commit_matches_github_sha = if (nzchar(github_sha)) TRUE else NULL,
@@ -269,4 +278,5 @@ if (!identical(validation_status, 0L)) {
 
 message("Linked-condition candidate estimates generated for methods review only.")
 message("No ArtifactBundle output was generated.")
-message("No release/runtime eligibility was granted.")
+message("Sampling precision was adjudicated under meps_hc_precision_v1.")
+message("No product release/runtime eligibility was granted.")

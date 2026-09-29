@@ -108,9 +108,6 @@ linked_condition_candidate_metadata <- function(
         length(result$interval_width) == 1L &&
         is.finite(result$interval_width)
     ) unname(result$interval_width) else NULL,
-    reliability_status = "not_adjudicated",
-    reliability_rule_version = NULL,
-    release_eligible = FALSE,
     allowed_interpretation = paste(
       "Descriptive annual documented exact-U09-linked D/E/F/G service-use footprint",
       "among adults in the governed HC-256 operational-current Long-COVID target."
@@ -130,7 +127,7 @@ linked_condition_candidate_metadata <- function(
       "Absence of a qualifying U09-linked encounter is not evidence of absence of healthcare.",
       "Annual D/E/F/G events may occur before or after the Round 3/1 point-in-time current-status anchor.",
       "U09-linked encounters may also carry non-U09 condition links and are not uniquely attributable to Long COVID.",
-      "Reliability/stability has not been adjudicated and this candidate is not release eligible."
+      "Sampling precision is adjudicated after estimation under meps_hc_precision_v1; product release remains separately unauthorized."
     )),
     weight_variable = "PERWT24F",
     variance_stratum_variable = "VARSTR",

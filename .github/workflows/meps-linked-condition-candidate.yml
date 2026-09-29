@@ -128,14 +128,28 @@ jobs:
         run: |
           set -euo pipefail
           jq -e '
-            .status == "preliminary-candidate-only"
+            .schema_version == "2.0"
+            and .status == "preliminary-candidate-only"
             and .candidate_estimates_generated == true
             and .automatic_release == false
             and .runtime_eligible == false
             and .runtime_selection_changed == false
             and .reviewed_artifact_modified == false
-            and .reliability_rule_reviewed == false
+            and .precision_rule_version == "meps_hc_precision_v1"
+            and .precision_rule_reviewed == true
           ' "$OUTPUT_DIR/candidate-manifest.json" >/dev/null
+          jq -e '
+            .schema_version == "2.0"
+            and .precision_governance.rule_version == "meps_hc_precision_v1"
+            and .precision_governance.rule_reviewed == true
+            and .precision_governance.product_release_eligible == false
+          ' "$OUTPUT_DIR/diagnostics.json" >/dev/null
+          jq -e '
+            .schema_version == "2.0"
+            and ([.candidates[].precision_rule_version] | all(. == "meps_hc_precision_v1"))
+            and ([.candidates[].computationally_valid] | all(. == true))
+            and ([.candidates[].product_release_eligible] | all(. == false))
+          ' "$OUTPUT_DIR/linked-condition-candidate-estimates.json" >/dev/null
           test ! -e "$OUTPUT_DIR/bundle.json"
 
       - name: Verify aggregate-only privacy boundary
