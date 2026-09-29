@@ -12,7 +12,7 @@
   gap: clamp(42px, 6vw, 88px);
   min-height: min(720px, calc(100vh - 118px));
   overflow: hidden;
-  margin-inline: max(-24px, calc((100vw - 1440px) / -2));
+  margin-inline: calc((min(1376px, 100vw - 48px) - 100vw) / 2);
   padding: clamp(54px, 7vw, 108px) max(24px, calc((100vw - 1320px) / 2));
   border-bottom: 1px solid var(--do-border);
   background:
@@ -566,7 +566,7 @@
 }
 
 .overview-destinations {
-  margin-inline: max(-24px, calc((100vw - 1440px) / -2));
+  margin-inline: calc((min(1376px, 100vw - 48px) - 100vw) / 2);
   padding: clamp(46px, 6vw, 76px) max(24px, calc((100vw - 1320px) / 2));
   border-block: 1px solid #ddd8ce;
   background: #f3f0e8;
@@ -702,6 +702,11 @@
   .overview-provenance { max-width: 760px; }
   .overview-role-grid,
   .overview-page .journey-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 980px) {
+  .overview-hero,
+  .overview-destinations { margin-inline: -16px; }
 }
 
 @media (max-width: 720px) {
