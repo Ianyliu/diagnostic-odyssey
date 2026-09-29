@@ -33,7 +33,9 @@ expect_precision <- function(result, status, reporting, reasons = character(), v
   testthat::expect_identical(result$computationally_valid, valid)
   testthat::expect_identical(result$precision_status, status)
   testthat::expect_identical(result$precision_reporting_status, reporting)
-  testthat::expect_identical(unlist(result$precision_reason_codes, use.names = FALSE), reasons)
+  actual_reasons <- unlist(result$precision_reason_codes, use.names = FALSE)
+  if (is.null(actual_reasons)) actual_reasons <- character()
+  testthat::expect_identical(actual_reasons, reasons)
   testthat::expect_identical(result$precision_rule_version, "meps_hc_precision_v1")
   testthat::expect_identical(result$product_release_eligible, FALSE)
 }
