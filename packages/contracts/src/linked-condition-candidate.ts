@@ -250,19 +250,34 @@ export function evaluateLinkedConditionPrecision(
     };
   }
 
-  const unitValid = value.unit === "proportion" || value.unit === "encounters/person/year";
-  const targetNValid = isNonnegativeInteger(value.unweighted_target_n);
-  const valueValid = isFiniteNumber(value.value) &&
-    value.value >= 0 &&
-    (value.unit !== "proportion" || value.value <= 1);
-  const standardErrorValid = isFiniteNumber(value.standard_error) && value.standard_error >= 0;
-  const intervalHighValid = isFiniteNumber(value.interval_high);
-  const nonzeroNValid = isNonnegativeInteger(value.unweighted_nonzero_person_n);
-  const eventNValid = isNonnegativeInteger(value.observed_qualifying_event_n);
-  const rseValid = value.relative_standard_error === null ||
-    (isFiniteNumber(value.relative_standard_error) && value.relative_standard_error >= 0);
+  const unit = value.unit;
+  const targetN = isNonnegativeInteger(value.unweighted_target_n)
+    ? value.unweighted_target_n
+    : null;
+  const estimate = isFiniteNumber(value.value) ? value.value : null;
+  const standardError = isFiniteNumber(value.standard_error) ? value.standard_error : null;
+  const intervalHigh = isFiniteNumber(value.interval_high) ? value.interval_high : null;
+  const nonzeroN = isNonnegativeInteger(value.unweighted_nonzero_person_n)
+    ? value.unweighted_nonzero_person_n
+    : null;
+  const eventN = isNonnegativeInteger(value.observed_qualifying_event_n)
+    ? value.observed_qualifying_event_n
+    : null;
+  const rseRaw = value.relative_standard_error;
+  const rse = isFiniteNumber(rseRaw) ? rseRaw : null;
 
-  if (targetNValid && value.unweighted_target_n < 60) reasons.push("sample_n_below_60");
+  const unitValid = unit === "proportion" || unit === "encounters/person/year";
+  const targetNValid = targetN !== null;
+  const valueValid = estimate !== null &&
+    estimate >= 0 &&
+    (unit !== "proportion" || estimate <= 1);
+  const standardErrorValid = standardError !== null && standardError >= 0;
+  const intervalHighValid = intervalHigh !== null;
+  const nonzeroNValid = nonzeroN !== null;
+  const eventNValid = eventN !== null;
+  const rseValid = rseRaw === null || (rse !== null && rse >= 0);
+
+  if (targetN !== null && targetN < 60) reasons.push("sample_n_below_60");
 
   let invalid = !unitValid ||
     !targetNValid ||
@@ -273,51 +288,43 @@ export function evaluateLinkedConditionPrecision(
     !eventNValid ||
     !rseValid;
 
-  if (
-    targetNValid &&
-    nonzeroNValid &&
-    value.unweighted_nonzero_person_n > value.unweighted_target_n
-  ) invalid = true;
+  if (targetN !== null && nonzeroN !== null && nonzeroN > targetN) invalid = true;
+  if (estimate !== null && intervalHigh !== null && intervalHigh < estimate) invalid = true;
 
-  if (valueValid && intervalHighValid && value.interval_high < value.value) invalid = true;
+  const supportConsistent = nonzeroN !== null &&
+    eventN !== null &&
+    ((nonzeroN === 0 && eventN === 0) || (nonzeroN > 0 && eventN > 0));
+  if (nonzeroN !== null && eventN !== null && !supportConsistent) invalid = true;
 
-  const supportConsistent = nonzeroNValid &&
-    eventNValid &&
-    (
-      (value.unweighted_nonzero_person_n === 0 && value.observed_qualifying_event_n === 0) ||
-      (value.unweighted_nonzero_person_n > 0 && value.observed_qualifying_event_n > 0)
-    );
-  if (nonzeroNValid && eventNValid && !supportConsistent) invalid = true;
-
-  const exactZeroSupport = valueValid &&
-    standardErrorValid &&
+  const exactZeroSupport = estimate !== null &&
+    standardError !== null &&
     rseValid &&
-    nonzeroNValid &&
-    eventNValid &&
-    value.value === 0 &&
-    value.standard_error === 0 &&
-    value.relative_standard_error === null &&
-    value.unweighted_nonzero_person_n === 0 &&
-    value.observed_qualifying_event_n === 0;
+    nonzeroN !== null &&
+    eventN !== null &&
+    estimate === 0 &&
+    standardError === 0 &&
+    rseRaw === null &&
+    nonzeroN === 0 &&
+    eventN === 0;
 
   if (exactZeroSupport) reasons.push("zero_positive_support");
 
   if (
-    nonzeroNValid &&
-    eventNValid &&
-    value.unweighted_nonzero_person_n === 0 &&
-    value.observed_qualifying_event_n === 0 &&
+    nonzeroN !== null &&
+    eventN !== null &&
+    nonzeroN === 0 &&
+    eventN === 0 &&
     !exactZeroSupport
   ) invalid = true;
 
-  if (valueValid && value.value !== 0 && value.relative_standard_error === null) invalid = true;
+  if (estimate !== null && estimate !== 0 && rseRaw === null) invalid = true;
 
   if (
-    valueValid &&
-    value.value === 0 &&
-    nonzeroNValid &&
-    eventNValid &&
-    (value.unweighted_nonzero_person_n > 0 || value.observed_qualifying_event_n > 0)
+    estimate !== null &&
+    estimate === 0 &&
+    nonzeroN !== null &&
+    eventN !== null &&
+    (nonzeroN > 0 || eventN > 0)
   ) invalid = true;
 
   if (invalid) {
@@ -343,7 +350,7 @@ export function evaluateLinkedConditionPrecision(
     };
   }
 
-  if (!isFiniteNumber(value.relative_standard_error)) {
+  if (rse === null || targetN === null || intervalHigh === null) {
     reasons.push("precision_input_invalid");
     return {
       computationally_valid: false,
@@ -357,7 +364,6 @@ export function evaluateLinkedConditionPrecision(
 
   let precisionStatus: LinkedConditionPrecisionStatus;
   let reportingStatus: LinkedConditionPrecisionReportingStatus;
-  const rse = value.relative_standard_error;
 
   if (rse < 0.30) {
     precisionStatus = "meps_precise";
@@ -368,7 +374,7 @@ export function evaluateLinkedConditionPrecision(
     reportingStatus = "reportable_with_caution";
   } else {
     reasons.push("rse_above_50");
-    if (value.unit === "proportion" && value.interval_high <= 0.10) {
+    if (unit === "proportion" && intervalHigh <= 0.10) {
       reasons.push("low_percentage_exception");
       precisionStatus = "meps_low_percentage_exception";
       reportingStatus = "reportable_with_caution";
@@ -378,7 +384,7 @@ export function evaluateLinkedConditionPrecision(
     }
   }
 
-  if (value.unweighted_target_n < 60) {
+  if (targetN < 60) {
     precisionStatus = "insufficient_sample";
     reportingStatus = "suppress_insufficient_sample";
   }
