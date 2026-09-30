@@ -6,6 +6,7 @@ import { ArtifactProvider } from "./data/ArtifactContext";
 import { OverviewPage } from "./pages/OverviewPage";
 import { BurdenPage } from "./pages/BurdenPage";
 import { DomainPage } from "./pages/DomainPage";
+import { MedicalBurdenPage } from "./pages/MedicalBurdenPage";
 import { LocalContextPage } from "./pages/LocalContextPage";
 import { PilotPage } from "./pages/PilotPage";
 import { EvidencePage } from "./pages/EvidencePage";
@@ -17,7 +18,7 @@ export function App() {
     <Route element={<AppShell />}>
       <Route index element={<OverviewPage />} />
       <Route path="burden" element={<BurdenPage />} />
-      <Route path="burden/medical" element={<DomainPage domainId="economic-healthcare" title="Economic / healthcare burden" description="Gross all-cause burden with explicit boundaries and release state." />} />
+      <Route path="burden/medical" element={<MedicalBurdenPage />} />
       <Route path="burden/work" element={<DomainPage domainId="work-function" title="Work and function" description="Standalone route reserved for released work/function measures; no proxy borrowing." />} />
       <Route path="burden/admin" element={<DomainPage domainId="healthcare-work-admin" title="Healthcare-work / administrative burden" description="Invisible work remains in separate native-unit measures." />} />
       <Route path="burden/human" element={<DomainPage domainId="mental-human" title="Mental-health / human burden" description="Screening, distress, service use, and recognition experience remain distinct." />} />
