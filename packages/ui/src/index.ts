@@ -7,7 +7,7 @@ export const designTokens = {
     surface: "#fffdf8",
     surfaceElevated: "#ffffff",
     text: "#18354b",
-    textMuted: "#65727a",
+    textMuted: "#5e6a72",
     border: "#d7d9d4",
     controlBorder: "#74828a",
     accent: "#0f7476",
@@ -19,11 +19,11 @@ export const designTokens = {
     warningBackground: "#f6eed6",
     selectionText: "#315e7a",
     selectionBackground: "#e7eff4",
-    assumptionText: "#715d2b",
+    assumptionText: "#7d3f5c",
     assumptionBackground: "#f1eadc",
     errorText: "#a33a31",
     errorBackground: "#f9e9e6",
-    chart: ["#1c506e", "#0f7476", "#4e7f9c", "#6e867a"]
+    chart: ["#1c506e", "#b46b2a", "#4e7f9c", "#6e867a"]
   },
   dark: {
     brandNavy: "#d7e4ec",
@@ -40,15 +40,15 @@ export const designTokens = {
     focus: "#83ddd8",
     reviewedText: "#8dc9a5",
     reviewedBackground: "#183027",
-    warningText: "#e2c17c",
+    warningText: "#f0c36a",
     warningBackground: "#352d1d",
     selectionText: "#8cbad8",
     selectionBackground: "#172a39",
-    assumptionText: "#ddbf7a",
+    assumptionText: "#e7a6c0",
     assumptionBackground: "#332c1f",
     errorText: "#ff9a8c",
     errorBackground: "#432822",
-    chart: ["#7aa9c7", "#58c3bd", "#83bd9e", "#d2ad68"]
+    chart: ["#7aa9c7", "#d68b52", "#83bd9e", "#d2ad68"]
   },
   radius: { control: 8, card: 10 },
   space: { xs: 4, sm: 8, md: 12, lg: 16, xl: 24, xxl: 32 }

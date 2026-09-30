@@ -10,7 +10,7 @@
   grid-template-columns: minmax(0, 1.02fr) minmax(420px, .98fr);
   align-items: center;
   gap: clamp(42px, 6vw, 88px);
-  min-height: min(720px, calc(100vh - 118px));
+  min-height: 0;
   overflow: hidden;
   margin-inline: calc((min(1376px, 100vw - 48px) - 100vw) / 2);
   padding: clamp(54px, 7vw, 108px) max(24px, calc((100vw - 1320px) / 2));
@@ -80,11 +80,11 @@
 }
 
 .overview-hero h1 {
-  max-width: 12.5ch;
+  max-width: 18ch;
   margin: 0;
   color: var(--do-text);
   font-family: var(--do-font-display);
-  font-size: clamp(3.35rem, 6.1vw, 6.35rem);
+  font-size: clamp(2.8rem, 4.8vw, 4.8rem);
   font-weight: 790;
   letter-spacing: -.065em;
   line-height: .94;
