@@ -53,25 +53,31 @@ test("presentation labels cover every current DataState and ReleaseStatus withou
   }
 });
 
-test("Overview provides first-run workflow semantics and outcomes on all five links", () => {
+test("Overview explains the evidence-to-planning workflow across six destinations", () => {
   const source = readSource("../src/pages/OverviewPage.tsx");
 
   for (const phrase of [
-    "reviewed descriptive national evidence",
-    "implementation conditions, not localized disease burden",
-    "explicit planning assumptions",
-    "governs what intervention-effect claims may drive scenario parameters",
-    "exports the current decision state and remaining gaps",
-    "See reviewed national burden estimates with survey uncertainty.",
-    "Review implementation and access context without turning national burden into a local disease estimate.",
+    "From invisible burden",
+    "to traceable",
+    "action.",
+    "reviewed national burden",
+    "local implementation context",
+    "analyst assumptions",
+    "No black-box blending",
+    "Review national burden estimates with survey uncertainty and explicit interpretation boundaries.",
+    "Inspect implementation and access context without turning national burden into a local disease estimate.",
     "Set explicit planning assumptions and stress-test reach, capacity, timing, and resources.",
     "See what intervention-effect evidence can and cannot support for the current scenario.",
-    "Export reviewed evidence, selected context, assumptions, boundaries, and remaining data needs."
+    "Turn local uncertainty into structured operational data requests.",
+    "Export reviewed evidence, selected context, assumptions, boundaries, and remaining gaps."
   ]) {
     assert.ok(source.includes(phrase), phrase);
   }
   assert.match(source, /journey\.map\(\(\[step, title, outcome, to\]\)/);
   assert.match(source, /<small>{outcome}<\/small>/);
+  assert.match(source, /MEPS/);
+  assert.match(source, /HRSA/);
+  assert.match(source, /ACS/);
 });
 
 test("DecisionStateRail reuses the readable pathway formatter", () => {

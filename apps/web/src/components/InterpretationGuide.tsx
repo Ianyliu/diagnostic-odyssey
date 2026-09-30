@@ -1,6 +1,7 @@
 interface InterpretationGuideProps {
   id: string;
   title?: string;
+  headingLevel?: 2 | 3;
   whatThisShows: string;
   whyItMatters: string;
   whatItDoesNotShow: string;
@@ -10,15 +11,17 @@ interface InterpretationGuideProps {
 export function InterpretationGuide({
   id,
   title = "How to interpret this",
+  headingLevel = 3,
   whatThisShows,
   whyItMatters,
   whatItDoesNotShow,
   whatToDoNext
 }: InterpretationGuideProps) {
   const titleId = `${id}-title`;
+  const Heading = headingLevel === 2 ? "h2" : "h3";
 
   return <section className="interpretation-guide" aria-labelledby={titleId}>
-    <h3 id={titleId}>{title}</h3>
+    <Heading id={titleId}>{title}</Heading>
     <dl className="interpretation-guide-list">
       <div>
         <dt>What this shows</dt>

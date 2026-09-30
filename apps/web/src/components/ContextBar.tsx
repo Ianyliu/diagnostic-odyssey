@@ -15,23 +15,21 @@ export function ContextBar() {
 
   const implementationContextLabel =
     localContextStatus === "loaded" && localContext
-      ? "Implementation context: " +
-        localContext.geography.geography_name +
+      ? localContext.geography.geography_name +
         " (" +
         localContext.geography.geography_type +
         ")"
       : localContextStatus === "error"
-        ? "Implementation context unavailable"
-        : "Implementation context loading";
+        ? "Unavailable"
+        : "Loading";
 
-  return <div className="context-bar" aria-label="Analytical context">
-    <strong>Analytical context</strong>
-    <span className="chip">{conditionLabel}</span>
-    <span className="chip">Adults {bundle.context.age_range}</span>
-    <span className="chip">{bundle.context.geography_scope}</span>
-    <span className="chip">{implementationContextLabel}</span>
-    <span className="context-version">
-      {reviewedBurden ? "Reviewed artifact" : "Analytical artifact"} · {bundle.manifest.artifact_version}
-    </span>
-  </div>;
+  return <section className="context-bar" aria-label="Analytical context">
+    <div className="context-bar-title"><span>ANALYTICAL SCOPE</span><strong>{conditionLabel}</strong></div>
+    <dl className="context-meta">
+      <div><dt>Population</dt><dd>Adults {bundle.context.age_range}</dd></div>
+      <div><dt>National burden</dt><dd>{bundle.context.geography_scope}</dd></div>
+      <div><dt>Local implementation context</dt><dd>{implementationContextLabel}</dd></div>
+      <div><dt>Artifact</dt><dd>{reviewedBurden ? "Reviewed burden" : "Analytical artifact"} · {bundle.manifest.artifact_version}</dd></div>
+    </dl>
+  </section>;
 }

@@ -5,6 +5,7 @@ import { ContextBar } from "../components/ContextBar";
 import { IntervalWhiskerPlot } from "../components/IntervalWhiskerPlot";
 import { useArtifact } from "../data/ArtifactContext";
 import { formatDataStateLabel } from "../data/presentationLabels";
+import "./Ledger.css";
 
 export function BurdenPage() {
   const {bundle} = useArtifact();
@@ -18,7 +19,7 @@ export function BurdenPage() {
       .filter((intervalType): intervalType is string => intervalType !== null)
   ));
 
-  return <section className="page page-stack">
+  return <section className="page page-stack burden-ledger-page">
     <ContextBar />
     <div className="heading-row">
       <header className="page-heading">
@@ -45,14 +46,21 @@ export function BurdenPage() {
       </details>
     </div>
 
-    <div className="burden-domain-stack">
-      {bundle.burden_domains.map(domain => {
+    <div className="ledger-layout">
+      <nav className="ledger-section-nav" aria-label="Burden sections">
+        <p className="ledger-index-heading">On this page</p>
+        <ol>{bundle.burden_domains.map(domain =>
+          <li key={domain.domain_id}><a href={`#burden-${domain.domain_id}`}>{domain.label}</a></li>
+        )}</ol>
+      </nav>
+      <div className="burden-domain-stack">
+        {bundle.burden_domains.map(domain => {
         const reviewed = domain.measures.length > 0 && domain.measures.every(canExportEstimate);
         const administrativeHourMeasures = domain.domain_id === "healthcare-work-admin"
           ? domain.measures.filter(estimate => estimate.unit === "hours/person/year")
           : [];
 
-        return <article className="card domain-card" key={domain.domain_id}>
+        return <article className="card domain-card ledger-panel" id={`burden-${domain.domain_id}`} key={domain.domain_id}>
           <div className="card-title-row burden-domain-header">
             <div>
               <h2>{domain.label}</h2>
@@ -60,7 +68,7 @@ export function BurdenPage() {
                 {formatDataStateLabel(domain.availability_state)} · {domain.measures.length} {domain.measures.length === 1 ? "measure" : "measures"}
               </p>
             </div>
-            <span className={`status ${reviewed ? "status-ok" : "status-scaffold"}`}>
+            <span className={`ledger-evidence-state ${reviewed ? "ledger-evidence-reviewed" : "ledger-evidence-gated"}`}>
               {reviewed ? "Reviewed national evidence" : "Not release-eligible"}
             </span>
           </div>
@@ -78,7 +86,8 @@ export function BurdenPage() {
             <p>{domain.limitations.join(" ")}</p>
           </details>}
         </article>;
-      })}
+        })}
+      </div>
     </div>
 
     <div className="guardrail">

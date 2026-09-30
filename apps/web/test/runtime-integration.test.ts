@@ -527,7 +527,8 @@ test("reviewed burden UI has no development-fixture labels", () => {
 test("ContextBar keeps national evidence and WV implementation context visibly separate", () => {
   const context = readSource("../src/components/ContextBar.tsx");
   assert.match(context, /bundle\.context\.geography_scope/);
-  assert.match(context, /Implementation context:/);
+  assert.match(context, /<dt>National burden<\/dt>/);
+  assert.match(context, /<dt>Local implementation context<\/dt>/);
   assert.match(context, /localContext\.geography\.geography_name/);
   assert.match(context, /localContext\.geography\.geography_type/);
   assert.doesNotMatch(context, /geography_scope\s*=|bundle\.context\.geography_scope\s*=/);
@@ -692,15 +693,15 @@ test("AppShell evidence strip is truthful for loading, loaded, and error local-c
   assert.match(shell, /useArtifact\(\)/);
   assert.match(
     shell,
-    /Local implementation context is loading; intervention-effect evidence is not yet loaded\./
+    /Local implementation context · loading/
   );
   assert.match(
     shell,
-    /Reviewed West Virginia state implementation context loaded; intervention-effect evidence is not yet loaded\./
+    /West Virginia implementation context · reviewed state data/
   );
   assert.match(
     shell,
-    /Local implementation context is unavailable; intervention-effect evidence is not yet loaded\./
+    /Local implementation context · unavailable/
   );
   assert.doesNotMatch(
     shell,
@@ -708,8 +709,11 @@ test("AppShell evidence strip is truthful for loading, loaded, and error local-c
   );
   assert.match(
     shell,
-    /Reviewed national MEPS burden loaded · planning assumptions remain analyst-editable/
+    /National MEPS burden · reviewed/
   );
+  assert.match(shell, /Pilot · analyst assumptions/);
+  assert.match(shell, /no approved record loaded/);
+  assert.match(shell, /check scenario eligibility/);
 });
 
 test("local-context failure state leaves national routes conceptually available", () => {

@@ -20,7 +20,7 @@ export function PlaceholderPage({title, description}: {title: string; descriptio
           <h2>Architecture is wired</h2>
           <p>This route is intentionally coarse in the first implementation pass. Domain contracts and release semantics are established before visual polish or deeper feature work.</p>
         </div>
-        <span className="status status-scaffold">Scaffold only</span>
+        <span className="status status-unavailable">Scaffold only · no reviewed output</span>
       </div>
       <div className="guardrail">
         <strong>Scientific behavior</strong>

@@ -9,6 +9,7 @@ import {
 } from "../data/formatEstimateValue";
 import { formatReleaseStatusLabel } from "../data/presentationLabels";
 import { DistributionSummaryText } from "./DistributionSummaryText";
+import { MetricVisual } from "./MetricVisual";
 
 function EstimateIntervalText({estimate}: {estimate: Estimate}) {
   if (!canExportEstimate(estimate)) return null;
@@ -36,9 +37,9 @@ export function BurdenMeasureList({estimates}: {estimates: Estimate[]}) {
         ? parentLabels.get(estimate.component_of_measure_id)
         : null;
 
-      return <article className="measure burden-measure-row" key={estimate.estimate_id}>
+      return <article className="measure burden-measure-row" aria-labelledby={`burden-measure-${estimate.estimate_id}`} key={estimate.estimate_id}>
         <div className="burden-measure-summary">
-          <strong>{estimate.label}</strong>
+          <h3 id={`burden-measure-${estimate.estimate_id}`}>{estimate.label}</h3>
           {estimate.component_of_measure_id && <span className="component-note">
             Component of {parentLabel ?? "a parent measure"} — do not add this value to the parent total.
           </span>}
@@ -49,6 +50,16 @@ export function BurdenMeasureList({estimates}: {estimates: Estimate[]}) {
             ? <DistributionSummaryText estimate={estimate} />
             : formatEstimateValue(estimate)}
           <EstimateIntervalText estimate={estimate} />
+          {typeof estimate.value === "number" && <MetricVisual
+            label={estimate.label}
+            value={estimate.distribution_summary?.p50 ?? estimate.value}
+            unit={estimate.unit}
+            low={estimate.distribution_summary?.p25 ?? estimate.interval_low}
+            high={estimate.distribution_summary?.p75 ?? estimate.interval_high}
+            intervalLabel={estimate.distribution_summary ? "Interquartile range" : estimate.interval_type}
+            source={estimate.source_ref}
+            universe={estimate.universe}
+          />}
           {!reviewed && <small className="measure-release-status">
             {formatReleaseStatusLabel(estimate.release_status)}
           </small>}

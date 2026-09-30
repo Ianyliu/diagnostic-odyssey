@@ -1,9 +1,11 @@
 import type { ReactNode } from "react";
+import { Link } from "react-router-dom";
 import { canExportEstimate } from "@diagnostic-odyssey/contracts";
 import { BurdenMeasureList } from "../components/BurdenMeasureList";
 import { ContextBar } from "../components/ContextBar";
 import { useArtifact } from "../data/ArtifactContext";
 import { formatDataStateLabel } from "../data/presentationLabels";
+import "./Ledger.css";
 
 interface DomainPageProps {
   domainId: string;
@@ -26,10 +28,14 @@ export function DomainPage({
     ? domain.measures.every(canExportEstimate)
     : false;
 
-  return <section className="page page-stack">
+  return <section className="page page-stack domain-ledger-page">
     <ContextBar />
-    <header className="page-heading"><h1>{title}</h1><p>{description}</p></header>
-    {domain ? <article className="card domain-card">
+    <header className="page-heading">
+      <Link className="ledger-back-link" to="/burden">← Burden overview</Link>
+      <h1>{title}</h1>
+      <p>{description}</p>
+    </header>
+    {domain ? <article className="card domain-card ledger-panel">
       <div className="card-title-row burden-domain-header">
         <div>
           <h2>{domain.label}</h2>
@@ -37,7 +43,7 @@ export function DomainPage({
             {formatDataStateLabel(domain.availability_state)} · {domain.measures.length} {domain.measures.length === 1 ? "measure" : "measures"}
           </p>
         </div>
-        <span className={`status ${reviewed ? "status-ok" : "status-scaffold"}`}>
+        <span className={`ledger-evidence-state ${reviewed ? "ledger-evidence-reviewed" : "ledger-evidence-gated"}`}>
           {reviewed ? "Reviewed national evidence" : "Not release-eligible"}
         </span>
       </div>
