@@ -219,3 +219,35 @@ Promotion performs no numerical recomputation. Exact candidate numerics, precisi
 Product policy `linked_condition_product_policy_v1` separately records Candidate A as `admitted_secondary_descriptive`, B and Office as `reviewed_not_product_admitted`, Outpatient/Emergency as `suppressed_precision`, and Inpatient as `suppressed_unsupported_zero`.
 
 Both the reviewed manifest and product policy remain `runtime_selected=false`. Candidate A is not converted to a generic `Estimate`, is not added to `burden_domains`, and is not eligible for generic burden/Brief export logic. Active runtime loading and the proposed secondary `/burden/medical` presentation require a separately reviewed PR 2.
+
+### Specialized runtime selection — linked-condition secondary evidence
+
+The immutable reviewed package above continues to record
+`runtime_selected=false` in both `review-manifest.json` and
+`product-policy.json`. Those fields describe the PR-1 promotion event and are
+not rewritten by runtime activation.
+
+Active selection for the specialized product path is instead represented by the
+checked-in, version-pinned loader at
+`apps/web/src/data/reviewedLinkedConditionArtifact.ts`. That loader selects
+only:
+
+- reviewed artifact `meps-2024-linked-condition-service-use-reviewed-20260929-v1`;
+- product policy `linked_condition_product_policy_v1`;
+- Candidate A (`u09_linked_service_use_person_share`) when its reviewed
+  precision/reporting/product-policy state remains exactly authorized.
+
+The loader directly imports the known reviewed-package files and invokes
+`assertValidReviewedLinkedConditionPackage(...)` before constructing a
+purpose-built secondary-evidence view model. It does not use the preserved
+historical `candidate-manifest.json` as a reviewed-package file index and does
+not fall back to another estimate when validation fails.
+
+Only Candidate A is rendered, as secondary documentation-linked evidence below
+the ordinary all-cause content on `/burden/medical`. Candidate B and Office
+remain non-admitted; Outpatient and Emergency remain precision-suppressed; and
+Inpatient remains unsupported-zero suppressed. Candidate A remains outside the
+ordinary national `ArtifactBundle`, `burden_domains`, generic
+`Estimate[]` / `canExportEstimate` flow, Planning Brief, Overview,
+DecisionStateRail counts, Pilot/scenario inputs, and intervention Evidence
+workflow.
