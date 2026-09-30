@@ -203,3 +203,19 @@ distribution exactly matches a Pilot assumption in construct,
 population/denominator, and unit. These reviewed ranges remain descriptive
 national burden evidence and must not be represented as causal or attributable
 burden, preventable spending, savings, or local/state burden.
+
+## Separate reviewed promotion — exact-U09-linked service-use evidence
+
+Issue #64 introduces a third, separate reviewed artifact family for the exact-U09-linked service-use candidates. It does not alter the ordinary national burden `ArtifactBundle` or the local-context artifact.
+
+The reviewed package is:
+
+`artifacts/reviewed/meps-2024-linked-condition-service-use-reviewed-20260929-v1/`
+
+It is a governance-only promotion of schema-v2 workflow run `36609436930`, artifact ID `11053325408`, digest `sha256:48aadea0db4e1c0bb6a2191286f0481dd256279f5ee020037aa15d2a2909296a`, generated at analytical SHA `2a0309d1d29e623aac0d285fe49cf99717a3c777`.
+
+Promotion performs no numerical recomputation. Exact candidate numerics, precision states, support diagnostics, Issue #20 reconciliation, source checksums, and historical candidate `product_release_eligible=false` are preserved and regression-tested.
+
+Product policy `linked_condition_product_policy_v1` separately records Candidate A as `admitted_secondary_descriptive`, B and Office as `reviewed_not_product_admitted`, Outpatient/Emergency as `suppressed_precision`, and Inpatient as `suppressed_unsupported_zero`.
+
+Both the reviewed manifest and product policy remain `runtime_selected=false`. Candidate A is not converted to a generic `Estimate`, is not added to `burden_domains`, and is not eligible for generic burden/Brief export logic. Active runtime loading and the proposed secondary `/burden/medical` presentation require a separately reviewed PR 2.
