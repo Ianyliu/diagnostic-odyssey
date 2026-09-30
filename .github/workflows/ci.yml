@@ -49,6 +49,10 @@ jobs:
             cd artifacts/reviewed/local-context-wv-hrsa-acs-candidate-20260924T052332Z/
             sha256sum -c SHA256SUMS
           )
+          (
+            cd artifacts/reviewed/meps-2024-linked-condition-service-use-reviewed-20260929-v1/
+            sha256sum -c SHA256SUMS
+          )
 
       - name: Lint
         run: npm run lint

@@ -1025,3 +1025,4 @@ export const canDisplayDistributionSummary = (estimate: Estimate): boolean =>
   validateEstimate(estimate).length === 0;
 
 export * from "./linked-condition-candidate.ts";
+export * from "./reviewed-linked-condition.ts";

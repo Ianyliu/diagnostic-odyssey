@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { canExportEstimate } from "@diagnostic-odyssey/contracts";
 import { BurdenMeasureList } from "../components/BurdenMeasureList";
@@ -6,7 +7,19 @@ import { useArtifact } from "../data/ArtifactContext";
 import { formatDataStateLabel } from "../data/presentationLabels";
 import "./Ledger.css";
 
-export function DomainPage({domainId,title,description}:{domainId:string;title:string;description:string}) {
+interface DomainPageProps {
+  domainId: string;
+  title: string;
+  description: string;
+  secondaryContent?: ReactNode;
+}
+
+export function DomainPage({
+  domainId,
+  title,
+  description,
+  secondaryContent
+}: DomainPageProps) {
   const {bundle}=useArtifact();
   if(!bundle) return null;
 
@@ -43,5 +56,6 @@ export function DomainPage({domainId,title,description}:{domainId:string;title:s
       <strong>Not yet represented by a standalone reviewed domain.</strong>
       <span>This route remains available without borrowing values from another domain. Missing domain does not mean zero burden.</span>
     </div>}
+    {secondaryContent}
   </section>;
 }
