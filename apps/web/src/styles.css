@@ -170,3 +170,24 @@
     text-align:left;
   }
 }
+
+/* Issue #64 PR 2: secondary documentation-linked service-use evidence */
+.linked-condition-secondary-evidence{display:grid;gap:14px;padding:18px 20px;border:1px solid var(--do-color-line);border-radius:var(--do-radius-card);background:var(--do-color-bg)}
+.linked-condition-secondary-heading{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}
+.linked-condition-secondary-heading h2,.linked-condition-secondary-unavailable h2{margin:0;color:var(--do-color-navy)}
+.linked-condition-secondary-heading .eyebrow,.linked-condition-secondary-unavailable .eyebrow{margin:0 0 6px}
+.linked-condition-secondary-measure{display:grid;grid-template-columns:minmax(0,1fr) minmax(200px,260px);gap:24px;align-items:start;padding:16px;border:1px solid var(--do-color-line);border-radius:8px;background:white}
+.linked-condition-secondary-measure h3{margin:0;color:var(--do-color-navy);font-size:16px;line-height:1.45}
+.linked-condition-secondary-explanation{margin:8px 0 0;color:var(--do-color-muted);line-height:1.55}
+.linked-condition-secondary-value{display:grid;gap:4px;text-align:right}
+.linked-condition-secondary-value>span{color:var(--do-color-muted);font-size:12px;font-weight:700}
+.linked-condition-secondary-value>strong{color:var(--do-color-navy);font-size:28px;line-height:1.1}
+.linked-condition-secondary-value>small{color:var(--do-color-ink);font-weight:650}
+.linked-condition-secondary-details{margin-top:0}
+.linked-condition-secondary-details h3{margin:14px 0 6px;color:var(--do-color-navy);font-size:14px}
+.linked-condition-secondary-details ol{margin:6px 0 0;padding-left:22px}
+.linked-condition-secondary-details li{margin:5px 0}
+.linked-condition-secondary-details code{overflow-wrap:anywhere}
+.linked-condition-secondary-unavailable{gap:6px}
+.linked-condition-secondary-unavailable p:last-child{margin:0;color:var(--do-color-muted)}
+@media(max-width:640px){.linked-condition-secondary-heading{display:grid}.linked-condition-secondary-measure{grid-template-columns:1fr}.linked-condition-secondary-value{text-align:left}}
