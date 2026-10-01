@@ -55,13 +55,9 @@ export function OverviewPage() {
       <section className="overview-hero" aria-labelledby="overview-title">
         <div className="overview-hero-grid" aria-hidden="true" />
         <div className="overview-hero-copy">
-          <p className="overview-launch-pill">
-            <span />
-            Public-health evidence → planning
-          </p>
           <h1 id="overview-title">
-            From invisible burden
-            <span>to traceable <em>action.</em></span>
+            Evidence into planning,
+            <span>with boundaries intact.</span>
           </h1>
           <p className="overview-lede">
             Diagnostic Odyssey keeps reviewed national burden, local implementation context, and analyst assumptions visibly separate—then carries their provenance into one planning workflow.
@@ -79,19 +75,7 @@ export function OverviewPage() {
               <dt>{localIndicatorCount ?? "—"}</dt>
               <dd>reviewed local-context indicators</dd>
             </div>
-            <div>
-              <dt>3</dt>
-              <dd>evidence roles kept distinct</dd>
-            </div>
           </dl>
-          <div className="overview-source-rail" aria-label="Public evidence sources represented in the workspace">
-            <span>Reviewed public evidence</span>
-            <strong>MEPS</strong>
-            <i aria-hidden="true" />
-            <strong>HRSA</strong>
-            <i aria-hidden="true" />
-            <strong>ACS</strong>
-          </div>
         </div>
         <OpeningProvenance />
       </section>
@@ -135,17 +119,6 @@ export function OverviewPage() {
         </div>
       </nav>
 
-      <section className="overview-final-cta" aria-labelledby="overview-final-title">
-        <div>
-          <p className="visual-kicker">PLANNING, WITH THE RECEIPTS ATTACHED</p>
-          <h2 id="overview-final-title">Stress-test the decision before you export the brief.</h2>
-          <p>Change assumptions, inspect sensitivity, record what is still unknown, and preserve the boundary between evidence and planning.</p>
-        </div>
-        <div className="overview-final-actions">
-          <Link className="button" to="/pilot">Build a pilot scenario</Link>
-          <Link className="text-button" to="/brief">Preview the Planning brief →</Link>
-        </div>
-      </section>
     </section>
   );
 }

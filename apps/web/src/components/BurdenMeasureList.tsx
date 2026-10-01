@@ -52,7 +52,7 @@ export function BurdenMeasureList({estimates}: {estimates: Estimate[]}) {
           <EstimateIntervalText estimate={estimate} />
           {typeof estimate.value === "number" && <MetricVisual
             label={estimate.label}
-            value={estimate.distribution_summary?.p50 ?? estimate.value}
+            value={estimate.value}
             unit={estimate.unit}
             low={estimate.distribution_summary?.p25 ?? estimate.interval_low}
             high={estimate.distribution_summary?.p75 ?? estimate.interval_high}

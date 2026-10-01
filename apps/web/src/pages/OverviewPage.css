@@ -569,7 +569,7 @@
   margin-inline: calc((min(1376px, 100vw - 48px) - 100vw) / 2);
   padding: clamp(46px, 6vw, 76px) max(24px, calc((100vw - 1320px) / 2));
   border-block: 1px solid #ddd8ce;
-  background: #f3f0e8;
+  background: var(--do-surface);
   color: #1d3445;
 }
 
@@ -665,7 +665,7 @@
   border-radius: 20px;
   background:
     radial-gradient(circle at 95% 10%, rgba(88, 195, 189, .12), transparent 38%),
-    linear-gradient(135deg, #153552, #102a3d 72%);
+    var(--do-brand-navy);
 }
 
 .overview-final-cta .visual-kicker { margin: 0 0 8px; }

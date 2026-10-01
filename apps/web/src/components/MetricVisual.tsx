@@ -1,6 +1,6 @@
 import "./MetricVisual.css";
 
-const compactNumber = new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 });
+const compactNumber = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
 
 export function MetricVisual({
   label,

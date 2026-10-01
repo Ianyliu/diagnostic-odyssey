@@ -57,9 +57,8 @@ test("Overview explains the evidence-to-planning workflow across six destination
   const source = readSource("../src/pages/OverviewPage.tsx");
 
   for (const phrase of [
-    "From invisible burden",
-    "to traceable",
-    "action.",
+    "Evidence into planning,",
+    "boundaries intact.",
     "reviewed national burden",
     "local implementation context",
     "analyst assumptions",
