@@ -568,21 +568,21 @@
 .overview-destinations {
   margin-inline: calc((min(1376px, 100vw - 48px) - 100vw) / 2);
   padding: clamp(46px, 6vw, 76px) max(24px, calc((100vw - 1320px) / 2));
-  border-block: 1px solid #ddd8ce;
+  border-block: 1px solid var(--do-border);
   background: var(--do-surface);
-  color: #1d3445;
+  color: var(--do-text);
 }
 
 .overview-destinations .overview-section-heading h2 {
-  color: #153552;
+  color: var(--do-text);
 }
 
 .overview-destinations .overview-section-heading > p:last-child {
-  color: #5c6970;
+  color: var(--do-text-muted);
 }
 
 .overview-destinations .visual-kicker {
-  color: #315e7a !important;
+  color: var(--do-accent) !important;
 }
 
 .overview-page .journey-grid {
@@ -600,10 +600,10 @@
   min-width: 0;
   min-height: 210px;
   padding: 22px;
-  color: #1d3445;
-  border: 1px solid #d8d3c9;
+  color: var(--do-text);
+  border: 1px solid var(--do-border);
   border-radius: 14px;
-  background: #fffdfa;
+  background: var(--do-surface-elevated);
   text-decoration: none;
   transition: transform var(--do-motion-medium) ease, border-color var(--do-motion-medium) ease, box-shadow var(--do-motion-medium) ease;
 }
@@ -631,13 +631,13 @@
 
 .overview-page .journey-card strong {
   align-self: center;
-  color: #1d3445;
+  color: var(--do-text);
   font-size: 1rem;
 }
 
 .overview-page .journey-card small {
   grid-column: 2 / -1;
-  color: #5c6970;
+  color: var(--do-text-muted);
   font-size: .82rem;
   line-height: 1.5;
 }
@@ -652,44 +652,6 @@
 .overview-page .journey-card:hover .journey-arrow,
 .overview-page .journey-card:focus-visible .journey-arrow {
   transform: translateX(3px);
-}
-
-.overview-final-cta {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: end;
-  gap: 32px;
-  padding: clamp(28px, 5vw, 52px);
-  overflow: hidden;
-  border: 1px solid #284b63;
-  border-radius: 20px;
-  background:
-    radial-gradient(circle at 95% 10%, rgba(88, 195, 189, .12), transparent 38%),
-    var(--do-brand-navy);
-}
-
-.overview-final-cta .visual-kicker { margin: 0 0 8px; }
-
-.overview-final-cta h2 {
-  max-width: 18ch;
-  margin: 0;
-  color: #f6f5ef;
-  font-size: clamp(1.75rem, 3vw, 2.8rem);
-  letter-spacing: -.04em;
-  line-height: 1.05;
-}
-
-.overview-final-cta p:last-child {
-  max-width: 64ch;
-  margin-bottom: 0;
-  color: #c6d1d7;
-}
-
-.overview-final-actions {
-  display: grid;
-  justify-items: start;
-  gap: 8px;
-  min-width: 210px;
 }
 
 @media (max-width: 1100px) {
@@ -791,21 +753,6 @@
 }
 
 
-/* Overview-only contrast discipline: navy/ink is the field, teal is emphasis. */
-.overview-final-cta .visual-kicker {
-  color: #75d4cf !important;
-}
-
-.overview-final-cta .text-button {
-  color: #8bd7d2;
-}
-
-.overview-final-cta .button {
-  color: #082126;
-  background: #75d4cf;
-  border-color: #75d4cf;
-}
-
 :root[data-theme="dark"] .overview-hero {
   background:
     radial-gradient(circle at 82% 18%, rgba(88, 195, 189, .055) 0, transparent 31%),
@@ -822,13 +769,7 @@
   color: #c1c9cd;
 }
 
-:root[data-theme="dark"] .overview-launch-pill {
-  color: #d7e4ec;
-  background: rgba(17, 29, 38, .9);
-}
-
 :root[data-theme="dark"] .overview-proof dt,
-:root[data-theme="dark"] .overview-source-rail strong,
 :root[data-theme="dark"] .preview-chrome strong,
 :root[data-theme="dark"] .preview-output > strong {
   color: #e1e8ec;
