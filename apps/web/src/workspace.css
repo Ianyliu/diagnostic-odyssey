@@ -223,11 +223,18 @@ footer {
 }
 
 .decision-trace li {
+  color: var(--do-text);
   background: var(--do-surface-elevated);
   border-color: var(--do-border);
 }
 
+.decision-trace-boundary,
+.decision-trace li span:not(.decision-trace-step) {
+  color: var(--do-text-muted);
+}
+
 .linked-condition-secondary-measure {
+  color: var(--do-text);
   background: var(--do-surface-elevated);
   border-color: var(--do-border);
 }

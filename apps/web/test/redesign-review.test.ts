@@ -51,6 +51,7 @@ test("sensitivity rows share one grid and the current row does not escape the ca
   assert.match(css, /\.sensitivity-row\s*\{[^}]*grid-template-columns:\s*subgrid/s);
   assert.match(css, /\.sensitivity-row\s*\{[^}]*grid-column:\s*1 \/ -1/s);
   assert.match(css, /\.sensitivity-row\.current\s*\{[^}]*margin-inline:\s*0/s);
+  assert.doesNotMatch(css, /\.sensitivity-row\.current\s*\{[^}]*padding-inline:/s);
 });
 
 test("all quantitative burden and local-context rows expose native-unit mini visuals", () => {
