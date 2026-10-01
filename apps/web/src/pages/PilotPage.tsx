@@ -147,7 +147,7 @@ function PilotPlannerWorkspace({
       <header className="page-heading"><p className="eyebrow">PILOT PLANNER</p><h1>Scope a feasible pilot</h1><p>Transparent recognition/navigation arithmetic from analyst-supplied assumptions. This is not a prediction or causal ROI estimate.</p></header>
       <div className="caution cool"><strong>Plan · Test · Learn</strong><span>Every scenario names the pathway step and mechanism it is allowed to change.</span></div>
     </div>
-    <nav className="pilot-section-nav" aria-label="Pilot Planner sections">
+    <nav className="pilot-section-nav" aria-label="Pilot planner sections">
       <a href="#pilot-assumptions">Assumptions</a>
       <a href="#pilot-results">Results</a>
       <a href="#sensitivity">Sensitivity</a>
@@ -241,7 +241,7 @@ function PilotPlannerWorkspace({
         <div className="sr-only" aria-live="polite" aria-atomic="true">{resultAnnouncement}</div>
         {invalidDraft ? <section id="sensitivity" className="sensitivity-paused-state" aria-labelledby="sensitivity-paused-title">
           <h3 id="sensitivity-paused-title">Sensitivity analysis paused</h3>
-          <p>Fix the Pilot Planner inputs before running sensitivity analysis or creating data requests.</p>
+          <p>Fix the Pilot planner inputs before running sensitivity analysis or creating data requests.</p>
         </section> : <SensitivityExplorer
           scenario={scenario}
           onUpsertDataRequest={addSensitivityDataRequest}

@@ -44,6 +44,10 @@
   text-align: right;
 }
 
+.visual-headline-compact {
+  white-space: nowrap;
+}
+
 .decision-visual .visual-note {
   margin: 0;
   color: var(--do-text-muted);

@@ -26,7 +26,7 @@ export function PlaceholderPage({title, description}: {title: string; descriptio
         <strong>Scientific behavior</strong>
         <p>Missing, suppressed, illustrative, and released results remain distinct. Unavailable functionality is shown explicitly rather than simulated as complete.</p>
       </div>
-      {title === "Burden overview" && <Link className="button" to="/pilot">Continue to Pilot Planner</Link>}
+      {title === "Burden overview" && <Link className="button" to="/pilot">Continue to Pilot planner</Link>}
     </section>
   );
 }

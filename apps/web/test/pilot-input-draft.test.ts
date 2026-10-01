@@ -186,7 +186,7 @@ test("invalid drafts pause sensitivity and the Pilot Brief action while keeping 
   assert.match(pilotSource, /Draft not applied/);
   assert.match(
     pilotSource,
-    /Fix the Pilot Planner inputs before running sensitivity analysis or creating data requests\./
+    /Fix the Pilot planner inputs before running sensitivity analysis or creating data requests\./
   );
   assert.match(
     pilotSource,

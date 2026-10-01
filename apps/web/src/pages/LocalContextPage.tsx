@@ -167,7 +167,7 @@ export function LocalContextPage() {
       <div className="empty-state" role="alert">
         <strong>Reviewed local implementation context is unavailable.</strong>
         <p>{localContextError ?? "The reviewed local-context artifact could not be loaded."}</p>
-        <p>National MEPS burden, Pilot Planner, and Planning Brief remain usable. No fixture or illustrative local data are substituted.</p>
+        <p>National MEPS burden, Pilot planner, and Planning Brief remain usable. No fixture or illustrative local data are substituted.</p>
       </div>
       <div className="guardrail">
         <strong>Missing local data is not zero constraint.</strong>
@@ -246,7 +246,7 @@ export function LocalContextPage() {
     />
     <div className="guardrail compact">
       <strong>Missing does not mean zero.</strong>
-      <p>Missing designation/data does not mean no shortage or zero implementation constraint. "Include in Planning Brief" and "Use in Pilot planning" are separate analyst choices. Neither changes national burden or Pilot Planner numeric assumptions.</p>
+      <p>Missing designation/data does not mean no shortage or zero implementation constraint. "Include in Planning Brief" and "Use in Pilot planning" are separate analyst choices. Neither changes national burden or Pilot planner numeric assumptions.</p>
     </div>
 
     <div className="card selection-summary ledger-selection-summary" id="local-selection-summary">

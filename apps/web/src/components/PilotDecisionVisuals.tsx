@@ -73,7 +73,7 @@ export function PilotDecisionVisuals({
           <p className="visual-kicker">TARGETED PATHWAY ASSUMPTION</p>
           <h3 id="recognition-window-title">Recognition-window comparison</h3>
         </div>
-        <strong className="visual-headline">{formatRecognitionWindowDifference(
+        <strong className="visual-headline visual-headline-compact">{formatRecognitionWindowDifference(
           scenario.baseline_window_months,
           scenario.alternative_window_months
         )} mo</strong>
