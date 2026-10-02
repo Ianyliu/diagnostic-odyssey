@@ -18,20 +18,30 @@ test("brand palette is navy and teal rather than a red primary theme", () => {
   assert.match(tokens, /:root\[data-theme="dark"\][\s\S]*--do-chart-4:\s*#d2ad68/);
 });
 
-test("landing page uses startup-style hero, proof, workflow and conversion sections", () => {
+test("overview keeps the workflow visible without promotional filler", () => {
   const overview = readSource("../src/pages/OverviewPage.tsx");
   const css = readSource("../src/pages/OverviewPage.css");
-  assert.match(overview, /overview-launch-pill/);
+  assert.match(overview, /Evidence into planning/);
+  assert.match(overview, /boundaries intact/);
   assert.match(overview, /overview-proof/);
   assert.match(overview, /overview-role-grid/);
   assert.match(overview, /journey-grid/);
-  assert.match(overview, /overview-final-cta/);
+  assert.match(overview, /<DecisionStateRail \/>/);
+  assert.doesNotMatch(overview, /overview-launch-pill/);
+  assert.doesNotMatch(overview, /overview-final-cta/);
   assert.match(css, /radial-gradient/);
   assert.match(css, /workspace-preview/);
-  assert.match(css, /overview-hero h1 em/);
-  assert.match(css, /\.overview-destinations\s*\{[\s\S]*background:\s*#f3f0e8/);
-  assert.match(css, /\.overview-final-cta\s*\{[\s\S]*linear-gradient\(135deg, #153552, #102a3d 72%\)/);
+  assert.match(css, /\.overview-destinations\s*\{[\s\S]*background:\s*#f1ede4/);
+  assert.doesNotMatch(css, /linear-gradient\(135deg, #153552, #102a3d 72%\)/);
   assert.match(css, /@media \(prefers-reduced-motion: reduce\)/);
+});
+
+test("narrow Overview uses valid single-column evidence and workflow grids", () => {
+  const css = readSource("../src/pages/OverviewPage.css");
+  const narrow = css.match(/@media \(max-width: 720px\) \{([\s\S]*?)\n\}\n\n@media \(max-width: 440px\)/)?.[1];
+  assert.ok(narrow, "720px mobile styles must exist");
+  assert.match(narrow, /\.overview-role-grid,\s*\.overview-page \.journey-grid\s*\{\s*grid-template-columns:\s*minmax\(0, 1fr\)/);
+  assert.doesNotMatch(narrow, /\.overview-page \.journey-grid,\s*\.overview-role-card/);
 });
 
 test("overview visualization preserves separate evidence lanes through the planning output", () => {
@@ -49,6 +59,7 @@ test("sensitivity rows share one grid and the current row does not escape the ca
   assert.match(css, /\.sensitivity-row\s*\{[^}]*grid-template-columns:\s*subgrid/s);
   assert.match(css, /\.sensitivity-row\s*\{[^}]*grid-column:\s*1 \/ -1/s);
   assert.match(css, /\.sensitivity-row\.current\s*\{[^}]*margin-inline:\s*0/s);
+  assert.doesNotMatch(css, /\.sensitivity-row\.current\s*\{[^}]*padding-inline:/s);
 });
 
 test("all quantitative burden and local-context rows expose native-unit mini visuals", () => {
@@ -60,6 +71,18 @@ test("all quantitative burden and local-context rows expose native-unit mini vis
   assert.match(visual, /role="img"/);
   assert.match(visual, /No uncertainty interval is displayed/);
   assert.match(visual, /intervalLabel/);
+  assert.match(burden, /value=\{estimate\.value\}/);
+  assert.match(visual, /formatMetricValue/);
+  assert.match(burden, /pointLabel=\{estimate\.distribution_summary/);
+});
+
+test("overview preview does not encode illustrative values as a chart", () => {
+  const source = readSource("../src/pages/OpeningProvenance.tsx");
+  assert.doesNotMatch(source, /preview-mini-chart/);
+  const css = readSource("../src/pages/OverviewPage.css");
+  assert.match(css, /\.preview-boundary-line\s*\{/);
+  assert.doesNotMatch(css, /\.preview-mini-chart\s*\{/);
+  assert.doesNotMatch(source, /height: "(?:42|74|58|88)%"/);
 });
 
 test("Planning Brief print repeats product provenance and moves decision state out of the trailing sidebar", () => {

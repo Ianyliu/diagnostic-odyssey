@@ -61,6 +61,7 @@ textarea {
 
 .brand {
   display: inline-flex;
+  flex-direction: row;
   align-items: center;
   gap: 10px;
   width: fit-content;
@@ -198,6 +199,50 @@ footer {
   color: var(--do-text-muted);
   background: var(--do-surface);
   border-color: var(--do-border);
+}
+
+/* Legacy route panels must follow the active workspace theme. */
+.pilot-local-context,
+.pilot-decision-trace,
+.brief-decision-trace,
+.linked-condition-secondary-evidence {
+  color: var(--do-text);
+  background: var(--do-surface);
+  border-color: var(--do-border);
+}
+
+.pilot-local-context-heading h3,
+.pilot-decision-trace h3,
+.brief-decision-trace h3,
+.decision-trace li strong,
+.linked-condition-secondary-heading h2,
+.linked-condition-secondary-unavailable h2,
+.linked-condition-secondary-measure h3,
+.linked-condition-secondary-details h3 {
+  color: var(--do-text);
+}
+
+.decision-trace li {
+  color: var(--do-text);
+  background: var(--do-surface-elevated);
+  border-color: var(--do-border);
+}
+
+.decision-trace-boundary,
+.decision-trace li span:not(.decision-trace-step) {
+  color: var(--do-text-muted);
+}
+
+.linked-condition-secondary-measure {
+  color: var(--do-text);
+  background: var(--do-surface-elevated);
+  border-color: var(--do-border);
+}
+
+.linked-condition-secondary-value > span,
+.linked-condition-secondary-explanation,
+.linked-condition-secondary-unavailable p:last-child {
+  color: var(--do-text-muted);
 }
 
 /* Analytical metadata is a ruled scope strip, not a collection of status chips. */

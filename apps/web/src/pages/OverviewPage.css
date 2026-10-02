@@ -10,7 +10,7 @@
   grid-template-columns: minmax(0, 1.02fr) minmax(420px, .98fr);
   align-items: center;
   gap: clamp(42px, 6vw, 88px);
-  min-height: min(720px, calc(100vh - 118px));
+  min-height: 0;
   overflow: hidden;
   margin-inline: calc((min(1376px, 100vw - 48px) - 100vw) / 2);
   padding: clamp(54px, 7vw, 108px) max(24px, calc((100vw - 1320px) / 2));
@@ -80,11 +80,11 @@
 }
 
 .overview-hero h1 {
-  max-width: 12.5ch;
+  max-width: 18ch;
   margin: 0;
   color: var(--do-text);
   font-family: var(--do-font-display);
-  font-size: clamp(3.35rem, 6.1vw, 6.35rem);
+  font-size: clamp(2.8rem, 4.8vw, 4.8rem);
   font-weight: 790;
   letter-spacing: -.065em;
   line-height: .94;
@@ -134,7 +134,7 @@
 
 .overview-proof {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0;
   max-width: 690px;
   margin: 38px 0 0;
@@ -354,25 +354,18 @@
   line-height: 1.06;
 }
 
-.preview-mini-chart {
-  display: flex;
-  align-items: end;
-  gap: 6px;
-  height: 68px;
-  padding: 8px 0 0;
-  border-bottom: 1px solid var(--do-chart-grid);
+.preview-boundary-line {
+  width: 100%;
+  height: 3px;
+  margin-block: 10px;
+  border-radius: 2px;
+  /* Three visually separate evidence roles, not values or one blended bar. */
+  background: linear-gradient(to right,
+    var(--do-reviewed-text) 0 29%, transparent 29% 35%,
+    var(--do-selection-text) 35% 64%, transparent 64% 70%,
+    var(--do-assumption-text) 70% 100%
+  );
 }
-
-.preview-mini-chart span {
-  flex: 1;
-  min-width: 8px;
-  border-radius: 4px 4px 1px 1px;
-  background: var(--do-chart-1);
-}
-
-.preview-mini-chart span:nth-child(2) { background: var(--do-chart-2); }
-.preview-mini-chart span:nth-child(3) { background: var(--do-chart-3); }
-.preview-mini-chart span:nth-child(4) { background: var(--do-chart-4); }
 
 .preview-output ul {
   display: grid;
@@ -434,11 +427,6 @@
   animation: output-enter .55s cubic-bezier(.2,.72,.2,1) .45s both;
 }
 
-.overview-provenance.is-playing .preview-mini-chart span {
-  animation: chart-rise .42s cubic-bezier(.2,.72,.2,1) .72s both;
-  transform-origin: bottom;
-}
-
 @keyframes lane-enter {
   from { opacity: 0; transform: translateX(-24px); }
   to { opacity: 1; transform: translateX(0); }
@@ -447,11 +435,6 @@
 @keyframes output-enter {
   from { opacity: 0; transform: translateX(22px); }
   to { opacity: 1; transform: translateX(0); }
-}
-
-@keyframes chart-rise {
-  from { transform: scaleY(.08); opacity: .35; }
-  to { transform: scaleY(1); opacity: 1; }
 }
 
 .overview-value-prop,
@@ -568,8 +551,9 @@
 .overview-destinations {
   margin-inline: calc((min(1376px, 100vw - 48px) - 100vw) / 2);
   padding: clamp(46px, 6vw, 76px) max(24px, calc((100vw - 1320px) / 2));
-  border-block: 1px solid #ddd8ce;
-  background: #f3f0e8;
+  /* Intentional warm editorial inset in both themes: section-level contrast. */
+  border-block: 1px solid #d8d2c7;
+  background: #f1ede4;
   color: #1d3445;
 }
 
@@ -578,10 +562,10 @@
 }
 
 .overview-destinations .overview-section-heading > p:last-child {
-  color: #5c6970;
+  color: #59666d;
 }
 
-.overview-destinations .visual-kicker {
+.overview-page .overview-destinations .visual-kicker {
   color: #315e7a !important;
 }
 
@@ -637,7 +621,7 @@
 
 .overview-page .journey-card small {
   grid-column: 2 / -1;
-  color: #5c6970;
+  color: #59666d;
   font-size: .82rem;
   line-height: 1.5;
 }
@@ -652,44 +636,6 @@
 .overview-page .journey-card:hover .journey-arrow,
 .overview-page .journey-card:focus-visible .journey-arrow {
   transform: translateX(3px);
-}
-
-.overview-final-cta {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: end;
-  gap: 32px;
-  padding: clamp(28px, 5vw, 52px);
-  overflow: hidden;
-  border: 1px solid #284b63;
-  border-radius: 20px;
-  background:
-    radial-gradient(circle at 95% 10%, rgba(88, 195, 189, .12), transparent 38%),
-    linear-gradient(135deg, #153552, #102a3d 72%);
-}
-
-.overview-final-cta .visual-kicker { margin: 0 0 8px; }
-
-.overview-final-cta h2 {
-  max-width: 18ch;
-  margin: 0;
-  color: #f6f5ef;
-  font-size: clamp(1.75rem, 3vw, 2.8rem);
-  letter-spacing: -.04em;
-  line-height: 1.05;
-}
-
-.overview-final-cta p:last-child {
-  max-width: 64ch;
-  margin-bottom: 0;
-  color: #c6d1d7;
-}
-
-.overview-final-actions {
-  display: grid;
-  justify-items: start;
-  gap: 8px;
-  min-width: 210px;
 }
 
 @media (max-width: 1100px) {
@@ -743,11 +689,11 @@
   .preview-footer { flex-wrap: wrap; text-align: center; }
 
   .overview-role-grid,
-  .overview-page .journey-grid,
-  .overview-final-cta { grid-template-columns: 1fr; }
+  .overview-page .journey-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
 
   .overview-role-card { min-height: 0; }
-  .overview-final-actions { min-width: 0; }
 }
 
 @media (max-width: 440px) {
@@ -763,7 +709,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .overview-provenance.is-playing :is(.opening-lane, .preview-output, .preview-mini-chart span) {
+  .overview-provenance.is-playing :is(.opening-lane, .preview-output) {
     animation: none;
   }
 
@@ -775,7 +721,7 @@
 }
 
 @media print {
-  .overview-provenance.is-playing :is(.opening-lane, .preview-output, .preview-mini-chart span) {
+  .overview-provenance.is-playing :is(.opening-lane, .preview-output) {
     animation: none;
   }
 
@@ -790,21 +736,6 @@
   }
 }
 
-
-/* Overview-only contrast discipline: navy/ink is the field, teal is emphasis. */
-.overview-final-cta .visual-kicker {
-  color: #75d4cf !important;
-}
-
-.overview-final-cta .text-button {
-  color: #8bd7d2;
-}
-
-.overview-final-cta .button {
-  color: #082126;
-  background: #75d4cf;
-  border-color: #75d4cf;
-}
 
 :root[data-theme="dark"] .overview-hero {
   background:
@@ -822,13 +753,7 @@
   color: #c1c9cd;
 }
 
-:root[data-theme="dark"] .overview-launch-pill {
-  color: #d7e4ec;
-  background: rgba(17, 29, 38, .9);
-}
-
 :root[data-theme="dark"] .overview-proof dt,
-:root[data-theme="dark"] .overview-source-rail strong,
 :root[data-theme="dark"] .preview-chrome strong,
 :root[data-theme="dark"] .preview-output > strong {
   color: #e1e8ec;

@@ -86,7 +86,6 @@ export function DecisionStateRail() {
   return <section className="decision-state-card" aria-labelledby="decision-state-title">
     <div className="decision-state-heading">
       <div>
-        <p className="visual-kicker">CURRENT DECISION STATE</p>
         <h2 id="decision-state-title">Current decision state</h2>
       </div>
       <Link className="button secondary" to="/pilot#sensitivity">Stress-test assumptions</Link>

@@ -86,7 +86,6 @@
 
 .sensitivity-row.current {
   margin-inline: 0;
-  padding-inline: 8px;
   background: var(--do-selection-surface);
   box-shadow: inset 3px 0 var(--do-selection-border);
 }

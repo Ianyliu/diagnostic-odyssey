@@ -50,13 +50,14 @@ export function BurdenMeasureList({estimates}: {estimates: Estimate[]}) {
             ? <DistributionSummaryText estimate={estimate} />
             : formatEstimateValue(estimate)}
           <EstimateIntervalText estimate={estimate} />
-          {typeof estimate.value === "number" && <MetricVisual
+          {reviewed && typeof estimate.value === "number" && <MetricVisual
             label={estimate.label}
-            value={estimate.distribution_summary?.p50 ?? estimate.value}
+            value={estimate.value}
             unit={estimate.unit}
             low={estimate.distribution_summary?.p25 ?? estimate.interval_low}
             high={estimate.distribution_summary?.p75 ?? estimate.interval_high}
-            intervalLabel={estimate.distribution_summary ? "Interquartile range" : estimate.interval_type}
+            intervalLabel={estimate.distribution_summary ? "Interquartile range (25th–75th percentile; not a confidence interval)" : estimate.interval_type}
+            pointLabel={estimate.distribution_summary ? "Survey-weighted mean" : "Point estimate"}
             source={estimate.source_ref}
             universe={estimate.universe}
           />}

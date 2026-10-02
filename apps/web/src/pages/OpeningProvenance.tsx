@@ -82,12 +82,7 @@ export function OpeningProvenance() {
             <i />
           </div>
           <strong>Traceable decision state</strong>
-          <div className="preview-mini-chart" aria-hidden="true">
-            <span style={{height: "42%"}} />
-            <span style={{height: "74%"}} />
-            <span style={{height: "58%"}} />
-            <span style={{height: "88%"}} />
-          </div>
+          <div className="preview-boundary-line" aria-hidden="true" />
           <ul>
             <li><span /> Evidence boundary retained</li>
             <li><span /> Assumptions labeled</li>

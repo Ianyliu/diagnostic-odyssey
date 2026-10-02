@@ -1,6 +1,5 @@
+import { formatMetricValue } from "../data/metricFormatting";
 import "./MetricVisual.css";
-
-const compactNumber = new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 });
 
 export function MetricVisual({
   label,
@@ -9,6 +8,7 @@ export function MetricVisual({
   low = null,
   high = null,
   intervalLabel,
+  pointLabel = "Published value",
   source,
   universe
 }: {
@@ -18,6 +18,7 @@ export function MetricVisual({
   low?: number | null;
   high?: number | null;
   intervalLabel?: string | null;
+  pointLabel?: string;
   source?: string | null;
   universe?: string | null;
 }) {
@@ -31,10 +32,10 @@ export function MetricVisual({
   const pct = (x: number) => Math.max(0, Math.min(100, ((x - min) / span) * 100));
   const intervalLeft = pct(observedLow);
   const intervalWidth = Math.max(1.5, pct(observedHigh) - intervalLeft);
-  const hasInterval = typeof low === "number" && typeof high === "number" && low !== high;
+  const hasInterval = typeof low === "number" && typeof high === "number";
   const aria = hasInterval
-    ? `${label}: ${compactNumber.format(value)} ${unit}; ${intervalLabel ?? "interval"} ${compactNumber.format(observedLow)} to ${compactNumber.format(observedHigh)}.`
-    : `${label}: ${compactNumber.format(value)} ${unit}. No uncertainty interval is displayed.`;
+    ? `${label}: ${pointLabel} ${formatMetricValue(value, unit)}; ${intervalLabel ?? "published interval"} ${formatMetricValue(observedLow, unit)} to ${formatMetricValue(observedHigh, unit)}.`
+    : `${label}: ${pointLabel} ${formatMetricValue(value, unit)}. No uncertainty interval is displayed.`;
 
   return <div className="metric-visual">
     <div className="metric-visual-track" role="img" aria-label={aria}>
@@ -43,11 +44,11 @@ export function MetricVisual({
       <span className="metric-visual-point" style={{left: `${pct(value)}%`}} />
     </div>
     <div className="metric-visual-axis" aria-hidden="true">
-      <span>{compactNumber.format(min)}</span>
-      <span>{compactNumber.format(max)} {unit}</span>
+      <span>{formatMetricValue(min, unit)}</span>
+      <span>{formatMetricValue(max, unit)}</span>
     </div>
     <div className="metric-visual-meta">
-      {hasInterval && <span>{intervalLabel ?? "Published interval"}</span>}
+      <span>{pointLabel}{hasInterval ? ` · ${intervalLabel ?? "Published interval"}` : " · Interval not available"}</span>
       {source && <span>{source}</span>}
       {universe && <span>{universe}</span>}
     </div>

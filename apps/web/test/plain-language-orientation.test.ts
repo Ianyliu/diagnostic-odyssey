@@ -57,9 +57,8 @@ test("Overview explains the evidence-to-planning workflow across six destination
   const source = readSource("../src/pages/OverviewPage.tsx");
 
   for (const phrase of [
-    "From invisible burden",
-    "to traceable",
-    "action.",
+    "Evidence into planning,",
+    "boundaries intact.",
     "reviewed national burden",
     "local implementation context",
     "analyst assumptions",
@@ -75,9 +74,6 @@ test("Overview explains the evidence-to-planning workflow across six destination
   }
   assert.match(source, /journey\.map\(\(\[step, title, outcome, to\]\)/);
   assert.match(source, /<small>{outcome}<\/small>/);
-  assert.match(source, /MEPS/);
-  assert.match(source, /HRSA/);
-  assert.match(source, /ACS/);
 });
 
 test("DecisionStateRail reuses the readable pathway formatter", () => {

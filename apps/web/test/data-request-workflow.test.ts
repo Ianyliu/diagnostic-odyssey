@@ -323,7 +323,7 @@ test("DataRequestsPage blocks sensitivity-request refresh while scenario result 
   );
   assert.match(
     requests,
-    /Fix the Pilot Planner inputs before refreshing this request\./
+    /Fix the Pilot planner inputs before refreshing this request\./
   );
   assert.match(
     requests,

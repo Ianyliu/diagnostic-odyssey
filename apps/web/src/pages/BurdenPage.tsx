@@ -94,6 +94,6 @@ export function BurdenPage() {
       <strong>Native units stay separate.</strong>
       <p>Administrative time, spending, screening measures, utilization, and access experience are not added into one opaque score. Out-of-pocket spending remains nested within total spending, and K6/PHQ-2 remain screening/distress measures rather than diagnoses.</p>
     </div>
-    <Link className="button" to="/pilot">Continue to Pilot Planner</Link>
+    <Link className="button" to="/pilot">Continue to Pilot planner</Link>
   </section>;
 }

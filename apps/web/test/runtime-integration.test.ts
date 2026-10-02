@@ -671,7 +671,7 @@ test("local-context selection UI supports reviewed records without changing Pilo
   assert.match(localSource, /Include in Planning Brief/);
   assert.match(localSource, /Use in Pilot planning/);
   assert.match(localSource, /separate analyst choices/);
-  assert.match(localSource, /Neither changes national burden or Pilot Planner numeric assumptions/);
+  assert.match(localSource, /Neither changes national burden or Pilot planner numeric assumptions/);
   assert.match(localSource, /BreakdownList/);
   assert.match(localSource, /primaryBreakdowns/);
   assert.match(localSource, /mentalBreakdowns/);
@@ -720,7 +720,7 @@ test("local-context failure state leaves national routes conceptually available"
   const context = readSource("../src/data/ArtifactContext.tsx");
   const local = readSource("../src/pages/LocalContextPage.tsx");
   assert.match(context, /setLocalContextStatus\("error"\)/);
-  assert.match(local, /National MEPS burden, Pilot Planner, and Planning Brief remain usable/);
+  assert.match(local, /National MEPS burden, Pilot planner, and Planning Brief remain usable/);
   assert.match(local, /National MEPS burden remains available and unchanged/);
   assert.doesNotMatch(local, /fixture-2026-09-v1|artifacts\/examples/);
 });

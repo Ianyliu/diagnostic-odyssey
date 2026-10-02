@@ -42,7 +42,7 @@ export function DataRequestsPage() {
 
     {availableDataRequests.length === 0 ? <div className="empty-state">
       <strong>No data requests have been created or loaded.</strong>
-      <p>Stress-test a Pilot Planner assumption first, then create a request for the operational information that would reduce that uncertainty.</p>
+      <p>Stress-test a Pilot planner assumption first, then create a request for the operational information that would reduce that uncertainty.</p>
       <Link className="button secondary" to="/pilot#sensitivity">Open sensitivity explorer</Link>
     </div> : <div className="data-request-grid" aria-label="Available data requests">
       {availableDataRequests.map(request => {
@@ -111,7 +111,7 @@ export function DataRequestsPage() {
               }}
             >Refresh data request</button>}
             {stale && sensitivityField && scenario && !scenarioResult && <span className="data-request-refresh-blocked">
-              Fix the Pilot Planner inputs before refreshing this request.
+              Fix the Pilot planner inputs before refreshing this request.
             </span>}
             {isAnalystRequest && <button
               className="text-button"

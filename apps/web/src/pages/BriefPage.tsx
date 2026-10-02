@@ -188,9 +188,8 @@ export function BriefPage() {
           <a href="#brief-intervention-evidence">Intervention evidence</a>
           <a href="#brief-data-requests">Data requests</a>
         </nav>
-        <div className="brief-readiness">
-        <h2>Decision state</h2>
-        <div className="readiness"><strong>Burden estimates</strong><span className={`status status-${burdenReadiness.tone}`}>{burdenReadiness.briefStatus}</span></div>
+        <div className="brief-readiness" role="group" aria-label="Current decision state">
+          <div className="readiness"><strong>Burden estimates</strong><span className={`status status-${burdenReadiness.tone}`}>{burdenReadiness.briefStatus}</span></div>
         <div className="readiness"><strong>Scenario arithmetic</strong><span className={`status ${brief.scenario ? "status-assumption" : "status-unavailable"}`}>{brief.scenario ? "Planning assumptions" : "No applied scenario"}</span></div>
         <div className="readiness"><strong>Evidence parameter</strong><span className={`status status-${evidenceReadiness.tone}`}>{evidenceReadiness.status}</span></div>
         <div className="readiness">
