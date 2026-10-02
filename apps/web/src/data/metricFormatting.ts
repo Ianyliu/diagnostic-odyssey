@@ -1,4 +1,4 @@
-import { formatNativeValue } from "./formatEstimateValue";
+import { formatNativeValue } from "./formatEstimateValue.ts";
 
 /** A chart tick must preserve the source's native scale, especially 0–1 proportions. */
 export function formatMetricValue(value: number, unit: string): string {
