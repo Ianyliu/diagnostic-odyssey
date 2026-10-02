@@ -83,7 +83,7 @@ function SelectableIndicatorRow({
     </div>
     <div className="measure-value ledger-record-value">
       {formatLocalContextValue(record)}
-      {typeof record.value === "number" && <MetricVisual
+      {selectable && typeof record.value === "number" && <MetricVisual
         label={accessibility.displayTitle}
         value={record.value}
         unit={record.unit}

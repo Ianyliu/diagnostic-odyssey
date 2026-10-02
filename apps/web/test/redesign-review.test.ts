@@ -64,7 +64,8 @@ test("all quantitative burden and local-context rows expose native-unit mini vis
   assert.match(visual, /No uncertainty interval is displayed/);
   assert.match(visual, /intervalLabel/);
   assert.match(burden, /value=\{estimate\.value\}/);
-  assert.match(visual, /maximumFractionDigits: 0/);
+  assert.match(visual, /formatMetricValue/);
+  assert.match(burden, /pointLabel=\{estimate\.distribution_summary/);
 });
 
 test("overview preview does not encode illustrative values as a chart", () => {
