@@ -31,7 +31,7 @@ test("overview keeps the workflow visible without promotional filler", () => {
   assert.doesNotMatch(overview, /overview-final-cta/);
   assert.match(css, /radial-gradient/);
   assert.match(css, /workspace-preview/);
-  assert.match(css, /\.overview-destinations\s*\{[\s\S]*background:\s*var\(--do-surface\)/);
+  assert.match(css, /\.overview-destinations\s*\{[\s\S]*background:\s*#f1ede4/);
   assert.doesNotMatch(css, /linear-gradient\(135deg, #153552, #102a3d 72%\)/);
   assert.match(css, /@media \(prefers-reduced-motion: reduce\)/);
 });
@@ -71,6 +71,9 @@ test("all quantitative burden and local-context rows expose native-unit mini vis
 test("overview preview does not encode illustrative values as a chart", () => {
   const source = readSource("../src/pages/OpeningProvenance.tsx");
   assert.doesNotMatch(source, /preview-mini-chart/);
+  const css = readSource("../src/pages/OverviewPage.css");
+  assert.match(css, /\.preview-boundary-line\s*\{/);
+  assert.doesNotMatch(css, /\.preview-mini-chart\s*\{/);
   assert.doesNotMatch(source, /height: "(?:42|74|58|88)%"/);
 });
 
