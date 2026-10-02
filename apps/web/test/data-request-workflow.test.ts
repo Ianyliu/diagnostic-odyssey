@@ -321,9 +321,9 @@ test("DataRequestsPage blocks sensitivity-request refresh while scenario result 
     requests,
     /stale && sensitivityField && scenario && scenarioResult/
   );
-    assert.match(
-      requests,
-      /Fix the Pilot planner inputs before refreshing this request\./
+  assert.match(
+    requests,
+    /Fix the Pilot planner inputs before refreshing this request\./
   );
   assert.match(
     requests,

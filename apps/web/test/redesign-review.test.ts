@@ -70,7 +70,7 @@ test("all quantitative burden and local-context rows expose native-unit mini vis
 test("overview preview does not encode illustrative values as a chart", () => {
   const source = readSource("../src/pages/OpeningProvenance.tsx");
   assert.doesNotMatch(source, /preview-mini-chart/);
-  assert.doesNotMatch(source, /height: \"(?:42|74|58|88)%\"/);
+  assert.doesNotMatch(source, /height: "(?:42|74|58|88)%"/);
 });
 
 test("Planning Brief print repeats product provenance and moves decision state out of the trailing sidebar", () => {
