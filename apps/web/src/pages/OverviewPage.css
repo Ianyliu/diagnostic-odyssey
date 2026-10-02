@@ -689,8 +689,9 @@
   .preview-footer { flex-wrap: wrap; text-align: center; }
 
   .overview-role-grid,
-  .overview-page .journey-grid,
-  
+  .overview-page .journey-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
 
   .overview-role-card { min-height: 0; }
 }

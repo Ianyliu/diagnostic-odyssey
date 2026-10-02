@@ -36,6 +36,14 @@ test("overview keeps the workflow visible without promotional filler", () => {
   assert.match(css, /@media \(prefers-reduced-motion: reduce\)/);
 });
 
+test("narrow Overview uses valid single-column evidence and workflow grids", () => {
+  const css = readSource("../src/pages/OverviewPage.css");
+  const narrow = css.match(/@media \(max-width: 720px\) \{([\s\S]*?)\n\}\n\n@media \(max-width: 440px\)/)?.[1];
+  assert.ok(narrow, "720px mobile styles must exist");
+  assert.match(narrow, /\.overview-role-grid,\s*\.overview-page \.journey-grid\s*\{\s*grid-template-columns:\s*minmax\(0, 1fr\)/);
+  assert.doesNotMatch(narrow, /\.overview-page \.journey-grid,\s*\.overview-role-card/);
+});
+
 test("overview visualization preserves separate evidence lanes through the planning output", () => {
   const source = readSource("../src/pages/OpeningProvenance.tsx");
   assert.match(source, /opening-lane lane-evidence/);
