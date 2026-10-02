@@ -134,7 +134,7 @@
 
 .overview-proof {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0;
   max-width: 690px;
   margin: 38px 0 0;
@@ -354,25 +354,18 @@
   line-height: 1.06;
 }
 
-.preview-mini-chart {
-  display: flex;
-  align-items: end;
-  gap: 6px;
-  height: 68px;
-  padding: 8px 0 0;
-  border-bottom: 1px solid var(--do-chart-grid);
+.preview-boundary-line {
+  width: 100%;
+  height: 3px;
+  margin-block: 10px;
+  border-radius: 2px;
+  /* Three visually separate evidence roles, not values or one blended bar. */
+  background: linear-gradient(to right,
+    var(--do-reviewed-text) 0 29%, transparent 29% 35%,
+    var(--do-selection-text) 35% 64%, transparent 64% 70%,
+    var(--do-assumption-text) 70% 100%
+  );
 }
-
-.preview-mini-chart span {
-  flex: 1;
-  min-width: 8px;
-  border-radius: 4px 4px 1px 1px;
-  background: var(--do-chart-1);
-}
-
-.preview-mini-chart span:nth-child(2) { background: var(--do-chart-2); }
-.preview-mini-chart span:nth-child(3) { background: var(--do-chart-3); }
-.preview-mini-chart span:nth-child(4) { background: var(--do-chart-4); }
 
 .preview-output ul {
   display: grid;
@@ -434,11 +427,6 @@
   animation: output-enter .55s cubic-bezier(.2,.72,.2,1) .45s both;
 }
 
-.overview-provenance.is-playing .preview-mini-chart span {
-  animation: chart-rise .42s cubic-bezier(.2,.72,.2,1) .72s both;
-  transform-origin: bottom;
-}
-
 @keyframes lane-enter {
   from { opacity: 0; transform: translateX(-24px); }
   to { opacity: 1; transform: translateX(0); }
@@ -447,11 +435,6 @@
 @keyframes output-enter {
   from { opacity: 0; transform: translateX(22px); }
   to { opacity: 1; transform: translateX(0); }
-}
-
-@keyframes chart-rise {
-  from { transform: scaleY(.08); opacity: .35; }
-  to { transform: scaleY(1); opacity: 1; }
 }
 
 .overview-value-prop,
@@ -706,10 +689,9 @@
 
   .overview-role-grid,
   .overview-page .journey-grid,
-  .overview-final-cta { grid-template-columns: 1fr; }
+  
 
   .overview-role-card { min-height: 0; }
-  .overview-final-actions { min-width: 0; }
 }
 
 @media (max-width: 440px) {
@@ -725,7 +707,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .overview-provenance.is-playing :is(.opening-lane, .preview-output, .preview-mini-chart span) {
+  .overview-provenance.is-playing :is(.opening-lane, .preview-output) {
     animation: none;
   }
 
@@ -737,7 +719,7 @@
 }
 
 @media print {
-  .overview-provenance.is-playing :is(.opening-lane, .preview-output, .preview-mini-chart span) {
+  .overview-provenance.is-playing :is(.opening-lane, .preview-output) {
     animation: none;
   }
 
