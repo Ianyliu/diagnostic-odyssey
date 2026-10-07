@@ -21,6 +21,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from collections import Counter, defaultdict
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
 from pathlib import Path
@@ -646,18 +647,33 @@ def fetch_acs_individual_metadata(config: dict[str, Any]) -> dict[str, dict[str,
     template = config.get("variable_metadata_url_template")
     if not isinstance(template, str) or "{variable}" not in template:
         raise ContractError("ACS variable metadata URL template is missing or invalid")
+
+    variable_ids: list[str] = []
     for spec in config["variables"]:
         for key in ("moe", "estimate_annotation", "moe_annotation"):
-            variable_id = spec[key]
-            record = fetch_json(template.replace("{variable}", variable_id))
-            if not isinstance(record, dict):
-                raise ContractError(
-                    f"Census individual metadata response for {variable_id} is not an object"
-                )
-            records[variable_id] = {
-                "requested_variable_id": variable_id,
-                "response": record,
-            }
+            variable_ids.append(spec[key])
+
+    def _fetch_single(variable_id: str) -> tuple[str, dict[str, Any]]:
+        record = fetch_json(template.replace("{variable}", variable_id))
+        if not isinstance(record, dict):
+            raise ContractError(
+                f"Census individual metadata response for {variable_id} is not an object"
+            )
+        return variable_id, {
+            "requested_variable_id": variable_id,
+            "response": record,
+        }
+
+    max_workers = min(10, len(variable_ids)) if variable_ids else 1
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = [
+            executor.submit(_fetch_single, variable_id)
+            for variable_id in variable_ids
+        ]
+        for future in futures:
+            variable_id, entry = future.result()
+            records[variable_id] = entry
+
     return records
 
 

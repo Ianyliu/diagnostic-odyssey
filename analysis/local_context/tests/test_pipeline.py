@@ -14,6 +14,7 @@ from analysis.local_context.pipeline import (
     build_acs_request,
     canonical_json_fingerprint,
     download_file,
+    fetch_acs_individual_metadata,
     fetch_json,
     load_expected_candidate_output_files,
     parse_acs,
@@ -557,6 +558,34 @@ class LocalContextPipelineTests(unittest.TestCase):
         governed = load_expected_candidate_output_files()
         self.assertEqual(governed, expected)
         self.assertEqual(len(governed), len(set(governed)))
+
+    def test_fetch_acs_individual_metadata_success(self):
+        def fake_fetch(url):
+            var_id = url.split("/")[-1].replace(".json", "")
+            return {"name": var_id, "label": f"Label for {var_id}"}
+
+        with patch("analysis.local_context.pipeline.fetch_json", side_effect=fake_fetch):
+            records = fetch_acs_individual_metadata(ACS_CONFIG)
+
+        expected_vars = [
+            spec[key]
+            for spec in ACS_CONFIG["variables"]
+            for key in ("moe", "estimate_annotation", "moe_annotation")
+        ]
+        self.assertEqual(set(records.keys()), set(expected_vars))
+        for var_id in expected_vars:
+            self.assertEqual(records[var_id]["requested_variable_id"], var_id)
+            self.assertEqual(records[var_id]["response"]["name"], var_id)
+
+    def test_fetch_acs_individual_metadata_invalid_template(self):
+        bad_config = {"variable_metadata_url_template": "http://example.com/no_placeholder"}
+        with self.assertRaisesRegex(ContractError, "URL template is missing or invalid"):
+            fetch_acs_individual_metadata(bad_config)
+
+    def test_fetch_acs_individual_metadata_non_dict_response(self):
+        with patch("analysis.local_context.pipeline.fetch_json", return_value=["not", "a", "dict"]):
+            with self.assertRaisesRegex(ContractError, "is not an object"):
+                fetch_acs_individual_metadata(ACS_CONFIG)
 
     def test_prohibited_guardrails_preserve_current_and_historical_union(self):
         expected = {
