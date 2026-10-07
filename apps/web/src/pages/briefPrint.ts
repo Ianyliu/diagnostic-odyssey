@@ -21,3 +21,16 @@ export function createBriefPrintDisclosureState(
     }
   };
 }
+
+export function printWithDisclosureState(
+  disclosureState: ReturnType<typeof createBriefPrintDisclosureState> | null,
+  printFn: () => void = () => window.print()
+) {
+  disclosureState?.prepare();
+  try {
+    printFn();
+  } catch (error) {
+    disclosureState?.restore();
+    throw error;
+  }
+}

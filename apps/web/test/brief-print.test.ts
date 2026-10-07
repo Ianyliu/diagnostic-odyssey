@@ -5,7 +5,7 @@ import test from "node:test";
 import type { Scenario } from "@diagnostic-odyssey/contracts";
 import { pilotInputFields } from "../src/data/pilotInputDraft.ts";
 import { formatAppliedAssumption } from "../src/pages/briefAssumptions.ts";
-import { createBriefPrintDisclosureState } from "../src/pages/briefPrint.ts";
+import { createBriefPrintDisclosureState, printWithDisclosureState } from "../src/pages/briefPrint.ts";
 
 test("all eight applied Brief inputs retain precise assumption values", () => {
   const scenario: Scenario = {
@@ -55,9 +55,41 @@ test("Planning Brief wires print events for browser and application print", () =
   );
   assert.match(source, /addEventListener\("beforeprint", state\.prepare\)/);
   assert.match(source, /addEventListener\("afterprint", state\.restore\)/);
-  assert.match(source, /printDisclosureState\.current\?\.prepare\(\)/);
+  assert.match(source, /printWithDisclosureState\(printDisclosureState\.current\)/);
   assert.match(source, /onClick=\{printBrief\}/);
   assert.match(source, /serializeBriefJson\(brief\)/);
+});
+
+test("printWithDisclosureState restores disclosure state and rethrows when print throws an error", () => {
+  const disclosures = [{ open: false }, { open: true }];
+  const state = createBriefPrintDisclosureState(() => disclosures);
+
+  const printError = new Error("Print dialog failed");
+  let printCalled = false;
+
+  assert.throws(
+    () => printWithDisclosureState(state, () => {
+      printCalled = true;
+      // Disclosures should be opened before printFn is invoked
+      assert.deepEqual(disclosures.map(d => d.open), [true, true]);
+      throw printError;
+    }),
+    (err: unknown) => err === printError
+  );
+
+  assert.equal(printCalled, true);
+  // Disclosures must be restored to initial state when print throws
+  assert.deepEqual(disclosures.map(d => d.open), [false, true]);
+});
+
+test("printWithDisclosureState handles null disclosure state gracefully during print failure", () => {
+  const printError = new Error("Print failed with null state");
+  assert.throws(
+    () => printWithDisclosureState(null, () => {
+      throw printError;
+    }),
+    (err: unknown) => err === printError
+  );
 });
 
 test("applied Brief inputs and scenario outputs occupy separate document sections", () => {
