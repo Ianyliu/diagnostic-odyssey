@@ -5,7 +5,10 @@ import test from "node:test";
 import type { Scenario } from "@diagnostic-odyssey/contracts";
 import { pilotInputFields } from "../src/data/pilotInputDraft.ts";
 import { formatAppliedAssumption } from "../src/pages/briefAssumptions.ts";
-import { createBriefPrintDisclosureState } from "../src/pages/briefPrint.ts";
+import {
+  createBriefPrintDisclosureState,
+  executeBriefPrint
+} from "../src/pages/briefPrint.ts";
 
 test("all eight applied Brief inputs retain precise assumption values", () => {
   const scenario: Scenario = {
@@ -48,6 +51,55 @@ test("printing opens closed disclosures and restores each screen choice after ca
   assert.deepEqual(disclosures.map(disclosure => disclosure.open), [false, true, true]);
 });
 
+test("executeBriefPrint prepares disclosures and invokes print callback", () => {
+  const disclosures = [{ open: false }, { open: true }];
+  const state = createBriefPrintDisclosureState(() => disclosures);
+  let printed = false;
+
+  executeBriefPrint(state, () => {
+    assert.deepEqual(disclosures.map(d => d.open), [true, true]);
+    printed = true;
+  });
+
+  assert.equal(printed, true);
+});
+
+test("executeBriefPrint restores disclosures and rethrows if print callback throws", () => {
+  const disclosures = [{ open: false }, { open: true }, { open: false }];
+  const state = createBriefPrintDisclosureState(() => disclosures);
+  const printError = new Error("Print failed");
+
+  assert.throws(
+    () => {
+      executeBriefPrint(state, () => {
+        assert.deepEqual(disclosures.map(d => d.open), [true, true, true]);
+        throw printError;
+      });
+    },
+    (err: unknown) => err === printError
+  );
+
+  assert.deepEqual(disclosures.map(d => d.open), [false, true, false]);
+});
+
+test("executeBriefPrint gracefully handles null disclosure state", () => {
+  let printed = false;
+  executeBriefPrint(null, () => {
+    printed = true;
+  });
+  assert.equal(printed, true);
+
+  const printError = new Error("Print failed");
+  assert.throws(
+    () => {
+      executeBriefPrint(null, () => {
+        throw printError;
+      });
+    },
+    (err: unknown) => err === printError
+  );
+});
+
 test("Planning Brief wires print events for browser and application print", () => {
   const source = readFileSync(
     fileURLToPath(new URL("../src/pages/BriefPage.tsx", import.meta.url)),
@@ -55,7 +107,7 @@ test("Planning Brief wires print events for browser and application print", () =
   );
   assert.match(source, /addEventListener\("beforeprint", state\.prepare\)/);
   assert.match(source, /addEventListener\("afterprint", state\.restore\)/);
-  assert.match(source, /printDisclosureState\.current\?\.prepare\(\)/);
+  assert.match(source, /executeBriefPrint\(printDisclosureState\.current\)/);
   assert.match(source, /onClick=\{printBrief\}/);
   assert.match(source, /serializeBriefJson\(brief\)/);
 });

@@ -35,7 +35,7 @@ import {
   pilotInputFields
 } from "../data/pilotInputDraft";
 import { formatAppliedAssumption } from "./briefAssumptions";
-import { createBriefPrintDisclosureState } from "./briefPrint";
+import { createBriefPrintDisclosureState, executeBriefPrint } from "./briefPrint";
 import "./BriefPage.css";
 
 function AccessibleEstimateInterval({estimate}: {estimate: Estimate}) {
@@ -143,13 +143,7 @@ export function BriefPage() {
   };
 
   const printBrief = () => {
-    printDisclosureState.current?.prepare();
-    try {
-      window.print();
-    } catch (error) {
-      printDisclosureState.current?.restore();
-      throw error;
-    }
+    executeBriefPrint(printDisclosureState.current);
   };
 
   return <section className="page page-stack planning-brief-page" ref={pageRef}>
