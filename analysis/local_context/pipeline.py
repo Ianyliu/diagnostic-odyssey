@@ -21,6 +21,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from collections import Counter, defaultdict
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
 from pathlib import Path
@@ -642,23 +643,39 @@ def verify_acs_metadata(
 
 
 def fetch_acs_individual_metadata(config: dict[str, Any]) -> dict[str, dict[str, Any]]:
-    records: dict[str, dict[str, Any]] = {}
     template = config.get("variable_metadata_url_template")
     if not isinstance(template, str) or "{variable}" not in template:
         raise ContractError("ACS variable metadata URL template is missing or invalid")
-    for spec in config["variables"]:
-        for key in ("moe", "estimate_annotation", "moe_annotation"):
-            variable_id = spec[key]
-            record = fetch_json(template.replace("{variable}", variable_id))
-            if not isinstance(record, dict):
-                raise ContractError(
-                    f"Census individual metadata response for {variable_id} is not an object"
-                )
-            records[variable_id] = {
-                "requested_variable_id": variable_id,
-                "response": record,
-            }
-    return records
+
+    variable_ids: list[str] = []
+    variables_config = config.get("variables", [])
+    if isinstance(variables_config, list):
+        for spec in variables_config:
+            if isinstance(spec, dict):
+                for key in ("moe", "estimate_annotation", "moe_annotation"):
+                    if key in spec:
+                        variable_ids.append(spec[key])
+
+    if not variable_ids:
+        return {}
+
+    def _fetch_variable(variable_id: str) -> tuple[str, dict[str, Any]]:
+        record = fetch_json(template.replace("{variable}", variable_id))
+        if not isinstance(record, dict):
+            raise ContractError(
+                f"Census individual metadata response for {variable_id} is not an object"
+            )
+        return variable_id, {
+            "requested_variable_id": variable_id,
+            "response": record,
+        }
+
+    max_workers = min(len(variable_ids), 16)
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        results = dict(executor.map(_fetch_variable, variable_ids))
+
+    # Preserve exact variable_ids order in returned dictionary
+    return {var_id: results[var_id] for var_id in variable_ids}
 
 
 def acs_requested_variables(config: dict[str, Any]) -> list[str]:

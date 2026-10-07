@@ -14,6 +14,7 @@ from analysis.local_context.pipeline import (
     build_acs_request,
     canonical_json_fingerprint,
     download_file,
+    fetch_acs_individual_metadata,
     fetch_json,
     load_expected_candidate_output_files,
     parse_acs,
@@ -557,6 +558,51 @@ class LocalContextPipelineTests(unittest.TestCase):
         governed = load_expected_candidate_output_files()
         self.assertEqual(governed, expected)
         self.assertEqual(len(governed), len(set(governed)))
+
+    def test_fetch_acs_individual_metadata_success(self):
+        config = {
+            "variable_metadata_url_template": "https://example.test/{variable}.json",
+            "variables": [
+                {
+                    "moe": "VAR1_PM",
+                    "estimate_annotation": "VAR1_PEA",
+                    "moe_annotation": "VAR1_PMA",
+                },
+                {
+                    "moe": "VAR2_PM",
+                    "estimate_annotation": "VAR2_PEA",
+                    "moe_annotation": "VAR2_PMA",
+                },
+            ],
+        }
+
+        def mock_fetch(url):
+            var_id = url.split("/")[-1].replace(".json", "")
+            return {"label": f"Label for {var_id}"}
+
+        with patch("analysis.local_context.pipeline.fetch_json", side_effect=mock_fetch):
+            records = fetch_acs_individual_metadata(config)
+
+        expected_keys = ["VAR1_PM", "VAR1_PEA", "VAR1_PMA", "VAR2_PM", "VAR2_PEA", "VAR2_PMA"]
+        self.assertEqual(list(records.keys()), expected_keys)
+        for var_id in expected_keys:
+            self.assertEqual(records[var_id]["requested_variable_id"], var_id)
+            self.assertEqual(records[var_id]["response"], {"label": f"Label for {var_id}"})
+
+    def test_fetch_acs_individual_metadata_invalid_template(self):
+        with self.assertRaisesRegex(ContractError, "metadata URL template"):
+            fetch_acs_individual_metadata({})
+        with self.assertRaisesRegex(ContractError, "metadata URL template"):
+            fetch_acs_individual_metadata({"variable_metadata_url_template": "https://example.test/no_placeholder"})
+
+    def test_fetch_acs_individual_metadata_non_dict_response_fails(self):
+        config = {
+            "variable_metadata_url_template": "https://example.test/{variable}.json",
+            "variables": [{"moe": "VAR1_PM", "estimate_annotation": "VAR1_PEA", "moe_annotation": "VAR1_PMA"}],
+        }
+        with patch("analysis.local_context.pipeline.fetch_json", return_value=["not", "a", "dict"]):
+            with self.assertRaisesRegex(ContractError, "not an object"):
+                fetch_acs_individual_metadata(config)
 
     def test_prohibited_guardrails_preserve_current_and_historical_union(self):
         expected = {
