@@ -23,6 +23,10 @@ export function shouldPlayOpening({
   }
 }
 
+export function sessionStorageOrNull(): Storage | null {
+  try { return window.sessionStorage; } catch { return null; }
+}
+
 export function markOpeningSeen(storage: Pick<Storage, "setItem"> | null): boolean {
   if (!storage) return false;
   try {
