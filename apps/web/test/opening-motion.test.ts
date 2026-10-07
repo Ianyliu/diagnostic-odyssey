@@ -5,6 +5,7 @@ import test from "node:test";
 import {
   OPENING_SESSION_KEY,
   markOpeningSeen,
+  reducedMotionRequested,
   shouldPlayOpening
 } from "../src/pages/openingMotion.ts";
 
@@ -36,6 +37,47 @@ test("reduced motion or storage failure produces the static composition", () => 
   assert.equal(shouldPlayOpening({ ...entry, storage: null }), false);
   assert.equal(shouldPlayOpening({ ...entry, storage: { getItem() { throw Error("blocked"); } } }), false);
   assert.equal(markOpeningSeen({ setItem() { throw Error("blocked"); } }), false);
+});
+
+test("reducedMotionRequested handles matchMedia state, error throwing, and missing window safely", () => {
+  const originalWindow = globalThis.window;
+
+  try {
+    // 1. matchMedia returns matches: true
+    globalThis.window = {
+      matchMedia: ((query: string) => ({
+        matches: query === "(prefers-reduced-motion: reduce)"
+      })) as typeof window.matchMedia
+    } as unknown as Window & typeof globalThis;
+    assert.equal(reducedMotionRequested(), true);
+
+    // 2. matchMedia returns matches: false
+    globalThis.window = {
+      matchMedia: (() => ({
+        matches: false
+      })) as typeof window.matchMedia
+    } as unknown as Window & typeof globalThis;
+    assert.equal(reducedMotionRequested(), false);
+
+    // 3. Error path: matchMedia throws an error
+    globalThis.window = {
+      matchMedia: () => {
+        throw new Error("matchMedia access blocked or failed");
+      }
+    } as unknown as Window & typeof globalThis;
+    assert.equal(reducedMotionRequested(), true);
+
+    // 4. matchMedia is undefined / missing on window
+    globalThis.window = {} as unknown as Window & typeof globalThis;
+    assert.equal(reducedMotionRequested(), true);
+
+    // 5. window is undefined
+    // @ts-expect-error test window undefined
+    delete globalThis.window;
+    assert.equal(reducedMotionRequested(), true);
+  } finally {
+    globalThis.window = originalWindow;
+  }
 });
 
 test("opening uses session storage and remains decorative", () => {

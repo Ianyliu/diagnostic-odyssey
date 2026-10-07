@@ -1,19 +1,14 @@
 import { useEffect, useState } from "react";
-import { markOpeningSeen, shouldPlayOpening } from "./openingMotion";
+import { markOpeningSeen, reducedMotionRequested, shouldPlayOpening } from "./openingMotion";
 
-const documentEntry = {
+const documentEntry = typeof window !== "undefined" ? {
   pathname: window.location.pathname,
   search: window.location.search,
   hash: window.location.hash
-};
+} : { pathname: "/", search: "", hash: "" };
 
 function sessionStorageOrNull(): Storage | null {
   try { return window.sessionStorage; } catch { return null; }
-}
-
-function reducedMotionRequested(): boolean {
-  try { return window.matchMedia("(prefers-reduced-motion: reduce)").matches; }
-  catch { return true; }
 }
 
 export function OpeningProvenance() {

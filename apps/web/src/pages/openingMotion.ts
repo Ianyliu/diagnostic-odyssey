@@ -23,6 +23,14 @@ export function shouldPlayOpening({
   }
 }
 
+export function reducedMotionRequested(): boolean {
+  try {
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  } catch {
+    return true;
+  }
+}
+
 export function markOpeningSeen(storage: Pick<Storage, "setItem"> | null): boolean {
   if (!storage) return false;
   try {
