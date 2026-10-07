@@ -32,6 +32,25 @@ test("same-document fragment focuses its heading and scrolls the section", () =>
   assert.equal(scrollToFragment("#missing", () => null), false);
 });
 
+test("scrollToFragment falls back to literal fragment when decodeURIComponent throws on malformed URI", () => {
+  let queriedId = "";
+  const mockElement = {
+    matches: () => true,
+    hasAttribute: () => true,
+    focus: () => {},
+    scrollIntoView: () => {}
+  } as unknown as HTMLElement;
+
+  const malformedHash = "#%E0%A4%A";
+  const result = scrollToFragment(malformedHash, id => {
+    queriedId = id;
+    return id === "%E0%A4%A" ? mockElement : null;
+  });
+
+  assert.equal(queriedId, "%E0%A4%A");
+  assert.equal(result, true);
+});
+
 test("shell handles native same-page fragment clicks and history hash changes", () => {
   const shell = readFileSync(fileURLToPath(new URL("../src/components/AppShell.tsx", import.meta.url)), "utf8");
   assert.match(shell, /addEventListener\("hashchange", onHashChange\)/);
