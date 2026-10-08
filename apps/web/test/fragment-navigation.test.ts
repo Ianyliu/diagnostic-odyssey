@@ -34,11 +34,19 @@ test("same-document fragment focuses its heading and scrolls the section", () =>
 
 test("scrollToFragment falls back to literal fragment when decodeURIComponent throws on malformed URI", () => {
   let queriedId = "";
+  let focused = false;
+  let scrolled = false;
   const mockElement = {
     matches: () => true,
     hasAttribute: () => true,
-    focus: () => {},
-    scrollIntoView: () => {}
+    focus(options: FocusOptions) {
+      assert.deepEqual(options, {preventScroll: true});
+      focused = true;
+    },
+    scrollIntoView(options: ScrollIntoViewOptions) {
+      assert.deepEqual(options, {block: "start"});
+      scrolled = true;
+    }
   } as unknown as HTMLElement;
 
   const malformedHash = "#%E0%A4%A";
@@ -49,6 +57,9 @@ test("scrollToFragment falls back to literal fragment when decodeURIComponent th
 
   assert.equal(queriedId, "%E0%A4%A");
   assert.equal(result, true);
+  assert.equal(focused, true);
+  assert.equal(scrolled, true);
+  assert.equal(scrollToFragment("#%E0%A4%A", () => null), false);
 });
 
 test("shell handles native same-page fragment clicks and history hash changes", () => {
