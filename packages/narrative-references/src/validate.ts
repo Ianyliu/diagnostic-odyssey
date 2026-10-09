@@ -77,7 +77,7 @@ function oneOf(value: unknown, options: readonly string[], path: string, out: Is
 function timestamp(value: unknown, path: string, out: Issue[]): void {
   if (!str(value, path, out)) return;
   if (!utcTimestamp.test(value) || !Number.isFinite(Date.parse(value)) ||
-      new Date(value).toISOString() !== value) issue(out, path, "must be an exact UTC ISO timestamp with seconds");
+      new Date(value).toISOString().replace(".000Z", "Z") !== value) issue(out, path, "must be an exact UTC ISO timestamp with seconds");
 }
 function nullableTimestamp(value: unknown, path: string, out: Issue[]): void {
   if (value !== null) timestamp(value, path, out);
