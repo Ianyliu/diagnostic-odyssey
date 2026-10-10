@@ -1,3 +1,4 @@
+import { formatPlanningCurrency, formatPlanningNumber } from "../data/planningNumberFormatting.ts";
 import "./PilotDecisionVisuals.css";
 import type { Scenario, ScenarioResult } from "@diagnostic-odyssey/contracts";
 import {
@@ -60,8 +61,8 @@ export function PilotDecisionVisuals({
         />
       </div>
       <div className="visual-stat-row">
-        <span><strong>{integer.format(result.reached_participants)}</strong> within capacity</span>
-        <span><strong>{integer.format(result.capacity_gap)}</strong> capacity gap</span>
+        <span><strong>{formatPlanningNumber(result.reached_participants, integer)}</strong> within capacity</span>
+        <span><strong>{formatPlanningNumber(result.capacity_gap, integer)}</strong> capacity gap</span>
       </div>
       {capacityCoverage.noDemandCopy && <p className="visual-note"><strong>{capacityCoverage.noDemandCopy}</strong></p>}
       <p className="visual-note">This compares analyst-entered reach and capacity assumptions. It is not an observed access rate or forecast.</p>
@@ -99,19 +100,19 @@ export function PilotDecisionVisuals({
           <p className="visual-kicker">PROGRAM INPUT</p>
           <h3 id="resource-composition-title">Resource requirement composition</h3>
         </div>
-        <strong className="visual-headline">{currency.format(resourceTotal)}</strong>
+        <strong className="visual-headline">{formatPlanningCurrency(resourceTotal, currency)}</strong>
       </div>
       <div
         className="resource-track"
         role="img"
-        aria-label={`Program-resource requirement ${currency.format(resourceTotal)}: fixed ${currency.format(result.fixed_program_cost)}, participant-dependent ${currency.format(result.variable_program_cost)}.`}
+        aria-label={`Program-resource requirement ${formatPlanningCurrency(resourceTotal, currency)}: fixed ${formatPlanningCurrency(result.fixed_program_cost, currency)}, participant-dependent ${formatPlanningCurrency(result.variable_program_cost, currency)}.`}
       >
         <span className="resource-fixed" style={{width: `${fixedShare}%`}} />
         <span className="resource-variable" style={{width: `${variableShare}%`}} />
       </div>
       <div className="resource-legend">
-        <span><i className="legend-swatch fixed" aria-hidden="true" />Fixed {currency.format(result.fixed_program_cost)}</span>
-        <span><i className="legend-swatch variable" aria-hidden="true" />Participant-dependent {currency.format(result.variable_program_cost)}</span>
+        <span><i className="legend-swatch fixed" aria-hidden="true" />Fixed {formatPlanningCurrency(result.fixed_program_cost, currency)}</span>
+        <span><i className="legend-swatch variable" aria-hidden="true" />Participant-dependent {formatPlanningCurrency(result.variable_program_cost, currency)}</span>
       </div>
       <p className="visual-note">Resource requirement is a planning input, not savings, ROI, or attributable cost.</p>
     </section>

@@ -1,3 +1,4 @@
+import { formatPlanningNumber } from "../data/planningNumberFormatting.ts";
 import "./SensitivityExplorer.css";
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
@@ -82,7 +83,7 @@ export function SensitivityExplorer({
           <div className="sensitivity-track" aria-hidden="true">
             <span className="sensitivity-fill" style={{width: `${width}%`}} />
           </div>
-          <strong>{integer.format(output)}</strong>
+          <strong>{formatPlanningNumber(output, integer)}</strong>
         </div>;
       })}
     </div>
@@ -94,8 +95,8 @@ export function SensitivityExplorer({
           <thead><tr><th scope="col">{fieldLabels[field]}</th><th scope="col">{metricLabel}</th><th scope="col">Reached participants</th></tr></thead>
           <tbody>{points.map(point => <tr key={point.input_value}>
             <th scope="row">{formatSensitivityInput(field, point.input_value)}</th>
-            <td>{integer.format(point.result[metric])}</td>
-            <td>{integer.format(point.result.reached_participants)}</td>
+            <td>{formatPlanningNumber(point.result[metric], integer)}</td>
+            <td>{formatPlanningNumber(point.result.reached_participants, integer)}</td>
           </tr>)}</tbody>
         </table>
       </div>

@@ -114,6 +114,10 @@
   color: var(--do-error-text);
 }
 
+.pilot-page .input-helper {
+  overflow-wrap: anywhere;
+}
+
 .pilot-page .form-error,
 .pilot-page .draft-not-applied {
   background: var(--do-warning-surface);

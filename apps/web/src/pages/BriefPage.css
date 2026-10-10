@@ -245,6 +245,7 @@
 
 .planning-brief-page .brief-applied-assumptions dd,
 .planning-brief-page .brief-output-list dd {
+  overflow-wrap: anywhere;
   margin: 0;
   color: var(--do-text);
   font-size: .94rem;

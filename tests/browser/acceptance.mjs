@@ -69,36 +69,36 @@ async function exportBrief(page, filename) {
   const parsed = JSON.parse(
     await readFile(`${output}/${filename}.json`, "utf8"),
   );
-  for (const [key, value] of Object.entries(parsed.scenario?.result ?? {})) {
-    if (
-      ![
-        "scenario_id",
-        "target_pathway_step",
-        "target_mechanism",
-        "bounded_effect",
-      ].includes(key)
-    )
-      assert.ok(
-        typeof value === "number" && Number.isFinite(value),
-        `Invalid JSON scenario numeric field ${key}: ${value}`,
-      );
-  }
-  for (const key of [
-    "eligible_population",
-    "reach",
-    "capacity",
-    "baseline_window_months",
-    "alternative_window_months",
-    "horizon_months",
-    "fixed_cost",
-    "per_participant_cost",
-  ]) {
-    const value = parsed.scenario?.input[key];
-    if (parsed.scenario)
-      assert.ok(
-        typeof value === "number" && Number.isFinite(value),
-        `Invalid JSON scenario input ${key}: ${value}`,
-      );
+  if (parsed.scenario) {
+    for (const [section, keys] of Object.entries({
+      input: [
+        "eligible_population", "reach", "capacity", "baseline_window_months",
+        "alternative_window_months", "horizon_months", "fixed_cost", "per_participant_cost",
+      ],
+      result: [
+        "intended_reach", "reached_participants", "capacity_gap", "baseline_person_months",
+        "alternative_person_months", "difference_person_months", "fixed_program_cost",
+        "variable_program_cost", "program_resource_requirement",
+      ],
+    })) {
+      for (const key of keys) {
+        const value = parsed.scenario[section]?.[key];
+        assert.ok(
+          typeof value === "number" && Number.isFinite(value),
+          `Invalid or missing JSON scenario ${section}.${key}: ${value}`,
+        );
+      }
+    }
+    const effect = parsed.scenario.result.bounded_effect;
+    if (effect !== undefined) {
+      assert.ok(effect && typeof effect === "object", "Invalid JSON bounded effect");
+      for (const key of ["value_low", "value_high"]) {
+        assert.ok(
+          typeof effect[key] === "number" && Number.isFinite(effect[key]),
+          `Invalid or missing JSON bounded effect ${key}: ${effect[key]}`,
+        );
+      }
+    }
   }
   return parsed;
 }
@@ -455,6 +455,49 @@ await check(
     await context.close();
   },
 );
+await check("extreme finite scenario layout and invalid sensitivity remain usable", async () => {
+  const layouts = [];
+  for (const width of [1440, 820, 360]) {
+    for (const theme of ["light", "dark"]) {
+      const context = await browser.newContext({
+        viewport: { width, height: 1000 }, colorScheme: theme,
+        reducedMotion: "reduce", acceptDownloads: true,
+      });
+      const page = await context.newPage();
+      page.setDefaultTimeout(5000);
+      const errors = [];
+      page.on("pageerror", (error) => errors.push(String(error)));
+      await ready(page, "/pilot");
+      await page.locator("#pilot-fixed_cost").fill("1e308");
+      assert.equal(await page.locator("#pilot-fixed_cost").getAttribute("aria-invalid"), "false");
+      for (const route of ["pilot", "brief"]) {
+        if (route === "brief") await navigate(page, "Planning brief");
+        const layout = await page.evaluate(() => ({ width: innerWidth, scroll: document.documentElement.scrollWidth }));
+        layouts.push({ route, theme, ...layout });
+        await page.screenshot({ path: `${output}/extreme-${route}-${width}-${theme}.png` });
+        assert.ok(layout.scroll <= layout.width + 1, `Extreme finite ${route} ${theme} overflow: ${JSON.stringify(layout)}`);
+      }
+      const brief = await exportBrief(page, `extreme-finite-${width}-${theme}`);
+      assert.equal(brief.scenario.input.fixed_cost, 1e308);
+      assert.equal(brief.scenario.result.fixed_program_cost, 1e308);
+      await navigate(page, "Pilot planner");
+      await page.locator("#pilot-capacity").fill(String(Number.MAX_VALUE));
+      assert.equal(await page.locator("#pilot-capacity").getAttribute("aria-invalid"), "false");
+      await page.getByLabel("Test assumption").selectOption("capacity");
+      await page.locator("#sensitivity .field-error[role=status]").waitFor();
+      assert.equal(await page.locator("#sensitivity tbody tr").count(), 0);
+      assert.equal(await page.locator("#sensitivity .sensitivity-action").count(), 0);
+      assert.equal(await page.getByText("Draft not applied", { exact: true }).count(), 0);
+      await navigate(page, "Planning brief");
+      const capacityBrief = await exportBrief(page, `extreme-capacity-${width}-${theme}`);
+      assert.equal(capacityBrief.scenario.input.capacity, Number.MAX_VALUE);
+      assert.equal(capacityBrief.scenario.result.reached_participants, 3000);
+      assert.deepEqual(errors, []);
+      await context.close();
+    }
+  }
+  return { layouts };
+});
 for (const theme of ["light", "dark"])
   await check(`rendered WCAG accessibility: ${theme}`, async () => {
     const context = await browser.newContext({

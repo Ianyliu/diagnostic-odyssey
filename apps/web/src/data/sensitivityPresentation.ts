@@ -1,3 +1,4 @@
+import { formatPlanningNumber } from "./planningNumberFormatting.ts";
 import type { SensitivityField } from "./decisionVisuals";
 
 const integer = new Intl.NumberFormat("en-US", {maximumFractionDigits: 0});
@@ -36,12 +37,12 @@ export function formatSensitivityInput(
     throw new Error("Cannot display an invalid sensitivity input. Correct the planning inputs first.");
   }
   if (field === "reach") {
-    return `${decimal.format(value * 100)}% (${exactDecimal(value)})`;
+    return `${formatPlanningNumber(value * 100, decimal)}% (${exactDecimal(value)})`;
   }
   if (field === "alternative_window_months") {
-    return `${decimal.format(value)} mo`;
+    return `${formatPlanningNumber(value, decimal)} mo`;
   }
-  return integer.format(value);
+  return formatPlanningNumber(value, integer);
 }
 
 
