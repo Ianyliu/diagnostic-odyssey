@@ -188,6 +188,15 @@
   overflow-wrap: anywhere;
 }
 
+.pilot-page .pilot-result-ledger .pilot-result-scientific {
+  grid-column: 1 / -1;
+}
+
+.pilot-page .pilot-result-scientific dd {
+  white-space: nowrap;
+  font-size: 18px;
+}
+
 .pilot-page .sensitivity-paused-state {
   background: var(--do-assumption-surface);
   border-color: var(--do-assumption-border);

@@ -1,4 +1,4 @@
-/* global process, console, window, document, innerWidth, innerHeight, getComputedStyle, performance, Event, MutationObserver */
+/* global process, console, window, document, innerWidth, innerHeight, getComputedStyle, performance, Event, MutationObserver, NodeFilter */
 import assert from "node:assert/strict";
 import { mkdir, writeFile, readFile } from "node:fs/promises";
 import { createRequire } from "node:module";
@@ -468,8 +468,51 @@ await check("extreme finite scenario layout and invalid sensitivity remain usabl
       const errors = [];
       page.on("pageerror", (error) => errors.push(String(error)));
       await ready(page, "/pilot");
+      const assertScientificTokens = async (selector, scenarioLabel) => {
+        const tokens = await page.locator(selector).evaluateAll((elements) => elements.flatMap(element => {
+          const bounds = element.parentElement.getBoundingClientRect();
+          const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
+          const found = [];
+          while (walker.nextNode()) {
+            const node = walker.currentNode;
+            for (const match of node.textContent.matchAll(/\$?\d+(?:\.\d+)?e[+-]?\d+/gi)) {
+              const range = document.createRange();
+              range.setStart(node, match.index);
+              range.setEnd(node, match.index + match[0].length);
+              const rects = [...range.getClientRects()].filter(rect => rect.width > 0 && rect.height > 0);
+              found.push({ text: match[0], lines: new Set(rects.map(rect => Math.round(rect.top))).size,
+                contained: rects.every(rect => rect.left >= bounds.left - 1 && rect.right <= bounds.right + 1) });
+            }
+          }
+          return found;
+        }));
+        assert.ok(tokens.length > 0, `No scientific tokens in ${scenarioLabel}: ${selector}`);
+        for (const token of tokens) {
+          assert.equal(token.lines, 1, `Scientific token split (${scenarioLabel}, ${width}px, ${theme}): ${JSON.stringify(token)}`);
+          assert.ok(token.contained, `Scientific token exceeds its row (${scenarioLabel}, ${width}px, ${theme}): ${JSON.stringify(token)}`);
+        }
+        return tokens;
+      };
       await page.locator("#pilot-fixed_cost").fill("1e308");
       assert.equal(await page.locator("#pilot-fixed_cost").getAttribute("aria-invalid"), "false");
+      const assertResourceToken = async (fixedCost) => {
+        const token = await page.locator('.decision-visual[aria-labelledby="resource-composition-title"] .visual-headline').evaluate((element) => {
+          const range = document.createRange();
+          range.selectNodeContents(element);
+          const rects = [...range.getClientRects()].filter(rect => rect.width > 0 && rect.height > 0);
+          const parent = element.parentElement.getBoundingClientRect();
+          return {
+            text: element.textContent,
+            lines: new Set(rects.map(rect => Math.round(rect.top))).size,
+            contained: rects.every(rect => rect.left >= parent.left - 1 && rect.right <= parent.right + 1),
+          };
+        });
+        assert.equal(token.lines, 1, `Scientific resource token split across lines (${fixedCost}, ${width}px, ${theme}): ${JSON.stringify(token)}`);
+        assert.ok(token.contained, `Scientific resource token exceeds its heading (${fixedCost}, ${width}px, ${theme}): ${JSON.stringify(token)}`);
+        return token;
+      };
+      const scientificToken = await assertResourceToken("1e308");
+      const scientificLedgerTokens = await assertScientificTokens(".pilot-result-ledger dd", "1e308 cost Pilot");
       for (const route of ["pilot", "brief"]) {
         if (route === "brief") await navigate(page, "Planning brief");
         const layout = await page.evaluate(() => ({ width: innerWidth, scroll: document.documentElement.scrollWidth }));
@@ -478,9 +521,27 @@ await check("extreme finite scenario layout and invalid sensitivity remain usabl
         assert.ok(layout.scroll <= layout.width + 1, `Extreme finite ${route} ${theme} overflow: ${JSON.stringify(layout)}`);
       }
       const brief = await exportBrief(page, `extreme-finite-${width}-${theme}`);
+      const scientificBriefTokens = await assertScientificTokens(".brief-applied-assumptions dd, .brief-output-list dd", "1e308 cost Brief");
       assert.equal(brief.scenario.input.fixed_cost, 1e308);
       assert.equal(brief.scenario.result.fixed_program_cost, 1e308);
       await navigate(page, "Pilot planner");
+      await page.locator("#pilot-fixed_cost").fill(String(Number.MAX_VALUE));
+      assert.equal(await page.locator("#pilot-fixed_cost").getAttribute("aria-invalid"), "false");
+      const maxScientificToken = await assertResourceToken("Number.MAX_VALUE");
+      const maxLedgerTokens = await assertScientificTokens(".pilot-result-ledger dd", "MAX cost Pilot");
+      await page.screenshot({ path: `${output}/extreme-max-pilot-${width}-${theme}.png` });
+      const maxLayout = await page.evaluate(() => ({ width: innerWidth, scroll: document.documentElement.scrollWidth }));
+      assert.ok(maxLayout.scroll <= maxLayout.width + 1, `MAX_VALUE resource page overflow: ${JSON.stringify(maxLayout)}`);
+      await navigate(page, "Planning brief");
+      const maxBrief = await exportBrief(page, `extreme-max-cost-${width}-${theme}`);
+      const maxBriefTokens = await assertScientificTokens(".brief-applied-assumptions dd, .brief-output-list dd", "MAX cost Brief");
+      const maxBriefLayout = await page.evaluate(() => ({ width: innerWidth, scroll: document.documentElement.scrollWidth }));
+      assert.ok(maxBriefLayout.scroll <= maxBriefLayout.width + 1, `MAX_VALUE resource Brief overflow: ${JSON.stringify(maxBriefLayout)}`);
+      assert.equal(maxBrief.scenario.input.fixed_cost, Number.MAX_VALUE);
+      assert.equal(maxBrief.scenario.result.fixed_program_cost, Number.MAX_VALUE);
+      layouts.push({ width, theme, scientificToken, scientificLedgerTokens, scientificBriefTokens, maxScientificToken, maxLedgerTokens, maxBriefTokens, maxLayout, maxBriefLayout });
+      await navigate(page, "Pilot planner");
+      await page.locator("#pilot-fixed_cost").fill("1e308");
       await page.locator("#pilot-capacity").fill(String(Number.MAX_VALUE));
       assert.equal(await page.locator("#pilot-capacity").getAttribute("aria-invalid"), "false");
       await page.getByLabel("Test assumption").selectOption("capacity");
@@ -492,6 +553,27 @@ await check("extreme finite scenario layout and invalid sensitivity remain usabl
       const capacityBrief = await exportBrief(page, `extreme-capacity-${width}-${theme}`);
       assert.equal(capacityBrief.scenario.input.capacity, Number.MAX_VALUE);
       assert.equal(capacityBrief.scenario.result.reached_participants, 3000);
+      await navigate(page, "Pilot planner");
+      for (const [key, value] of Object.entries({ fixed_cost: "0", per_participant_cost: "0", baseline_window_months: "0", alternative_window_months: "0", horizon_months: "0", reach: "100", eligible_population: String(Number.MAX_VALUE) })) {
+        await page.locator(`#pilot-${key}`).fill(value);
+      }
+      assert.equal(await page.getByText("Draft not applied", { exact: true }).count(), 0);
+      const maxReachedPilotTokens = await assertScientificTokens(".pilot-result-ledger dd", "MAX reached Pilot");
+      const maxReachedPilotLayout = await page.evaluate(() => ({ width: innerWidth, scroll: document.documentElement.scrollWidth }));
+      assert.ok(maxReachedPilotLayout.scroll <= maxReachedPilotLayout.width + 1, `MAX reached Pilot overflow: ${JSON.stringify(maxReachedPilotLayout)}`);
+      await page.screenshot({ path: `${output}/extreme-max-reached-pilot-${width}-${theme}.png` });
+      await navigate(page, "Planning brief");
+      const maxReachedBriefTokens = await assertScientificTokens(".brief-applied-assumptions dd, .brief-output-list dd", "MAX reached Brief");
+      const maxReachedBriefLayout = await page.evaluate(() => ({ width: innerWidth, scroll: document.documentElement.scrollWidth }));
+      assert.ok(maxReachedBriefLayout.scroll <= maxReachedBriefLayout.width + 1, `MAX reached Brief overflow: ${JSON.stringify(maxReachedBriefLayout)}`);
+      const maxReached = await exportBrief(page, `extreme-max-reached-${width}-${theme}`);
+      assert.equal(maxReached.scenario.input.eligible_population, Number.MAX_VALUE);
+      assert.equal(maxReached.scenario.input.capacity, Number.MAX_VALUE);
+      assert.equal(maxReached.scenario.input.reach, 1);
+      assert.equal(maxReached.scenario.result.reached_participants, Number.MAX_VALUE);
+      assert.equal(maxReached.scenario.result.baseline_person_months, 0);
+      assert.equal(maxReached.scenario.result.program_resource_requirement, 0);
+      layouts.push({width, theme, maxReachedPilotTokens, maxReachedBriefTokens, maxReachedPilotLayout, maxReachedBriefLayout});
       assert.deepEqual(errors, []);
       await context.close();
     }

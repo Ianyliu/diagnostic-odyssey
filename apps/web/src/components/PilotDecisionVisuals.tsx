@@ -34,6 +34,8 @@ export function PilotDecisionVisuals({
   const baselineWidth = clampPercent((scenario.baseline_window_months / windowScale) * 100);
   const planningWidth = clampPercent((scenario.alternative_window_months / windowScale) * 100);
   const resourceTotal = result.program_resource_requirement;
+  const resourceLabel = formatPlanningCurrency(resourceTotal, currency);
+  const scientificResource = resourceLabel.includes("e+");
   const fixedShare = resourceTotal > 0
     ? clampPercent((result.fixed_program_cost / resourceTotal) * 100)
     : 0;
@@ -95,12 +97,12 @@ export function PilotDecisionVisuals({
     </section>
 
     <section className="decision-visual" aria-labelledby="resource-composition-title">
-      <div className="decision-visual-heading">
+      <div className={`decision-visual-heading${scientificResource ? " decision-visual-heading-scientific" : ""}`}>
         <div>
           <p className="visual-kicker">PROGRAM INPUT</p>
           <h3 id="resource-composition-title">Resource requirement composition</h3>
         </div>
-        <strong className="visual-headline">{formatPlanningCurrency(resourceTotal, currency)}</strong>
+        <strong className={`visual-headline${scientificResource ? " visual-headline-scientific" : ""}`}>{resourceLabel}</strong>
       </div>
       <div
         className="resource-track"
