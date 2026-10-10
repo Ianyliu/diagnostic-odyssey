@@ -103,7 +103,7 @@ test("opening uses session storage and remains decorative", () => {
   assert.match(source, /sessionStorageOrNull/);
   assert.match(motionSource, /window\.sessionStorage/);
   assert.doesNotMatch(source, /localStorage/);
-  assert.match(source, /className="preview-lanes" aria-label="Evidence roles remain separate"/);
+  assert.match(source, /className="preview-lanes" role="group" aria-label="Evidence roles remain separate"/);
   assert.match(source, /Reviewed evidence/);
   assert.match(source, /Local context/);
   assert.match(source, /Analyst assumptions/);

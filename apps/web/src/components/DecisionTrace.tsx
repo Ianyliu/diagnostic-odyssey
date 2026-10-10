@@ -32,7 +32,7 @@ export function DecisionTrace({
     evidence
   });
 
-  return <div className="decision-trace" aria-label="Decision provenance ledger">
+  return <div className="decision-trace" role="group" aria-label="Decision provenance ledger">
     <p className="decision-trace-boundary">
       Evidence → explicit analyst context → planning scope → evidence/data gap.
       This is a provenance and decision ledger, not a proven causal chain.
