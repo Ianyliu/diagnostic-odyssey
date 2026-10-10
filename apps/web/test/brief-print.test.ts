@@ -62,6 +62,14 @@ test("executeBriefPrint prepares disclosures and invokes print callback", () => 
   });
 
   assert.equal(printed, true);
+  // Browsers may return before the print dialog closes. Keep prepared state
+  // until afterprint/media exit explicitly restores the original choices.
+  assert.deepEqual(disclosures.map(d => d.open), [true, true]);
+  state.prepare();
+  state.restore();
+  assert.deepEqual(disclosures.map(d => d.open), [false, true]);
+  state.restore();
+  assert.deepEqual(disclosures.map(d => d.open), [false, true]);
 });
 
 test("executeBriefPrint restores disclosures and rethrows if print callback throws", () => {
