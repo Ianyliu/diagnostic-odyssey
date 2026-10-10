@@ -31,7 +31,7 @@ Within that slice, the Pilot Planner now includes deterministic decision visuals
 Requirements: Node.js 22 or newer. From the repository root:
 
 ```bash
-npm install
+npm ci
 npm run dev
 ```
 

@@ -123,3 +123,24 @@ test("near-one reach preserves both exact current and one boundary", () => {
   assert.ok(points.some(point => point.input_value === currentReach));
   assert.ok(points.some(point => point.input_value === 1));
 });
+
+test("invalid sensitivity calculations are explicit without suppressing or replacing bad points", async () => {
+  const {evaluateScenarioSensitivity} = await import("../src/data/decisionVisuals.ts");
+  const overflowingNeighbor = {
+    ...scenario, eligible_population: 100, capacity: 1, reach: 1,
+    fixed_cost: 0, per_participant_cost: Number.MAX_VALUE
+  };
+  const evaluation = evaluateScenarioSensitivity(overflowingNeighbor, "capacity");
+  assert.deepEqual(evaluation.points, []);
+  assert.match(evaluation.error ?? "", /outside the supported numeric range/);
+  const valid = evaluateScenarioSensitivity(scenario, "capacity");
+  assert.equal(valid.error, null);
+  assert.equal(valid.points.length, 5);
+});
+
+test("mechanical sensitivity range overflow rejects the range instead of clamping it", async () => {
+  const {evaluateScenarioSensitivity} = await import("../src/data/decisionVisuals.ts");
+  const hugeCapacity = {...scenario, capacity: Number.MAX_VALUE};
+  assert.throws(() => buildSensitivityValues(hugeCapacity, "capacity"), {name: "InvalidScenarioResultError"});
+  assert.match(evaluateScenarioSensitivity(hugeCapacity, "capacity").error ?? "", /Reduce/);
+});

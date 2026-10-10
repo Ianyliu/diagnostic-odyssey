@@ -1,5 +1,7 @@
 import {
   canExportEstimate,
+  validateScenario,
+  validateScenarioResult,
   type AnalysisContext,
   type DataRequest,
   type Estimate,
@@ -33,6 +35,7 @@ export interface BriefInput {
 }
 
 export function buildPlanningBrief(input: BriefInput): PlanningBrief {
+  assertValidBriefScenario(input.scenario);
   const burdenFindings = input.estimates.filter(canExportEstimate);
   const warnings = [
     "Gross burden is not attributable burden.",
@@ -76,5 +79,22 @@ export function buildPlanningBrief(input: BriefInput): PlanningBrief {
 }
 
 export function serializeBriefJson(brief: PlanningBrief): string {
-  return JSON.stringify(brief, null, 2);
+  assertValidBriefScenario(brief.scenario);
+  return JSON.stringify(brief, (key: string, value: unknown) => {
+    if (typeof value === "number" && !Number.isFinite(value)) {
+      throw new Error(`Cannot export Planning Brief: ${key || "value"} must be a finite number. Correct the invalid value before exporting.`);
+    }
+    return value;
+  }, 2);
+}
+
+function assertValidBriefScenario(scenario: BriefInput["scenario"]): void {
+  if (scenario == null) return;
+  const issues = [
+    ...validateScenario(scenario.input),
+    ...validateScenarioResult(scenario.result)
+  ];
+  if (issues.length > 0) {
+    throw new Error(`Cannot export Planning Brief: ${issues.map(issue => `${issue.path}: ${issue.message}`).join("; ")}. Correct the planning inputs before exporting.`);
+  }
 }
