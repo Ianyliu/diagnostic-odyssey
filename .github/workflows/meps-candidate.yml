@@ -63,7 +63,7 @@ jobs:
           node-version: 22
 
       - name: Install JavaScript dependencies
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
 
       - name: Re-run TypeScript checks before real data
         run: |
