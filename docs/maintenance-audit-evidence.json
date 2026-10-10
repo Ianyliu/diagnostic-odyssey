@@ -359,7 +359,7 @@
   "limits": [
     "Final main/static/deployment provenance must be populated after remaining merges and real deployment.",
     "Main protection endpoint404 and empty rulesets; manual owner configuration remains.",
-    "Overview axe incomplete contrast nodes:32 light,29 dark; native OS print and screen readers not tested.",
+    "Overview axe incomplete contrast nodes:32 light,29 dark; no screen-reader session or physical print job. Native Chrome/macOS cancellation smoke passed, with seven default-preview pages distinct from the eight-page selected-workflow PDF.",
     "Local browser timings are small-sample localhost diagnostics, not field/mobile Core Web Vitals.",
     "Router package findings remain moderate; present-source exposure assessment does not claim a patched Router6 package."
   ],

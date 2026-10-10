@@ -58,12 +58,16 @@
   "print": {
     "pages": 8,
     "allPagesVisuallyInspected": true,
-    "nativeOSDialogTested": false
+    "nativeOSDialogTested": true,
+    "nativeDefaultScenarioPreviewPages": 7,
+    "nativeCancellationRestoresMixedDisclosureStateAndFocus": true,
+    "physicalPrintJobSubmitted": false,
+    "nativeSmokeEvidence": "native-print-smoke.json"
   },
   "limitations": [
     "Axe contrast incomplete nodes remain on Overview gradients/decorative elements: 32 light,29 dark. Visual inspection found readable text; not full WCAG certification.",
     "No screen reader session was run.",
-    "Native OS print dialog was not tested; actual Chrome PDF and simulated print lifecycle restoration were verified.",
+    "Native Chrome/macOS print-dialog cancellation was tested with the default seven-page scenario; the selected-workflow headless PDF has eight pages. No physical print job was submitted.",
     "Loading test observes the initial DOM commit before synchronous validation; no persistent loading paint is claimed.",
     "Five localhost cold samples are diagnostic, not field Core Web Vitals or mobile-network measurement."
   ],
