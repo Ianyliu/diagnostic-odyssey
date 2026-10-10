@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { markOpeningSeen, reducedMotionRequested, sessionStorageOrNull, shouldPlayOpening } from "./openingMotion";
+import { getBrowserMediaQuery, readMediaQueryMatches, subscribeToMediaQuery } from "../browserMedia";
 
 const documentEntry = typeof window !== "undefined" ? {
   pathname: window.location.pathname,
@@ -21,9 +22,12 @@ export function OpeningProvenance() {
       return;
     }
     const settle = () => setPlaying(false);
-    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
-    if (media.matches) settle();
-    media.addEventListener("change", settle);
+    const media = getBrowserMediaQuery("(prefers-reduced-motion: reduce)");
+    if (readMediaQueryMatches(media, true)) {
+      settle();
+      return;
+    }
+    const unsubscribeMedia = subscribeToMediaQuery(media, settle);
     window.addEventListener("pointerdown", settle, { passive: true });
     window.addEventListener("keydown", settle);
     window.addEventListener("wheel", settle, { passive: true });
@@ -31,7 +35,7 @@ export function OpeningProvenance() {
     const timer = window.setTimeout(settle, 1450);
     return () => {
       window.clearTimeout(timer);
-      media.removeEventListener("change", settle);
+      unsubscribeMedia();
       window.removeEventListener("pointerdown", settle);
       window.removeEventListener("keydown", settle);
       window.removeEventListener("wheel", settle);
