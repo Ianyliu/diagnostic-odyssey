@@ -824,6 +824,33 @@ export function validateScenario(value: unknown, path = "scenario"): ValidationI
   return issues;
 }
 
+/** Reject invalid calculated quantities before presentation or JSON serialization. */
+export function validateScenarioResult(value: unknown, path = "scenario_result"): ValidationIssue[] {
+  if (!isRecord(value)) return [{ path, message: "must be an object" }];
+  const issues: ValidationIssue[] = [];
+  for (const key of [
+    "intended_reach", "reached_participants", "capacity_gap", "baseline_person_months",
+    "alternative_person_months", "difference_person_months", "fixed_program_cost",
+    "variable_program_cost", "program_resource_requirement"
+  ]) {
+    if (typeof value[key] !== "number" || !Number.isFinite(value[key]) || (value[key] as number) < 0) {
+      issues.push({ path: `${path}.${key}`, message: "must be a non-negative finite calculated number" });
+    }
+  }
+  if (value.bounded_effect !== undefined) {
+    if (!isRecord(value.bounded_effect)) {
+      issues.push({ path: `${path}.bounded_effect`, message: "must be an object" });
+    } else {
+      for (const key of ["value_low", "value_high"]) {
+        if (typeof value.bounded_effect[key] !== "number" || !Number.isFinite(value.bounded_effect[key])) {
+          issues.push({ path: `${path}.bounded_effect.${key}`, message: "must be a finite number" });
+        }
+      }
+    }
+  }
+  return issues;
+}
+
 export function validateDataRequest(
   value: unknown,
   path = "data_request"

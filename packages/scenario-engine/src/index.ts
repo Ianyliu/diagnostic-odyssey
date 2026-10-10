@@ -1,5 +1,6 @@
 import {
   validateScenario,
+  validateScenarioResult,
   type BoundedEffect,
   type Scenario,
   type ScenarioResult
@@ -13,6 +14,21 @@ export class InvalidScenarioError extends Error {
     this.issues = issues;
     this.name = "InvalidScenarioError";
   }
+}
+
+export class InvalidScenarioResultError extends Error {
+  readonly issues: ReturnType<typeof validateScenarioResult>;
+
+  constructor(issues: ReturnType<typeof validateScenarioResult>) {
+    super("Calculated planning quantities exceed the supported numeric range. Reduce population, recognition windows, or program costs and try again.");
+    this.issues = issues;
+    this.name = "InvalidScenarioResultError";
+  }
+}
+
+function assertFiniteResult(result: ScenarioResult): void {
+  const issues = validateScenarioResult(result);
+  if (issues.length > 0) throw new InvalidScenarioResultError(issues);
 }
 
 const participantCount = (value: number): number => Math.max(0, Math.round(value));
@@ -63,7 +79,7 @@ export function calculateScenario(scenario: Scenario): ScenarioResult {
   );
   const resources = programResourceRequirement(scenario, reached);
 
-  return {
+  const result: ScenarioResult = {
     scenario_id: scenario.scenario_id,
     intended_reach: intended,
     reached_participants: reached,
@@ -77,6 +93,8 @@ export function calculateScenario(scenario: Scenario): ScenarioResult {
     target_pathway_step: scenario.target_pathway_step,
     target_mechanism: scenario.mechanism
   };
+  assertFiniteResult(result);
+  return result;
 }
 
 export function attachBoundedEffect(
@@ -90,7 +108,9 @@ export function attachBoundedEffect(
   if (effect.target_mechanism !== scenario.mechanism) {
     throw new Error("Bounded effect target_mechanism does not match the scenario mechanism.");
   }
-  return { ...result, bounded_effect: effect };
+  const combined = { ...result, bounded_effect: effect };
+  assertFiniteResult(combined);
+  return combined;
 }
 
 export interface SensitivityPoint {
@@ -104,6 +124,8 @@ export function oneWaySensitivity(
   field: "reach" | "capacity" | "alternative_window_months",
   values: number[]
 ): SensitivityPoint[] {
+  // Validate the applied scenario even when no comparison values were requested.
+  calculateScenario(scenario);
   return values.map(inputValue => ({
     label: `${field}=${inputValue}`,
     input_value: inputValue,
