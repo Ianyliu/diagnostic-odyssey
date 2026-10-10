@@ -50,6 +50,16 @@
   white-space: normal;
 }
 
+.decision-visual-heading-scientific {
+  flex-wrap: wrap;
+}
+
+.visual-headline-scientific {
+  flex-shrink: 0;
+  white-space: nowrap;
+  font-size: 18px;
+}
+
 .decision-visual .visual-note {
   margin: 0;
   color: var(--do-text-muted);
