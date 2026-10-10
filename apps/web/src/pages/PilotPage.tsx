@@ -1,3 +1,4 @@
+import { formatPlanningCurrency, formatPlanningNumber } from "../data/planningNumberFormatting.ts";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import type { Scenario, ScenarioResult } from "@diagnostic-odyssey/contracts";
@@ -32,6 +33,8 @@ import {
 } from "../data/planningScenarioDefaults";
 import { getPathwayBoundaryPresentation } from "../data/pathwayBoundary";
 import "./PilotPage.css";
+
+const resultNumber = new Intl.NumberFormat("en-US");
 
 const assumptionGroups: ReadonlyArray<{
   title: string;
@@ -230,13 +233,13 @@ function PilotPlannerWorkspace({
         />
         <PilotDecisionVisuals scenario={scenario} result={scenarioResult} />
         <dl className="result-list pilot-result-ledger">
-          <div><dt>Intended reach</dt><dd>{scenarioResult.intended_reach.toLocaleString()}</dd></div>
-          <div><dt>Reached participants</dt><dd>{scenarioResult.reached_participants.toLocaleString()}</dd></div>
-          <div><dt>Capacity gap</dt><dd>{scenarioResult.capacity_gap.toLocaleString()}</dd></div>
-          <div><dt>Baseline person-month exposure</dt><dd>{scenarioResult.baseline_person_months.toLocaleString()}</dd></div>
-          <div><dt>Planning person-month exposure</dt><dd>{scenarioResult.alternative_person_months.toLocaleString()}</dd></div>
-          <div><dt>Difference in person-month exposure</dt><dd>{scenarioResult.difference_person_months.toLocaleString()}</dd></div>
-          <div><dt>Program-resource requirement</dt><dd>{new Intl.NumberFormat("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0}).format(scenarioResult.program_resource_requirement)}</dd></div>
+          <div><dt>Intended reach</dt><dd>{formatPlanningNumber(scenarioResult.intended_reach, resultNumber)}</dd></div>
+          <div><dt>Reached participants</dt><dd>{formatPlanningNumber(scenarioResult.reached_participants, resultNumber)}</dd></div>
+          <div><dt>Capacity gap</dt><dd>{formatPlanningNumber(scenarioResult.capacity_gap, resultNumber)}</dd></div>
+          <div><dt>Baseline person-month exposure</dt><dd>{formatPlanningNumber(scenarioResult.baseline_person_months, resultNumber)}</dd></div>
+          <div><dt>Planning person-month exposure</dt><dd>{formatPlanningNumber(scenarioResult.alternative_person_months, resultNumber)}</dd></div>
+          <div><dt>Difference in person-month exposure</dt><dd>{formatPlanningNumber(scenarioResult.difference_person_months, resultNumber)}</dd></div>
+          <div><dt>Program-resource requirement</dt><dd>{formatPlanningCurrency(scenarioResult.program_resource_requirement)}</dd></div>
         </dl>
         <div className="sr-only" aria-live="polite" aria-atomic="true">{resultAnnouncement}</div>
         {invalidDraft ? <section id="sensitivity" className="sensitivity-paused-state" aria-labelledby="sensitivity-paused-title">

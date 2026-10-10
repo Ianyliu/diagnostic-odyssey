@@ -1,3 +1,4 @@
+import { formatPlanningCurrency, formatPlanningNumber } from "./planningNumberFormatting.ts";
 import {
   validateScenario,
   validateScenarioResult,
@@ -236,19 +237,19 @@ export function formatPilotInputHelper(
   const value = parsed.value;
   switch (field) {
     case "eligible_population":
-      return readableNumber.format(value) + " people";
+      return formatPlanningNumber(value, readableNumber) + " people";
     case "reach":
-      return readableNumber.format(value) + "% intended reach";
+      return formatPlanningNumber(value, readableNumber) + "% intended reach";
     case "capacity":
-      return readableNumber.format(value) + " participants capacity";
+      return formatPlanningNumber(value, readableNumber) + " participants capacity";
     case "baseline_window_months":
     case "alternative_window_months":
     case "horizon_months":
-      return readableNumber.format(value) + (value === 1 ? " month" : " months");
+      return formatPlanningNumber(value, readableNumber) + (value === 1 ? " month" : " months");
     case "fixed_cost":
-      return readableCurrency.format(value);
+      return formatPlanningCurrency(value, readableCurrency);
     case "per_participant_cost":
-      return readableCurrency.format(value) + " per participant";
+      return formatPlanningCurrency(value, readableCurrency) + " per participant";
   }
 }
 
@@ -261,9 +262,9 @@ export function formatPilotResultAnnouncement(result: ScenarioResult): string {
   assertDisplayableResult(result);
   return [
     "Planning results updated.",
-    "Reached participants " + readableInteger.format(result.reached_participants) + ".",
-    "Capacity gap " + readableInteger.format(result.capacity_gap) + ".",
-    "Program-resource requirement " + readableCurrency.format(result.program_resource_requirement) + "."
+    "Reached participants " + formatPlanningNumber(result.reached_participants, readableInteger) + ".",
+    "Capacity gap " + formatPlanningNumber(result.capacity_gap, readableInteger) + ".",
+    "Program-resource requirement " + formatPlanningCurrency(result.program_resource_requirement, readableCurrency) + "."
   ].join(" ");
 }
 

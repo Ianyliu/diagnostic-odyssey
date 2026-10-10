@@ -1,3 +1,4 @@
+import { formatPlanningCurrency, formatPlanningNumber } from "../data/planningNumberFormatting.ts";
 import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { buildPlanningBrief, serializeBriefJson } from "@diagnostic-odyssey/brief-core";
@@ -37,6 +38,8 @@ import {
 import { formatAppliedAssumption } from "./briefAssumptions";
 import { createBriefPrintDisclosureState, executeBriefPrint, watchBriefPrintMedia } from "./briefPrint";
 import "./BriefPage.css";
+
+const resultNumber = new Intl.NumberFormat("en-US");
 
 function AccessibleEstimateInterval({estimate}: {estimate: Estimate}) {
   const interval = formatEstimateInterval(estimate);
@@ -283,9 +286,9 @@ export function BriefPage() {
           <h2>Scenario outputs</h2>
           <p className="subtle">Deterministic planning quantities from the applied assumptions above; these are not a forecast or observed evidence.</p>
           <dl className="brief-output-list">
-            <div><dt>Participants within capacity</dt><dd>{brief.scenario.result.reached_participants.toLocaleString()}</dd></div>
-            <div><dt>Person-month planning exposure difference</dt><dd>{brief.scenario.result.difference_person_months.toLocaleString()}</dd></div>
-            <div><dt>Program-resource requirement</dt><dd>{new Intl.NumberFormat("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0}).format(brief.scenario.result.program_resource_requirement)}</dd></div>
+            <div><dt>Participants within capacity</dt><dd>{formatPlanningNumber(brief.scenario.result.reached_participants, resultNumber)}</dd></div>
+            <div><dt>Person-month planning exposure difference</dt><dd>{formatPlanningNumber(brief.scenario.result.difference_person_months, resultNumber)}</dd></div>
+            <div><dt>Program-resource requirement</dt><dd>{formatPlanningCurrency(brief.scenario.result.program_resource_requirement)}</dd></div>
           </dl>
             <section className="brief-decision-trace" aria-labelledby="brief-decision-trace-title">
               <h3 id="brief-decision-trace-title">Decision trace</h3>
