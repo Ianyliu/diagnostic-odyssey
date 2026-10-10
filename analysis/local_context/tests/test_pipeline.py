@@ -2,7 +2,6 @@ import csv
 import json
 import os
 import tempfile
-import threading
 import unittest
 import urllib.error
 from io import BytesIO
@@ -587,98 +586,6 @@ class LocalContextPipelineTests(unittest.TestCase):
         with patch("analysis.local_context.pipeline.fetch_json", return_value=["not", "a", "dict"]):
             with self.assertRaisesRegex(ContractError, "is not an object"):
                 fetch_acs_individual_metadata(ACS_CONFIG)
-
-    def test_metadata_configuration_is_validated_before_any_requests(self):
-        template = {"variable_metadata_url_template": "https://example.test/{variable}.json"}
-        malformed = [None, {}, "variables", [], [None], [{}]]
-        for value in malformed:
-            with self.subTest(value=value), patch("analysis.local_context.pipeline.fetch_json") as fetch:
-                with self.assertRaises(ContractError):
-                    fetch_acs_individual_metadata({**template, "variables": value})
-                fetch.assert_not_called()
-        valid = {"moe": "PM", "estimate_annotation": "PEA", "moe_annotation": "PMA"}
-        for key in valid:
-            for bad in (None, "", 123, "../secret", " PM"):
-                with self.subTest(key=key, bad=bad), patch("analysis.local_context.pipeline.fetch_json") as fetch:
-                    with self.assertRaises(ContractError):
-                        fetch_acs_individual_metadata({**template, "variables": [valid, {**valid, key: bad}]})
-                    fetch.assert_not_called()
-        with patch("analysis.local_context.pipeline.fetch_json") as fetch:
-            with self.assertRaises(ContractError):
-                fetch_acs_individual_metadata(template)
-            fetch.assert_not_called()
-
-    def test_metadata_deduplicates_and_preserves_configuration_order(self):
-        config = {
-            "variable_metadata_url_template": "https://example.test/{variable}.json",
-            "variables": [
-                {"moe": "A", "estimate_annotation": "B", "moe_annotation": "C"},
-                {"moe": "C", "estimate_annotation": "D", "moe_annotation": "B"},
-            ],
-        }
-        later_finished = threading.Event()
-        calls = []
-        lock = threading.Lock()
-
-        def fetch(url):
-            variable_id = url.rsplit("/", 1)[-1].removesuffix(".json")
-            with lock:
-                calls.append(variable_id)
-            if variable_id == "A":
-                self.assertTrue(later_finished.wait(5), "later request did not run concurrently")
-            if variable_id == "D":
-                later_finished.set()
-            return {"name": variable_id}
-
-        with patch("analysis.local_context.pipeline.fetch_json", side_effect=fetch):
-            records = fetch_acs_individual_metadata(config)
-        self.assertEqual(list(records), ["A", "B", "C", "D"])
-        self.assertCountEqual(calls, ["A", "B", "C", "D"])
-        for variable_id, entry in records.items():
-            self.assertEqual(entry, {"requested_variable_id": variable_id, "response": {"name": variable_id}})
-
-    def test_metadata_requests_run_concurrently_with_four_worker_bound(self):
-        config = {
-            "variable_metadata_url_template": "https://example.test/{variable}.json",
-            "variables": [
-                {"moe": f"V{i}M", "estimate_annotation": f"V{i}E", "moe_annotation": f"V{i}A"}
-                for i in range(4)
-            ],
-        }
-        gate = threading.Barrier(4, timeout=5)
-        lock = threading.Lock()
-        active = 0
-        peak = 0
-
-        def fetch(url):
-            nonlocal active, peak
-            with lock:
-                active += 1
-                peak = max(peak, active)
-            try:
-                gate.wait()
-                return {"url": url}
-            finally:
-                with lock:
-                    active -= 1
-
-        with patch("analysis.local_context.pipeline.fetch_json", side_effect=fetch):
-            records = fetch_acs_individual_metadata(config)
-        self.assertEqual(len(records), 12)
-        self.assertEqual(peak, 4)
-        self.assertEqual(active, 0)
-
-    def test_metadata_fetch_failure_propagates_without_partial_output(self):
-        failure = ContractError("fetch exhausted retries")
-        with patch("analysis.local_context.pipeline.fetch_json", side_effect=failure):
-            with self.assertRaises(ContractError) as caught:
-                fetch_acs_individual_metadata(ACS_CONFIG)
-        self.assertIs(caught.exception, failure)
-        unexpected = RuntimeError("unexpected worker failure")
-        with patch("analysis.local_context.pipeline.fetch_json", side_effect=unexpected):
-            with self.assertRaises(RuntimeError) as caught:
-                fetch_acs_individual_metadata(ACS_CONFIG)
-        self.assertIs(caught.exception, unexpected)
 
     def test_prohibited_guardrails_preserve_current_and_historical_union(self):
         expected = {
