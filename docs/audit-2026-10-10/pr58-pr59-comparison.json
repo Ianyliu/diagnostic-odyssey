@@ -1,0 +1,160 @@
+{
+  "refs": {
+    "PR58": "8b035d45ab2f65b9e9275470b25b82cd27d673aa",
+    "PR59": "da07e3270d176ce6af05f9e381fae174fd6ce591",
+    "main": "b99d1c703226009f2004a06a332174124fbfd8a3"
+  },
+  "merge_base": "f66a225249ffde2eb4c3d5cf913f373c31b5365b",
+  "files": [
+    {
+      "path": ".github/workflows/meps-linked-condition-candidate.yml",
+      "blobs": {
+        "PR58": "9da240ae5aff95d4db481028153c40818b849516",
+        "PR59": "7564a34358b6e06f0368598764daf8c0b09c8441",
+        "main": "ac65f68d78ada48b743953481415738e4d019cfb"
+      },
+      "58_equals_59": false,
+      "58_equals_main": false
+    },
+    {
+      "path": "analysis/r/lib/survey_design_diagnostics.R",
+      "blobs": {
+        "PR58": "f939e733bee85166aba443db60889da4eea5e8f5",
+        "PR59": "f939e733bee85166aba443db60889da4eea5e8f5",
+        "main": "f939e733bee85166aba443db60889da4eea5e8f5"
+      },
+      "58_equals_59": true,
+      "58_equals_main": true
+    },
+    {
+      "path": "analysis/r/meps/bootstrap.R",
+      "blobs": {
+        "PR58": "bcb2469c320430a89a073dbe7bcb1fc447fe6965",
+        "PR59": "bcb2469c320430a89a073dbe7bcb1fc447fe6965",
+        "main": "2e12d0045b87b9308a86b745cc27c12de1b90eb5"
+      },
+      "58_equals_59": true,
+      "58_equals_main": false
+    },
+    {
+      "path": "analysis/r/meps/estimate_linked_condition_service_use.R",
+      "blobs": {
+        "PR58": "e6eb766dc917438601d634948e8da393ccf7b69d",
+        "PR59": "e6eb766dc917438601d634948e8da393ccf7b69d",
+        "main": "07df79e41ffa3cbafa32bdb221cb0902736434cd"
+      },
+      "58_equals_59": true,
+      "58_equals_main": false
+    },
+    {
+      "path": "analysis/r/meps/linked_condition_service_use.R",
+      "blobs": {
+        "PR58": "a6365330a12df605d3c6b51e6afc71941b7aceb5",
+        "PR59": "a6365330a12df605d3c6b51e6afc71941b7aceb5",
+        "main": "a6365330a12df605d3c6b51e6afc71941b7aceb5"
+      },
+      "58_equals_59": true,
+      "58_equals_main": true
+    },
+    {
+      "path": "analysis/r/meps/run_linked_condition_candidate.R",
+      "blobs": {
+        "PR58": "85ad8cdba43188a6e4565cad0b3acd24bce98a90",
+        "PR59": "e5a373017ad75429ed069a9f4880064da5e34f21",
+        "main": "ffd8b000cf8b549f13d13820296152e2969f2734"
+      },
+      "58_equals_59": false,
+      "58_equals_main": false
+    },
+    {
+      "path": "analysis/r/tests/testthat/test-linked-condition-candidate-runner.R",
+      "blobs": {
+        "PR58": "c2f7a9cbd762a8803bc4233b004841f295d163c1",
+        "PR59": "632b8afd1c3a0d5cb5c8eb0c8f5a780d31db3fc0",
+        "main": "dca27c8f2c573e09e5103114a777f58ae23ab50b"
+      },
+      "58_equals_59": false,
+      "58_equals_main": false
+    },
+    {
+      "path": "analysis/r/tests/testthat/test-linked-condition-candidate-workflow-contract.R",
+      "blobs": {
+        "PR58": "086c45354fe07fb3b76daf88203d65642a1c9d7b",
+        "PR59": "4d3008b03fe8769db9ee6407152755a2c6e7a2b1",
+        "main": "90ede1943cb6f8b728393028bd7a23775f1c12c6"
+      },
+      "58_equals_59": false,
+      "58_equals_main": false
+    },
+    {
+      "path": "analysis/r/tests/testthat/test-linked-condition-estimators.R",
+      "blobs": {
+        "PR58": "a8a0974268c528f26107b67edc8931e63b470bfa",
+        "PR59": "a8a0974268c528f26107b67edc8931e63b470bfa",
+        "main": "b6dbb52a47db10aad236171c49b11dcba6f9da18"
+      },
+      "58_equals_59": true,
+      "58_equals_main": false
+    },
+    {
+      "path": "analysis/r/tests/testthat/test-linked-condition-feasibility.R",
+      "blobs": {
+        "PR58": "90273ccadd180caaa65a02ab619715a355c1e5af",
+        "PR59": "90273ccadd180caaa65a02ab619715a355c1e5af",
+        "main": "90273ccadd180caaa65a02ab619715a355c1e5af"
+      },
+      "58_equals_59": true,
+      "58_equals_main": true
+    },
+    {
+      "path": "docs/methods/meps-2024-linked-condition-candidate-implementation.md",
+      "blobs": {
+        "PR58": "35ea195d580c74454a9e2561e9ae40d986894013",
+        "PR59": "35ea195d580c74454a9e2561e9ae40d986894013",
+        "main": "6e9cc0fb32476810ec3dee28555502cb4223ec73"
+      },
+      "58_equals_59": true,
+      "58_equals_main": false
+    },
+    {
+      "path": "packages/contracts/src/index.ts",
+      "blobs": {
+        "PR58": "c46188ff0b23716a2090bb41b6fe24e53537d9e1",
+        "PR59": "c46188ff0b23716a2090bb41b6fe24e53537d9e1",
+        "main": "35f8583bdfb435685fbd9d7d2a057a647719cc0c"
+      },
+      "58_equals_59": true,
+      "58_equals_main": false
+    },
+    {
+      "path": "packages/contracts/src/linked-condition-candidate.ts",
+      "blobs": {
+        "PR58": "6a4466aca1c3523dc85e6bdae2624f69c80cb5dd",
+        "PR59": "eb00dda6e75386ac1c5af5ea338dd557a190d754",
+        "main": "6afed908ceaecae154f895aab4e3d6287ddb212f"
+      },
+      "58_equals_59": false,
+      "58_equals_main": false
+    },
+    {
+      "path": "packages/contracts/src/validate-linked-condition-candidate-cli.ts",
+      "blobs": {
+        "PR58": "aad9a3466906f0cae6c486fc3ad6404d6e078ce5",
+        "PR59": "9e819409ffe0bce6a1a299359ef821ebd1547f35",
+        "main": "9e819409ffe0bce6a1a299359ef821ebd1547f35"
+      },
+      "58_equals_59": false,
+      "58_equals_main": false
+    },
+    {
+      "path": "packages/contracts/test/linked-condition-candidate.test.ts",
+      "blobs": {
+        "PR58": "7556e763f9ba2c5d7c48c1494d6a2a3d159fd246",
+        "PR59": "576b60222f53f5bd2ee8e01a832abcf81a923abe",
+        "main": "8e79c0638df635288bbcb7954efca3af30abfa32"
+      },
+      "58_equals_59": false,
+      "58_equals_main": false
+    }
+  ]
+}

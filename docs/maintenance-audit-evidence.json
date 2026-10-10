@@ -1,0 +1,485 @@
+{
+  "schema_version": "1.0",
+  "audit_date": "2026-10-10",
+  "authoring_status": "Engineering verification complete at PR91 merge; final clean build/static/deployment provenance belongs to subsequent release record.",
+  "source": {
+    "baseline": "b99d1c703226009f2004a06a332174124fbfd8a3",
+    "last_merged_main_reported": "d578be2df7ce5ccce3facc32b533d9b574ac4bdb",
+    "tested_pr90_head": "5d3425bb6755de049bd95b8b123ea0f3bb6026b6",
+    "pr90_changed_files_independently_byte_matched": 15,
+    "final_main_sha": null,
+    "static_commit": null,
+    "deployment_id": null,
+    "deployment_url": null,
+    "pr91_reviewed_code_commit": "29e2f5dc425b864f2264410aba2b1ab841e22bed",
+    "tested_pr91_head": "d604fb5ef7e12ebc64e2d11cb44d2d0b63498c88",
+    "final_repaired_application_source": "d578be2df7ce5ccce3facc32b533d9b574ac4bdb",
+    "pr91_ci_run": {
+      "id": 38084611863,
+      "conclusion": "success"
+    },
+    "release_provenance_status": "pending subsequent clean build and live deployment verification"
+  },
+  "environment": {
+    "node": "22.23.3",
+    "npm": "10.9.9",
+    "browser": "154.0.8037.98",
+    "playwright": "1.64.0",
+    "axe": "4.11.1",
+    "R_local": "4.5.2",
+    "R_acquisition_workflow": "4.6.1"
+  },
+  "checks": {
+    "javascript": {
+      "tests": 284,
+      "passed": 284,
+      "failed": 0,
+      "workspace_test_counts": {
+        "web": 185,
+        "brief": 14,
+        "contracts": 55,
+        "evidence": 18,
+        "scenario": 12
+      }
+    },
+    "python": {
+      "tests": 51,
+      "passed": 51,
+      "preexisting_fixture_resource_warnings": 3
+    },
+    "R": {
+      "R": "R version 4.5.2 (2025-10-31)",
+      "packages": [
+        "2.5.5",
+        "2.0.0",
+        "4.5",
+        "3.3.2"
+      ],
+      "files": 21,
+      "tests": 116,
+      "assertions": 829,
+      "passed": 829,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "warnings": 0
+    },
+    "reviewed_files_byte_identical": 27,
+    "reviewed_manifest_entries_valid": 23,
+    "full_sha_pinned_external_actions": 20,
+    "workflow_files": 6,
+    "rendered_browser": {
+      "groups": 24,
+      "passed": 24,
+      "source_build_base_url": "http://127.0.0.1:4177",
+      "visual_issue_resolved": "PR91 conditional heading/ledger layout; DOM Range token containment assertions pass for extreme finite values."
+    },
+    "main_protection_read_api": {
+      "date": "2026-10-10",
+      "conventional_protection_http_status": 404,
+      "rulesets": [],
+      "owner_manual_configuration_required": true
+    }
+  },
+  "dependencies": {
+    "lock_sha256": "4bb8387872c5174bcaceb7929c6d4cad3b634282504c2412bf6b6f1f71bdef8b",
+    "installed_packages": 186,
+    "high": 0,
+    "critical": 0,
+    "moderate_package_entries": 2,
+    "remaining_packages": [
+      "react-router",
+      "react-router-dom"
+    ],
+    "source_map_js": "1.2.2",
+    "vite": "6.4.4",
+    "react_router_dom": "6.30.6",
+    "postcss": "8.5.29"
+  },
+  "governed_regression": {
+    "unchanged": true,
+    "capture_bytes": 357903,
+    "capture_sha256": "2cc126c18bbc2e191bae3e2d6bb49c8c84c801d1bc84325d88d2b4df48589513",
+    "scenario_count": 11,
+    "sensitivity_points": 150,
+    "invariants": {
+      "national_estimates": 21,
+      "local_indicators": 34,
+      "reviewed_files": 27,
+      "verified_manifest_entries": 23
+    },
+    "sections": [
+      {
+        "section": "invariants",
+        "before_sha256": "d56b9de581ee40c247fbf713952e898b5586354c3bd3a95d069bee9259aaa45d",
+        "after_sha256": "d56b9de581ee40c247fbf713952e898b5586354c3bd3a95d069bee9259aaa45d",
+        "unchanged": true
+      },
+      {
+        "section": "scenarios",
+        "before_sha256": "100dfff71843619f40063e6655ee945a4046cd2b20301d813703fc5541cb44b8",
+        "after_sha256": "100dfff71843619f40063e6655ee945a4046cd2b20301d813703fc5541cb44b8",
+        "unchanged": true
+      },
+      {
+        "section": "briefs",
+        "before_sha256": "9640cb8696bc397db2c6897680c0428f44bdf8b5af68c7fe81da325603945447",
+        "after_sha256": "9640cb8696bc397db2c6897680c0428f44bdf8b5af68c7fe81da325603945447",
+        "unchanged": true
+      },
+      {
+        "section": "checksums",
+        "before_sha256": "d99fcf7c180ffb26b6f13da4e6ac7f7c540d8b917da6512aba5b712c6fb12f05",
+        "after_sha256": "d99fcf7c180ffb26b6f13da4e6ac7f7c540d8b917da6512aba5b712c6fb12f05",
+        "unchanged": true
+      }
+    ],
+    "briefs": [
+      {
+        "id": "unselected-context-and-requests",
+        "sha256": "c3031878661a52d0818cba95e1bd0a85ebc558ed7d54e6d1c9e22fa8be0aed0d",
+        "exported_estimates": 21,
+        "selected_local_records": 0,
+        "selected_current_data_requests": 0
+      },
+      {
+        "id": "explicit-context-and-current-request",
+        "sha256": "ed3cfbf077a780ca4c27ea66cfc467820399693adbc9220636c15001cc1d4a4a",
+        "exported_estimates": 21,
+        "selected_local_records": 2,
+        "selected_current_data_requests": 1
+      },
+      {
+        "id": "explicit-context-and-stale-request",
+        "sha256": "198ad8bff6cc1dfcb48199ad6d221d83918b47e95ccdecebbe51ec0be9e053bb",
+        "exported_estimates": 21,
+        "selected_local_records": 2,
+        "selected_current_data_requests": 0
+      }
+    ]
+  },
+  "browser_snapshot_comparison": {
+    "before": "/tmp/diagnostic-browser-baseline2/qa-results.json",
+    "after": "/tmp/diagnostic-browser-token-final/qa-results.json",
+    "ignored": "Planning Brief top-level generated_at only",
+    "results": [
+      {
+        "key": "defaultBrief",
+        "status": "PASS",
+        "beforeSha256": "caf3025c68cb9447ea3dbe264425981f36e9bb1611ab840cdd15ed19d6ce023a",
+        "afterSha256": "caf3025c68cb9447ea3dbe264425981f36e9bb1611ab840cdd15ed19d6ce023a"
+      },
+      {
+        "key": "selectedBrief",
+        "status": "PASS",
+        "beforeSha256": "b01b8b85a4d8cae86037dc2df6940e133a8f98e09320422104a3d46391a25e1d",
+        "afterSha256": "b01b8b85a4d8cae86037dc2df6940e133a8f98e09320422104a3d46391a25e1d"
+      },
+      {
+        "key": "staleBrief",
+        "status": "PASS",
+        "beforeSha256": "bb7f58b9fc7351b153cf734826fcc6a14f54ae49352973a98e34ddb722583c4c",
+        "afterSha256": "bb7f58b9fc7351b153cf734826fcc6a14f54ae49352973a98e34ddb722583c4c"
+      },
+      {
+        "key": "refreshedBrief",
+        "status": "PASS",
+        "beforeSha256": "acc05757980e8976128186e78856690c450f3d4f49bcd10414bd93c780e1a85b",
+        "afterSha256": "acc05757980e8976128186e78856690c450f3d4f49bcd10414bd93c780e1a85b"
+      },
+      {
+        "key": "capacitySensitivity",
+        "status": "PASS",
+        "beforeSha256": "8d9b53bf7bf4f4229c6c889c80e97b2edeb9728c9ebc73e72db62253b84b79fe",
+        "afterSha256": "8d9b53bf7bf4f4229c6c889c80e97b2edeb9728c9ebc73e72db62253b84b79fe"
+      },
+      {
+        "key": "reachSensitivity",
+        "status": "PASS",
+        "beforeSha256": "04993f46f3712b7bd3da4c4669f41790db298ffd11c02e01ec0838ffbe93bf17",
+        "afterSha256": "04993f46f3712b7bd3da4c4669f41790db298ffd11c02e01ec0838ffbe93bf17"
+      },
+      {
+        "key": "windowSensitivity",
+        "status": "PASS",
+        "beforeSha256": "2b58c60850043134d697088b12a01b6ff5b6372848abd1ac201e0b27b1cb72ef",
+        "afterSha256": "2b58c60850043134d697088b12a01b6ff5b6372848abd1ac201e0b27b1cb72ef"
+      }
+    ]
+  },
+  "local_performance": {
+    "scope": "Five cold localhost browser contexts. Diagnostic only; no mobile-network or field Core Web Vitals claim.",
+    "baseline": {
+      "sampleCount": 5,
+      "navigationMedianMs": 35.10000002384186,
+      "paint": [
+        [
+          {
+            "name": "first-paint",
+            "ms": 24
+          }
+        ],
+        [
+          {
+            "name": "first-paint",
+            "ms": 24
+          }
+        ],
+        [
+          {
+            "name": "first-paint",
+            "ms": 48
+          }
+        ],
+        [
+          {
+            "name": "first-paint",
+            "ms": 24
+          }
+        ],
+        [
+          {
+            "name": "first-paint",
+            "ms": 24
+          }
+        ]
+      ],
+      "assets": [
+        {
+          "name": "index-DCs6JUE-.js",
+          "gzipBodyBytes": 117400,
+          "transferBytes": 117700,
+          "decodedBodyBytes": 502140,
+          "durationMs": 14.899999976158142
+        },
+        {
+          "name": "index-CuSK_Skz.css",
+          "gzipBodyBytes": 17326,
+          "transferBytes": 17626,
+          "decodedBodyBytes": 100170,
+          "durationMs": 6.100000023841858
+        }
+      ]
+    },
+    "final": {
+      "sampleCount": 5,
+      "navigationMedianMs": 44.60000002384186,
+      "paint": [
+        [
+          {
+            "name": "first-paint",
+            "ms": 40
+          }
+        ],
+        [
+          {
+            "name": "first-paint",
+            "ms": 40
+          }
+        ],
+        [
+          {
+            "name": "first-paint",
+            "ms": 24
+          },
+          {
+            "name": "first-contentful-paint",
+            "ms": 68
+          }
+        ],
+        [
+          {
+            "name": "first-paint",
+            "ms": 28
+          }
+        ],
+        [
+          {
+            "name": "first-paint",
+            "ms": 24
+          }
+        ]
+      ],
+      "assets": [
+        {
+          "name": "index-D79TFG21.js",
+          "gzipBodyBytes": 119274,
+          "transferBytes": 119574,
+          "decodedBodyBytes": 506461,
+          "durationMs": 28.899999976158142
+        },
+        {
+          "name": "index-D24PT-ZR.css",
+          "gzipBodyBytes": 17465,
+          "transferBytes": 17765,
+          "decodedBodyBytes": 100980,
+          "durationMs": 14.199999928474426
+        }
+      ]
+    }
+  },
+  "pr58_disposition": {
+    "status": "closed as superseded, branch preserved; exact-head/history/check review and evidence comment completed by root",
+    "refs": {
+      "PR58": "8b035d45ab2f65b9e9275470b25b82cd27d673aa",
+      "PR59": "da07e3270d176ce6af05f9e381fae174fd6ce591",
+      "main": "b99d1c703226009f2004a06a332174124fbfd8a3"
+    },
+    "merge_base": "f66a225249ffde2eb4c3d5cf913f373c31b5365b",
+    "file_count": 15,
+    "identical_58_vs_59": 8,
+    "needed_cherry_picks": 0,
+    "pr59_to_pr58_additions": 50,
+    "pr59_to_pr58_deletions": 739
+  },
+  "historical_dispositions": {
+    "issues_kept_open": [
+      7,
+      39
+    ],
+    "duplicates_closed_with_surviving_implementation_comments": [
+      69,
+      72,
+      77
+    ],
+    "separate_scope_untouched": {
+      "pull_requests": [
+        79
+      ],
+      "issues": [
+        26,
+        23,
+        68
+      ]
+    },
+    "scientifically_blocked_outside_scope": [
+      19
+    ]
+  },
+  "limits": [
+    "Final main/static/deployment provenance must be populated after remaining merges and real deployment.",
+    "Main protection endpoint404 and empty rulesets; manual owner configuration remains.",
+    "Overview axe incomplete contrast nodes:32 light,29 dark; native OS print and screen readers not tested.",
+    "Local browser timings are small-sample localhost diagnostics, not field/mobile Core Web Vitals.",
+    "Router package findings remain moderate; present-source exposure assessment does not claim a patched Router6 package."
+  ],
+  "evidence_files": [
+    {
+      "path": "/tmp/diagnostic-governed-before.json",
+      "bytes": 357903,
+      "sha256": "2cc126c18bbc2e191bae3e2d6bb49c8c84c801d1bc84325d88d2b4df48589513"
+    },
+    {
+      "path": "/tmp/diagnostic-token-final-governed.json",
+      "bytes": 357903,
+      "sha256": "2cc126c18bbc2e191bae3e2d6bb49c8c84c801d1bc84325d88d2b4df48589513"
+    },
+    {
+      "path": "/tmp/diagnostic-token-final-governed-comparison.json",
+      "bytes": 9717,
+      "sha256": "ccabc937088ab886eb48f5e01a5df2426631453fd99dff84f1aec7345cb99322"
+    },
+    {
+      "path": "/tmp/diagnostic-reviewed-baseline-checksums.json",
+      "bytes": 12831,
+      "sha256": "507c10f9f3a229e1c7bf7800eeddcdfe8fc4f38ab83f7a6e6dd6cbbf6d9c4f99"
+    },
+    {
+      "path": "/tmp/diagnostic-pr58-59-comparison.json",
+      "bytes": 5486,
+      "sha256": "c8df33d7afe07b78e3e726544e0055f64af9226e44e77fe98b83c9f37294a528"
+    },
+    {
+      "path": "/tmp/diagnostic-r-results.json",
+      "bytes": 224,
+      "sha256": "afe19b59c6cd506cedf048e0013fe00bbfaf04ca2c3934f5ddb073cc2a736bd0"
+    },
+    {
+      "path": "/tmp/diagnostic-final-independent-r-tests.log",
+      "bytes": 1560,
+      "sha256": "0421142f02921111c2f7a56bbd88b4e6ad1c740835df0539c325da8588d4649a"
+    },
+    {
+      "path": "/tmp/diagnostic-token-tests.log",
+      "bytes": 62888,
+      "sha256": "9a4e992473c2aab7cd96e5ea9dfc10117ac069b7545c08a2ce16fbc80ccaa69d"
+    },
+    {
+      "path": "/tmp/diagnostic-final-python.log",
+      "bytes": 862,
+      "sha256": "c78afd4500dd44c77a6a0dc3d91721b8c9a625728388f128560b67f083e2eeb0"
+    },
+    {
+      "path": "/tmp/diagnostic-browser-token-final/qa-results.json",
+      "bytes": 368793,
+      "sha256": "e311b52340b3e3cc98805bf2a1f70a273fe8b91d6a411f5e1821e67606564e97"
+    },
+    {
+      "path": "/tmp/diagnostic-browser-token-final/governed-browser-comparison.json",
+      "bytes": 1937,
+      "sha256": "a89609cb00bc956a25ae522356b280b0d73846e9c71809c073e61ae84548a45e"
+    },
+    {
+      "path": "/tmp/diagnostic-browser-token-final/performance-comparison.json",
+      "bytes": 2137,
+      "sha256": "51c57c43f4ed0a6fee032c779e02e413b421048ac76ac838626659a4aa6ba246"
+    },
+    {
+      "path": "/tmp/diagnostic-browser-token-final/planning-brief.pdf",
+      "bytes": 574179,
+      "sha256": "c46338d1860a320952af2a1abf5a3b52b2f9ca7deeb2ec3b0ab2c04f581ec76b"
+    },
+    {
+      "path": "/tmp/diagnostic-browser-token-final/qa-matrix.md",
+      "bytes": 1478,
+      "sha256": "ab61f8c04daec37880f1a72570b09907a7d01565594390f4eb596b32e0686339"
+    },
+    {
+      "path": "/tmp/diagnostic-token-independent-review.md",
+      "bytes": 1445,
+      "sha256": "e9fb7ce7287630df9301da50fc1a4cb7e192d5b55c1a4068fdb145e2110efa3d"
+    },
+    {
+      "path": "/tmp/diagnostic-token-typecheck.log",
+      "bytes": 666,
+      "sha256": "cce03ec7725f716f66796bc4e5ca2e73ca435b578ec2ab51f8dc7c6c5240b255"
+    },
+    {
+      "path": "/tmp/diagnostic-token-lint.log",
+      "bytes": 62,
+      "sha256": "c5ed91ecc78a0ebce479d00d8f12832213ac55c97e0d4638a0fffa69fdad9cf6"
+    }
+  ],
+  "durable_attachments": [
+    "docs/audit-2026-10-10/qa-matrix.md",
+    "docs/audit-2026-10-10/acceptance-summary.json",
+    "docs/audit-2026-10-10/governed-comparison.json",
+    "docs/audit-2026-10-10/governed-browser-comparison.json",
+    "docs/audit-2026-10-10/performance-comparison.json",
+    "docs/audit-2026-10-10/pr58-pr59-comparison.json",
+    "docs/audit-2026-10-10/visual-review.md",
+    "docs/audit-2026-10-10/planning-brief.pdf",
+    "docs/audit-2026-10-10/screenshots/"
+  ],
+  "native_print_smoke": {
+    "date": "2026-10-10",
+    "method": "Native macOS Google Chrome UI through cua_repl",
+    "url": "http://127.0.0.1:4177/brief",
+    "source_code_sha": "d578be2df7ce5ccce3facc32b533d9b574ac4bdb",
+    "initial_disclosures": {
+      "economic": "open",
+      "administrative": "closed",
+      "mental_health": "closed"
+    },
+    "actual_chrome_print_preview": "PASS; default scenario rendered seven Letter pages with all three technical disclosures",
+    "actual_macos_system_print_dialog": "PASS; opened and cancelled without submitting a print job",
+    "restored_disclosures": {
+      "economic": "open",
+      "administrative": "closed",
+      "mental_health": "closed"
+    },
+    "focus_restored": "Print / save PDF button",
+    "user_tabs_preserved": true,
+    "notes": "Dedicated test tab was closed after verification. The separate selected-workflow headless PDF has eight pages and was reviewed independently. No screen-reader or physical-printer claim."
+  }
+}
