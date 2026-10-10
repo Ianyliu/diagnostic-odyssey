@@ -23,9 +23,14 @@ export function shouldPlayOpening({
   }
 }
 
+export function sessionStorageOrNull(): Storage | null {
+  try { return window.sessionStorage; } catch { return null; }
+}
+
 export function reducedMotionRequested(): boolean {
   try {
-    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const matches = window.matchMedia("(prefers-reduced-motion: reduce)")?.matches;
+    return typeof matches === "boolean" ? matches : true;
   } catch {
     return true;
   }

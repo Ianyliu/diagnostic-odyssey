@@ -1,15 +1,11 @@
 import { useEffect, useState } from "react";
-import { markOpeningSeen, reducedMotionRequested, shouldPlayOpening } from "./openingMotion";
+import { markOpeningSeen, reducedMotionRequested, sessionStorageOrNull, shouldPlayOpening } from "./openingMotion";
 
 const documentEntry = typeof window !== "undefined" ? {
   pathname: window.location.pathname,
   search: window.location.search,
   hash: window.location.hash
 } : { pathname: "/", search: "", hash: "" };
-
-function sessionStorageOrNull(): Storage | null {
-  try { return window.sessionStorage; } catch { return null; }
-}
 
 export function OpeningProvenance() {
   const [playing, setPlaying] = useState(() => shouldPlayOpening({
