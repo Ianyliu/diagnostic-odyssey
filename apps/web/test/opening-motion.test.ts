@@ -40,11 +40,11 @@ test("reduced motion or storage failure produces the static composition", () => 
 });
 
 test("sessionStorageOrNull handles missing window, accessible storage, and getter security errors", () => {
-  const originalWindow = globalThis.window;
+  const originalWindow = Object.getOwnPropertyDescriptor(globalThis, "window");
   try {
     // 1. Accessible window.sessionStorage
     const dummyStorage = { getItem: () => null } as unknown as Storage;
-    globalThis.window = { sessionStorage: dummyStorage } as unknown as Window & typeof globalThis;
+    Object.defineProperty(globalThis, "window", {value: {sessionStorage: dummyStorage}, configurable: true, writable: true});
     assert.equal(sessionStorageOrNull(), dummyStorage);
 
     // 2. window.sessionStorage getter throws error (e.g. SecurityError / privacy settings)
@@ -55,19 +55,17 @@ test("sessionStorageOrNull handles missing window, accessible storage, and gette
       },
       configurable: true
     });
-    globalThis.window = errorWindow as unknown as Window & typeof globalThis;
+    Object.defineProperty(globalThis, "window", {value: errorWindow, configurable: true, writable: true});
     assert.equal(sessionStorageOrNull(), null);
 
     // 3. window is undefined
     delete (globalThis as Record<string, unknown>).window;
     assert.equal(sessionStorageOrNull(), null);
   } finally {
-    if (originalWindow === undefined) {
-      delete (globalThis as Record<string, unknown>).window;
-    } else {
-      globalThis.window = originalWindow;
-    }
+    if (originalWindow) Object.defineProperty(globalThis, "window", originalWindow);
+    else Reflect.deleteProperty(globalThis, "window");
   }
+  assert.deepEqual(Object.getOwnPropertyDescriptor(globalThis, "window"), originalWindow);
 });
 
 test("opening uses session storage and remains decorative", () => {
