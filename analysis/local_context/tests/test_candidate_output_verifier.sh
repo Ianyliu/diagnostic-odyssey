@@ -26,7 +26,14 @@ reset_candidate() {
 recompute_checksums() {
   (
     cd "$TMP"
-    sha256sum "${payload_files[@]}" > SHA256SUMS
+    python3 - "${payload_files[@]}" > SHA256SUMS <<'PYTHON'
+import hashlib
+from pathlib import Path
+import sys
+
+for name in sys.argv[1:]:
+    print(f"{hashlib.sha256(Path(name).read_bytes()).hexdigest()}  {name}")
+PYTHON
   )
 }
 
@@ -85,5 +92,52 @@ fi
 reset_candidate
 printf 'tamper\n' >> "$TMP/diagnostics.json"
 expect_failure "a checksum mismatch" env CENSUS_API_KEY="" bash "$VERIFY" "$TMP"
+
+reset_candidate
+mkdir "$TMP/.unexpected-hidden-dir"
+expect_failure "a hidden directory" bash "$VERIFY" "$TMP"
+
+reset_candidate
+rm "$TMP/diagnostics.json"
+mkdir "$TMP/diagnostics.json"
+printf 'nested\n' > "$TMP/diagnostics.json/nested.json"
+expect_failure "a directory replacing expected output" bash "$VERIFY" "$TMP"
+
+reset_candidate
+rm "$TMP/diagnostics.json"
+mkfifo "$TMP/diagnostics.json"
+expect_failure "a FIFO replacing expected output" bash "$VERIFY" "$TMP"
+
+reset_candidate
+rm "$TMP/diagnostics.json"
+expect_failure "missing output" bash "$VERIFY" "$TMP"
+
+reset_candidate
+: > "$TMP/SHA256SUMS"
+expect_failure "an empty checksum manifest" bash "$VERIFY" "$TMP"
+
+reset_candidate
+sed '$d' "$TMP/SHA256SUMS" > "$TMP/checksums.tmp"
+mv "$TMP/checksums.tmp" "$TMP/SHA256SUMS"
+expect_failure "an incomplete checksum manifest" bash "$VERIFY" "$TMP"
+
+reset_candidate
+head -n 1 "$TMP/SHA256SUMS" >> "$TMP/SHA256SUMS"
+expect_failure "a duplicate checksum entry" bash "$VERIFY" "$TMP"
+
+reset_candidate
+printf '%064d  ../outside.json\n' 0 >> "$TMP/SHA256SUMS"
+expect_failure "a checksum path outside the output directory" bash "$VERIFY" "$TMP"
+
+reset_candidate
+printf 'not-a-checksum\n' > "$TMP/SHA256SUMS"
+expect_failure "a malformed checksum entry" bash "$VERIFY" "$TMP"
+
+reset_candidate
+ln -s "$TMP" "$TMP-link"
+expect_failure "a symlink output directory" bash "$VERIFY" "$TMP-link"
+rm "$TMP-link"
+
+expect_failure "a nonexistent output directory" bash "$VERIFY" "$TMP/missing"
 
 echo "candidate output verifier regression tests passed"
