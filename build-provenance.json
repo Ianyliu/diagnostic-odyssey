@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "built_at_utc": "2026-10-10T20:54:11.297658+00:00",
+  "source_repository": "https://github.com/Ianyliu/diagnostic-odyssey",
+  "source_main_sha": "1910fd98b84cefa50ed64084af07b226739195cb",
+  "source_checkout_clean": true,
+  "static_branch": "demo/deploy-ready-2026-10-06-b99d1c70",
+  "static_parent_sha": "e28203aaefe1065cb6bceb30f317796bae4743c6",
+  "node": "v22.23.3",
+  "npm": "10.9.9",
+  "installation": "npm ci",
+  "package_lock_sha256": "4bb8387872c5174bcaceb7929c6d4cad3b634282504c2412bf6b6f1f71bdef8b",
+  "build_command": "npm run build",
+  "build_output": "apps/web/dist",
+  "reviewed_artifacts": {
+    "national": "meps-2024-long-covid-candidate-20260926T011343Z",
+    "local_context": "local-context-wv-hrsa-acs-candidate-20260924T052332Z",
+    "secondary_descriptive": "meps-2024-linked-condition-service-use-reviewed-20260929-v1",
+    "secondary_policy": "linked_condition_product_policy_v1",
+    "new_scientific_release_or_admission": false,
+    "baseline_reviewed_files_sha256": {
+      "artifacts/reviewed/local-context-wv-hrsa-acs-candidate-20260924T052332Z/SHA256SUMS": "5b6e365983783cc109827f87f5aef6b883f7fc8b8c4960db7453fabcf4bdade0",
+      "artifacts/reviewed/local-context-wv-hrsa-acs-candidate-20260924T052332Z/acs-source-metadata.json": "e84a84385162cf8db7e8ed996b7caf7acca84be2b161cc44e802a5792dd15afa",
+      "artifacts/reviewed/local-context-wv-hrsa-acs-candidate-20260924T052332Z/diagnostics.json": "3dbff0ba734d1a80b13d0298ce024181c690c3f3dcd50cea3c4f48704399a54c",
+      "artifacts/reviewed/local-context-wv-hrsa-acs-candidate-20260924T052332Z/github-actions-run-manifest.json": "f8a501f3c87695e2dd2c9d46cc75a8821af8b009440106e99c4d3641a60cfe5f",
+      "artifacts/reviewed/local-context-wv-hrsa-acs-candidate-20260924T052332Z/hrsa-source-metadata.json": "c6f94c8da0c458cb839af03777b098659ae880117d8edb959a8bdc2519efc306",
+      "artifacts/reviewed/local-context-wv-hrsa-acs-candidate-20260924T052332Z/local-context.json": "82e3cc5d5c6bd1d084fddb47b36ca08df76be19ab2a641dbba50b8c59c467bc4",
+      "artifacts/reviewed/local-context-wv-hrsa-acs-candidate-20260924T052332Z/review-manifest.json": "12687fdf7fcf824deda52c4fc4312da2a5b46b0fa1caa3389c4bed6b0b5174d1",
+      "artifacts/reviewed/meps-2024-linked-condition-service-use-reviewed-20260929-v1/SHA256SUMS": "b6d686170d17bed76163e145c12292bceb8e1050ff88378ba1c697d40ce54ab4",
+      "artifacts/reviewed/meps-2024-linked-condition-service-use-reviewed-20260929-v1/candidate-manifest.json": "50da47205d1565bc58187793efe0beb2406f2b588212ad02785f876ded7f2435",
+      "artifacts/reviewed/meps-2024-linked-condition-service-use-reviewed-20260929-v1/github-actions-run-manifest.json": "4cded646ee6ca6d6cc14bf807987863e346c0b8f0a5a6d5521778dfaf3fc24cc",
+      "artifacts/reviewed/meps-2024-linked-condition-service-use-reviewed-20260929-v1/linked-condition-candidate-estimates.json": "2c72c0069aa3c199feef656bb20f2633a47c156dff25aeaaf2b5bbd45def42c8",
+      "artifacts/reviewed/meps-2024-linked-condition-service-use-reviewed-20260929-v1/product-policy.json": "7b72a4e48f28fe2003abfc6e06293004bee169649a16f9b002646507275c66d6",
+      "artifacts/reviewed/meps-2024-linked-condition-service-use-reviewed-20260929-v1/review-manifest.json": "82c5505d25f105d4de469d91139bce08f7494f9233e9a0f1695c69096aeda46e",
+      "artifacts/reviewed/meps-2024-linked-condition-service-use-reviewed-20260929-v1/reviewed-diagnostics.json": "888195c461e86538b6c776f7d142a9b1a99d897347cbe89c4e12b17cfa93b7ca",
+      "artifacts/reviewed/meps-2024-linked-condition-service-use-reviewed-20260929-v1/source-metadata.json": "568f3b8db291563cad0b8912ccd79dfb6732a094b4528c2a2b676e66f9bfc03c",
+      "artifacts/reviewed/meps-2024-long-covid-candidate-20260923T020607Z/SHA256SUMS": "8d6d3b61b57c92cfdbd05661b34f713ece4389059bfe5927b4be73d417f8f5cb",
+      "artifacts/reviewed/meps-2024-long-covid-candidate-20260923T020607Z/bundle.json": "f5255710da1b53e5d317d768512319453e6a1dab636f92cb0d95abf6db3082f1",
+      "artifacts/reviewed/meps-2024-long-covid-candidate-20260923T020607Z/diagnostics.json": "a00b136193c90e234e0f1c59dbbfe6afdce68948f4318402311e72d1ffb1bdeb",
+      "artifacts/reviewed/meps-2024-long-covid-candidate-20260923T020607Z/github-actions-run-manifest.json": "d67c3c8ed3121c6cddcb65871d110b28befbeb45b85f106e721c5b78e4220174",
+      "artifacts/reviewed/meps-2024-long-covid-candidate-20260923T020607Z/hc256-source-metadata.json": "960a8b7c4a7795f901273b64ed1b7c2166f6aa1db8cbf9f7f083ec0167f503c1",
+      "artifacts/reviewed/meps-2024-long-covid-candidate-20260923T020607Z/review-manifest.json": "9ce9890fa4234a9be625bfad550034dee60a9ffb0ab64744af34fceef0708567",
+      "artifacts/reviewed/meps-2024-long-covid-candidate-20260926T011343Z/SHA256SUMS": "2d0bdb6cce0c12606f78ff0686c6c97da6e4d977ce2e8b25f282b953da2d1da3",
+      "artifacts/reviewed/meps-2024-long-covid-candidate-20260926T011343Z/bundle.json": "5b32bfb3288a28ce0a57de4d0c3ec75fe1d83c0f19ad481e687b70af4a91eca0",
+      "artifacts/reviewed/meps-2024-long-covid-candidate-20260926T011343Z/diagnostics.json": "6ea703bde35ff3ee2ddc75c21afcaeb9de8b273dec010255dd59174142ac9767",
+      "artifacts/reviewed/meps-2024-long-covid-candidate-20260926T011343Z/github-actions-run-manifest.json": "d1bd1cabd4e116a2db0481524e982819c80a7c567a5e1e7e27c06b60ada893a3",
+      "artifacts/reviewed/meps-2024-long-covid-candidate-20260926T011343Z/hc256-source-metadata.json": "f0f704df6ee8d082c01175d7107103a255e8d480471bfdc9935c4d21d6c96ee2",
+      "artifacts/reviewed/meps-2024-long-covid-candidate-20260926T011343Z/review-manifest.json": "05fa3b743bde8af933bcb52a19cd564038f6416490b444aa073890beccdff994"
+    }
+  },
+  "governed_snapshot_sha256": "2cc126c18bbc2e191bae3e2d6bb49c8c84c801d1bc84325d88d2b4df48589513",
+  "rollback": {
+    "static_sha": "e28203aaefe1065cb6bceb30f317796bae4743c6",
+    "deployment_id": "8e0709c3-5fe5-4911-b0d7-020f883c4216",
+    "url": "https://8e0709c3.diagnostic-odyssey.pages.dev"
+  },
+  "files": {
+    "_headers": {
+      "bytes": 565,
+      "sha256": "f979f1133b6d937adab4d7a87091b7cdc9dc149080a052dbc25d0fe68899540b"
+    },
+    "assets/index-D24PT-ZR.css": {
+      "bytes": 100980,
+      "sha256": "cfcccb91d15e50bf31de5219877df13f9d8e5cb6ebf7f4faaf2fc0a95a36c6c5"
+    },
+    "assets/index-D79TFG21.js": {
+      "bytes": 506461,
+      "sha256": "0f981747bab68643b64decca57ac40645572e65ce1724b14289cc3a77a549bb5"
+    },
+    "diagnostic-odyssey-horizontal.png": {
+      "bytes": 58175,
+      "sha256": "c0081b24c9c6826cc0d6911650134754c5a937c1736c1394348281847afa4194"
+    },
+    "diagnostic-odyssey-icon.png": {
+      "bytes": 39345,
+      "sha256": "47584bd120cb52e41046c58367388b8e58a91542d4bcb3a1138ef0a8885bdad2"
+    },
+    "diagnostic-odyssey-mark.svg": {
+      "bytes": 444,
+      "sha256": "5a7b4da5d9dcdb6abb802b5cff5a6cd3a1749c338f86ba166555e6b1cced6294"
+    },
+    "index.html": {
+      "bytes": 1445,
+      "sha256": "af3ca79d3abf77b45f037c83ea0a507e643e8bcd9fd6682c79a194fc1e19163c"
+    },
+    "netlify.toml": {
+      "bytes": 89,
+      "sha256": "4b447480f52959050f110347b2f39d6479030175a38beb702740c3f94316632f"
+    },
+    "vercel.json": {
+      "bytes": 474,
+      "sha256": "ec2ae3d91ba77e4294ee64f42c0e0234e2e261fefe1c4ffe76fc4711062fa972"
+    }
+  },
+  "deployment_note": "Deployment ID and this bundle commit SHA are recorded by Cloudflare deployment metadata and the final release verification report; GitHub push alone does not deploy this Direct Upload project."
+}

@@ -1,99 +1,54 @@
-# Deploy-ready demo bundle — `demo/deploy-ready-2026-10-06-b99d1c70`
+# Verified static demo — October 10, 2026
 
-A verified, fully static production build of the **Diagnostic Odyssey Ledger**
-clickable demo, pushed as a deploy-ready branch for the TOPx HHS Tech Sprint
-Phase 2 final submission (due **October 15, 2026, 11:59 PM ET**).
+This branch preserves its independent orphan history. The new bundle is a normal
+child of `e28203aaefe1065cb6bceb30f317796bae4743c6`, with no force push or merge into main.
 
-## What this branch is
+Source main: [`1910fd98b84cefa50ed64084af07b226739195cb`](https://github.com/Ianyliu/diagnostic-odyssey/commit/1910fd98b84cefa50ed64084af07b226739195cb).
+Built from a clean checkout using **Node 22.23.3 / npm 10.9.9**, `npm ci`, then
+`npm run build` (output `apps/web/dist`). Lock SHA-256: `4bb8387872c5174bcaceb7929c6d4cad3b634282504c2412bf6b6f1f71bdef8b`.
+`build-provenance.json` records full file hashes, dependency/build state, reviewed
+artifact versions/checksums and the previous release rollback point.
 
-- **Orphan branch** (no parent commit) containing only the built site plus deployment metadata.
-- **Source:** `Ianyliu/diagnostic-odyssey` main @ `b99d1c70`
-  (commit dated 2026-10-02T16:32:21Z; unchanged since the Oct 4 round-4 review).
-- **Built:** 2026-10-06, via `npm install` (186 packages, Node v24.20.0) + `vite build` (~12 s).
-- **Not merged to main.** Main is untouched by this branch.
-
-## Verification (2026-10-06)
-
-- Web test suite: **162/162 pass** (`node --experimental-strip-types --test`).
-- Runtime analysis of the built bundle: **zero application API calls, zero runtime JSON
-  fetches, zero WebSocket/EventSource/XHR** — the reviewed MEPS artifact is
-  imported at build time and validated by `assertValidArtifactBundle` during the build.
-  (The generated Vite module-preload helper may use `fetch` internally if preload events fire.)
-- Served locally (`python3 -m http.server`): `/` → 200, JS asset → 200.
-- Full report: `demo-build-verification.md` (kept alongside the submission
-  drafts, not in this branch).
-
-## Contents (~700 kB)
-
-| File | Size | Notes |
+| Generated asset | Bytes | SHA-256 |
 |---|---:|---|
-| `index.html` | 1.45 kB | Entry point |
-| `assets/index-CuSK_Skz.css` | 100 kB | Styles |
-| `assets/index-DCs6JUE-.js` | 502 kB | App bundle |
-| `diagnostic-odyssey-horizontal.png` | — | Brand image |
-| `diagnostic-odyssey-icon.png` | — | Brand image |
-| `diagnostic-odyssey-mark.svg` | — | Brand image |
-| `netlify.toml` | — | Netlify publish root + SPA fallback |
-| `vercel.json` | — | Vercel SPA fallback |
+| `assets/index-D24PT-ZR.css` | 100,980 | `cfcccb91d15e50bf31de5219877df13f9d8e5cb6ebf7f4faaf2fc0a95a36c6c5` |
+| `assets/index-D79TFG21.js` | 506,461 | `0f981747bab68643b64decca57ac40645572e65ce1724b14289cc3a77a549bb5` |
 
-## Important path constraint
+## Scientific boundaries
 
-This exact bundle is built for a **domain root**. Generated assets and brand
-images use absolute paths such as `/assets/...` and
-`/diagnostic-odyssey-icon.png`, and the app's `BrowserRouter` has no
-`basename`.
+The existing reviewed September 26 MEPS national bundle supplies 21 estimates;
+the September 24 WV HRSA/ACS artifact supplies 34 separate implementation-context
+indicators. The reviewed September 29 linked-condition package retains only its
+previously admitted Candidate A secondary descriptive use under existing policy.
+All 27 reviewed source files and their 23 manifest payload checksums are unchanged.
+No new scientific release, evidence admission, effect or causal claim is included.
+Typical Range IQRs remain distinct from mean confidence intervals. Local selections
+and analyst assumptions never rescale national burden.
 
-Therefore:
+## Acceptance and reports
 
-- **Works as-is:** `https://diagnostic-odyssey.pages.dev/`, a Netlify/Vercel
-  project domain, or a dedicated custom domain/subdomain such as
-  `https://diagnostic.example.org/`.
-- **Does not work as-is:** a GitHub Pages project path such as
-  `https://ianyliu.github.io/diagnostic-odyssey/`. That deployment requires a
-  source rebuild with a matching Vite base path and React Router basename (or
-  equivalent relative-path routing).
+The maintenance report and reproducible browser harness live on source main:
+[implementation audit](https://github.com/Ianyliu/diagnostic-odyssey/blob/1910fd98b84cefa50ed64084af07b226739195cb/docs/maintenance-audit-report.md),
+[browser acceptance](https://github.com/Ianyliu/diagnostic-odyssey/blob/1910fd98b84cefa50ed64084af07b226739195cb/tests/browser/README.md).
+The final release verification report records the actual static commit, deployment
+ID, canonical URL, live checks and rollback point after upload; a branch push alone
+does not prove deployment. See the audit documentation PR conversation for that
+final release record.
 
-## How to deploy
+## Deployment and routing
 
-The app uses `BrowserRouter`, so non-root routes such as `/pilot` must return
-`index.html`.
+The existing Cloudflare Pages project `diagnostic-odyssey` is **Direct Upload**,
+not Git-connected. Deploy these exact verified bytes using a scoped Pages upload
+token/approved Wrangler installation, preserving `_headers`. Confirm canonical
+deployment metadata and rendered production routes after upload.
 
-- **Cloudflare Pages (recommended):** connect this repository and select this
-  branch. No build command is needed; publish the repository root. Cloudflare
-  Pages treats a project without a top-level `404.html` as an SPA and falls
-  back to `/` for unknown paths, so **do not add a GitHub-Pages-style
-  `404.html` to this branch**.
-- **Netlify:** connect this branch, leave the build command empty, and publish
-  `.`. The committed `netlify.toml` provides the required 200 rewrite to
-  `/index.html`.
-- **Vercel:** connect this branch as a static project. The committed
-  `vercel.json` rewrites application routes to `/index.html`.
-- **GitHub Pages:** practical only if you assign a dedicated custom domain at
-  the domain root and accept the `404.html` SPA workaround, or rebuild the
-  source specifically for the repository subpath. It is not the best fit for
-  this current root-path bundle.
+This root-path SPA runs at https://diagnostic-odyssey.pages.dev. BrowserRouter deep
+links rely on Pages' automatic SPA fallback: keep the root free of `404.html`.
+The preserved `_headers` provides security headers, immutable hashed-asset caching
+and no-cache index HTML. Netlify/Vercel fallback configurations remain available.
+A GitHub Pages repository subpath requires a separate base-path/router rebuild.
 
-## Data artifact note
-
-The bundled build embeds the reviewed MEPS candidate artifact
-`meps-2024-long-covid-candidate-20260926T011343Z` (**Sept 26** bundle).
-The TOPx Phase 2 submission drafts cite
-`meps-2024-long-covid-candidate-20260923T020607Z` (**Sept 23**, 21 estimates),
-and a newer Sept 29 reviewed artifact
-(`meps-2024-linked-condition-service-use-reviewed-20260929-v1`) exists.
-Pointing the demo at a different artifact is a **repo change** (rebuild), not a
-deploy-blocker — confirm before the Oct 15 submission which bundle should be
-live.
-
-## Rebuilding
-
-```bash
-git clone https://github.com/Ianyliu/diagnostic-odyssey.git
-cd diagnostic-odyssey
-git checkout b99d1c70
-npm install     # Node v24
-npm run build   # → dist/
-```
-
-A rebuild from the same commit should reproduce this bundle byte-for-byte
-(modulo build-tool nondeterminism in hashed asset filenames).
+Previous known-good rollback deployment: `8e0709c3-5fe5-4911-b0d7-020f883c4216`
+at https://8e0709c3.diagnostic-odyssey.pages.dev, static commit `e28203aaefe1065cb6bceb30f317796bae4743c6`.
+Preserve this deployment. If live verification fails, restore that deployment and
+verify it before claiming submission readiness.
