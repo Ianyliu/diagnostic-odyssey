@@ -169,3 +169,57 @@ test("export revalidates finite scenario inputs and catches non-finite values el
     assert.throws(() => serializeBriefJson(invalidContext), /must be a finite number/);
   }
 });
+
+function briefForWarnings(estimates: Estimate[]) {
+  return buildPlanningBrief({
+    context:{condition_id:"c",cohort_id:"x",age_range:"18–64",evidence_year:2024,geography_scope:"United States",local_context_id:null,severity_filter:null,artifact_version:"v1"},
+    estimates, localContext:[], evidence:[], dataRequests:[], generatedAt:"2026-01-01T00:00:00Z"
+  });
+}
+
+const nestedSpendingWarning = "Out-of-pocket/self-family-paid spending is nested within total spending and must not be added to it.";
+const mentalScreenWarning = "K6 measures nonspecific psychological distress and PHQ-2 is a depressive-symptom screen; neither is a psychiatric diagnosis.";
+const esaqTimingWarning = "ESAQ time measures are AHRQ annualized hours-per-year measures; later ESAQ responses do not establish continued current Long COVID after the earlier Round 3/1 status anchor.";
+
+test("generic Brief preserves all three scientific boundary warnings without unrelated conditional warnings", () => {
+  assert.deepEqual(briefForWarnings([estimate("reviewed_released", "analytical_artifact")]).warnings, [
+    "Gross burden is not attributable burden.",
+    "Local context informs implementation and does not modify national burden.",
+    "Scenario outputs are deterministic planning quantities, not savings, ROI, causal benefit, or observed improvement."
+  ]);
+});
+
+test("nested spending warning follows exported component metadata and is emitted once", () => {
+  const component = {...estimate("reviewed_released", "analytical_artifact"), component_of_measure_id:"total_spending"};
+  assert.equal(briefForWarnings([component, {...component, estimate_id:"second-component"}]).warnings.filter(w => w === nestedSpendingWarning).length, 1);
+});
+
+for (const measure_id of ["k6_score", "phq2_score", "K6_serious_distress", "PHQ2_screen_positive"]) {
+  test(`${measure_id} exports the screening interpretation warning`, () => {
+    assert.ok(briefForWarnings([{...estimate("reviewed_released", "analytical_artifact"), measure_id}]).warnings.includes(mentalScreenWarning));
+  });
+}
+
+test("ESAQ warning is specific to the exported ESAQ weight and emitted once", () => {
+  const esaq = {...estimate("reviewed_released", "analytical_artifact"), weight_variable:"ESAQWT24F"};
+  assert.equal(briefForWarnings([esaq, {...esaq, estimate_id:"second-esaq"}]).warnings.filter(w => w === esaqTimingWarning).length, 1);
+  for (const weight_variable of ["PERWT24F", "SAQWT24F", "PESAQWT24F"]) {
+    assert.equal(briefForWarnings([{...esaq, weight_variable}]).warnings.includes(esaqTimingWarning), false);
+  }
+});
+
+test("nonexportable findings do not activate spending, screening or ESAQ warnings", () => {
+  const triggers = {measure_id:"k6_score", component_of_measure_id:"total_spending", weight_variable:"ESAQWT24F"};
+  const filtered = [
+    {...estimate("preliminary", "analytical_artifact"), ...triggers},
+    {...estimate("not_released", "analytical_artifact"), ...triggers},
+    {...estimate("suppressed", "analytical_artifact"), ...triggers},
+    {...estimate("unavailable", "analytical_artifact"), ...triggers},
+    {...estimate("reviewed_released", "illustrative"), ...triggers}
+  ];
+  const brief = briefForWarnings(filtered);
+  assert.deepEqual(brief.burden_findings, []);
+  assert.equal(brief.warnings.includes(nestedSpendingWarning), false);
+  assert.equal(brief.warnings.includes(mentalScreenWarning), false);
+  assert.equal(brief.warnings.includes(esaqTimingWarning), false);
+});
