@@ -28,7 +28,11 @@ The runner exits nonzero for any failed matrix row. It emits `qa-results.json`,
 a print screenshot/PDF, actual JSON exports, and light/dark axe reports. Keep
 baseline and repaired output directories separate. Reviewed national findings,
 scenario arithmetic, and three sensitivity tables have exact regression checks.
-Actual parsed JSON must preserve finite numeric scenario fields. Valid zeros,
+Actual parsed JSON must preserve all eight required numeric inputs, all nine
+required numeric outputs, and any bounded-effect endpoints. Missing or null
+required numbers fail. Huge finite resource values must stay within desktop,
+tablet, and mobile layouts in both themes; an overflowing sensitivity range must
+show an error while preserving the valid applied scenario. Valid zeros,
 invalid drafts, explicit local-context/request selection, stale exclusion and
 refresh, history, focus, theme persistence, reduced motion, browser API failures,
 and disclosure restoration are exercised in Chrome.
