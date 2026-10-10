@@ -2,6 +2,7 @@
 import assert from "node:assert/strict";
 import { mkdir, writeFile, readFile } from "node:fs/promises";
 import { createRequire } from "node:module";
+import { URL } from "node:url";
 const require = createRequire(process.env.PLAYWRIGHT_RUNNER ?? import.meta.url);
 const { chromium } = require("playwright");
 const axe = require("axe-core");
@@ -433,6 +434,52 @@ await check("appearance persistence and reduced motion opening", async () => {
   assert.equal(await page.locator("html").getAttribute("data-theme"), "dark");
   await assertThemeColor(page, "dark");
   await context.close();
+});
+
+await check("local context labels preserve native scores and exported uncertainty across responsive themes", async () => {
+  const reviewed = JSON.parse(await readFile(new URL(
+    "../../artifacts/reviewed/local-context-wv-hrsa-acs-candidate-20260924T052332Z/local-context.json",
+    import.meta.url,
+  ), "utf8"));
+  const ids = ["wv.hrsa.primary-care.max-score", "wv.hrsa.mental-health.max-score", "wv.acs.uninsured_pct"];
+  for (const width of [1440, 820, 360]) for (const theme of ["light", "dark"]) {
+    const context = await browser.newContext({viewport: {width, height: 1000}, colorScheme: theme, reducedMotion: "reduce", acceptDownloads: true});
+    const page = await context.newPage();
+    page.setDefaultTimeout(5000);
+    await ready(page, "/local-context");
+    for (const id of ids) {
+      const checkbox = page.locator(`#select-local-context-${id.replace(/[^a-zA-Z0-9_-]/g, "-")}`);
+      const row = page.locator(".ledger-indicator-row").filter({has: checkbox});
+      const record = reviewed.indicators.find(record => record.indicator_id === id);
+      if (record.unit === "HPSA score points") {
+        assert.ok((await row.locator(".ledger-record-value").innerText()).startsWith(`${record.value} points`));
+      }
+      await checkbox.check();
+      if (id === ids[0]) await row.getByRole("button", {name: /^Use .* in Pilot planning$/}).click();
+    }
+    const localText = await page.locator("main").textContent();
+    assert.ok(localText.includes("Published 90% margin of error"));
+    assert.ok(!localText.includes("published_90_percent_margin_of_error"));
+    await navigate(page, "Pilot planner");
+    assert.equal(await page.locator(".pilot-local-context-value").innerText(), "23 points");
+    await navigate(page, "Planning brief");
+    const values = await page.locator(".brief-local-context-value").allTextContents();
+    assert.ok(values.includes("23 points"));
+    assert.ok(values.includes("24 points"));
+    const brief = await exportBrief(page, `local-context-labels-${width}-${theme}`);
+    assert.equal(brief.local_context.length, 3);
+    for (const id of ids) {
+      assert.deepEqual(brief.local_context.find(record => record.indicator_id === id), reviewed.indicators.find(record => record.indicator_id === id));
+    }
+    const overflow = await page.evaluate(() => ({width: innerWidth, scroll: document.documentElement.scrollWidth}));
+    assert.ok(overflow.scroll <= overflow.width + 1);
+    await page.screenshot({path: `${output}/local-context-labels-brief-${width}-${theme}.png`, fullPage: true});
+    if (width === 1440 && theme === "light") {
+      await page.locator("main details").evaluateAll(els => els.forEach(el => {el.open = true;}));
+      await page.pdf({path: `${output}/local-context-labels.pdf`, format: "Letter", printBackground: true});
+    }
+    await context.close();
+  }
 });
 
 await check("browser theme color follows bootstrap, explicit preferences, system changes and other tabs", async () => {
