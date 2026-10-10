@@ -648,10 +648,20 @@ def fetch_acs_individual_metadata(config: dict[str, Any]) -> dict[str, dict[str,
     if not isinstance(template, str) or "{variable}" not in template:
         raise ContractError("ACS variable metadata URL template is missing or invalid")
 
+    specs = config.get("variables")
+    if not isinstance(specs, list) or not specs:
+        raise ContractError("ACS metadata variables must be a non-empty list")
     variable_ids: list[str] = []
-    for spec in config["variables"]:
+    for index, spec in enumerate(specs):
+        if not isinstance(spec, dict):
+            raise ContractError(f"ACS metadata variable specification {index} is not an object")
         for key in ("moe", "estimate_annotation", "moe_annotation"):
-            variable_ids.append(spec[key])
+            variable_id = spec.get(key)
+            if not isinstance(variable_id, str) or not re.fullmatch(r"[A-Za-z0-9_]+", variable_id):
+                raise ContractError(f"ACS metadata variable specification {index} has missing or invalid {key}")
+            variable_ids.append(variable_id)
+    # Fetch shared annotations once, preserving configured order and identity.
+    variable_ids = list(dict.fromkeys(variable_ids))
 
     def _fetch_single(variable_id: str) -> tuple[str, dict[str, Any]]:
         record = fetch_json(template.replace("{variable}", variable_id))
@@ -664,15 +674,20 @@ def fetch_acs_individual_metadata(config: dict[str, Any]) -> dict[str, dict[str,
             "response": record,
         }
 
-    max_workers = min(10, len(variable_ids)) if variable_ids else 1
+    max_workers = min(4, len(variable_ids))
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         futures = [
             executor.submit(_fetch_single, variable_id)
             for variable_id in variable_ids
         ]
-        for future in futures:
-            variable_id, entry = future.result()
-            records[variable_id] = entry
+        try:
+            for future in futures:
+                variable_id, entry = future.result()
+                records[variable_id] = entry
+        except Exception:
+            for future in futures:
+                future.cancel()
+            raise
 
     return records
 
