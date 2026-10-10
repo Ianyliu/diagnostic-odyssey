@@ -25,3 +25,7 @@ artifacts/generated/
 Thumbs.db
 .vscode/
 .idea/
+
+# Local Python bytecode
+__pycache__/
+*.py[cod]
