@@ -7,7 +7,8 @@ import { pilotInputFields } from "../src/data/pilotInputDraft.ts";
 import { formatAppliedAssumption } from "../src/pages/briefAssumptions.ts";
 import {
   createBriefPrintDisclosureState,
-  executeBriefPrint
+  executeBriefPrint,
+  watchBriefPrintMedia
 } from "../src/pages/briefPrint.ts";
 
 test("all eight applied Brief inputs retain precise assumption values", () => {
@@ -130,4 +131,47 @@ test("applied Brief inputs and scenario outputs occupy separate document section
   assert.match(source, /pilotInputFields\.map\(field =>/);
   assert.match(source, /formatAppliedAssumption\(brief\.scenario!\.input, field\)/);
   assert.ok(source.indexOf("brief-applied-assumptions") < source.indexOf("brief-output-list"));
+});
+
+test("asynchronous print media preserves disclosure state until printing ends and detaches on cleanup", async () => {
+  const disclosures = [{open:false}, {open:true}];
+  const state = createBriefPrintDisclosureState(() => disclosures);
+  const listeners = new Set<() => void>();
+  const media = {
+    matches: false,
+    addEventListener(_type: string, callback: () => void) {listeners.add(callback);},
+    removeEventListener(_type: string, callback: () => void) {listeners.delete(callback);}
+  };
+  const stop = watchBriefPrintMedia(state, {matchMedia: () => media as unknown as MediaQueryList});
+  // Application print returns while the browser's print dialog remains active.
+  state.prepare();
+  await Promise.resolve();
+  assert.deepEqual(disclosures.map(disclosure => disclosure.open), [true, true]);
+  media.matches = true;
+  listeners.forEach(callback => callback());
+  assert.deepEqual(disclosures.map(disclosure => disclosure.open), [true, true]);
+  media.matches = false;
+  listeners.forEach(callback => callback());
+  assert.deepEqual(disclosures.map(disclosure => disclosure.open), [false, true]);
+  media.matches = true;
+  listeners.forEach(callback => callback());
+  assert.deepEqual(disclosures.map(disclosure => disclosure.open), [true, true]);
+  stop();
+  assert.deepEqual(disclosures.map(disclosure => disclosure.open), [false, true]);
+  assert.equal(listeners.size, 0);
+});
+
+test("unavailable print-media APIs retain native print event restoration and unmount cleanup", () => {
+  for (const source of [null, {}, {matchMedia() {throw new Error("blocked");}}, {matchMedia: () => ({matches:false}) as MediaQueryList}]) {
+    const disclosure = {open:false};
+    const state = createBriefPrintDisclosureState(() => [disclosure]);
+    const stop = watchBriefPrintMedia(state, source);
+    state.prepare();
+    assert.equal(disclosure.open, true);
+    state.restore(); // The browser's afterprint event remains an independent fallback.
+    assert.equal(disclosure.open, false);
+    state.prepare();
+    stop();
+    assert.equal(disclosure.open, false);
+  }
 });

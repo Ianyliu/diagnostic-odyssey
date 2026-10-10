@@ -9,6 +9,9 @@ import {
   resolveTheme
 } from "./theme";
 import type { ThemePreference, ResolvedTheme } from "./theme";
+import { getBrowserMediaQuery, readMediaQueryMatches, subscribeToMediaQuery } from "./browserMedia";
+
+const systemThemeQuery = "(prefers-color-scheme: dark)";
 
 interface ThemeValue {
   preference: ThemePreference;
@@ -19,9 +22,7 @@ interface ThemeValue {
 const ThemeContext = createContext<ThemeValue | null>(null);
 
 function systemIsDark(): boolean {
-  return typeof window !== "undefined" &&
-    typeof window.matchMedia === "function" &&
-    window.matchMedia("(prefers-color-scheme: dark)").matches;
+  return readMediaQueryMatches(getBrowserMediaQuery(systemThemeQuery));
 }
 
 export function ThemeProvider({ children }: PropsWithChildren) {
@@ -37,19 +38,18 @@ export function ThemeProvider({ children }: PropsWithChildren) {
   }, [preference, resolved]);
 
   useEffect(() => {
-    const media = typeof window.matchMedia === "function"
-      ? window.matchMedia("(prefers-color-scheme: dark)")
-      : null;
-    const onMediaChange = () => setDarkSystem(media?.matches ?? false);
+    const media = getBrowserMediaQuery(systemThemeQuery);
+    const onMediaChange = () => setDarkSystem(readMediaQueryMatches(media));
     const onStorage = (event: StorageEvent) => {
       if (event.key === THEME_STORAGE_KEY || event.key === null) {
         updatePreference(parseThemePreference(event.newValue));
       }
     };
-    media?.addEventListener("change", onMediaChange);
+    const unsubscribeMedia = subscribeToMediaQuery(media, onMediaChange);
+    onMediaChange();
     window.addEventListener("storage", onStorage);
     return () => {
-      media?.removeEventListener("change", onMediaChange);
+      unsubscribeMedia();
       window.removeEventListener("storage", onStorage);
     };
   }, []);

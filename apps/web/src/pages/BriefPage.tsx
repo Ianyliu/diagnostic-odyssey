@@ -35,7 +35,7 @@ import {
   pilotInputFields
 } from "../data/pilotInputDraft";
 import { formatAppliedAssumption } from "./briefAssumptions";
-import { createBriefPrintDisclosureState, executeBriefPrint } from "./briefPrint";
+import { createBriefPrintDisclosureState, executeBriefPrint, watchBriefPrintMedia } from "./briefPrint";
 import "./BriefPage.css";
 
 function AccessibleEstimateInterval({estimate}: {estimate: Estimate}) {
@@ -75,15 +75,11 @@ export function BriefPage() {
     printDisclosureState.current = state;
     window.addEventListener("beforeprint", state.prepare);
     window.addEventListener("afterprint", state.restore);
-    const printMedia = window.matchMedia?.("print");
-    const onPrintMediaChange = () => {
-      if (!printMedia?.matches) state.restore();
-    };
-    printMedia?.addEventListener?.("change", onPrintMediaChange);
+    const stopWatchingPrintMedia = watchBriefPrintMedia(state);
     return () => {
       window.removeEventListener("beforeprint", state.prepare);
       window.removeEventListener("afterprint", state.restore);
-      printMedia?.removeEventListener?.("change", onPrintMediaChange);
+      stopWatchingPrintMedia();
       state.restore();
       if (printDisclosureState.current === state) printDisclosureState.current = null;
     };
