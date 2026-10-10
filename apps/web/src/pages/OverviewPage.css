@@ -788,17 +788,17 @@
 }
 
 .overview-page .journey-card:nth-child(3) {
-  --journey-accent: #8a6d2c;
+  --journey-accent: #806326;
   --journey-tint: #f7f1e3;
 }
 
 .overview-page .journey-card:nth-child(4) {
-  --journey-accent: #397d7b;
+  --journey-accent: #327472;
   --journey-tint: #edf5f4;
 }
 
 .overview-page .journey-card:nth-child(5) {
-  --journey-accent: #687486;
+  --journey-accent: #606c7e;
   --journey-tint: #f0f1f4;
 }
 

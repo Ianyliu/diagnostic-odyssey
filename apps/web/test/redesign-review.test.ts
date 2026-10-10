@@ -102,7 +102,7 @@ test("Planning Brief print repeats product provenance and moves decision state o
 
 test("workflow cards use restrained semantic variety instead of one teal treatment", () => {
   const css = readSource("../src/pages/OverviewPage.css");
-  for (const accent of ["#3f765f", "#3e6f91", "#8a6d2c", "#397d7b", "#687486", "#153552"]) {
+  for (const accent of ["#3f765f", "#3e6f91", "#806326", "#327472", "#606c7e", "#153552"]) {
     assert.ok(css.includes(accent), accent);
   }
   assert.match(css, /journey-card:nth-child\(1\)/);
