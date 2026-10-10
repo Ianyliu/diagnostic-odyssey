@@ -1,0 +1,193 @@
+{
+  "baseURL": "http://127.0.0.1:4177",
+  "browser": {
+    "chrome": "154.0.8037.98",
+    "playwright": "1.64.0",
+    "axe": "4.11.1"
+  },
+  "groups": {
+    "pass": 24,
+    "fail": 0
+  },
+  "renderedRoutes": 66,
+  "axeRouteThemeAudits": 22,
+  "governedComparisons": [
+    {
+      "key": "defaultBrief",
+      "status": "PASS",
+      "beforeSha256": "caf3025c68cb9447ea3dbe264425981f36e9bb1611ab840cdd15ed19d6ce023a",
+      "afterSha256": "caf3025c68cb9447ea3dbe264425981f36e9bb1611ab840cdd15ed19d6ce023a"
+    },
+    {
+      "key": "selectedBrief",
+      "status": "PASS",
+      "beforeSha256": "b01b8b85a4d8cae86037dc2df6940e133a8f98e09320422104a3d46391a25e1d",
+      "afterSha256": "b01b8b85a4d8cae86037dc2df6940e133a8f98e09320422104a3d46391a25e1d"
+    },
+    {
+      "key": "staleBrief",
+      "status": "PASS",
+      "beforeSha256": "bb7f58b9fc7351b153cf734826fcc6a14f54ae49352973a98e34ddb722583c4c",
+      "afterSha256": "bb7f58b9fc7351b153cf734826fcc6a14f54ae49352973a98e34ddb722583c4c"
+    },
+    {
+      "key": "refreshedBrief",
+      "status": "PASS",
+      "beforeSha256": "acc05757980e8976128186e78856690c450f3d4f49bcd10414bd93c780e1a85b",
+      "afterSha256": "acc05757980e8976128186e78856690c450f3d4f49bcd10414bd93c780e1a85b"
+    },
+    {
+      "key": "capacitySensitivity",
+      "status": "PASS",
+      "beforeSha256": "8d9b53bf7bf4f4229c6c889c80e97b2edeb9728c9ebc73e72db62253b84b79fe",
+      "afterSha256": "8d9b53bf7bf4f4229c6c889c80e97b2edeb9728c9ebc73e72db62253b84b79fe"
+    },
+    {
+      "key": "reachSensitivity",
+      "status": "PASS",
+      "beforeSha256": "04993f46f3712b7bd3da4c4669f41790db298ffd11c02e01ec0838ffbe93bf17",
+      "afterSha256": "04993f46f3712b7bd3da4c4669f41790db298ffd11c02e01ec0838ffbe93bf17"
+    },
+    {
+      "key": "windowSensitivity",
+      "status": "PASS",
+      "beforeSha256": "2b58c60850043134d697088b12a01b6ff5b6372848abd1ac201e0b27b1cb72ef",
+      "afterSha256": "2b58c60850043134d697088b12a01b6ff5b6372848abd1ac201e0b27b1cb72ef"
+    }
+  ],
+  "print": {
+    "pages": 8,
+    "allPagesVisuallyInspected": true,
+    "nativeOSDialogTested": true,
+    "nativeDefaultScenarioPreviewPages": 7,
+    "nativeCancellationRestoresMixedDisclosureStateAndFocus": true,
+    "physicalPrintJobSubmitted": false,
+    "nativeSmokeEvidence": "native-print-smoke.json"
+  },
+  "limitations": [
+    "Axe contrast incomplete nodes remain on Overview gradients/decorative elements: 32 light,29 dark. Visual inspection found readable text; not full WCAG certification.",
+    "No screen reader session was run.",
+    "Native Chrome/macOS print-dialog cancellation was tested with the default seven-page scenario; the selected-workflow headless PDF has eight pages. No physical print job was submitted.",
+    "Loading test observes the initial DOM commit before synchronous validation; no persistent loading paint is claimed.",
+    "Five localhost cold samples are diagnostic, not field Core Web Vitals or mobile-network measurement."
+  ],
+  "screenshots": "/tmp/diagnostic-audit-screenshots",
+  "performance": {
+    "scope": "Five cold localhost browser contexts. Diagnostic only; no mobile-network or field Core Web Vitals claim.",
+    "baseline": {
+      "sampleCount": 5,
+      "navigationMedianMs": 35.10000002384186,
+      "paint": [
+        [
+          {
+            "name": "first-paint",
+            "ms": 24
+          }
+        ],
+        [
+          {
+            "name": "first-paint",
+            "ms": 24
+          }
+        ],
+        [
+          {
+            "name": "first-paint",
+            "ms": 48
+          }
+        ],
+        [
+          {
+            "name": "first-paint",
+            "ms": 24
+          }
+        ],
+        [
+          {
+            "name": "first-paint",
+            "ms": 24
+          }
+        ]
+      ],
+      "assets": [
+        {
+          "name": "index-DCs6JUE-.js",
+          "gzipBodyBytes": 117400,
+          "transferBytes": 117700,
+          "decodedBodyBytes": 502140,
+          "durationMs": 14.899999976158142
+        },
+        {
+          "name": "index-CuSK_Skz.css",
+          "gzipBodyBytes": 17326,
+          "transferBytes": 17626,
+          "decodedBodyBytes": 100170,
+          "durationMs": 6.100000023841858
+        }
+      ]
+    },
+    "final": {
+      "sampleCount": 5,
+      "navigationMedianMs": 44.60000002384186,
+      "paint": [
+        [
+          {
+            "name": "first-paint",
+            "ms": 40
+          }
+        ],
+        [
+          {
+            "name": "first-paint",
+            "ms": 40
+          }
+        ],
+        [
+          {
+            "name": "first-paint",
+            "ms": 24
+          },
+          {
+            "name": "first-contentful-paint",
+            "ms": 68
+          }
+        ],
+        [
+          {
+            "name": "first-paint",
+            "ms": 28
+          }
+        ],
+        [
+          {
+            "name": "first-paint",
+            "ms": 24
+          }
+        ]
+      ],
+      "assets": [
+        {
+          "name": "index-D79TFG21.js",
+          "gzipBodyBytes": 119274,
+          "transferBytes": 119574,
+          "decodedBodyBytes": 506461,
+          "durationMs": 28.899999976158142
+        },
+        {
+          "name": "index-D24PT-ZR.css",
+          "gzipBodyBytes": 17465,
+          "transferBytes": 17765,
+          "decodedBodyBytes": 100980,
+          "durationMs": 14.199999928474426
+        }
+      ]
+    }
+  },
+  "files": {
+    "qa-matrix.md": "ab61f8c04daec37880f1a72570b09907a7d01565594390f4eb596b32e0686339",
+    "planning-brief.pdf": "c46338d1860a320952af2a1abf5a3b52b2f9ca7deeb2ec3b0ab2c04f581ec76b",
+    "qa-results.json": "e311b52340b3e3cc98805bf2a1f70a273fe8b91d6a411f5e1821e67606564e97",
+    "performance-comparison.json": "51c57c43f4ed0a6fee032c779e02e413b421048ac76ac838626659a4aa6ba246",
+    "governed-browser-comparison.json": "a89609cb00bc956a25ae522356b280b0d73846e9c71809c073e61ae84548a45e"
+  }
+}

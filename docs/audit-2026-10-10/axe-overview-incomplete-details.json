@@ -1,0 +1,1130 @@
+[
+  {
+    "theme": "light",
+    "incomplete": [
+      {
+        "target": [
+          "#overview-title"
+        ],
+        "html": "<h1 id=\"overview-title\">Evidence into planning,<span>with boundaries intact.</span></h1>",
+        "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "contrastRatio": 0,
+              "fontSize": "51.8pt (69.12px)",
+              "fontWeight": "bold",
+              "messageKey": "bgGradient",
+              "expectedContrastRatio": "3:1"
+            },
+            "message": "Element's background color could not be determined due to a background gradient"
+          }
+        ]
+      },
+      {
+        "target": [
+          "#overview-title > span"
+        ],
+        "html": "<span>with boundaries intact.</span>",
+        "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "contrastRatio": 0,
+              "fontSize": "51.8pt (69.12px)",
+              "fontWeight": "bold",
+              "messageKey": "bgGradient",
+              "expectedContrastRatio": "3:1"
+            },
+            "message": "Element's background color could not be determined due to a background gradient"
+          }
+        ]
+      },
+      {
+        "target": [
+          ".overview-lede"
+        ],
+        "html": "<p class=\"overview-lede\">Diagnostic Odyssey keeps reviewed national burden, local implementation context, and analyst assumptions visibly separate—then carries their provenance into one planning workflow.</p>",
+        "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "contrastRatio": 0,
+              "fontSize": "14.4pt (19.2px)",
+              "fontWeight": "normal",
+              "messageKey": "bgGradient",
+              "expectedContrastRatio": "4.5:1"
+            },
+            "message": "Element's background color could not be determined due to a background gradient"
+          }
+        ]
+      },
+      {
+        "target": [
+          ".overview-secondary-cta"
+        ],
+        "html": "<a class=\"button secondary overview-secondary-cta\" href=\"/pilot\">Open Pilot planner</a>",
+        "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "contrastRatio": 0,
+              "fontSize": "10.8pt (14.4px)",
+              "fontWeight": "bold",
+              "messageKey": "bgGradient",
+              "expectedContrastRatio": "4.5:1"
+            },
+            "message": "Element's background color could not be determined due to a background gradient"
+          }
+        ]
+      },
+      {
+        "target": [
+          ".overview-proof > div:nth-child(1) > dt"
+        ],
+        "html": "<dt>21</dt>",
+        "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "contrastRatio": 0,
+              "fontSize": "17.0pt (22.72px)",
+              "fontWeight": "bold",
+              "messageKey": "bgGradient",
+              "expectedContrastRatio": "3:1"
+            },
+            "message": "Element's background color could not be determined due to a background gradient"
+          }
+        ]
+      },
+      {
+        "target": [
+          ".overview-proof > div:nth-child(1) > dd"
+        ],
+        "html": "<dd>reviewed national estimates</dd>",
+        "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "contrastRatio": 0,
+              "fontSize": "8.8pt (11.68px)",
+              "fontWeight": "normal",
+              "messageKey": "bgGradient",
+              "expectedContrastRatio": "4.5:1"
+            },
+            "message": "Element's background color could not be determined due to a background gradient"
+          }
+        ]
+      },
+      {
+        "target": [
+          ".overview-proof > div:nth-child(2) > dt"
+        ],
+        "html": "<dt>34</dt>",
+        "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "contrastRatio": 0,
+              "fontSize": "17.0pt (22.72px)",
+              "fontWeight": "bold",
+              "messageKey": "bgGradient",
+              "expectedContrastRatio": "3:1"
+            },
+            "message": "Element's background color could not be determined due to a background gradient"
+          }
+        ]
+      },
+      {
+        "target": [
+          ".overview-proof > div:nth-child(2) > dd"
+        ],
+        "html": "<dd>reviewed local-context indicators</dd>",
+        "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "contrastRatio": 0,
+              "fontSize": "8.8pt (11.68px)",
+              "fontWeight": "normal",
+              "messageKey": "bgGradient",
+              "expectedContrastRatio": "4.5:1"
+            },
+            "message": "Element's background color could not be determined due to a background gradient"
+          }
+        ]
+      },
+      {
+        "target": [
+          ".preview-chrome > strong"
+        ],
+        "html": "<strong>Decision workspace</strong>",
+        "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "contrastRatio": 0,
+              "fontSize": "8.9pt (11.84px)",
+              "fontWeight": "bold",
+              "messageKey": "bgGradient",
+              "expectedContrastRatio": "4.5:1"
+            },
+            "message": "Element's background color could not be determined due to a background gradient"
+          }
+        ]
+      },
+      {
+        "target": [
+          ".preview-output-topline > span"
+        ],
+        "html": "<span>Planning brief</span>",
+        "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "contrastRatio": 0,
+              "fontSize": "7.6pt (10.08px)",
+              "fontWeight": "bold",
+              "messageKey": "bgGradient",
+              "expectedContrastRatio": "4.5:1"
+            },
+            "message": "Element's background color could not be determined due to a background gradient"
+          }
+        ]
+      },
+      {
+        "target": [
+          ".preview-output > strong"
+        ],
+        "html": "<strong>Traceable decision state</strong>",
+        "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "contrastRatio": 0,
+              "fontSize": "20.4pt (27.2px)",
+              "fontWeight": "bold",
+              "messageKey": "bgGradient",
+              "expectedContrastRatio": "3:1"
+            },
+            "message": "Element's background color could not be determined due to a background gradient"
+          }
+        ]
+      },
+      {
+        "target": [
+          ".preview-output > ul > li:nth-child(1)"
+        ],
+        "html": "<li><span></span> Evidence boundary retained</li>",
+        "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "contrastRatio": 0,
+              "fontSize": "8.2pt (10.88px)",
+              "fontWeight": "normal",
+              "messageKey": "bgGradient",
+              "expectedContrastRatio": "4.5:1"
+            },
+            "message": "Element's background color could not be determined due to a background gradient"
+          }
+        ]
+      },
+      {
+        "target": [
+          ".preview-output > ul > li:nth-child(2)"
+        ],
+        "html": "<li><span></span> Assumptions labeled</li>",
+        "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "contrastRatio": 0,
+              "fontSize": "8.2pt (10.88px)",
+              "fontWeight": "normal",
+              "messageKey": "bgGradient",
+              "expectedContrastRatio": "4.5:1"
+            },
+            "message": "Element's background color could not be determined due to a background gradient"
+          }
+        ]
+      },
+      {
+        "target": [
+          ".preview-output > ul > li:nth-child(3)"
+        ],
+        "html": "<li><span></span> Data gaps visible</li>",
+        "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "contrastRatio": 0,
+              "fontSize": "8.2pt (10.88px)",
+              "fontWeight": "normal",
+              "messageKey": "bgGradient",
+              "expectedContrastRatio": "4.5:1"
+            },
+            "message": "Element's background color could not be determined due to a background gradient"
+          }
+        ]
+      },
+      {
+        "target": [
+          ".preview-footer > span:nth-child(1)"
+        ],
+        "html": "<span>Distinct inputs</span>",
+        "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "contrastRatio": 0,
+              "fontSize": "7.9pt (10.56px)",
+              "fontWeight": "normal",
+              "messageKey": "bgGradient",
+              "expectedContrastRatio": "4.5:1"
+            },
+            "message": "Element's background color could not be determined due to a background gradient"
+          }
+        ]
+      },
+      {
+        "target": [
+          ".preview-footer > i"
+        ],
+        "html": "<i aria-hidden=\"true\">→</i>",
+        "summary": "Fix any of the following:\n  Element content contains only non-text characters",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "messageKey": "nonBmp"
+            },
+            "message": "Element content contains only non-text characters"
+          }
+        ]
+      },
+      {
+        "target": [
+          ".preview-footer > span:nth-child(3)"
+        ],
+        "html": "<span>one auditable planning artifact</span>",
+        "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "contrastRatio": 0,
+              "fontSize": "7.9pt (10.56px)",
+              "fontWeight": "normal",
+              "messageKey": "bgGradient",
+              "expectedContrastRatio": "4.5:1"
+            },
+            "message": "Element's background color could not be determined due to a background gradient"
+          }
+        ]
+      },
+      {
+        "target": [
+          "figcaption"
+        ],
+        "html": "<figcaption>Conceptual workspace preview. The three lanes stay distinct all the way into the Planning brief; no data values are combined into a composite score.</figcaption>",
+        "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "contrastRatio": 0,
+              "fontSize": "8.2pt (10.88px)",
+              "fontWeight": "normal",
+              "messageKey": "bgGradient",
+              "expectedContrastRatio": "4.5:1"
+            },
+            "message": "Element's background color could not be determined due to a background gradient"
+          }
+        ]
+      },
+      {
+        "target": [
+          "article:nth-child(1) > p"
+        ],
+        "html": "<p>01 / REVIEWED EVIDENCE</p>",
+        "summary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "fontSize": "8.0pt (10.72px)",
+              "fontWeight": "bold",
+              "messageKey": "pseudoContent",
+              "expectedContrastRatio": "4.5:1"
+            },
+            "message": "Element's background color could not be determined due to a pseudo element"
+          }
+        ]
+      },
+      {
+        "target": [
+          ".context > p"
+        ],
+        "html": "<p>02 / LOCAL CONTEXT</p>",
+        "summary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "fontSize": "8.0pt (10.72px)",
+              "fontWeight": "bold",
+              "messageKey": "pseudoContent",
+              "expectedContrastRatio": "4.5:1"
+            },
+            "message": "Element's background color could not be determined due to a pseudo element"
+          }
+        ]
+      },
+      {
+        "target": [
+          ".assumption > p"
+        ],
+        "html": "<p>03 / ANALYST ASSUMPTIONS</p>",
+        "summary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "fontSize": "8.0pt (10.72px)",
+              "fontWeight": "bold",
+              "messageKey": "pseudoContent",
+              "expectedContrastRatio": "4.5:1"
+            },
+            "message": "Element's background color could not be determined due to a pseudo element"
+          }
+        ]
+      },
+      {
+        "target": [
+          ".reviewed.decision-state:nth-child(1) > a[href$=\"burden\"] > span[aria-hidden=\"true\"]"
+        ],
+        "html": "<span aria-hidden=\"true\"> →</span>",
+        "summary": "Fix any of the following:\n  Element content contains only non-text characters",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "messageKey": "nonBmp"
+            },
+            "message": "Element content contains only non-text characters"
+          }
+        ]
+      },
+      {
+        "target": [
+          ".reviewed.decision-state:nth-child(2) > a[href$=\"local-context\"] > span[aria-hidden=\"true\"]"
+        ],
+        "html": "<span aria-hidden=\"true\"> →</span>",
+        "summary": "Fix any of the following:\n  Element content contains only non-text characters",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "messageKey": "nonBmp"
+            },
+            "message": "Element content contains only non-text characters"
+          }
+        ]
+      },
+      {
+        "target": [
+          ".assumption.decision-state > a[href$=\"pilot\"] > span[aria-hidden=\"true\"]"
+        ],
+        "html": "<span aria-hidden=\"true\"> →</span>",
+        "summary": "Fix any of the following:\n  Element content contains only non-text characters",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "messageKey": "nonBmp"
+            },
+            "message": "Element content contains only non-text characters"
+          }
+        ]
+      },
+      {
+        "target": [
+          ".unavailable > a[href$=\"evidence\"] > span[aria-hidden=\"true\"]"
+        ],
+        "html": "<span aria-hidden=\"true\"> →</span>",
+        "summary": "Fix any of the following:\n  Element content contains only non-text characters",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "messageKey": "nonBmp"
+            },
+            "message": "Element content contains only non-text characters"
+          }
+        ]
+      },
+      {
+        "target": [
+          ".neutral > a[href$=\"brief\"] > span[aria-hidden=\"true\"]"
+        ],
+        "html": "<span aria-hidden=\"true\"> →</span>",
+        "summary": "Fix any of the following:\n  Element content contains only non-text characters",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "messageKey": "nonBmp"
+            },
+            "message": "Element content contains only non-text characters"
+          }
+        ]
+      },
+      {
+        "target": [
+          ".journey-card[href$=\"burden\"] > .journey-arrow[aria-hidden=\"true\"]"
+        ],
+        "html": "<span class=\"journey-arrow\" aria-hidden=\"true\">→</span>",
+        "summary": "Fix any of the following:\n  Element content contains only non-text characters",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "messageKey": "nonBmp"
+            },
+            "message": "Element content contains only non-text characters"
+          }
+        ]
+      },
+      {
+        "target": [
+          ".journey-card[href$=\"local-context\"] > .journey-arrow[aria-hidden=\"true\"]"
+        ],
+        "html": "<span class=\"journey-arrow\" aria-hidden=\"true\">→</span>",
+        "summary": "Fix any of the following:\n  Element content contains only non-text characters",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "messageKey": "nonBmp"
+            },
+            "message": "Element content contains only non-text characters"
+          }
+        ]
+      },
+      {
+        "target": [
+          ".journey-card[href$=\"pilot\"] > .journey-arrow[aria-hidden=\"true\"]"
+        ],
+        "html": "<span class=\"journey-arrow\" aria-hidden=\"true\">→</span>",
+        "summary": "Fix any of the following:\n  Element content contains only non-text characters",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "messageKey": "nonBmp"
+            },
+            "message": "Element content contains only non-text characters"
+          }
+        ]
+      },
+      {
+        "target": [
+          ".journey-card[href$=\"evidence\"] > .journey-arrow[aria-hidden=\"true\"]"
+        ],
+        "html": "<span class=\"journey-arrow\" aria-hidden=\"true\">→</span>",
+        "summary": "Fix any of the following:\n  Element content contains only non-text characters",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "messageKey": "nonBmp"
+            },
+            "message": "Element content contains only non-text characters"
+          }
+        ]
+      },
+      {
+        "target": [
+          ".journey-card[href$=\"data-requests\"] > .journey-arrow[aria-hidden=\"true\"]"
+        ],
+        "html": "<span class=\"journey-arrow\" aria-hidden=\"true\">→</span>",
+        "summary": "Fix any of the following:\n  Element content contains only non-text characters",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "messageKey": "nonBmp"
+            },
+            "message": "Element content contains only non-text characters"
+          }
+        ]
+      },
+      {
+        "target": [
+          ".journey-card[href$=\"brief\"] > .journey-arrow[aria-hidden=\"true\"]"
+        ],
+        "html": "<span class=\"journey-arrow\" aria-hidden=\"true\">→</span>",
+        "summary": "Fix any of the following:\n  Element content contains only non-text characters",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "messageKey": "nonBmp"
+            },
+            "message": "Element content contains only non-text characters"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "theme": "dark",
+    "incomplete": [
+      {
+        "target": [
+          "#overview-title"
+        ],
+        "html": "<h1 id=\"overview-title\">Evidence into planning,<span>with boundaries intact.</span></h1>",
+        "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "contrastRatio": 0,
+              "fontSize": "51.8pt (69.12px)",
+              "fontWeight": "bold",
+              "messageKey": "bgGradient",
+              "expectedContrastRatio": "3:1"
+            },
+            "message": "Element's background color could not be determined due to a background gradient"
+          }
+        ]
+      },
+      {
+        "target": [
+          "#overview-title > span"
+        ],
+        "html": "<span>with boundaries intact.</span>",
+        "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "contrastRatio": 0,
+              "fontSize": "51.8pt (69.12px)",
+              "fontWeight": "bold",
+              "messageKey": "bgGradient",
+              "expectedContrastRatio": "3:1"
+            },
+            "message": "Element's background color could not be determined due to a background gradient"
+          }
+        ]
+      },
+      {
+        "target": [
+          ".overview-lede"
+        ],
+        "html": "<p class=\"overview-lede\">Diagnostic Odyssey keeps reviewed national burden, local implementation context, and analyst assumptions visibly separate—then carries their provenance into one planning workflow.</p>",
+        "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "contrastRatio": 0,
+              "fontSize": "14.4pt (19.2px)",
+              "fontWeight": "normal",
+              "messageKey": "bgGradient",
+              "expectedContrastRatio": "4.5:1"
+            },
+            "message": "Element's background color could not be determined due to a background gradient"
+          }
+        ]
+      },
+      {
+        "target": [
+          ".overview-secondary-cta"
+        ],
+        "html": "<a class=\"button secondary overview-secondary-cta\" href=\"/pilot\">Open Pilot planner</a>",
+        "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "contrastRatio": 0,
+              "fontSize": "10.8pt (14.4px)",
+              "fontWeight": "bold",
+              "messageKey": "bgGradient",
+              "expectedContrastRatio": "4.5:1"
+            },
+            "message": "Element's background color could not be determined due to a background gradient"
+          }
+        ]
+      },
+      {
+        "target": [
+          ".overview-proof > div:nth-child(1) > dt"
+        ],
+        "html": "<dt>21</dt>",
+        "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "contrastRatio": 0,
+              "fontSize": "17.0pt (22.72px)",
+              "fontWeight": "bold",
+              "messageKey": "bgGradient",
+              "expectedContrastRatio": "3:1"
+            },
+            "message": "Element's background color could not be determined due to a background gradient"
+          }
+        ]
+      },
+      {
+        "target": [
+          ".overview-proof > div:nth-child(1) > dd"
+        ],
+        "html": "<dd>reviewed national estimates</dd>",
+        "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "contrastRatio": 0,
+              "fontSize": "8.8pt (11.68px)",
+              "fontWeight": "normal",
+              "messageKey": "bgGradient",
+              "expectedContrastRatio": "4.5:1"
+            },
+            "message": "Element's background color could not be determined due to a background gradient"
+          }
+        ]
+      },
+      {
+        "target": [
+          ".overview-proof > div:nth-child(2) > dt"
+        ],
+        "html": "<dt>34</dt>",
+        "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "contrastRatio": 0,
+              "fontSize": "17.0pt (22.72px)",
+              "fontWeight": "bold",
+              "messageKey": "bgGradient",
+              "expectedContrastRatio": "3:1"
+            },
+            "message": "Element's background color could not be determined due to a background gradient"
+          }
+        ]
+      },
+      {
+        "target": [
+          ".overview-proof > div:nth-child(2) > dd"
+        ],
+        "html": "<dd>reviewed local-context indicators</dd>",
+        "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "contrastRatio": 0,
+              "fontSize": "8.8pt (11.68px)",
+              "fontWeight": "normal",
+              "messageKey": "bgGradient",
+              "expectedContrastRatio": "4.5:1"
+            },
+            "message": "Element's background color could not be determined due to a background gradient"
+          }
+        ]
+      },
+      {
+        "target": [
+          ".preview-output-topline > span"
+        ],
+        "html": "<span>Planning brief</span>",
+        "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "contrastRatio": 0,
+              "fontSize": "7.6pt (10.08px)",
+              "fontWeight": "bold",
+              "messageKey": "bgGradient",
+              "expectedContrastRatio": "4.5:1"
+            },
+            "message": "Element's background color could not be determined due to a background gradient"
+          }
+        ]
+      },
+      {
+        "target": [
+          ".preview-output > strong"
+        ],
+        "html": "<strong>Traceable decision state</strong>",
+        "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "contrastRatio": 0,
+              "fontSize": "20.4pt (27.2px)",
+              "fontWeight": "bold",
+              "messageKey": "bgGradient",
+              "expectedContrastRatio": "3:1"
+            },
+            "message": "Element's background color could not be determined due to a background gradient"
+          }
+        ]
+      },
+      {
+        "target": [
+          ".preview-output > ul > li:nth-child(1)"
+        ],
+        "html": "<li><span></span> Evidence boundary retained</li>",
+        "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "contrastRatio": 0,
+              "fontSize": "8.2pt (10.88px)",
+              "fontWeight": "normal",
+              "messageKey": "bgGradient",
+              "expectedContrastRatio": "4.5:1"
+            },
+            "message": "Element's background color could not be determined due to a background gradient"
+          }
+        ]
+      },
+      {
+        "target": [
+          ".preview-output > ul > li:nth-child(2)"
+        ],
+        "html": "<li><span></span> Assumptions labeled</li>",
+        "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "contrastRatio": 0,
+              "fontSize": "8.2pt (10.88px)",
+              "fontWeight": "normal",
+              "messageKey": "bgGradient",
+              "expectedContrastRatio": "4.5:1"
+            },
+            "message": "Element's background color could not be determined due to a background gradient"
+          }
+        ]
+      },
+      {
+        "target": [
+          ".preview-output > ul > li:nth-child(3)"
+        ],
+        "html": "<li><span></span> Data gaps visible</li>",
+        "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "contrastRatio": 0,
+              "fontSize": "8.2pt (10.88px)",
+              "fontWeight": "normal",
+              "messageKey": "bgGradient",
+              "expectedContrastRatio": "4.5:1"
+            },
+            "message": "Element's background color could not be determined due to a background gradient"
+          }
+        ]
+      },
+      {
+        "target": [
+          ".preview-footer > i"
+        ],
+        "html": "<i aria-hidden=\"true\">→</i>",
+        "summary": "Fix any of the following:\n  Element content contains only non-text characters",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "messageKey": "nonBmp"
+            },
+            "message": "Element content contains only non-text characters"
+          }
+        ]
+      },
+      {
+        "target": [
+          "figcaption"
+        ],
+        "html": "<figcaption>Conceptual workspace preview. The three lanes stay distinct all the way into the Planning brief; no data values are combined into a composite score.</figcaption>",
+        "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "contrastRatio": 0,
+              "fontSize": "8.2pt (10.88px)",
+              "fontWeight": "normal",
+              "messageKey": "bgGradient",
+              "expectedContrastRatio": "4.5:1"
+            },
+            "message": "Element's background color could not be determined due to a background gradient"
+          }
+        ]
+      },
+      {
+        "target": [
+          "article:nth-child(1) > p"
+        ],
+        "html": "<p>01 / REVIEWED EVIDENCE</p>",
+        "summary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "fontSize": "8.0pt (10.72px)",
+              "fontWeight": "bold",
+              "messageKey": "pseudoContent",
+              "expectedContrastRatio": "4.5:1"
+            },
+            "message": "Element's background color could not be determined due to a pseudo element"
+          }
+        ]
+      },
+      {
+        "target": [
+          ".context > p"
+        ],
+        "html": "<p>02 / LOCAL CONTEXT</p>",
+        "summary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "fontSize": "8.0pt (10.72px)",
+              "fontWeight": "bold",
+              "messageKey": "pseudoContent",
+              "expectedContrastRatio": "4.5:1"
+            },
+            "message": "Element's background color could not be determined due to a pseudo element"
+          }
+        ]
+      },
+      {
+        "target": [
+          ".assumption > p"
+        ],
+        "html": "<p>03 / ANALYST ASSUMPTIONS</p>",
+        "summary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "fontSize": "8.0pt (10.72px)",
+              "fontWeight": "bold",
+              "messageKey": "pseudoContent",
+              "expectedContrastRatio": "4.5:1"
+            },
+            "message": "Element's background color could not be determined due to a pseudo element"
+          }
+        ]
+      },
+      {
+        "target": [
+          ".reviewed.decision-state:nth-child(1) > a[href$=\"burden\"] > span[aria-hidden=\"true\"]"
+        ],
+        "html": "<span aria-hidden=\"true\"> →</span>",
+        "summary": "Fix any of the following:\n  Element content contains only non-text characters",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "messageKey": "nonBmp"
+            },
+            "message": "Element content contains only non-text characters"
+          }
+        ]
+      },
+      {
+        "target": [
+          ".reviewed.decision-state:nth-child(2) > a[href$=\"local-context\"] > span[aria-hidden=\"true\"]"
+        ],
+        "html": "<span aria-hidden=\"true\"> →</span>",
+        "summary": "Fix any of the following:\n  Element content contains only non-text characters",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "messageKey": "nonBmp"
+            },
+            "message": "Element content contains only non-text characters"
+          }
+        ]
+      },
+      {
+        "target": [
+          ".assumption.decision-state > a[href$=\"pilot\"] > span[aria-hidden=\"true\"]"
+        ],
+        "html": "<span aria-hidden=\"true\"> →</span>",
+        "summary": "Fix any of the following:\n  Element content contains only non-text characters",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "messageKey": "nonBmp"
+            },
+            "message": "Element content contains only non-text characters"
+          }
+        ]
+      },
+      {
+        "target": [
+          ".unavailable > a[href$=\"evidence\"] > span[aria-hidden=\"true\"]"
+        ],
+        "html": "<span aria-hidden=\"true\"> →</span>",
+        "summary": "Fix any of the following:\n  Element content contains only non-text characters",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "messageKey": "nonBmp"
+            },
+            "message": "Element content contains only non-text characters"
+          }
+        ]
+      },
+      {
+        "target": [
+          ".neutral > a[href$=\"brief\"] > span[aria-hidden=\"true\"]"
+        ],
+        "html": "<span aria-hidden=\"true\"> →</span>",
+        "summary": "Fix any of the following:\n  Element content contains only non-text characters",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "messageKey": "nonBmp"
+            },
+            "message": "Element content contains only non-text characters"
+          }
+        ]
+      },
+      {
+        "target": [
+          ".journey-card[href$=\"burden\"] > .journey-arrow[aria-hidden=\"true\"]"
+        ],
+        "html": "<span class=\"journey-arrow\" aria-hidden=\"true\">→</span>",
+        "summary": "Fix any of the following:\n  Element content contains only non-text characters",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "messageKey": "nonBmp"
+            },
+            "message": "Element content contains only non-text characters"
+          }
+        ]
+      },
+      {
+        "target": [
+          ".journey-card[href$=\"local-context\"] > .journey-arrow[aria-hidden=\"true\"]"
+        ],
+        "html": "<span class=\"journey-arrow\" aria-hidden=\"true\">→</span>",
+        "summary": "Fix any of the following:\n  Element content contains only non-text characters",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "messageKey": "nonBmp"
+            },
+            "message": "Element content contains only non-text characters"
+          }
+        ]
+      },
+      {
+        "target": [
+          ".journey-card[href$=\"pilot\"] > .journey-arrow[aria-hidden=\"true\"]"
+        ],
+        "html": "<span class=\"journey-arrow\" aria-hidden=\"true\">→</span>",
+        "summary": "Fix any of the following:\n  Element content contains only non-text characters",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "messageKey": "nonBmp"
+            },
+            "message": "Element content contains only non-text characters"
+          }
+        ]
+      },
+      {
+        "target": [
+          ".journey-card[href$=\"evidence\"] > .journey-arrow[aria-hidden=\"true\"]"
+        ],
+        "html": "<span class=\"journey-arrow\" aria-hidden=\"true\">→</span>",
+        "summary": "Fix any of the following:\n  Element content contains only non-text characters",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "messageKey": "nonBmp"
+            },
+            "message": "Element content contains only non-text characters"
+          }
+        ]
+      },
+      {
+        "target": [
+          ".journey-card[href$=\"data-requests\"] > .journey-arrow[aria-hidden=\"true\"]"
+        ],
+        "html": "<span class=\"journey-arrow\" aria-hidden=\"true\">→</span>",
+        "summary": "Fix any of the following:\n  Element content contains only non-text characters",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "messageKey": "nonBmp"
+            },
+            "message": "Element content contains only non-text characters"
+          }
+        ]
+      },
+      {
+        "target": [
+          ".journey-card[href$=\"brief\"] > .journey-arrow[aria-hidden=\"true\"]"
+        ],
+        "html": "<span class=\"journey-arrow\" aria-hidden=\"true\">→</span>",
+        "summary": "Fix any of the following:\n  Element content contains only non-text characters",
+        "checks": [
+          {
+            "id": "color-contrast",
+            "data": {
+              "messageKey": "nonBmp"
+            },
+            "message": "Element content contains only non-text characters"
+          }
+        ]
+      }
+    ]
+  }
+]

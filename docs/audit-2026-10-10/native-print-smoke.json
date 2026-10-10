@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-10",
+  "method": "Native macOS Google Chrome UI through cua_repl",
+  "url": "http://127.0.0.1:4177/brief",
+  "source_code_sha": "d578be2df7ce5ccce3facc32b533d9b574ac4bdb",
+  "initial_disclosures": {
+    "economic": "open",
+    "administrative": "closed",
+    "mental_health": "closed"
+  },
+  "actual_chrome_print_preview": "PASS; default scenario rendered seven Letter pages with all three technical disclosures",
+  "actual_macos_system_print_dialog": "PASS; opened and cancelled without submitting a print job",
+  "restored_disclosures": {
+    "economic": "open",
+    "administrative": "closed",
+    "mental_health": "closed"
+  },
+  "focus_restored": "Print / save PDF button",
+  "user_tabs_preserved": true,
+  "notes": "Dedicated test tab was closed after verification. The separate selected-workflow headless PDF has eight pages and was reviewed independently. No screen-reader or physical-printer claim."
+}

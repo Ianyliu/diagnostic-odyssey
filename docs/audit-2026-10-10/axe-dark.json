@@ -1,0 +1,62 @@
+[
+  {
+    "route": "/",
+    "violations": [],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "count": 29
+      }
+    ]
+  },
+  {
+    "route": "/burden",
+    "violations": [],
+    "incomplete": []
+  },
+  {
+    "route": "/burden/medical",
+    "violations": [],
+    "incomplete": []
+  },
+  {
+    "route": "/burden/work",
+    "violations": [],
+    "incomplete": []
+  },
+  {
+    "route": "/burden/admin",
+    "violations": [],
+    "incomplete": []
+  },
+  {
+    "route": "/burden/human",
+    "violations": [],
+    "incomplete": []
+  },
+  {
+    "route": "/local-context",
+    "violations": [],
+    "incomplete": []
+  },
+  {
+    "route": "/pilot",
+    "violations": [],
+    "incomplete": []
+  },
+  {
+    "route": "/evidence",
+    "violations": [],
+    "incomplete": []
+  },
+  {
+    "route": "/data-requests",
+    "violations": [],
+    "incomplete": []
+  },
+  {
+    "route": "/brief",
+    "violations": [],
+    "incomplete": []
+  }
+]
