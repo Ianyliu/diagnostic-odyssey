@@ -110,7 +110,7 @@ Five cold localhost contexts give a final navigation median of **44.6 ms**, vers
 | Native HPSA score / remaining vocabulary polish | No scientific unit changed. Score value uses native presentation; further wording/unit-label polish is P3 and needs rendered review. |
 | Favicon / theme-color | Favicon and application metadata already present. Theme-color remains absent, P3 deferred; no claim it was added. |
 | Lock/install and bundle growth | PR78 resolves tracked reproducible install and high dependency advisory; measured growth documented above. Router major migration and lint-tool upgrade deferred. |
-| Branch hygiene | Preserve remote branches and provenance by user instruction; no cleanup deletion performed. |
+| Branch hygiene | Original maintenance scope preserved branches. The separately authorized follow-up below archives provenance and deletes eight obsolete refs. |
 | Issue39 closure criteria | Bootstrap/design/archive and core tests addressed; source readability and active-manifest migration remain deliberately deferred. Keep open with this checklist; tests alone do not establish full closure. |
 
 ### PR58 compared behaviorally with PR59
@@ -157,3 +157,58 @@ Brand and workspace identity are preserved. The Overview brand text now has read
 | Mobile controls, light | ![Mobile controls before, light](audit-2026-10-10/screenshots/before-mobile-pilot-controls-light.png) | ![Mobile controls after, light](audit-2026-10-10/screenshots/after-mobile-pilot-controls-light.png) |
 | Mobile controls, dark | ![Mobile controls before, dark](audit-2026-10-10/screenshots/before-mobile-pilot-controls-dark.png) | ![Mobile controls after, dark](audit-2026-10-10/screenshots/after-mobile-pilot-controls-dark.png) |
 | Huge finite cost | ![Huge-value overflow before](audit-2026-10-10/screenshots/before-extreme-pilot-light.png) | ![Huge-value repaired after](audit-2026-10-10/screenshots/after-extreme-pilot-light.png) |
+
+
+## Authorized repository-hygiene follow-up — October 10, 2026
+
+This follow-up adds bounded presentation fixes under #39 and completes the remaining branch audit/cleanup under #7. The initial live inventory contained 11 branches; local remote-tracking refs also contained already-deleted historical branches. Baseline main is `1910fd98b84cefa50ed64084af07b226739195cb`. Implementation is isolated on `maintenance/repository-hygiene-release-audit` and remains subject to independent PR review and separate merge authorization. No scientific source, artifact, estimator, evidence admission, export contract or scenario arithmetic changed. #23, #26/PR #79 and #68 remain separate.
+
+### Tangible implementation
+
+- `1116fe5`: browser theme-color follows the existing light/dark canvas, including pre-React bootstrap, explicit preferences, System/OS changes and other-tab updates. Existing favicons remain intact.
+- `4a8375a`: native HPSA values explicitly say points throughout Local Context/Pilot/Brief; technical disclosures humanize the known published 90% margin-of-error token. No denominator or normalization is introduced. Unknown uncertainty types use neutral source-defined wording; raw metadata stays unchanged in JSON.
+- Historical readability/regex cleanup, active-artifact manifest migration, major dependencies and broad UI/scientific changes remain deferred.
+
+### Complete initial-branch disposition
+
+All eight deletions used exact-HEAD leases in one atomic remote push. Fresh GitHub open-PR inspection found only PR #79. Superseded PRs #72/#69 agent comments acknowledge stopping; merged branches have no unique commits, PR #58 has patch equivalents plus the existing 15-file behavior comparison, and historical unique trees were archived first. Remote heads and annotated tag/commit/tree identities were checked before deletion; protected/active heads were verified unchanged afterward. Full SHAs, trees, divergent commits, changed files and replacement reasons are recorded in `maintenance-audit-evidence.json` under `hygiene_followup`.
+
+| Initial branch | HEAD | Disposition | Action / replacement |
+|---|---|---|---|
+| `contracts/narrative-intervention-references-phase-a` | `e1da9ebc4a0e9408579b0da7229dfce7c01a241d` | Keep — active | Retained; 4 ahead / 64 behind. Active PR #79; separate narrative-reference contract workstream; retained unchanged. |
+| `demo/deploy-ready-2026-10-06-b99d1c70` | `6a216270094519b45421db91a6eb80e7b6c07ee5` | Keep — active | Retained; Independent history. Independent-history static release; retained unchanged until source merge review. |
+| `main` | `1910fd98b84cefa50ed64084af07b226739195cb` | Keep — active | Retained; 0 ahead / 0 behind. Approved source baseline; retained unchanged. |
+| `methods/meps-linked-condition-candidate-estimators` | `8b035d45ab2f65b9e9275470b25b82cd27d673aa` | Delete — safe | Deleted; 6 ahead / 144 behind. All six patches have equivalents; PR #59 and later precision governance preserve stronger behavior. PR #58 closed after 15-file comparison; no needed methodological cherry-pick. |
+| `methods-variance-review` | `c33812d1f8be91727860682425b11957795c427c` | Archive then delete | Deleted; 1 ahead / 418 behind. Main preserves hardened review tooling and original commit/run provenance. Annotated tag also preserves the complete original script and workflow. |
+| `promotion-helper-meps-2024` | `15e412913098e1c8b9f74282de6b789e4dfde6ca` | Archive then delete | Deleted; 2 ahead / 407 behind. One-time promotion completed; historical helper contains approved identities/hashes. Complete tree archived without reactivating its write workflow. |
+| `security/pin-workflow-actions` | `15e6bb2f7de0d073661494bec72d6bf0d169604d` | Delete — safe | Deleted; 0 ahead / 51 behind. Exact HEAD is an ancestor of main; merged PR #81. |
+| `test/add-try-load-linked-condition-error-path-test-4505736616952437946` | `bdc7b059d7de69b9a450a46625f722e4e274721e` | Delete — safe | Deleted; 0 ahead / 60 behind. Exact HEAD is an ancestor of main; merged PR #71. |
+| `test/brief-page-print-error-path-10108248051161208280` | `41aefdc7506e59d1cb8f48e47911c17cc79915c2` | Delete — safe | Deleted; 3 ahead / 64 behind. Superseded by merged PRs #75/#84; current tests preserve failure, null-state, asynchronous restoration and cleanup. PR #72 closed and agent acknowledged supersession. |
+| `test/fragment-navigation-decode-error-11645379645524263885` | `cd435a94c219c36367e4c42e59dd469bab032b0d` | Archive then delete | Deleted; 4 ahead / 64 behind. PR #70 preserves required navigation behavior. Tag preserves unique reviewer-rule documentation and test variants. PR #69 closed and agent acknowledged stopping work. |
+| `test/governed-maintenance-regressions` | `fe24ab40d265e2a3e5fecf194aed09ea1597de6a` | Delete — safe | Deleted; 0 ahead / 24 behind. Exact HEAD is an ancestor of main; merged PR #86 preserves tests and governed comparison tools. |
+
+Three permanent annotated archive tags preserve complete original trees; do not move or delete them:
+
+- `archive/2026-10-10/methods-variance-review`: tag object `8204cafec5208c08bedcc673a94f907679f6d2dc`, target `c33812d1f8be91727860682425b11957795c427c`, tree `b717752ced4c63f4c9a24f58a5129c6a4d6ad228`.
+- `archive/2026-10-10/promotion-helper-meps-2024`: tag object `edf1bc7a57fb707468ddb29045e83eaf4a9b4198`, target `15e412913098e1c8b9f74282de6b789e4dfde6ca`, tree `062fe1b9d046a09c5db16ec0052afe751edc7b8a`.
+- `archive/2026-10-10/test/fragment-navigation-decode-error-11645379645524263885`: tag object `79c03a99a872e0ad9415b9c85beab9793a7d8a4d`, target `cd435a94c219c36367e4c42e59dd469bab032b0d`, tree `005a67bb7a26e4eba51b6fc5abc52f5e551ab7e1`.
+
+No open PR was closed and no issue was automatically closed. #7 now has a complete audit/disposition record and is recommended for closure after independent evidence acceptance; unfinished implementation is tracked in #39. #39 remains open: cleanup is complete, presentation changes await merge, and substantive deferred criteria remain. #40 must retain unchecked #39 and independent Final additions.
+
+### Fresh validation and reused evidence
+
+Tested application commit: `4a8375add79a5c532def8f40a0bee7822821e8f7`. Official Node 22.23.3/npm 10.9.9 clean `npm ci`; typecheck, 288 JavaScript tests, lint and production build pass. The complete Chrome 154 production suite passes 26/26 groups, including new theme-bootstrap/system/cross-tab and six responsive-theme local-context/export cases. All seven existing browser output snapshots match the prior release exactly, ignoring only Brief execution time. New score exports contain the exact original reviewed record objects, including native units and raw uncertainty metadata.
+
+All 27 reviewed files remain byte-identical; 23 manifest payload checksums pass. Eleven scenarios, 150 sensitivity points and three serialized Brief cases are exact; capture SHA256 remains `2cc126c18bbc2e191bae3e2d6bb49c8c84c801d1bc84325d88d2b4df48589513`. Desktop/light and mobile/dark score cards and complete changed PDF pages 7/8 were visually inspected; labels/disclosures remain legible. Long existing provenance paragraphs can span pages. No new native print-dialog or full screen-reader session is claimed. Existing Overview axe incompletes still require human contrast judgment.
+
+Python (51 tests)/R (829 checks) and native-print cancellation results are reused from the [exact-baseline release record](https://github.com/Ianyliu/diagnostic-odyssey/pull/92#issuecomment-6102220045): their source/configuration/inputs are unchanged. Exact final-PR-head CI is still required; identify its results in the PR conversation. An initial local lint run caught an undefined URL global in the new browser test; importing the Node URL class resolved it, and the rerun passed. No test failures or scientific differences remain.
+
+Full logs, captures, comparison results, browser outputs and cleanup identities are preserved locally in `.maintenance-local/hygiene-2026-10-10/`; the compact checked-in evidence index records durable counts, hashes and dispositions.
+
+### Static and production boundaries
+
+The earlier pending release steps were completed by the [PR #92 release addendum](https://github.com/Ianyliu/diagnostic-odyssey/pull/92#issuecomment-6102220045): source `1910fd98`, static `6a216270`, production deployment `171fdf6b-839c-4852-9449-6a5aba6516bc`. Historical source evidence fields are reconciled in the companion JSON.
+
+The new candidate changes index HTML and compiled JS; CSS and public image/SVG assets are unchanged. The exact production build has been served locally and browser-tested, but it is intentionally not published to the static branch before independent source approval and authorized merge. Main and static HEAD remain `1910fd98`/`6a216270`. After merge, rebuild exact approved main, compare files, and make one ordinary static child commit updating generated assets/provenance/checksums if required. Preserve orphan history, host configurations, security headers and SPA fallback.
+
+No Cloudflare deployment was triggered. Production remains the prior reviewed release; a future production upload requires separate user authorization. Branch synchronization and production deployment must be reported separately.
