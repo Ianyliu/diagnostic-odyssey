@@ -1,8 +1,10 @@
 import {
   validateScenario,
+  validateScenarioResult,
   type Scenario,
   type ScenarioResult
 } from "@diagnostic-odyssey/contracts";
+import { calculateScenario, InvalidScenarioResultError } from "@diagnostic-odyssey/scenario-engine";
 
 export type PilotNumericField =
   | "eligible_population"
@@ -68,12 +70,18 @@ function parseNumericDraft(raw: string): ParsedDraftNumber {
   if (trimmed.length === 0) {
     return {ok: false, message: "Enter a value."};
   }
+  if (trimmed.length > 1024) {
+    return {ok: false, message: "Enter a shorter number (at most 1,024 characters)."};
+  }
   if (!completeNumberPattern.test(trimmed)) {
     return {ok: false, message: "Enter a valid number."};
   }
   const value = Number(trimmed);
   if (!Number.isFinite(value)) {
     return {ok: false, message: "Enter a valid finite number."};
+  }
+  if (value === 0 && /[1-9]/.test(trimmed.split(/[eE]/)[0] ?? "")) {
+    return {ok: false, message: "This nonzero value is too small to represent. Enter a larger value or an explicit zero."};
   }
   return {ok: true, value};
 }
@@ -89,7 +97,14 @@ function shiftDecimalPoint(raw: string, places: number): string {
   const exponent = Number(exponentText) + places;
   const [integerPart = "", fractionalPart = ""] = coefficient.split(".");
   const digits = (integerPart + fractionalPart) || "0";
+  if (!/[1-9]/.test(digits)) return "0";
   const decimalIndex = integerPart.length + exponent;
+
+  // Keep extreme exponents compact: never allocate a decimal string in proportion
+  // to the user-supplied exponent. Number() performs the final representability check.
+  if (decimalIndex < -324 || decimalIndex > 309) {
+    return `${sign}${digits}e${exponent - fractionalPart.length}`;
+  }
 
   let plain: string;
   if (decimalIndex <= 0) {
@@ -155,9 +170,14 @@ export function evaluatePilotInputDraft(
       errors[field.key] = result.message;
       continue;
     }
-    parsed[field.key] = field.key === "reach"
-      ? Number(shiftDecimalPoint(draft[field.key], -2))
-      : result.value;
+    const scaled = field.key === "reach"
+      ? parseNumericDraft(shiftDecimalPoint(draft[field.key], -2))
+      : result;
+    if (!scaled.ok) {
+      errors[field.key] = scaled.message;
+      continue;
+    }
+    parsed[field.key] = scaled.value;
   }
 
   if (Object.keys(errors).length > 0) {
@@ -190,8 +210,17 @@ export function evaluatePilotInputDraft(
     }
   }
 
+  if (issues.length === 0) {
+    try {
+      calculateScenario(candidate);
+    } catch (error) {
+      if (!(error instanceof InvalidScenarioResultError)) throw error;
+      formError = error.message;
+    }
+  }
+
   return {
-    candidate: issues.length === 0 ? candidate : null,
+    candidate: issues.length === 0 && !formError ? candidate : null,
     errors,
     formError
   };
@@ -224,14 +253,21 @@ export function formatPilotInputHelper(
 }
 
 export function getPilotResultSignature(result: ScenarioResult): string {
+  assertDisplayableResult(result);
   return JSON.stringify(result);
 }
 
 export function formatPilotResultAnnouncement(result: ScenarioResult): string {
+  assertDisplayableResult(result);
   return [
     "Planning results updated.",
     "Reached participants " + readableInteger.format(result.reached_participants) + ".",
     "Capacity gap " + readableInteger.format(result.capacity_gap) + ".",
     "Program-resource requirement " + readableCurrency.format(result.program_resource_requirement) + "."
   ].join(" ");
+}
+
+function assertDisplayableResult(result: ScenarioResult): void {
+  const issues = validateScenarioResult(result);
+  if (issues.length > 0) throw new InvalidScenarioResultError(issues);
 }

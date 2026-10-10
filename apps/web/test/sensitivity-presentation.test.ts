@@ -46,21 +46,18 @@ test("sensitivity bar widths stay finite, non-negative, and bounded", () => {
   assert.equal(getSensitivityBarWidth(5, 10), 50);
   assert.equal(getSensitivityBarWidth(10, 10), 100);
   assert.equal(getSensitivityBarWidth(20, 10), 100);
-  assert.equal(getSensitivityBarWidth(Number.NaN, 10), 0);
-  assert.equal(getSensitivityBarWidth(5, Number.NaN), 0);
-  assert.equal(getSensitivityBarWidth(Number.POSITIVE_INFINITY, 10), 0);
-  assert.equal(getSensitivityBarWidth(5, Number.POSITIVE_INFINITY), 0);
-  assert.equal(getSensitivityBarWidth(Number.NEGATIVE_INFINITY, 10), 0);
+  for (const [output, maxOutput] of [
+    [Number.NaN, 10], [5, Number.NaN], [Infinity, 10], [5, Infinity], [-Infinity, 10]
+  ]) {
+    assert.throws(() => getSensitivityBarWidth(output, maxOutput), /non-finite sensitivity result/);
+  }
 
   for (const [output, maxOutput] of [
     [0, 0],
     [-1, 0],
     [0, 10],
     [5, 10],
-    [10, 10],
-    [Number.NaN, 10],
-    [5, Number.NaN],
-    [5, Number.POSITIVE_INFINITY]
+    [10, 10]
   ]) {
     const width = getSensitivityBarWidth(output, maxOutput);
     const cssWidth = `${width}%`;
@@ -74,4 +71,12 @@ test("SensitivityExplorer uses the tested width invariant for rendered CSS", () 
     explorerSource,
     /maxOutput > 0 \? \(output \/ maxOutput\) \* 100 : 0/
   );
+});
+
+
+test("invalid sensitivity inputs cannot be formatted as ordinary result labels", () => {
+  for (const value of [NaN, Infinity, -Infinity, -1]) {
+    assert.throws(() => formatSensitivityInput("capacity", value), /invalid sensitivity input/);
+  }
+  assert.throws(() => formatSensitivityInput("reach", 2), /invalid sensitivity input/);
 });

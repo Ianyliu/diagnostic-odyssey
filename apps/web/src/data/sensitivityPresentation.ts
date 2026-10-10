@@ -32,6 +32,9 @@ export function formatSensitivityInput(
   field: SensitivityField,
   value: number
 ): string {
+  if (!Number.isFinite(value) || value < 0 || (field === "reach" && value > 1)) {
+    throw new Error("Cannot display an invalid sensitivity input. Correct the planning inputs first.");
+  }
   if (field === "reach") {
     return `${decimal.format(value * 100)}% (${exactDecimal(value)})`;
   }
@@ -46,7 +49,9 @@ export function getSensitivityBarWidth(
   output: number,
   maxOutput: number
 ): number {
-  if (!Number.isFinite(output) || !Number.isFinite(maxOutput)) return 0;
+  if (!Number.isFinite(output) || !Number.isFinite(maxOutput)) {
+    throw new Error("Cannot display a non-finite sensitivity result. Correct the planning inputs first.");
+  }
   if (output <= 0 || maxOutput <= 0) return 0;
   return Math.max(0, Math.min(100, (output / maxOutput) * 100));
 }

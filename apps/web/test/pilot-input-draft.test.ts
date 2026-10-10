@@ -251,3 +251,40 @@ test("exact sensitivity-current regressions remain intact for precise reach and 
   const zeroCapacity = buildSensitivityValues({...scenario, capacity: 0}, "capacity");
   assert.ok(zeroCapacity.includes(0));
 });
+
+test("extreme exponents and overlong numbers are bounded and cannot silently become zero", () => {
+  for (const raw of ["1e-999999999", "1e999999999", "1e-324", "1".repeat(1025)]) {
+    const draft = createPilotInputDraft(scenario);
+    draft.reach = raw;
+    const result = evaluatePilotInputDraft(draft, scenario);
+    assert.equal(result.candidate, null, raw.slice(0, 20));
+    assert.ok(result.errors.reach);
+    assert.equal(scenario.reach, 0.25);
+    assert.equal(formatPilotInputHelper("reach", raw), null);
+  }
+});
+
+test("percentage conversion rejects underflow but preserves exact zero and representable subnormals", () => {
+  const draft = createPilotInputDraft(scenario);
+  draft.reach = "5e-324";
+  assert.equal(evaluatePilotInputDraft(draft, scenario).candidate, null);
+  assert.match(evaluatePilotInputDraft(draft, scenario).errors.reach ?? "", /too small/);
+  for (const raw of ["0", "0e-999999999", "0e999999999"]) {
+    draft.reach = raw;
+    assert.equal(evaluatePilotInputDraft(draft, scenario).candidate?.reach, 0);
+  }
+  const subnormal = {...scenario, reach: Number.MIN_VALUE};
+  assert.equal(evaluatePilotInputDraft(createPilotInputDraft(subnormal), subnormal).candidate?.reach, Number.MIN_VALUE);
+});
+
+test("overflowing draft calculations retain the last applied scenario and offer corrective guidance", () => {
+  const applied = structuredClone(scenario);
+  const draft = createPilotInputDraft(applied);
+  draft.per_participant_cost = "1e308";
+  const evaluation = evaluatePilotInputDraft(draft, applied);
+  assert.equal(evaluation.candidate, null);
+  assert.match(evaluation.formError ?? "", /Reduce population, recognition windows, or program costs/);
+  assert.deepEqual(applied, scenario);
+  draft.per_participant_cost = "0";
+  assert.equal(evaluatePilotInputDraft(draft, applied).candidate?.per_participant_cost, 0);
+});
