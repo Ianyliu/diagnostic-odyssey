@@ -32,7 +32,14 @@ Actual parsed JSON must preserve all eight required numeric inputs, all nine
 required numeric outputs, and any bounded-effect endpoints. Missing or null
 required numbers fail. Huge finite resource values must stay within desktop,
 tablet, and mobile layouts in both themes; an overflowing sensitivity range must
-show an error while preserving the valid applied scenario. Valid zeros,
+show an error while preserving the valid applied scenario. Resource headlines
+for 1e308 and Number.MAX_VALUE must display their complete scientific tokens on
+one line within the heading bounds, and actual JSON must preserve both costs.
+Scientific numeric tokens in the Pilot result ledger and Brief assumption/output
+rows must also remain intact and within their rows. This includes maximum finite
+reached participants with zero windows and costs, so the applied result remains
+finite. This guards against a visually misleading exponent split even when the
+overall page has no horizontal overflow. Valid zeros,
 invalid drafts, explicit local-context/request selection, stale exclusion and
 refresh, history, focus, theme persistence, reduced motion, browser API failures,
 and disclosure restoration are exercised in Chrome.
