@@ -61,6 +61,17 @@ async function navigate(page, name) {
   await nav.getByRole("link", { name, exact: true }).click();
   await page.locator("main h1").waitFor();
 }
+async function assertThemeColor(page, expectedTheme) {
+  if (expectedTheme) {
+    await page.waitForFunction(theme => document.documentElement.dataset.theme === theme, expectedTheme);
+  }
+  assert.equal(await page.locator('meta[name="theme-color"]').count(), 1);
+  const colors = await page.evaluate(() => ({
+    metadata: document.querySelector('meta[name="theme-color"]').content,
+    canvas: getComputedStyle(document.documentElement).getPropertyValue("--do-canvas").trim(),
+  }));
+  assert.equal(colors.metadata, colors.canvas);
+}
 async function exportBrief(page, filename) {
   const download = page.waitForEvent("download");
   await page.getByRole("button", { name: "Export JSON companion" }).click();
@@ -134,6 +145,7 @@ for (const [device, viewport] of Object.entries({
       const details = [];
       for (const route of routes) {
         await ready(page, route);
+        await assertThemeColor(page, theme);
         const overflow = await page.evaluate(() => ({
           width: innerWidth,
           scroll: document.documentElement.scrollWidth,
@@ -400,6 +412,7 @@ for (const [name, script] of Object.entries({
     page.on("pageerror", (e) => errors.push(String(e)));
     await ready(page, "/");
     await ready(page, "/brief");
+    await assertThemeColor(page);
     assert.deepEqual(errors, []);
     await context.close();
   });
@@ -414,9 +427,56 @@ await check("appearance persistence and reduced motion opening", async () => {
   );
   await page.getByLabel("Appearance", { exact: true }).selectOption("dark");
   assert.equal(await page.locator("html").getAttribute("data-theme"), "dark");
+  await assertThemeColor(page, "dark");
   await page.reload();
   await page.locator("main h1").waitFor();
   assert.equal(await page.locator("html").getAttribute("data-theme"), "dark");
+  await assertThemeColor(page, "dark");
+  await context.close();
+});
+
+await check("browser theme color follows bootstrap, explicit preferences, system changes and other tabs", async () => {
+  // Prevent React from running so this exercises the actual pre-render bootstrap.
+  for (const [preference, system, expected] of [
+    ["system", "light", "light"], ["system", "dark", "dark"],
+    ["dark", "light", "dark"], ["light", "dark", "light"],
+  ]) {
+    const context = await browser.newContext({colorScheme: system});
+    await context.addInitScript(preference => {
+      window.localStorage.setItem("diagnostic-odyssey.theme", preference);
+    }, preference);
+    await context.route("**/assets/*.js", route => route.abort());
+    const page = await context.newPage();
+    page.setDefaultTimeout(5000);
+    await page.goto(baseURL);
+    await assertThemeColor(page, expected);
+    await context.close();
+  }
+
+  const context = await browser.newContext({colorScheme: "light", reducedMotion: "reduce"});
+  const page = await context.newPage();
+  page.setDefaultTimeout(5000);
+  await ready(page);
+  await assertThemeColor(page, "light");
+  await page.emulateMedia({colorScheme: "dark"});
+  await assertThemeColor(page, "dark");
+  await page.getByLabel("Appearance", {exact: true}).selectOption("light");
+  await assertThemeColor(page, "light");
+  await page.emulateMedia({colorScheme: "light"});
+  await page.emulateMedia({colorScheme: "dark"});
+  await assertThemeColor(page, "light");
+  await page.reload();
+  await page.locator("main h1").waitFor();
+  await assertThemeColor(page, "light");
+
+  const other = await context.newPage();
+  await ready(other);
+  await other.getByLabel("Appearance", {exact: true}).selectOption("dark");
+  await assertThemeColor(page, "dark");
+  await other.getByLabel("Appearance", {exact: true}).selectOption("system");
+  await assertThemeColor(page, "dark");
+  await page.emulateMedia({colorScheme: "light"});
+  await assertThemeColor(page, "light");
   await context.close();
 });
 
