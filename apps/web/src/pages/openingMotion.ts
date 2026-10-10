@@ -27,6 +27,15 @@ export function sessionStorageOrNull(): Storage | null {
   try { return window.sessionStorage; } catch { return null; }
 }
 
+export function reducedMotionRequested(): boolean {
+  try {
+    const matches = window.matchMedia("(prefers-reduced-motion: reduce)")?.matches;
+    return typeof matches === "boolean" ? matches : true;
+  } catch {
+    return true;
+  }
+}
+
 export function markOpeningSeen(storage: Pick<Storage, "setItem"> | null): boolean {
   if (!storage) return false;
   try {

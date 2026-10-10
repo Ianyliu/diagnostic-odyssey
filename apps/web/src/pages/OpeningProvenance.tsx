@@ -1,16 +1,11 @@
 import { useEffect, useState } from "react";
-import { markOpeningSeen, sessionStorageOrNull, shouldPlayOpening } from "./openingMotion";
+import { markOpeningSeen, reducedMotionRequested, sessionStorageOrNull, shouldPlayOpening } from "./openingMotion";
 
-const documentEntry = {
+const documentEntry = typeof window !== "undefined" ? {
   pathname: window.location.pathname,
   search: window.location.search,
   hash: window.location.hash
-};
-
-function reducedMotionRequested(): boolean {
-  try { return window.matchMedia("(prefers-reduced-motion: reduce)").matches; }
-  catch { return true; }
-}
+} : { pathname: "/", search: "", hash: "" };
 
 export function OpeningProvenance() {
   const [playing, setPlaying] = useState(() => shouldPlayOpening({

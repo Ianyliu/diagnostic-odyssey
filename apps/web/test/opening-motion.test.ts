@@ -5,6 +5,7 @@ import test from "node:test";
 import {
   OPENING_SESSION_KEY,
   markOpeningSeen,
+  reducedMotionRequested,
   sessionStorageOrNull,
   shouldPlayOpening
 } from "../src/pages/openingMotion.ts";
@@ -61,6 +62,30 @@ test("sessionStorageOrNull handles missing window, accessible storage, and gette
     // 3. window is undefined
     delete (globalThis as Record<string, unknown>).window;
     assert.equal(sessionStorageOrNull(), null);
+  } finally {
+    if (originalWindow) Object.defineProperty(globalThis, "window", originalWindow);
+    else Reflect.deleteProperty(globalThis, "window");
+  }
+  assert.deepEqual(Object.getOwnPropertyDescriptor(globalThis, "window"), originalWindow);
+});
+
+test("reducedMotionRequested handles state, unavailable APIs, and missing window without global leakage", () => {
+  const originalWindow = Object.getOwnPropertyDescriptor(globalThis, "window");
+  try {
+    const cases = [
+      [{matchMedia: () => ({matches: true})}, true],
+      [{matchMedia: () => ({matches: false})}, false],
+      [{matchMedia() {throw new Error("blocked");}}, true],
+      [{}, true],
+      [{matchMedia: () => ({})}, true],
+      [{matchMedia: () => null}, true]
+    ] as const;
+    for (const [value, expected] of cases) {
+      Object.defineProperty(globalThis, "window", {value, configurable: true, writable: true});
+      assert.equal(reducedMotionRequested(), expected);
+    }
+    Reflect.deleteProperty(globalThis, "window");
+    assert.equal(reducedMotionRequested(), true);
   } finally {
     if (originalWindow) Object.defineProperty(globalThis, "window", originalWindow);
     else Reflect.deleteProperty(globalThis, "window");
