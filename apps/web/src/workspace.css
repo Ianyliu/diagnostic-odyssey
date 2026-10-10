@@ -114,6 +114,12 @@ textarea {
   text-transform: uppercase;
 }
 
+/* Legacy brand spans compounded opacity and reduced subtitle contrast. */
+.brand .brand-copy,
+.brand .brand-copy span {
+  opacity: 1;
+}
+
 .primary-nav {
   display: flex;
   align-items: stretch;
