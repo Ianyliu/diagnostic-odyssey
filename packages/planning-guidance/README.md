@@ -15,9 +15,21 @@ Trust layers:
 
 Canonical JSON sorts object keys by ECMAScript UTF-16 code units (native `Array.prototype.sort`), and every set-like ID sort uses explicitly defined code-unit comparison (`a < b`, `a > b`), never `localeCompare`, represents finite numbers by ECMAScript JSON decimal serialization (negative zero as zero), rejects nonfinite values, and retains ordered array semantics by default. Explicit set-like top-level ID arrays and admission reference/hint arrays are sorted by ID; template field codes are sorted lexicographically. Duplicate IDs fail before normalization. UTF-8 encoding is used; strings are not Unicode-normalized. The schema version is domain separated. Golden snapshot test vectors: baseline `pg1:61fcad8177dc4eebbe2fba04ed7dc092f8d4e464352f6cb5256efdab67103eea`; same fixture with `Z`, `a-a`, `a.a`, `a_a`, `z` warning IDs: `pg1:6ccf8b0e4b719ad8f658ba926748c6c30c0057cf7dc7b13ec708fec3db98a805`. Volatile timestamps are excluded **only** for the content fingerprint, not audit provenance.
 
-Proposal IDs are `pgp1:` + SHA-256 of a domain-separated ordered string including snapshot fingerprint, trusted generation ID, action type and exact admitted reference/review/applicability or request/template/hint registry bindings. Collision and staleness checks are performed before acceptance. These SHA-256 bindings are tamper-evident content identifiers, **not digital signatures or proof of authorization**; upstream authority and current-state checks must be separately authenticated by the application.
+Proposal IDs are `pgp1:` + SHA-256 of domain-separated canonical binding data, including snapshot fingerprint, trusted generation ID, action type and admitted reference/review/applicability or request/template/hint registry identities. **Request proposal ID version v2** uses one shared pure `requestProposalId()` function in both construction and verification; its preimage is the UTF-8 concatenation of `DiagnosticOdyssey/PlanningGuidanceRequestProposal/v2\n` and canonical JSON with `snapshot_fingerprint`, `generation_id`, `template_id`, `gap_id`, `hint_release_sha256` (null or released SHA-256), and a **tagged** `hint` member: `{"kind":"absent"}` for null, versus `{"kind":"released","id":"<actual-id>"}` for a released ID. No sentinel string is substituted; literal IDs `none`, `null`, and any valid sentinel-like ID remain distinct. This deliberately changes *request proposal IDs only* relative to pre-v2 drafts; old request IDs are not silently grandfathered or accepted. Option proposal preimages remain unchanged: every constituent identifier excludes newlines and every digest has fixed 64-character lowercase hex form, so their delimiter-based encoding has no comparable null/string ambiguity. Collision and staleness checks are performed before acceptance. These SHA-256 bindings are tamper-evident content identifiers, **not digital signatures or proof of authorization**; upstream authority and current-state checks must be separately authenticated by the application.
 
 A valid 21-estimate reviewed artifact may yield a selected subset of 0–21 ordinary findings; Candidate A secondary medical data never enters this contract. IQR must not be promoted to confidence intervals. Local context cannot adjust national burden; deterministic person-month calculations are not observed or causal benefits.
+
+## Request proposal ID v2 golden vectors (synthetic only)
+
+Using `snapshot_fingerprint = "pg1:" + "f".repeat(64)`, `generation_id = "generation1"`, `template_id = "t1"`, `gap_id = "g1"`, and `hint_release_sha256 = "a".repeat(64)`:
+
+| Tagged hint value | Frozen proposal ID |
+| --- | --- |
+| `{"kind":"absent"}` (`hint_id: null`) | `pgp1:9e4f12335f8a297e6d0b9625f019106416fcbd1f49fcd7309615add8acf85e1b` |
+| `{"kind":"released","id":"none"}` | `pgp1:1cb41944cb3e0245cb810f59e5fa4e619b7d5f796492aae536377d77e30c8376` |
+| `{"kind":"released","id":"null"}` | `pgp1:52edad5c658dab6df2467fb4ef88f3be11d0794c0fa50ea6d8d1ca9754299805` |
+
+The test suite additionally constructs all three outputs under the **same validated synthetic input snapshot and generation identity** with a separately supplied synthetic authority containing two permitted hints. It rejects every swapped hash, unapproved hint, manipulated disposition/number/warning, or stale source fingerprint. The real #23 hint release remains **unavailable**; this synthetic grant does not authorize shipping or admitting either hint.
 
 ## Reviewer corrections — explicit admission and mandatory warnings
 
