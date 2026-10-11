@@ -31,7 +31,7 @@ export function LinkedConditionServiceUseFootprint({
           {evidence.alwaysVisibleExplanation}
         </p>
       </div>
-      <div className="linked-condition-secondary-value" aria-label={
+      <div className="linked-condition-secondary-value" role="group" aria-label={
         `Survey-weighted estimate ${display.estimate}; ${display.interval}`
       }>
         <span>Survey-weighted estimate</span>

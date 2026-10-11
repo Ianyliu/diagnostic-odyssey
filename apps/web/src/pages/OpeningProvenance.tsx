@@ -58,7 +58,7 @@ export function OpeningProvenance() {
         <span className="preview-status">Reviewed + traceable</span>
       </div>
       <div className="preview-body">
-        <div className="preview-lanes" aria-label="Evidence roles remain separate">
+        <div className="preview-lanes" role="group" aria-label="Evidence roles remain separate">
           <div className="opening-lane lane-evidence">
             <span className="lane-kicker">Reviewed evidence</span>
             <strong>National burden</strong>

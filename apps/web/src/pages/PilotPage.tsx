@@ -205,7 +205,7 @@ function PilotPlannerWorkspace({
           <p>{pathwayBoundary.modeledBoundaryStatement}</p>
           <p>{pathwayBoundary.assumptionBoundaryStatement}</p>
           <p><strong>Outside this model:</strong> {pathwayBoundary.outsideModelItems.join("; ")}.</p>
-          <div className="pathway-boundary-actions" aria-label="Pathway boundary follow-up">
+          <div className="pathway-boundary-actions" role="group" aria-label="Pathway boundary follow-up">
             <Link className="text-button" to="/pilot#sensitivity">Stress-test these assumptions</Link>
             <Link className="text-button" to="/evidence">Review evidence limits</Link>
           </div>
