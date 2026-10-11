@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
-  "built_at_utc": "2026-10-10T20:54:11.297658+00:00",
+  "built_at_utc": "2026-10-11T00:18:27.543903+00:00",
   "source_repository": "https://github.com/Ianyliu/diagnostic-odyssey",
-  "source_main_sha": "1910fd98b84cefa50ed64084af07b226739195cb",
+  "source_main_sha": "cb0d0a50d76fcdd9c0492fe4b348cb07969174d9",
   "source_checkout_clean": true,
   "static_branch": "demo/deploy-ready-2026-10-06-b99d1c70",
-  "static_parent_sha": "e28203aaefe1065cb6bceb30f317796bae4743c6",
+  "static_parent_sha": "6a216270094519b45421db91a6eb80e7b6c07ee5",
   "node": "v22.23.3",
   "npm": "10.9.9",
   "installation": "npm ci",
@@ -50,9 +50,9 @@
   },
   "governed_snapshot_sha256": "2cc126c18bbc2e191bae3e2d6bb49c8c84c801d1bc84325d88d2b4df48589513",
   "rollback": {
-    "static_sha": "e28203aaefe1065cb6bceb30f317796bae4743c6",
-    "deployment_id": "8e0709c3-5fe5-4911-b0d7-020f883c4216",
-    "url": "https://8e0709c3.diagnostic-odyssey.pages.dev"
+    "static_sha": "6a216270094519b45421db91a6eb80e7b6c07ee5",
+    "deployment_id": "171fdf6b-839c-4852-9449-6a5aba6516bc",
+    "url": "https://171fdf6b.diagnostic-odyssey.pages.dev"
   },
   "files": {
     "_headers": {
@@ -63,9 +63,9 @@
       "bytes": 100980,
       "sha256": "cfcccb91d15e50bf31de5219877df13f9d8e5cb6ebf7f4faaf2fc0a95a36c6c5"
     },
-    "assets/index-D79TFG21.js": {
-      "bytes": 506461,
-      "sha256": "0f981747bab68643b64decca57ac40645572e65ce1724b14289cc3a77a549bb5"
+    "assets/index-DzXhtyp7.js": {
+      "bytes": 506776,
+      "sha256": "7f4d77719ee5d2c0ec59a7ee4826a72a07086ee0084407ca69f3d82dc65a84c6"
     },
     "diagnostic-odyssey-horizontal.png": {
       "bytes": 58175,
@@ -80,8 +80,8 @@
       "sha256": "5a7b4da5d9dcdb6abb802b5cff5a6cd3a1749c338f86ba166555e6b1cced6294"
     },
     "index.html": {
-      "bytes": 1445,
-      "sha256": "af3ca79d3abf77b45f037c83ea0a507e643e8bcd9fd6682c79a194fc1e19163c"
+      "bytes": 1642,
+      "sha256": "5b06322f03a4fee9ff6b9c55d26d1e8ac4ab82784899aaf63afe24c536c15903"
     },
     "netlify.toml": {
       "bytes": 89,
@@ -92,5 +92,24 @@
       "sha256": "ec2ae3d91ba77e4294ee64f42c0e0234e2e261fefe1c4ffe76fc4711062fa972"
     }
   },
-  "deployment_note": "Deployment ID and this bundle commit SHA are recorded by Cloudflare deployment metadata and the final release verification report; GitHub push alone does not deploy this Direct Upload project."
+  "deployment_note": "Deployment ID and this bundle commit SHA are recorded by Cloudflare deployment metadata and the final release verification report; GitHub push alone does not deploy this Direct Upload project.",
+  "publication_status": "GitHub static refresh only; production remains the prior reviewed deployment pending separate authorization.",
+  "validation": {
+    "reviewed_pr": 93,
+    "reviewed_pr_head": "a9820ddfc9af2b201687ef122b5d372f24e22e5b",
+    "independent_review": "https://github.com/Ianyliu/diagnostic-odyssey/pull/93#issuecomment-6102535767",
+    "merged_main_ci": "https://github.com/Ianyliu/diagnostic-odyssey/actions/runs/38097873185",
+    "build_equivalent_to_reviewed_candidate": true,
+    "reused_candidate_browser_groups": 26,
+    "reviewed_files_byte_identical": 27,
+    "reviewed_payload_checksums_valid": 23,
+    "fresh_static_browser_verification": {
+      "groups": 8,
+      "direct_route_checks": 66,
+      "browser": "154.0.8037.98",
+      "playwright": "1.64.0",
+      "scope": "Actual standalone artifact served locally; 11 routes at 1440/820/360 px in light/dark, theme bootstrap/live changes, native score labels, raw JSON equality and PDF output. No production upload.",
+      "full_matrix_reuse_reason": "All six generated application files are byte-identical to the reviewed 26-group candidate; source merge tree equals reviewed PR HEAD."
+    }
+  }
 }
