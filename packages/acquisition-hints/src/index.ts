@@ -40,11 +40,29 @@ export function requestFingerprint(request: unknown, context: AnalysisContext, s
   return sha256(canonicalJson({request: sanitizeBaseDataRequest(request), context, scenario}));
 }
 
+/** The original capacity proposal is an immutable preimage. Its ambiguous privacy
+ * summary must not be presented as permission to transfer record-level de-identified
+ * data. Project effective guidance to the adopted aggregate-only privacy boundary.
+ * The exact frozen capacity *wording* remains unchanged. */
+function effectivePrivacyLimits(limits: string[]): string[] {
+  return limits.map(limit => limit ===
+    "Steward performs any necessary linkage locally under existing authority; this hint requests aggregate/de-identified outputs only."
+    ? "Steward performs any necessary linkage locally under existing authority; request locally approved aggregate summaries and counts only. De-identified individual or episode records are not permitted."
+    : limit);
+}
+
 function validateMapping(value: unknown): asserts value is AcquisitionMapping {
   closed(value, ["candidate_hint_id", "candidate_version", "eligible_request_family", "source_owner_system", "required_information", "minimum_necessary_output", "local_only_preparation", "official_support", "mapping_limits", "local_confirmation", "review_status", "review_provenance", "existing_requested_fields", "field_crosswalk", "preparation_recommendation", "proposed_guidance_wording", "privacy_limits"]);
   if (!ids.includes(value.candidate_hint_id) || value.candidate_version !== "2" || value.eligible_request_family !== family[value.candidate_hint_id as keyof typeof family]) throw new Error("Unknown mapping family/version");
   for (const key of ["source_owner_system", "minimum_necessary_output", "local_only_preparation", "proposed_guidance_wording", "preparation_recommendation", "review_status"]) if (!text(value[key])) throw new Error("Missing mapping text");
   for (const key of ["required_information", "mapping_limits", "local_confirmation", "existing_requested_fields", "privacy_limits"]) if (!texts(value[key])) throw new Error("Missing mapping limits/information");
+  // A reviewable mapping is an aggregate-only acquisition proposal, never a way
+  // to request individual records or a generic "de-identified" dataset.
+  if (!/\\baggregate\\b/i.test(value.minimum_necessary_output) ||
+      !/\\baggregate\\b/i.test(value.proposed_guidance_wording) ||
+      /aggregate or de-identified|de-identified interval summaries/i.test(
+        value.minimum_necessary_output + " " + value.proposed_guidance_wording
+      )) throw new Error("Non-aggregate acquisition proposal");
   if (!Array.isArray(value.official_support) || !value.official_support.length || !Array.isArray(value.field_crosswalk) || !value.field_crosswalk.length) throw new Error("Missing supporting locators");
   for (const source of value.official_support) {
     closed(source, ["version", "url", "source_path", "source_sha256", "retrieved_at", "publication_note", "elements"]);
@@ -156,7 +174,7 @@ export function createAcquisitionResolver(bytes: AcquisitionReleaseBytes | null,
       source_owner_system: hint.source_owner_system, required_information: hint.required_information,
       minimum_necessary_output: hint.minimum_necessary_output, local_only_preparation: hint.local_only_preparation,
       official_support: hint.official_support, field_crosswalk: hint.field_crosswalk, mapping_limits: hint.mapping_limits,
-      local_confirmation: hint.local_confirmation, privacy_limits: hint.privacy_limits, privacy_boundary: aggregatePrivacyBoundary,
+      local_confirmation: hint.local_confirmation, privacy_limits: effectivePrivacyLimits(hint.privacy_limits), privacy_boundary: aggregatePrivacyBoundary,
       review: {reviewer: review.reviewer, reviewed_at: review.reviewed_at, evidence_url: review.evidence_url, code_commit: review.code_commit},
       registry_id: registry.registry_id, registry_version: registry.version
     };
