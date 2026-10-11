@@ -95,8 +95,8 @@ test("adopted aggregate-only candidate wording survives canonical Brief JSON; no
   assert.match(timing.wording,/do not transfer record-level outputs/);
   assert.match(timing.wording,/differencing risk/);
   const withForged=structuredClone(brief);
-  withForged.acquisition_guidance[0].wording="UPLOAD RAW IDENTIFIERS";
-  withForged.acquisition_guidance[1].minimum_necessary_output="TRANSFER EMPLOYEE RECORDS";
+  withForged.acquisition_guidance![0]!.wording="UPLOAD RAW IDENTIFIERS";
+  withForged.acquisition_guidance![1]!.minimum_necessary_output="TRANSFER EMPLOYEE RECORDS";
   const safe=codec.serializeBriefJson(withForged);
   assert.doesNotMatch(safe,/UPLOAD RAW|TRANSFER EMPLOYEE/);
   assert.ok(safe.includes("Aggregate steward-approved"));
