@@ -58,8 +58,8 @@ function validateMapping(value: unknown): asserts value is AcquisitionMapping {
   for (const key of ["required_information", "mapping_limits", "local_confirmation", "existing_requested_fields", "privacy_limits"]) if (!texts(value[key])) throw new Error("Missing mapping limits/information");
   // A reviewable mapping is an aggregate-only acquisition proposal, never a way
   // to request individual records or a generic "de-identified" dataset.
-  if (!/\\baggregate\\b/i.test(value.minimum_necessary_output) ||
-      !/\\baggregate\\b/i.test(value.proposed_guidance_wording) ||
+  if (!/\baggregate\b/i.test(value.minimum_necessary_output) ||
+      !/\baggregate\b/i.test(value.proposed_guidance_wording) ||
       /aggregate or de-identified|de-identified interval summaries/i.test(
         value.minimum_necessary_output + " " + value.proposed_guidance_wording
       )) throw new Error("Non-aggregate acquisition proposal");
