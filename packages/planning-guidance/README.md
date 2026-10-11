@@ -27,6 +27,22 @@ The application must authenticate the `national_release_sha256`, `local_release_
 
 All `input.warnings` are mandatory. The untrusted candidate schema has **no warning selection field**. The available trusted output copies the complete input warning set; output validation compares all IDs and exact trusted warning codes, rejecting suppressed/altered warnings. With an unavailable/invalid/stale generation state, no AI-produced output is claimed, and the deterministic Brief retains its own warnings outside this AI output contract.
 
+## Section-state semantics — trusted sufficiency, not model selection
+
+Section availability is **application-derived after trusted input validation**, independently of the model's optional ID selections. An `available` section may contain zero selected findings, intervention options, or request proposals. Such emptiness means *the candidate made no selection/proposal*, **not** that the reviewed evidence or request-template opportunity is absent.
+
+| Available model response | Trusted, validated source of availability | `available` when | `insufficient_evidence` when |
+| --- | --- | --- | --- |
+| Findings | Reviewed `national_findings` subset | At least one reviewed finding exists, even if candidate selects none | No reviewed finding is in the selected validated input |
+| Interventions | Independently authenticated, context-exact `planning_option_to_investigate` admission | At least one eligible reference exists, even if no model option is proposed | No eligible admitted reference; background-only never qualifies |
+| Requests | Trusted `request_templates` and validated gap bindings | At least one valid request template exists, even if no request is drafted | No valid request template for this input |
+
+The ordinary reviewed national source bundle still has 21 estimates; a zero-length `national_findings` array means **zero selected findings in this input**, not that the reviewed national bundle has no evidence. The `requests` `insufficient_evidence` value means **no trusted available operational template**, not a claim that there is no scientific intervention effect.
+
+For global `unavailable`, `invalid`, or `stale` generation, **all output sections are `unavailable` and contain no AI-generated content** even if independent deterministic evidence is present. The deterministic Brief remains separate. `assertOutput` recomputes all available-response section states from independently validated application input and rejects false `insufficient_evidence` or false `available`; it does not infer sufficiency from `supported_findings`, `intervention_options` or `draft_requests` lengths.
+
+This scientific relationship is **cross-document**: the standalone output JSON Schema cannot know the independently authenticated input. The Draft 2020-12 schema executes structural checks on both empty-selection/available responses and unavailable responses, while the runtime semantic validator enforces the additional input-to-output invariant. **No state enum, schema property or canonical snapshot representation changed** for this correction, preserving the existing digest vectors.
+
 ## Draft 2020-12 validation and scientific semantics
 
 The four closed schemas are `schema/{input,egress,candidate,output}.v1.schema.json` with `additionalProperties:false` on every object, nested bounds, types, version constants and numeric JSON types. `test/schema_draft202012.py` uses the standards-compliant Python `jsonschema==4.26.0` `Draft202012Validator`, including meta-schema checking. This is a **pinned, test-only dependency installed by the workspace test script**, not an application dependency, provider call or evidence loader. Executable schema cases cover structurally valid and malformed instances of all four contracts; TypeScript validators enforce semantics that the schema cannot express, including cross-record duplicate IDs, exact currently authenticated source eligibility, mandatory warning preservation, finite-number rules beyond standard JSON representability, source-value drift, stale snapshots, and application-generated proposal hashes. A JSON Schema pass **never** constitutes scientific admission, a successful model response, or permission to mutate analyst state.
