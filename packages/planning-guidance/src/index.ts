@@ -1,7 +1,7 @@
 import {createHash} from "node:crypto";
 import {assertInput,assertEgress,assertCandidate,contextKey} from "./guards.ts";
 import {VERSION} from "./types.ts";
-import type {PlanningGuidanceInputV1,ModelEgressV1,ModelCandidateV1,PlanningGuidanceOutputV1,VerifiedAuthority} from "./types.ts";
+import type {PlanningGuidanceInputV1,ModelEgressV1,PlanningGuidanceOutputV1,VerifiedAuthority} from "./types.ts";
 export {VERSION} from "./types.ts";
 export {assertInput,assertEgress,assertCandidate,validate,contextKey} from "./guards.ts";
 export type * from "./types.ts";
