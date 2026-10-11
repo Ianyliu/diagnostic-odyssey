@@ -76,6 +76,7 @@ export type PlanningGuidanceOutputV1 = {
   supported_findings:PlanningGuidanceInputV1["national_findings"];
   intervention_options:{
     proposal_id:string;reference_id:Id;claim_code:Id;release_sha256:Digest;
+    review_sha256:Digest;applicability_sha256:Digest;applicability_policy_version:Id;
     applicability_decision_id:Id;applicability_policy_sha256:Digest;
     disposition:"pending";
   }[];
