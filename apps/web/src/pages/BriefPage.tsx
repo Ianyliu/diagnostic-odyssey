@@ -2,6 +2,7 @@ import { formatPlanningCurrency, formatPlanningNumber } from "../data/planningNu
 import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { buildPlanningBrief, serializeBriefJson } from "@diagnostic-odyssey/brief-core";
+import { AcquisitionGuidanceCard } from "../components/AcquisitionGuidanceCard";
 import {
   canDisplayDistributionSummary,
   type Estimate
@@ -370,6 +371,7 @@ export function BriefPage() {
                     Pathway: {formatPathwayStepLabel(request.pathway_step)}
                     {request.target_mechanism && <> · Mechanism: {formatMechanismLabel(request.target_mechanism)}</>}
                   </small>
+                  {brief.acquisition_guidance?.filter(guidance => guidance.request_id === request.request_id).map(guidance => <AcquisitionGuidanceCard key={guidance.reference.hint_id} guidance={guidance} />)}
                 </li>)}</ul>
               </>
             : <div className="empty-state">
