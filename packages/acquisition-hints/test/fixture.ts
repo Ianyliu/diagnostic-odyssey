@@ -13,9 +13,14 @@ export const scenario: Scenario = {
   fixed_cost: 300000, per_participant_cost: 300, target_pathway_step: "recognition-to-referral",
   mechanism: "navigation-support", assumption_refs: [], artifact_version: "TEST-ONLY"
 };
-export function fixture(change?: (objects: {mapping: any; policy: any; sourceIndex: any; review: any; registry: any}) => void): {bytes: AcquisitionReleaseBytes; pins: string[]} {
-  const mapping = JSON.parse(readInput("mapping-candidates.json"));
-  const policy = JSON.parse(readInput("context-policy.candidate.json"));
+export function fixture(
+  change?: (objects: {mapping: any; policy: any; sourceIndex: any; review: any; registry: any}) => void,
+  subject: "amended" | "original" = "amended"
+): {bytes: AcquisitionReleaseBytes; pins: string[]} {
+  const mappingFile = subject === "amended" ? "mapping-candidates.privacy-amendment-1.json" : "mapping-candidates.json";
+  const policyFile = subject === "amended" ? "context-policy.privacy-amendment-1.json" : "context-policy.candidate.json";
+  const mapping = JSON.parse(readInput(mappingFile));
+  const policy = JSON.parse(readInput(policyFile));
   const sourceIndex = JSON.parse(readInput("source-index.json"));
   const review = {
     schema_version: "1", status: "approved_for_release", reviewer: "SYNTHETIC TEST ACTOR — NO REAL APPROVAL",
@@ -31,11 +36,11 @@ export function fixture(change?: (objects: {mapping: any; policy: any; sourceInd
   change?.({mapping, policy, sourceIndex, review, registry});
   // Preserve the real frozen preimages by default. For mutation tests, rebuild all
   // dependency hashes so closed-object/semantic tests cannot pass on digest checks alone.
-  const mappingText = JSON.stringify(mapping) === JSON.stringify(JSON.parse(readInput("mapping-candidates.json"))) ? readInput("mapping-candidates.json") : JSON.stringify(mapping);
+  const mappingText = JSON.stringify(mapping) === JSON.stringify(JSON.parse(readInput(mappingFile))) ? readInput(mappingFile) : JSON.stringify(mapping);
   const sourceText = JSON.stringify(sourceIndex) === JSON.stringify(JSON.parse(readInput("source-index.json"))) ? readInput("source-index.json") : JSON.stringify(sourceIndex);
   policy.mapping_candidates_sha256 = digest(mappingText);
   policy.source_index_sha256 = digest(sourceText);
-  const policyText = JSON.stringify(policy) === JSON.stringify(JSON.parse(readInput("context-policy.candidate.json"))) ? readInput("context-policy.candidate.json") : JSON.stringify(policy);
+  const policyText = JSON.stringify(policy) === JSON.stringify(JSON.parse(readInput(policyFile))) ? readInput(policyFile) : JSON.stringify(policy);
   registry.mapping_sha256 = review.mapping_sha256 = digest(mappingText);
   registry.policy_sha256 = review.policy_sha256 = digest(policyText);
   registry.source_index_sha256 = review.source_index_sha256 = digest(sourceText);
