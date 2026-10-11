@@ -1,1 +1,13 @@
-{"name":"@diagnostic-odyssey/planning-guidance","private":true,"version":"0.1.0","type":"module","exports":{".":"./src/index.ts"},"scripts":{"typecheck":"tsc -p tsconfig.json --noEmit","test":"node --experimental-strip-types --test test/*.test.ts"}}
+{
+  "name": "@diagnostic-odyssey/planning-guidance",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "python3 -m pip install --disable-pip-version-check --quiet jsonschema==4.26.0 && node --experimental-strip-types --test test/*.test.ts"
+  }
+}
