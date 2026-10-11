@@ -19,6 +19,38 @@ The independent unsigned assessment and owner adoption are separately retained i
 Neither an AI assessment nor a structurally valid `approved` field authenticates
 an independent reviewer or grants release authority.
 
+## PM-adopted independent privacy amendment (candidate-only)
+
+The original frozen v2 inputs above remain byte-identical and must not be renamed,
+rewritten or promoted. The separately retained reviewer-proposed amendment files are:
+
+- `review-inputs/mapping-candidates.privacy-amendment-1.json`
+  SHA-256 `5a6ff02ec024f200a785e960a5fea20ef74dae356c4c59a5b5f962411dd05604`
+- `review-inputs/context-policy.privacy-amendment-1.json`
+  SHA-256 `5531c472aa795f4c1a4058d35ccf5541ab21832c687f43062b971f0331fb6742`
+- `review-inputs/review-subject.privacy-amendment-1.json`
+  SHA-256 `2f747438ed3435927eb7b0a4b4ce2062138b73ca7ae4eda5fd2bc850d891fab2`
+
+The independent reviewer decision is unsigned AI-assisted technical review, not
+institutional privacy approval or a release signature. PM adoption authorizes
+candidate-only correction of existing PR #98 and aggregate-only wording, not
+production admission. The mapping still has `released: false` and zero
+`approved_hint_ids`; policy has zero `approved_decisions`. The real resolver
+remains `createAcquisitionResolver(null, Object.freeze([]))` and no approved
+registry/release bytes exist.
+
+The revised timing output requires steward-approved aggregate distributions and
+counts after overlapping-strata/rare-cell/differencing assessment; raw person-
+or episode-level dates, identifiers and joins remain locally held. The exact
+capacity `proposed_guidance_wording` is unchanged. Its older source privacy
+footnote remains intact in the historical candidate record, while the **effective
+rendered/exported** privacy note replaces the permissive "aggregate/de-identified
+outputs only" description with aggregate-only restrictions. This projection is
+explicit, tested and cannot change the hash of the historical source record.
+No base DataRequest template, fingerprint, scenario arithmetic or Brief opt-in
+semantics changed. Prior synthetic fixture assertions are now run against the
+adopted amended candidates, never a claimed production review.
+
 ## Canonical release boundary
 
 `createAcquisitionResolver` is a trusted composition-root API. Its allowlist is
@@ -87,10 +119,13 @@ under the frozen exact-context policy, while retaining the base request.
 
 ## Privacy and scientific limits
 
-Preserve the exact assessed v2 wording. Its “de-identified interval summaries” phrase
-is constrained by the owner's additional aggregate-only boundary, displayed beside
-the wording and exported as `privacy_boundary`: no individual intervals, raw dates,
-identifiers or patient/employee records enter the application. No upload, API call,
+Use the PM-adopted aggregate-only candidate amendment for future separately
+approved releases. The original frozen v2 bytes are historical preimages, not
+current acquisition permissions. Exact capacity proposal wording remains frozen;
+its older ambiguous privacy footnote is superseded at the guidance projection
+boundary. The adopted timing proposal explicitly forbids record-level outputs.
+The mandatory `privacy_boundary` disallows individual intervals, raw dates,
+identifiers and patient/employee records entering the application. No upload, API call,
 data acquisition or backend is implemented. Local stewards retain release authority
 and must review small cells, overlapping strata, differencing, workflow definitions
 and vendor support. No invented disclosure threshold or interoperability certification.
