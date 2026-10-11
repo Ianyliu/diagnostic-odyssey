@@ -121,7 +121,6 @@ test("stale selected sensitivity requests are excluded from Brief/export until r
   const requests = readSource("../src/pages/DataRequestsPage.tsx");
   const sensitivity = readSource("../src/components/SensitivityExplorer.tsx");
   const brief = readSource("../src/pages/BriefPage.tsx");
-  const warnings = readSource("../src/data/briefDataRequestWarnings.ts");
 
   assert.match(context, /isDataRequestCurrentForScenario\(request, scenario\)/);
   assert.match(context, /\[availableDataRequests, briefDataRequestIds, scenario\]/);
@@ -131,7 +130,7 @@ test("stale selected sensitivity requests are excluded from Brief/export until r
   assert.match(requests, /this stale request is excluded from export until refreshed/);
   assert.match(requests, /createSensitivityDataRequest\(scenario, sensitivityField\)/);
   assert.match(brief, /withStaleSelectedDataRequestWarning/);
-  assert.match(warnings, /stale for the current scenario/);
+  assert.match(staleSelectedDataRequestExclusionWarning(1)!, /stale for the current scenario/);
 });
 
 
@@ -168,7 +167,7 @@ test("mixed current and stale selected requests remain explicit in rendered and 
     },
     estimates: [],
     localContext: [],
-    scenario: null,
+    scenario: {input: changedScenario, result: calculateScenario(changedScenario)},
     evidence: [],
     dataRequests: currentSelected,
     generatedAt: "2026-09-24T00:00:00Z"
