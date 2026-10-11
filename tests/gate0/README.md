@@ -1,6 +1,6 @@
 # Gate 0 exact-baseline rendered QA
 
-Use Node 22. Install the browser runner outside the repository (no application dependency changes):
+Use Node 22 and Poppler (`pdftotext`) for the PDF pagination regression. Install the browser runner outside the repository (no application dependency changes):
 
 ```sh
 npm install --prefix /tmp/diagnostic-browser-runner --save-exact --no-audit --no-fund @playwright/test@1.64.0 axe-core@4.11.1

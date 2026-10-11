@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {mkdir,readFile,writeFile} from 'node:fs/promises';
 import {createRequire} from 'node:module';
 import {fileURLToPath} from 'node:url';
+import {execFileSync} from 'node:child_process';
 const require=createRequire(process.env.PLAYWRIGHT_RUNNER ?? import.meta.url);
 const {chromium}=require('playwright'); const axe=require('axe-core');
 const root=process.env.QA_SOURCE_ROOT ?? fileURLToPath(new URL('../../',import.meta.url));
@@ -80,6 +81,29 @@ await check('Print default Brief independently and verify native before/afterpri
  await p.pdf({path:`${output}/native-planning-brief.pdf`,format:'Letter',printBackground:true});assert.deepEqual(await details.evaluateAll(es=>es.map(e=>e.open)),before);
  await p.evaluate(()=>{window.print=()=>window.dispatchEvent(new Event('beforeprint'));});await p.getByRole('button',{name:'Print / save PDF'}).click();assert.ok((await details.evaluateAll(es=>es.map(e=>e.open))).every(Boolean));
  await p.emulateMedia({media:'print'});assert.equal(await p.locator('.site-header').isVisible(),false);assert.equal(await p.locator('.brief-aside').isVisible(),false);await p.pdf({path:`${output}/explicit-planning-brief.pdf`,format:'Letter',printBackground:true});await p.screenshot({path:`${output}/supplemental-print.png`,fullPage:true});await p.evaluate(()=>window.dispatchEvent(new Event('afterprint')));assert.deepEqual(await details.evaluateAll(es=>es.map(e=>e.open)),before);return {disclosures:before.length,chromeHidden:true};
+});
+await check('Selected-request and long-context decision entries remain on one PDF page',async()=>{
+ const all=[];
+ for(const kind of ['selected-request','long-context']){
+  const p=await page();await go(p,'/local-context');
+  if(kind==='selected-request')await p.getByRole('button',{name:/^Use .* in Pilot planning$/}).first().click();
+  else {
+   for(const id of ['wv.hrsa.primary-care.max-score','wv.hrsa.mental-health.max-score','wv.acs.uninsured_pct']){const box=p.locator('#select-local-context-'+id.replace(/[^a-zA-Z0-9_-]/g,'-'));await box.check();if(id.includes('primary-care'))await p.locator('.ledger-indicator-row').filter({has:box}).getByRole('button',{name:/^Use .* in Pilot planning$/}).click();}
+  }
+  if(kind==='selected-request'){await nav(p,'Pilot planner');await p.locator('#pilot-capacity').fill('2000');await p.getByRole('button',{name:'Add to data requests',exact:true}).click();await nav(p,'Data requests');await p.locator('.data-request-sheet').filter({hasText:'SESSION PLANNING REQUEST'}).getByRole('checkbox').check();}
+  await nav(p,'Planning brief');
+  const entries=await p.locator('.decision-trace li').evaluateAll(es=>es.map(e=>({label:e.querySelector('strong').textContent,detail:e.querySelector('div > span').textContent})));
+  await p.evaluate(()=>window.dispatchEvent(new Event("beforeprint")));
+  await p.emulateMedia({media:"print"});
+  await p.pdf({path:`${output}/${kind}-pagination.pdf`,format:'Letter',printBackground:true});
+  const pages=execFileSync('pdftotext',['-layout',`${output}/${kind}-pagination.pdf`,'-'],{encoding:'utf8'}).split('\f').map(x=>x.replace(/\s+/g,' ').trim());
+  let withinTrace=false;
+  const tracePages=pages.map(page=>{let text=page;if(text.includes('Decision trace')){withinTrace=true;text=text.slice(text.indexOf('Decision trace')+'Decision trace'.length);}if(!withinTrace)return '';if(text.includes('Local implementation context')){withinTrace=false;return text.slice(0,text.indexOf('Local implementation context'));}return text;});
+  const compact=pages.join('').replace(/\s/g,'');for(const estimate of reviewed)assert.ok(compact.includes(estimate.allowed_interpretation.replace(/\s/g,'')),`Missing printed interpretation: ${estimate.estimate_id}`);
+  all.push(...entries.map(entry=>({case:kind,label:entry.label,detail:entry.detail,page:tracePages.findIndex(text=>text.includes(entry.label)&&text.includes(entry.detail))+1})));
+  await p.context().close();
+ }
+ await writeFile(`${output}/print-entry-checks.json`,JSON.stringify(all,null,2));for(const entry of all)assert.ok(entry.page>0,`Decision entry split across pages (${entry.case}): ${entry.label}`);return all;
 });
 await check('Data request controls have distinguishable accessible names',async()=>{
  const p=await page();await go(p,'/pilot');
