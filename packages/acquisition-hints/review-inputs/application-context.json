@@ -1,0 +1,54 @@
+{
+  "main": "e27403af8d878327d28ead2b6f7aeb00657c5239",
+  "artifact_context": {
+    "condition_id": "long-covid-current",
+    "cohort_id": "current-long-covid-adults-18-64-meps-2024-r31-anchor",
+    "age_range": "18-64",
+    "evidence_year": 2024,
+    "geography_scope": "United States national evidence",
+    "local_context_id": null,
+    "severity_filter": null,
+    "artifact_version": "meps-2024-long-covid-candidate-20260926T011343Z"
+  },
+  "artifact_path": "artifacts/reviewed/meps-2024-long-covid-candidate-20260926T011343Z/bundle.json",
+  "artifact_sha256": "5b32bfb3288a28ce0a57de4d0c3ec75fe1d83c0f19ad481e687b70af4a91eca0",
+  "analysis_context_keys": [
+    "condition_id",
+    "cohort_id",
+    "age_range",
+    "evidence_year",
+    "geography_scope",
+    "local_context_id",
+    "severity_filter",
+    "artifact_version"
+  ],
+  "target_setting_id": null,
+  "target_payer_id": null,
+  "default_scenario_pathway_step": "recognition-to-referral",
+  "default_scenario_mechanism": "navigation-support",
+  "null_semantics": "local_context_id=null and severity_filter=null explicitly mean no selected local context/filter. target_setting_id=null and target_payer_id=null mean unknown; never an applicability wildcard.",
+  "scenario_values_are_illustrative": true,
+  "code_preimages": [
+    {
+      "path": "packages/contracts/src/index.ts",
+      "sha256": "db36a841773b7f15663396af5f90dd3f1ee4b6f1241117025300c2d0754b6227"
+    },
+    {
+      "path": "apps/web/src/data/planningScenarioDefaults.ts",
+      "sha256": "9842126b0af49684b06cbbe68df05b89ae3f9b1b384ef3c0da350681583d107c"
+    },
+    {
+      "path": "apps/web/src/data/dataRequestTemplates.ts",
+      "sha256": "f3bd1b4627130617993d75322e83523a826cbdf9205e746b1359c8d80ae0588d"
+    },
+    {
+      "path": "packages/narrative-references/REVIEW_GATES.md",
+      "sha256": "f489b47da0ae2becdeb5b67a4dacc3aea45d6b744f3de91f292112b13f954710"
+    },
+    {
+      "path": "packages/narrative-references/schema/narrative-intervention-references.v1.schema.json",
+      "sha256": "07269e4c7801b59a894f78461a204b5a565500b400a7531763adb9bc2c9ac9fe"
+    }
+  ],
+  "finding": "AnalysisContext has no target setting or payer fields. Local context selection does not supply either or change the national analytic population."
+}

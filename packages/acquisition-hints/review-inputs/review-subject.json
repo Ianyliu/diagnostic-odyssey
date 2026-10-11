@@ -1,0 +1,11 @@
+{
+  "review_subject_id": "23-acquisition-mapping-privacy-v2",
+  "status": "unsigned_review_subject",
+  "code_commit": "e27403af8d878327d28ead2b6f7aeb00657c5239",
+  "mapping_candidates_sha256": "9a117d4a2a5ac1c51d1b8d559fb617be4635306767d21ae06d3ee54668989866",
+  "context_policy_sha256": "2c4370d84f6024157a3f645c6b2c8da3d0691a254dc9407226d81d1abb94e64f",
+  "source_index_sha256": "0c607a5ef437b40bbdc599a8a74dbcb887f1f369fef4ca0506f782dd20af53ce",
+  "application_context_sha256": "4d92ff7b7d67423149e1c4207726a5210d4f69d0168c260b76b543fea9253023",
+  "scope": "Only timing and capacity mappings, versioned spec locators, exact context policy, privacy/feasibility and bounded acquisition wording. No narrative or governance approval implied.",
+  "actual_independent_review": null
+}
