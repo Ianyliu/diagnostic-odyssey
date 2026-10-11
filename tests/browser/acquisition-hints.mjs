@@ -75,7 +75,7 @@ for(const width of [1440,820,360]) for(const theme of ["light","dark"]) {
     const brief=await download(page,`synthetic-${width}-${theme}`,"Export synthetic JSON");assert.equal(brief.acquisition_guidance.length,2);
     for(const guidance of brief.acquisition_guidance) {
       assert.match(guidance.privacy_boundary,/No individual-level intervals/);
-      assert.doesNotMatch([guidance.wording,guidance.minimum_necessary_output,...guidance.privacy_limits].join(" "),/aggregate or de-identified|aggregate\\/de-identified outputs only/i);
+      assert.doesNotMatch([guidance.wording,guidance.minimum_necessary_output,...guidance.privacy_limits].join(" "),/aggregate or de-identified|aggregate\/de-identified outputs only/i);
       assert.match(guidance.minimum_necessary_output,/aggregate/i);
       if(guidance.reference.hint_id==="ACQ26-TIMING-01") {
         assert.match(guidance.wording,/Request only locally approved aggregate interval distributions and episode counts/);
