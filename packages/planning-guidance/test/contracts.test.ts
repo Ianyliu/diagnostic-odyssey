@@ -37,6 +37,15 @@ test("unavailable never pretends to generate",()=>{
  assert.equal(out.generation.state,"unavailable");assert.equal(out.generation.id,null);assert.equal(out.sections.interventions,"unavailable");
  assert.throws(()=>assertOutput({...out,generation:{state:"available",id:null,at:null}},x,authority));
 });
+test("versioned reproducible SHA-256 golden vectors: ordinary snapshot, mixed-case punctuation",()=>{
+ const x=fixture();
+ assert.equal(fingerprint(x,authority),"pg1:61fcad8177dc4eebbe2fba04ed7dc092f8d4e464352f6cb5256efdab67103eea");
+ x.warnings=[{id:"z",code:"warning_z"},{id:"a_a",code:"warning_underscore"},{id:"a.a",code:"warning_period"},{id:"a-a",code:"warning_dash"},{id:"Z",code:"warning_capital"}];
+ assert.equal(canonicalJSON({z:1,Z:2,"a-b":3,a_b:4,"a.B":5}),'{"Z":2,"a-b":3,"a.B":5,"a_b":4,"z":1}');
+ assert.equal(fingerprint(x,authority),"pg1:6ccf8b0e4b719ad8f658ba926748c6c30c0057cf7dc7b13ec708fec3db98a805");
+ const other=clone(x);other.warnings.reverse();
+ assert.equal(fingerprint(other,authority),fingerprint(x,authority));
+});
 test("canonicalization excludes timestamps, sorts set-like arrays, rejects nonfinite numbers",()=>{
  const x=fixture(),y=clone(x);y.captured_at="2026-10-12T12:30:00Z";
  assert.equal(fingerprint(x,authority),fingerprint(y,authority));
