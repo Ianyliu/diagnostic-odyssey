@@ -1,52 +1,116 @@
+<div align="center">
+
 # Diagnostic Odyssey
 
-Diagnostic Odyssey is a statistically grounded planning platform for making hidden diagnostic-odyssey burden visible and turning reviewed evidence into a defensible planning artifact.
+### Make hidden diagnostic burden visible. Turn reviewed evidence into a defensible plan.
 
-It is designed for teams planning services around conditions such as Long COVID and ME/CFS. The application separates observed burden, local context, reviewed evidence, and planning assumptions so that a useful pilot plan does not imply stronger evidence than the data support.
+<p>
+  <strong>A statistically grounded decision workspace for service planning around Long COVID, ME/CFS, and other complex conditions.</strong>
+</p>
 
-> **Project status:** working decision-workspace foundation with reviewed national 2024 MEPS Long COVID burden runtime-loaded as one evidence layer and reviewed West Virginia **state-level** HRSA + ACS context runtime-loaded separately as implementation context. The 21 national `reviewed_released` estimates remain unchanged; WV context does not rescale or mutate them. Analysts may explicitly include reviewed WV records in the Planning Brief and may separately attach one eligible reviewed record as the active Pilot planning context. Pilot attachment is contextual only: it does not auto-change numeric assumptions or rescale national burden. County-level reviewed context and the Implementation Decision Map remain future work.
+<p>
+  <a href="#quick-start">Quick start</a> ·
+  <a href="#the-workflow">The workflow</a> ·
+  <a href="#scientific-guardrails">Scientific guardrails</a> ·
+  <a href="docs/architecture.md">Architecture</a>
+</p>
 
-The full product workflow is:
+<br>
 
-**Overview → Burden → Local Context → Pilot Planner → Evidence / Data Requests → Planning Brief**
+![Node.js 22+](https://img.shields.io/badge/Node.js-22%2B-1f2937?style=for-the-badge&logo=node.js&logoColor=white)
+![React + TypeScript](https://img.shields.io/badge/React%20%2B%20TypeScript-0f766e?style=for-the-badge&logo=react&logoColor=white)
+![R pipeline](https://img.shields.io/badge/analysis-R-276DC3?style=for-the-badge&logo=r&logoColor=white)
+![Status](https://img.shields.io/badge/status-working%20foundation-f59e0b?style=for-the-badge)
 
-The first working vertical slice is:
+</div>
 
-**Burden → Pilot Planner → Planning Brief**
+<br>
 
-Within that slice, the Pilot Planner now includes deterministic decision visuals and one-way sensitivity testing. Sensitivity findings can be converted into structured operational data requests, which require explicit analyst opt-in before they enter the Planning Brief.
+> [!IMPORTANT]
+> **Current status:** the working decision-workspace foundation runtime-loads a reviewed national 2024 MEPS Long COVID burden artifact and a reviewed **West Virginia state-level** HRSA + ACS implementation-context artifact. The 21 national `reviewed_released` estimates remain unchanged: local context never rescales or mutates national burden.
 
-## Start here
+## Why this exists
 
-| Goal | Recommended path | Requirements |
-| --- | --- | --- |
-| Explore the web app | [Run locally](#run-locally) | Node.js 22+ |
-| Use a reproducible environment | [Open the dev container](#use-the-dev-container) | Docker and the Dev Containers extension |
-| Run the MEPS analysis | [Run the analytical pipeline](#run-the-analytical-pipeline) | R and internet access |
+Complex-condition planning often fails at the handoff between evidence and action. Diagnostic Odyssey keeps those layers visible and separate:
+
+| Evidence layer | Planning question |
+| --- | --- |
+| **Observed burden** | What does the reviewed national evidence say? |
+| **Local context** | What implementation conditions are visible in the selected geography? |
+| **Scenario assumptions** | What would a bounded pilot require under explicit assumptions? |
+| **Operational requests** | What information would make the next decision stronger? |
+| **Planning brief** | What can an analyst responsibly carry forward? |
+
+The product is designed to help a team move from **“how large is the problem?”** to **“what could we test next?”** without turning assumptions into facts.
+
+## At a glance
+
+<table>
+<tr>
+<td width="50%" valign="top">
+
+### Evidence you can inspect
+
+- Reviewed national MEPS burden estimates
+- Comparable confidence intervals where units and universes permit
+- Reviewed West Virginia HRSA + 2024 ACS context
+- Explicit release and admissibility states
+- Provenance-aware planning artifacts
+
+</td>
+<td width="50%" valign="top">
+
+### Decisions you can stress-test
+
+- Deterministic reach and capacity scenarios
+- Person-month exposure and program resources
+- One-way sensitivity for reach, capacity, and recognition window
+- Structured data-request handoff
+- JSON export and browser print / save-PDF
+
+</td>
+</tr>
+</table>
+
+## The workflow
+
+```text
+┌──────────┐     ┌────────┐     ┌───────────────┐     ┌─────────────┐
+│ Overview │ ──▶ │ Burden │ ──▶ │ Local Context │ ──▶ │ Pilot       │
+└──────────┘     └────────┘     └───────────────┘     │ Planner     │
+                                                      └──────┬──────┘
+                                                             │
+                              ┌──────────────────────────────┼────────────────┐
+                              ▼                              ▼                ▼
+                       ┌──────────────┐              ┌──────────────┐  ┌──────────┐
+                       │ Data Requests│ ────────────▶ │ Planning     │  │ Evidence │
+                       │ (opt-in)     │              │ Brief        │  │ review   │
+                       └──────────────┘              └──────────────┘  └──────────┘
+```
+
+### Working vertical slice
+
+**Burden → Pilot Planner → Data Requests → Planning Brief**
+
+1. **Burden** — inspect domains, native units, release state, and reviewed intervals.
+2. **Pilot Planner** — set assumptions, inspect decision visuals, and run one-way sensitivity.
+3. **Data Requests** — optionally turn uncertainty into a structured operational request.
+4. **Planning Brief** — review the assembled artifact and export its JSON companion or a PDF.
+
+The analyst must explicitly opt in before a current data request enters the Planning Brief. Sensitivity testing is assumption testing, not evidence-derived effect estimation.
 
 ## Quick start
 
 ### Run locally
 
-Requirements: Node.js 22 or newer. From the repository root:
+**Requirement:** Node.js 22 or newer.
 
 ```bash
 npm ci
 npm run dev
 ```
 
-Open the local URL printed by Vite, usually `http://localhost:5173`. The app loads the promoted reviewed national MEPS artifact and, as a separate runtime layer, the promoted reviewed West Virginia state-level HRSA/ACS implementation-context artifact. The checked-in illustrative fixture remains available only for development/test coverage and is not a runtime evidence source.
-
-### Use the dev container
-
-The repository includes an optional VS Code dev container with Node 22, R, the analytical system libraries, recommended extensions, and port `5173` forwarding.
-
-1. Install Docker and the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers).
-2. Open this repository in VS Code.
-3. Run **Dev Containers: Reopen in Container** from the Command Palette.
-4. After setup completes, run `npm run dev` in the container terminal.
-
-The container is a convenience for consistent tooling, not a requirement. Raw research data remains local and is never included in the image or committed to Git.
+Open the local URL printed by Vite, usually [`http://localhost:5173`](http://localhost:5173). The app loads the promoted reviewed national MEPS artifact and the reviewed West Virginia context artifact as separate runtime layers. The checked-in illustrative fixture is for development and test coverage only.
 
 ### Run the checks
 
@@ -57,81 +121,71 @@ npm run lint
 npm run build
 ```
 
-These commands cover the TypeScript packages, web integration tests, linting, and the production build. Run them from the repository root after installing dependencies.
+These commands cover TypeScript packages, web integration tests, linting, and the production build.
 
-### Run the analytical pipeline
+### Use the dev container
 
-The MEPS pipeline is separate from the web app and requires R. It downloads or reads the official AHRQ HC-256 public-use file and writes a preliminary candidate artifact locally:
+The optional VS Code dev container includes Node 22, R, analytical system libraries, recommended extensions, and port `5173` forwarding.
+
+1. Install Docker and the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers).
+2. Open the repository in VS Code.
+3. Run **Dev Containers: Reopen in Container** from the Command Palette.
+4. Run `npm run dev` in the container terminal.
+
+The container is a convenience, not a requirement. Raw research data remains local and is never included in the image or committed to Git.
+
+## Analytical pipeline
+
+The offline MEPS pipeline requires R and official AHRQ data. It writes a preliminary candidate artifact locally:
 
 ```bash
 Rscript analysis/r/install_dependencies.R
 Rscript analysis/r/meps/run_meps_2024.R --download
 ```
 
-See [Data and analytical inputs](#data-and-analytical-inputs) before running this workflow. Raw microdata and generated candidates are intentionally not committed.
+Before running it, read [Data and analytical inputs](#data-and-analytical-inputs), [data/README.md](data/README.md), and [the source manifest](data/manifests/sources.json).
 
-## Product map
+For maintenance or future regeneration, use the manual GitHub Actions workflow:
 
-The intended workflow is:
+`Actions → MEPS 2024 Long COVID Candidate → Run workflow`
 
-**Overview → Burden → Local Context → Pilot Planner → Evidence / Data Requests → Planning Brief**
+The workflow generates a **preliminary** candidate and uploads aggregate review files. It does not commit the candidate or change runtime artifact selection. If automatic download is unavailable, place the official HC-256 Stata ZIP at `data/raw/meps/2024/meps_hc256_2024_stata.zip` and run without `--download`.
 
-The working vertical slice is:
+## What is working
 
-**Burden → Pilot Planner → Planning Brief**
+- Reviewed national 2024 MEPS HC-256 Long COVID artifact with **21 `reviewed_released` estimates**.
+- Survey-aware MEPS analysis with reviewed variable maps, cohort construction, weight-specific survey designs, candidate generation, methods review, and promotion gates.
+- Reviewed West Virginia **state-level** HRSA + 2024 ACS implementation context with fail-closed runtime validation.
+- React + TypeScript + Vite application shell and major product routes.
+- Versioned fixture loading, typed scientific contracts, and runtime validators.
+- Deterministic scenario engine for reach, capacity, person-month exposure, and program-resource calculations.
+- Capacity coverage/gap, recognition-window, and fixed-versus-participant-dependent resource visuals.
+- Deterministic one-way sensitivity explorer with an accessible table alternative.
+- Sensitivity-to-data-request handoff with explicit analyst opt-in and stale-request protection.
+- Decision-state rail, reviewed confidence-interval visualization, and rural-status composition visualization.
+- Planning Brief assembly, JSON companion export, and browser print / save-PDF path.
+- Export filtering that excludes illustrative and unreleased estimates from released findings.
+- Deterministic evidence admissibility gates and a Long COVID reference condition adapter.
+- Figma-derived design tokens, coarse responsive presentation, and GitHub Actions CI.
 
-Use the application in that order:
+## What is intentionally incomplete
 
-1. **Burden:** inspect burden domains, native units, release state, and comparable reviewed confidence intervals where units and universe permit.
-2. **Pilot Planner:** set planning assumptions, inspect deterministic decision visuals, and run one-way sensitivity for reach, capacity, or the planning recognition window.
-3. **Data Requests:** optionally turn sensitivity uncertainty into a structured operational request; explicit analyst opt-in is required before a current request enters the Planning Brief.
-4. **Planning Brief:** review the assembled artifact and use the JSON companion export or browser print / save-PDF path.
+The following boundaries are explicit rather than silently implied:
 
-The other routes show the intended product boundary. Some are deliberately scaffolded while their source data or review workflow is being built.
-
-## Implementation status
-
-### Working now
-
-- Reviewed national 2024 MEPS HC-256 Long COVID artifact with **21 `reviewed_released` estimates**, loaded by the web runtime from `artifacts/reviewed/meps-2024-long-covid-candidate-20260926T011343Z/`.
-- Survey-aware MEPS analytical pipeline with reviewed variable map, cohort construction, weight-specific survey designs, burden domains, candidate generation, methods review, and explicit promotion gates.
-- Reviewed West Virginia **state-level** HRSA + 2024 ACS 5-year local context, runtime-loaded from `artifacts/reviewed/local-context-wv-hrsa-acs-candidate-20260924T052332Z/` as a separate implementation-context layer with fail-closed runtime validation. Analysts can explicitly select eligible reviewed records into the Planning Brief; selection does not rescale national burden or alter Pilot Planner assumptions.
-
-- React + TypeScript + Vite application shell and all major product routes.
-- Versioned fixture artifact loading with runtime validation and explicit loading/error behavior.
-- Typed scientific contracts and status vocabulary.
-- Deterministic TypeScript scenario engine with reach, capacity, person-month exposure, and program-resource calculations.
-- Pilot decision visuals for capacity coverage/gap, recognition-window comparison, and fixed versus participant-dependent program-resource composition.
-- Deterministic one-way sensitivity explorer for intended reach, program capacity, and the planning recognition window, with an accessible table alternative. Sensitivity is assumption testing, not evidence-derived effect estimation, and scenario outputs are not forecasts.
-- Sensitivity → structured operational data-request handoff with explicit analyst opt-in before a request enters the Planning Brief; stale or invalid sensitivity-derived requests fail closed from Brief/JSON until valid, current, and explicitly refreshed. Data requests are planning artifacts, not observed evidence.
-- Decision-state rail plus comparable reviewed confidence-interval visualization where units and universe permit, and reviewed HRSA rural-status composition visualization.
-- Interactive Burden → Pilot Planner → Data Requests → Planning Brief workflow.
-- JSON planning-brief companion export and browser print / save-PDF path.
-- Export filtering that prevents illustrative/unreleased estimates from appearing as released burden findings.
-- Deterministic evidence admissibility gates.
-- Long COVID reference condition adapter and ME/CFS compatibility skeleton.
-- Figma-derived design tokens and coarse responsive presentation.
-- Dataset source manifest, raw-data placement policy, and fail-closed R pipeline entry points.
-- GitHub Actions CI for install, strict typecheck, unit tests, lint, and production build.
-
-### Scaffolded / intentionally incomplete
-
-- Reviewed county-level local context does not exist yet; county HRSA/ACS aggregation, topology, and the Implementation Decision Map remain future work. The state-level Local Context → Pilot Planner handoff is implemented as an explicit single-record analyst choice without automatic numeric calibration.
+- Reviewed county-level context, county HRSA/ACS aggregation, topology, and the Implementation Decision Map.
 - PLACES/CMS local-context ingestion.
 - Reviewed external literature ledger and source extraction workflow.
 - Evidence-backed bounded scenario parameters.
-- Rich provenance drawer/interactions.
-- Real analytical-artifact release workflow.
+- Rich provenance interactions and rich HTML/PDF/Markdown formatting.
 - ME/CFS analytical estimates.
-- Rich HTML/PDF/Markdown export formatting.
-- Pixel-level Figma parity, chart polish, and full accessibility QA.
+- Pixel-level Figma parity and full accessibility QA.
 - Optional grounded AI. The core product does not require AI.
 
-The checked-in artifact under `artifacts/examples/fixture-2026-09-v1/` is **illustrative development/test data only**. It is deliberately barred from analytical export by the release/display gates. The released national MEPS artifact is separate and runtime-loaded; the fixture remains only for development and test coverage.
+The checked-in artifact under `artifacts/examples/fixture-2026-09-v1/` is **illustrative development/test data only** and is deliberately barred from analytical export.
 
-## Scientific boundaries
+## Scientific guardrails
 
-The application preserves these distinctions:
+Diagnostic Odyssey preserves these distinctions:
 
 - gross burden ≠ attributable burden;
 - national burden evidence ≠ state/local implementation context;
@@ -141,20 +195,22 @@ The application preserves these distinctions:
 - scenario outputs ≠ forecasts;
 - program-resource requirement ≠ savings or ROI;
 - data requests are planning artifacts, not observed evidence;
-- state/local implementation context does not rescale national MEPS burden;
-- reviewed county-level context and the Implementation Decision Map remain future work;
+- state/local context does not rescale national MEPS burden;
 - PHQ-2/K6 screens ≠ psychiatric diagnoses;
 - unreleased/suppressed values cannot enter exports;
-- bounded effects can modify only the pathway step/mechanism they support.
+- bounded effects can modify only the pathway step or mechanism they support.
 
-See [Scientific guardrails](docs/scientific-guardrails.md) for the detailed rules.
+Read the full [scientific guardrails](docs/scientific-guardrails.md) before interpreting or extending the analytical workflow.
+
+## Visual QA
+
+The current route, viewport, theme, and reduced-motion matrix passed for all nine product surfaces across 1440px, 768px, and 390px viewports. See the [Gate 0 route / viewport / appearance matrix](artifacts/generated/gate0-20261011-b99d1c7/route-viewport-mode-matrix.md) for the full evidence set and screenshot index.
 
 ## Repository map
 
 ```text
 apps/
   web/                       React/Vite product shell and routes
-
 packages/
   contracts/                 canonical types + runtime validators
   scenario-engine/           pure deterministic scenario calculations
@@ -162,83 +218,33 @@ packages/
   brief-core/                planning brief assembly + export filtering
   condition-adapters/        condition reuse boundary
   ui/                        design tokens
-
 analysis/
   r/                         offline survey-analysis entry points
   local_context/             HRSA + ACS candidate pipeline/config/tests
-
 pipelines/
-  data/                      source acquisition helpers/boundaries
-  evidence/                  evidence ingestion/review foundation
-
+  data/                       source acquisition helpers/boundaries
+  evidence/                   evidence ingestion/review foundation
 conditions/
-  long-covid/                reference implementation notes
-  mecfs/                     compatibility proof notes
-
+  long-covid/                 reference implementation notes
+  mecfs/                      compatibility proof notes
 data/
   manifests/                 checked-in source inventory
-  raw/                       local only; gitignored
-  intermediate/              local only; gitignored
-  derived/                   local only; gitignored
-
+  raw/                        local only; gitignored
+  intermediate/               local only; gitignored
+  derived/                    local only; gitignored
 artifacts/
-  reviewed/                  promoted aggregate analytical artifacts used by runtime
-  examples/                  illustrative development/test fixtures only
-
+  reviewed/                   promoted aggregate artifacts used by runtime
+  examples/                   illustrative development/test fixtures only
 docs/
   architecture.md
   implementation-plan.md
   scientific-guardrails.md
   testing.md
-
-.github/
-  workflows/
-    ci.yml
-    meps-candidate.yml
-    local-context-candidate.yml
 ```
 
-## Development
+## Data and working agreements
 
-Requires Node 22+ for the application and contracts. R is required only for the offline analytical pipeline.
-
-### MEPS candidate maintenance / regeneration
-
-The reviewed MEPS artifact is already promoted and runtime-loaded. The manual GitHub Actions workflow remains the reproducible path for maintenance or future regeneration:
-
-`Actions → MEPS 2024 Long COVID Candidate → Run workflow`
-
-Select `main` (or an explicitly reviewed commit/ref). The workflow has no custom inputs. It downloads HC-256 from the official AHRQ source, reruns TypeScript and synthetic R checks, generates a **preliminary** candidate, and uploads aggregate review files only. It does not commit the candidate or change runtime artifact selection.
-
-For local execution, the pipeline uses the official AHRQ HC-256 Stata download when the raw file is absent. If automatic download is unavailable in your environment, manually place the official HC-256 Stata ZIP at `data/raw/meps/2024/meps_hc256_2024_stata.zip` and run the command without `--download`.
-
-Generated candidates are written under `artifacts/generated/meps-2024-long-covid-candidate/` and remain gitignored and `release_status=preliminary` until explicit methods review and promotion. Running the candidate workflow does not overwrite the reviewed runtime artifact.
-
-Quality checks:
-
-```bash
-npm run typecheck
-npm test
-npm run lint
-npm run build
-```
-
-## Data and analytical inputs
-
-Do not commit raw public-use microdata, large intermediate files, or large generated analytical outputs.
-
-See [data/README.md](data/README.md) and [data/manifests/sources.json](data/manifests/sources.json) for:
-
-- required/manual downloads;
-- canonical local filenames;
-- official source pages;
-- approximate sizes where verified;
-- registration/API-key requirements;
-- downstream script entry points.
-
-The repository contains the reviewed aggregate national MEPS artifact with 21 `reviewed_released` estimates and a separately runtime-loaded reviewed West Virginia state-level HRSA/ACS implementation-context artifact. Raw MEPS and HRSA source files remain excluded. State local context does not rescale or mutate national burden. Eligible reviewed state records may be explicitly selected into the Planning Brief, and one eligible reviewed state record may separately be attached for Pilot planning. That attachment is an analyst context handoff only and does not change Pilot numeric assumptions or national burden. No reviewed county-level local context exists yet; the Implementation Decision Map remains future work. The illustrative fixture remains development/test-only and is not a substitute for reviewed evidence.
-
-## Working agreements
+Do not commit raw public-use microdata, large intermediate files, or large generated analytical outputs. See [data/README.md](data/README.md) and [data/manifests/sources.json](data/manifests/sources.json) for required downloads, canonical filenames, official sources, size estimates, registration/API-key requirements, and script entry points.
 
 - Keep raw microdata, intermediate files, and generated candidates out of Git.
 - Treat missing, suppressed, and unreleased values as distinct from zero.
@@ -248,11 +254,13 @@ The repository contains the reviewed aggregate national MEPS artifact with 21 `r
 
 ## Documentation
 
-- [Architecture](docs/architecture.md): package boundaries and runtime flow.
-- [Implementation plan](docs/implementation-plan.md): planned product and analytical work.
-- [Scientific guardrails](docs/scientific-guardrails.md): interpretation and release constraints.
-- [Testing](docs/testing.md): test strategy and validation boundaries.
-- [MEPS Long COVID methods](docs/methods/meps-2024-long-covid.md): analytical method notes.
+| Guide | What it covers |
+| --- | --- |
+| [Architecture](docs/architecture.md) | Package boundaries and runtime flow |
+| [Implementation plan](docs/implementation-plan.md) | Planned product and analytical work |
+| [Scientific guardrails](docs/scientific-guardrails.md) | Interpretation and release constraints |
+| [Testing](docs/testing.md) | Test strategy and validation boundaries |
+| [MEPS Long COVID methods](docs/methods/meps-2024-long-covid.md) | Analytical method notes |
 
 ## AI boundary
 

@@ -27,8 +27,14 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
+      - name: Install Draft 2020-12 test validator
+        run: python3 -m pip install --disable-pip-version-check jsonschema==4.26.0
+
       - name: Unit tests
         run: npm test
+
+      - name: Offline synthetic provenance verification
+        run: python3 -m unittest discover -s packages/narrative-references/test -p 'test_provenance.py'
 
       - name: Local-context contract tests
         run: |
