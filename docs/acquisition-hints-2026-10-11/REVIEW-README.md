@@ -19,6 +19,17 @@ Six MacEwan/LOCOMOTION statements are source-supported as *unreleased bounded ba
 
 Both exact v2 mapping candidates and their exact proposed wording are technically plausible as conditional *questions to local stewards*, not promises of system implementation. `ServiceRequest.authoredOn`, `Appointment.created/start/status`, `Encounter.period/status`, `Slot` and `Schedule` retain their distinct semantics. A free slot is not staffed capacity, FTE, catchment, participant count or wait. The exact proposed context policy is appropriately narrow and default-deny, with no approved decisions or admitted registry. Privacy limitation: retain local authority to approve **aggregate** summaries/counts and screen for small cells, combinations and differencing. The wording “de-identified interval summaries” should not be interpreted to permit patient-level interval transfer; a tighter wording could be helpful but would require new reviewed bytes. This review is not a substitute for authorized privacy approval or implementation/export validation. See `B-acquisition-ai-assessment.json`.
 
+## Subsequent independent reviewer privacy amendment — separately versioned
+
+The later October 11 reviewer packet was supplied directly as raw ZIP bytes and
+its three amended JSON preimages were independently SHA-256 verified. The original
+v2 mapping/policy/review-subject are unchanged. The PM adopted the revised
+timing wording and restrictive aggregate-only policy for *candidate-only* PR #98
+correction; capacity's frozen technical wording is unchanged. See the separately
+retained `privacy-amendment-adoption.md` and `packages/acquisition-hints/review-inputs/*.privacy-amendment-1.json`.
+Neither the earlier unsigned AI assessment nor the amendment creates human
+privacy approval, an approved production registry, or a release allowlist.
+
 ## Governance
 
 Recommend an explicit `Gate1: reviewed_no_current_context_admission` record and a separately adopted Gate2 exception allowing bounded #23 mapping implementation preparation only **after** B exact-byte/privacy and Gate0 adjudication. Current main independently verified as `e27403af8d878327d28ead2b6f7aeb00657c5239`. PR #92 and #93 provide extensive reusable QA evidence but this review does not confer a formal Gate0 authorization. No implementation, promotion, merger, issue closure, static synchronization, deployment, or #68 evidence-grounded intervention suggestion is authorized. The authorized governance actor must record adoption in project governance. See `governance-ai-recommendation.json`.
