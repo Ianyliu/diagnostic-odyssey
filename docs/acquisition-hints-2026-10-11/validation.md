@@ -67,3 +67,6 @@ The generated fixture stays under ignored artifacts and never enters production.
 Remaining independent gates: exact-HEAD contract/export/UI/privacy/implementation review;
 any necessary institutional privacy authority; exact-byte admission and release allowlist;
 owner merge authorization. Static synchronization and production deployment are not authorized.
+The push also surfaced two pre-existing moderate Router alerts; see the separate
+[targeted applicability triage](security-triage.md). No new reachable path was identified,
+but independent security disposition remains pending and no dependency migration was made.
