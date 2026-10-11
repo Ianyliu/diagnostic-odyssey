@@ -27,8 +27,58 @@
     "local_context": {"type": "array"},
     "qualitative_evidence": {"type": "array"},
     "scenario_examples": {"type": "array"},
-    "data_requests": {"type": "array"},
+    "data_requests": {"type": "array", "items": {"type": "object", "properties": {"acquisition_hint": {"$ref": "#/$defs/acquisitionHintReference"}}}},
     "sources": {"type": "array"}
   },
-  "additionalProperties": false
+  "additionalProperties": false,
+  "$defs": {
+    "acquisitionHintReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "hint_id",
+        "hint_version",
+        "registry_sha256",
+        "policy_sha256",
+        "source_index_sha256",
+        "review_sha256",
+        "request_fingerprint"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "1"
+        },
+        "hint_id": {
+          "enum": [
+            "ACQ26-TIMING-01",
+            "ACQ26-CAPACITY-01"
+          ]
+        },
+        "hint_version": {
+          "const": "2"
+        },
+        "registry_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "policy_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "source_index_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "review_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "request_fingerprint": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    }
+  }
 }

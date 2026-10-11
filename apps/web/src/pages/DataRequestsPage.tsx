@@ -3,6 +3,8 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ContextBar } from "../components/ContextBar";
 import { useArtifact } from "../data/ArtifactContext";
+import { acquisitionResolver } from "@diagnostic-odyssey/acquisition-hints";
+import { AcquisitionGuidanceStatus } from "../components/AcquisitionGuidanceCard";
 import {
   createSensitivityDataRequest,
   isDataRequestCurrentForScenario,
@@ -25,7 +27,9 @@ export function DataRequestsPage() {
     selectedDataRequests,
     upsertAnalystDataRequest,
     toggleDataRequestForBrief,
-    removeAnalystDataRequest
+    removeAnalystDataRequest,
+    attachAcquisitionHint,
+    removeAcquisitionHint
   } = useArtifact();
   if (!bundle) return null;
 
@@ -52,11 +56,13 @@ export function DataRequestsPage() {
         const stale = isAnalystRequest &&
           sensitivityField !== null &&
           !isDataRequestCurrentForScenario(request, scenario);
+        const acquisition = acquisitionResolver.resolve(request, bundle.context, scenarioResult ? scenario : null);
+        const attachable = isAnalystRequest && acquisitionResolver.attach(request, bundle.context, scenarioResult ? scenario : null).state === "reviewed";
         return <article className="data-request-sheet" key={request.request_id}>
           <header className="request-sheet-heading">
             <div>
               <p className="visual-kicker">{isAnalystRequest ? "SESSION PLANNING REQUEST" : "LOADED REQUEST TEMPLATE"}</p>
-              <h2>{request.target_question}</h2>
+              <h2 id={`request-title-${request.request_id}`}>{request.target_question}</h2>
             </div>
             <div className="request-sheet-states" role="group" aria-label="Freshness and Brief selection">
               <span className={`status ${stale ? "status-warning" : "status-neutral"}`}>
@@ -76,10 +82,19 @@ export function DataRequestsPage() {
           </dl>
           <div className="request-rationale"><h3>Why collect it</h3><p>{request.rationale}</p></div>
           <details className="technical-disclosure request-privacy"><summary>Feasibility and privacy</summary><p>{request.feasibility_privacy_notes}</p></details>
+          <AcquisitionGuidanceStatus resolution={acquisition} />
+          {attachable && acquisition.state !== "reviewed" && <button type="button" className="text-button" onClick={() => {
+            setAnnouncement(attachAcquisitionHint(request.request_id) ? "Reviewed acquisition guidance attached. Brief selection is unchanged." : "Acquisition guidance is unavailable; the request is unchanged.");
+          }}>{Object.hasOwn(request, "acquisition_hint") ? "Refresh acquisition guidance" : "Attach reviewed acquisition guidance"}</button>}
+          {isAnalystRequest && Object.hasOwn(request, "acquisition_hint") && <button type="button" className="text-button" onClick={() => {
+            removeAcquisitionHint(request.request_id);
+            setAnnouncement("Acquisition guidance removed. Brief selection is unchanged.");
+          }}>Remove acquisition guidance</button>}
           <div className="data-request-actions">
             <label className="brief-selection">
               <input
                 type="checkbox"
+                aria-labelledby={`request-title-${request.request_id} request-action-${request.request_id}`}
                 checked={selected}
                 onChange={() => {
                   toggleDataRequestForBrief(request.request_id);
@@ -91,7 +106,7 @@ export function DataRequestsPage() {
                 }}
               />
               <span>
-                <strong>Include in Planning Brief</strong>
+                <strong id={`request-action-${request.request_id}`}>Include in Planning Brief</strong>
                 <small>
                   {stale && selected
                     ? "Selected state is preserved, but this stale request is excluded from export until refreshed."

@@ -1,0 +1,14 @@
+.acquisition-guidance { min-width: 0; overflow-wrap: anywhere; margin-block: 1rem; padding: 1rem; color: var(--do-text); background: var(--do-surface); border: 1px solid var(--do-border); border-radius: .6rem; }
+.acquisition-guidance h3 { margin-top: 0; }
+.acquisition-guidance h3, .acquisition-guidance h4 { color: var(--do-text); }
+.acquisition-guidance dt { font-weight: 700; margin-top: .75rem; }
+.acquisition-guidance dd { margin-left: 0; }
+.acquisition-guidance small { display: block; }
+.acquisition-guidance a, .acquisition-identities dd { overflow-wrap: anywhere; }
+.acquisition-privacy { border-left: 3px solid currentColor; padding-left: .75rem; }
+.acquisition-state { margin-block: 1rem; }
+@media print {
+  .acquisition-guidance { color: #172c3b; border-color: #6b7780; }
+  .acquisition-guidance h3, .acquisition-guidance h4, .acquisition-guidance dt { break-after: avoid; }
+  .acquisition-guidance li, .acquisition-guidance dl > div, .acquisition-privacy { break-inside: avoid; }
+}

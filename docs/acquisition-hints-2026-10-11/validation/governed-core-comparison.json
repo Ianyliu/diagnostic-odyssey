@@ -1,0 +1,302 @@
+{
+  "unchanged": true,
+  "sections": [
+    {
+      "section": "invariants",
+      "before_sha256": "d56b9de581ee40c247fbf713952e898b5586354c3bd3a95d069bee9259aaa45d",
+      "after_sha256": "d56b9de581ee40c247fbf713952e898b5586354c3bd3a95d069bee9259aaa45d",
+      "unchanged": true
+    },
+    {
+      "section": "scenarios",
+      "before_sha256": "100dfff71843619f40063e6655ee945a4046cd2b20301d813703fc5541cb44b8",
+      "after_sha256": "100dfff71843619f40063e6655ee945a4046cd2b20301d813703fc5541cb44b8",
+      "unchanged": true
+    },
+    {
+      "section": "briefs",
+      "before_sha256": "9640cb8696bc397db2c6897680c0428f44bdf8b5af68c7fe81da325603945447",
+      "after_sha256": "9640cb8696bc397db2c6897680c0428f44bdf8b5af68c7fe81da325603945447",
+      "unchanged": true
+    },
+    {
+      "section": "checksums",
+      "before_sha256": "d99fcf7c180ffb26b6f13da4e6ac7f7c540d8b917da6512aba5b712c6fb12f05",
+      "after_sha256": "d99fcf7c180ffb26b6f13da4e6ac7f7c540d8b917da6512aba5b712c6fb12f05",
+      "unchanged": true
+    }
+  ],
+  "invariants": {
+    "national_estimates": 21,
+    "local_indicators": 34,
+    "reviewed_files": 27,
+    "verified_manifest_entries": 23
+  },
+  "scenarios": [
+    {
+      "id": "defaults",
+      "result": {
+        "scenario_id": "illustrative-navigation-pilot-default",
+        "intended_reach": 3000,
+        "reached_participants": 3000,
+        "capacity_gap": 0,
+        "baseline_person_months": 36000,
+        "alternative_person_months": 18000,
+        "difference_person_months": 18000,
+        "fixed_program_cost": 300000,
+        "variable_program_cost": 900000,
+        "program_resource_requirement": 1200000,
+        "target_pathway_step": "recognition-to-referral",
+        "target_mechanism": "navigation-support"
+      },
+      "sensitivity_points": {
+        "reach": 5,
+        "capacity": 5,
+        "alternative_window_months": 5
+      }
+    },
+    {
+      "id": "capacity-constrained",
+      "result": {
+        "scenario_id": "illustrative-navigation-pilot-default",
+        "intended_reach": 3000,
+        "reached_participants": 2000,
+        "capacity_gap": 1000,
+        "baseline_person_months": 24000,
+        "alternative_person_months": 12000,
+        "difference_person_months": 12000,
+        "fixed_program_cost": 300000,
+        "variable_program_cost": 600000,
+        "program_resource_requirement": 900000,
+        "target_pathway_step": "recognition-to-referral",
+        "target_mechanism": "navigation-support"
+      },
+      "sensitivity_points": {
+        "reach": 5,
+        "capacity": 5,
+        "alternative_window_months": 5
+      }
+    },
+    {
+      "id": "horizon-capped",
+      "result": {
+        "scenario_id": "illustrative-navigation-pilot-default",
+        "intended_reach": 3000,
+        "reached_participants": 3000,
+        "capacity_gap": 0,
+        "baseline_person_months": 12000,
+        "alternative_person_months": 9000,
+        "difference_person_months": 3000,
+        "fixed_program_cost": 300000,
+        "variable_program_cost": 900000,
+        "program_resource_requirement": 1200000,
+        "target_pathway_step": "recognition-to-referral",
+        "target_mechanism": "navigation-support"
+      },
+      "sensitivity_points": {
+        "reach": 5,
+        "capacity": 5,
+        "alternative_window_months": 5
+      }
+    },
+    {
+      "id": "precise-reach",
+      "result": {
+        "scenario_id": "illustrative-navigation-pilot-default",
+        "intended_reach": 3015,
+        "reached_participants": 3000,
+        "capacity_gap": 15,
+        "baseline_person_months": 36000,
+        "alternative_person_months": 18000,
+        "difference_person_months": 18000,
+        "fixed_program_cost": 300000,
+        "variable_program_cost": 900000,
+        "program_resource_requirement": 1200000,
+        "target_pathway_step": "recognition-to-referral",
+        "target_mechanism": "navigation-support"
+      },
+      "sensitivity_points": {
+        "reach": 5,
+        "capacity": 5,
+        "alternative_window_months": 5
+      }
+    },
+    {
+      "id": "zero-reach",
+      "result": {
+        "scenario_id": "illustrative-navigation-pilot-default",
+        "intended_reach": 0,
+        "reached_participants": 0,
+        "capacity_gap": 0,
+        "baseline_person_months": 0,
+        "alternative_person_months": 0,
+        "difference_person_months": 0,
+        "fixed_program_cost": 300000,
+        "variable_program_cost": 0,
+        "program_resource_requirement": 300000,
+        "target_pathway_step": "recognition-to-referral",
+        "target_mechanism": "navigation-support"
+      },
+      "sensitivity_points": {
+        "reach": 3,
+        "capacity": 5,
+        "alternative_window_months": 5
+      }
+    },
+    {
+      "id": "zero-capacity",
+      "result": {
+        "scenario_id": "illustrative-navigation-pilot-default",
+        "intended_reach": 3000,
+        "reached_participants": 0,
+        "capacity_gap": 3000,
+        "baseline_person_months": 0,
+        "alternative_person_months": 0,
+        "difference_person_months": 0,
+        "fixed_program_cost": 300000,
+        "variable_program_cost": 0,
+        "program_resource_requirement": 300000,
+        "target_pathway_step": "recognition-to-referral",
+        "target_mechanism": "navigation-support"
+      },
+      "sensitivity_points": {
+        "reach": 5,
+        "capacity": 6,
+        "alternative_window_months": 5
+      }
+    },
+    {
+      "id": "zero-resources",
+      "result": {
+        "scenario_id": "illustrative-navigation-pilot-default",
+        "intended_reach": 3000,
+        "reached_participants": 3000,
+        "capacity_gap": 0,
+        "baseline_person_months": 36000,
+        "alternative_person_months": 18000,
+        "difference_person_months": 18000,
+        "fixed_program_cost": 0,
+        "variable_program_cost": 0,
+        "program_resource_requirement": 0,
+        "target_pathway_step": "recognition-to-referral",
+        "target_mechanism": "navigation-support"
+      },
+      "sensitivity_points": {
+        "reach": 5,
+        "capacity": 5,
+        "alternative_window_months": 5
+      }
+    },
+    {
+      "id": "near-zero-reach",
+      "result": {
+        "scenario_id": "illustrative-navigation-pilot-default",
+        "intended_reach": 400,
+        "reached_participants": 400,
+        "capacity_gap": 0,
+        "baseline_person_months": 4800,
+        "alternative_person_months": 2400,
+        "difference_person_months": 2400,
+        "fixed_program_cost": 300000,
+        "variable_program_cost": 120000,
+        "program_resource_requirement": 420000,
+        "target_pathway_step": "recognition-to-referral",
+        "target_mechanism": "navigation-support"
+      },
+      "sensitivity_points": {
+        "reach": 4,
+        "capacity": 5,
+        "alternative_window_months": 5
+      }
+    },
+    {
+      "id": "near-one-reach",
+      "result": {
+        "scenario_id": "illustrative-navigation-pilot-default",
+        "intended_reach": 12000,
+        "reached_participants": 3000,
+        "capacity_gap": 9000,
+        "baseline_person_months": 36000,
+        "alternative_person_months": 18000,
+        "difference_person_months": 18000,
+        "fixed_program_cost": 300000,
+        "variable_program_cost": 900000,
+        "program_resource_requirement": 1200000,
+        "target_pathway_step": "recognition-to-referral",
+        "target_mechanism": "navigation-support"
+      },
+      "sensitivity_points": {
+        "reach": 4,
+        "capacity": 5,
+        "alternative_window_months": 5
+      }
+    },
+    {
+      "id": "rounding-boundary",
+      "result": {
+        "scenario_id": "illustrative-navigation-pilot-default",
+        "intended_reach": 2,
+        "reached_participants": 2,
+        "capacity_gap": 0,
+        "baseline_person_months": 24,
+        "alternative_person_months": 12,
+        "difference_person_months": 12,
+        "fixed_program_cost": 300000,
+        "variable_program_cost": 600,
+        "program_resource_requirement": 300600,
+        "target_pathway_step": "recognition-to-referral",
+        "target_mechanism": "navigation-support"
+      },
+      "sensitivity_points": {
+        "reach": 5,
+        "capacity": 3,
+        "alternative_window_months": 5
+      }
+    },
+    {
+      "id": "all-zero",
+      "result": {
+        "scenario_id": "illustrative-navigation-pilot-default",
+        "intended_reach": 0,
+        "reached_participants": 0,
+        "capacity_gap": 0,
+        "baseline_person_months": 0,
+        "alternative_person_months": 0,
+        "difference_person_months": 0,
+        "fixed_program_cost": 0,
+        "variable_program_cost": 0,
+        "program_resource_requirement": 0,
+        "target_pathway_step": "recognition-to-referral",
+        "target_mechanism": "navigation-support"
+      },
+      "sensitivity_points": {
+        "reach": 3,
+        "capacity": 1,
+        "alternative_window_months": 1
+      }
+    }
+  ],
+  "briefs": [
+    {
+      "id": "unselected-context-and-requests",
+      "sha256": "c3031878661a52d0818cba95e1bd0a85ebc558ed7d54e6d1c9e22fa8be0aed0d",
+      "exported_estimates": 21,
+      "selected_local_records": 0,
+      "selected_current_data_requests": 0
+    },
+    {
+      "id": "explicit-context-and-current-request",
+      "sha256": "ed3cfbf077a780ca4c27ea66cfc467820399693adbc9220636c15001cc1d4a4a",
+      "exported_estimates": 21,
+      "selected_local_records": 2,
+      "selected_current_data_requests": 1
+    },
+    {
+      "id": "explicit-context-and-stale-request",
+      "sha256": "198ad8bff6cc1dfcb48199ad6d221d83918b47e95ccdecebbe51ec0be9e053bb",
+      "exported_estimates": 21,
+      "selected_local_records": 2,
+      "selected_current_data_requests": 0
+    }
+  ]
+}

@@ -1,0 +1,83 @@
+{
+  "results": [
+    {
+      "name": "Selected-request and long-context decision entries remain on one PDF page",
+      "status": "PASS",
+      "details": [
+        {
+          "case": "selected-request",
+          "label": "Released observed burden",
+          "detail": "Reviewed national MEPS burden · 21 reviewed estimates · national descriptive evidence",
+          "page": 6
+        },
+        {
+          "case": "selected-request",
+          "label": "Explicitly selected reviewed local constraint/context",
+          "detail": "Distinct currently Designated Primary Care HPSA IDs: 123 · West Virginia state context",
+          "page": 7
+        },
+        {
+          "case": "selected-request",
+          "label": "Target pathway step",
+          "detail": "Recognition → referral",
+          "page": 7
+        },
+        {
+          "case": "selected-request",
+          "label": "Planning mechanism",
+          "detail": "Navigation support",
+          "page": 7
+        },
+        {
+          "case": "selected-request",
+          "label": "Measurement / data request needed",
+          "detail": "1 current operational data request",
+          "page": 7
+        },
+        {
+          "case": "selected-request",
+          "label": "Supported claim boundary",
+          "detail": "No reviewed intervention-effect parameter is available. The scenario remains assumption-based; causal benefit, savings, ROI, and preventable-cost claims remain unavailable.",
+          "page": 7
+        },
+        {
+          "case": "long-context",
+          "label": "Released observed burden",
+          "detail": "Reviewed national MEPS burden · 21 reviewed estimates · national descriptive evidence",
+          "page": 6
+        },
+        {
+          "case": "long-context",
+          "label": "Explicitly selected reviewed local constraint/context",
+          "detail": "Maximum HPSA score among included Primary Care designations: 23 points · West Virginia state context",
+          "page": 7
+        },
+        {
+          "case": "long-context",
+          "label": "Target pathway step",
+          "detail": "Recognition → referral",
+          "page": 7
+        },
+        {
+          "case": "long-context",
+          "label": "Planning mechanism",
+          "detail": "Navigation support",
+          "page": 7
+        },
+        {
+          "case": "long-context",
+          "label": "Measurement / data request needed",
+          "detail": "No current operational data request attached",
+          "page": 7
+        },
+        {
+          "case": "long-context",
+          "label": "Supported claim boundary",
+          "detail": "No reviewed intervention-effect parameter is available. The scenario remains assumption-based; causal benefit, savings, ROI, and preventable-cost claims remain unavailable.",
+          "page": 7
+        }
+      ]
+    }
+  ],
+  "events": []
+}
