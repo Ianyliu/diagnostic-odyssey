@@ -56,6 +56,7 @@ test("synthetic admitted entries require explicit attachment, preserve exact wor
 });
 
 test("legacy projection preserves absent/null optional base fields and ordered needed fields", () => {
+  assert.equal(JSON.stringify(sanitizeBaseDataRequest(request())), JSON.stringify(request()));
   const base = request(); delete base.target_mechanism;
   assert.deepEqual(sanitizeBaseDataRequest(base), base);
   assert.equal(Object.hasOwn(sanitizeBaseDataRequest(base), "target_mechanism"), false);

@@ -26,8 +26,10 @@ const equal = (a: unknown, b: unknown) => {
 export function sanitizeBaseDataRequest(value: unknown): DataRequest {
   if (!record(value)) throw new Error("Invalid base DataRequest: expected object");
   const base: Record<string, unknown> = {};
-  for (const key of ["request_id", "target_question", "pathway_step", "fields_needed", "likely_source_owner", "granularity_time_window", "rationale", "feasibility_privacy_notes"]) base[key] = value[key];
-  if (Object.hasOwn(value, "target_mechanism")) base.target_mechanism = value.target_mechanism;
+  const keys = ["request_id", "target_question", "pathway_step", "target_mechanism", "fields_needed", "likely_source_owner", "granularity_time_window", "rationale", "feasibility_privacy_notes"];
+  // Preserve the original recognized-field order and optional-property presence:
+  // legacy serialized request bytes must not change just because hints exist.
+  for (const key of Object.keys(value)) if (keys.includes(key)) base[key] = value[key];
   const issues = validateDataRequest(base);
   if (issues.length) throw new Error(`Invalid base DataRequest: ${issues.map(issue => issue.path).join(", ")}`);
   return {...base, fields_needed: [...base.fields_needed as string[]]} as unknown as DataRequest;
