@@ -481,7 +481,7 @@ await check("browser theme color follows bootstrap, explicit preferences, system
   ]) {
     const context = await browser.newContext({colorScheme: system});
     await context.addInitScript(preference => {
-      window.localStorage.setItem("diagnostic-odyssey.theme", preference);
+      try { window.localStorage.setItem("diagnostic-odyssey.theme", preference); } catch { /* Initial blank documents have no storage origin. */ }
     }, preference);
     await context.route("**/assets/*.js", route => route.abort());
     const page = await context.newPage();
@@ -720,6 +720,7 @@ for (const theme of ["light", "dark"])
       })),
     );
     assert.deepEqual(violations, []);
+    assert.deepEqual(results.flatMap(row => row.incomplete.filter(check => check.id === "aria-prohibited-attr")), [], "Named groups require a role that supports aria-label");
     await context.close();
     return results.map((r) => ({ route: r.route, incomplete: r.incomplete }));
   });
