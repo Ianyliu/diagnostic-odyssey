@@ -62,8 +62,14 @@ async function navigate(page, name) {
   const nav = page.getByRole("navigation", { name: "Primary navigation" });
   if (!(await nav.isVisible()))
     await page.getByRole("button", { name: "Menu", exact: true }).click();
-  await nav.getByRole("link", { name, exact: true }).click();
+  const link = nav.getByRole("link", { name, exact: true });
+  const destination = await link.getAttribute("href");
+  await link.click();
+  await page.waitForURL(url => url.pathname === destination);
   await page.locator("main h1").waitFor();
+  await page.waitForFunction(() => document.activeElement === document.querySelector("main h1"));
+  const toggle = page.locator(".menu-toggle");
+  if (await toggle.isVisible()) await page.waitForFunction(() => document.querySelector(".menu-toggle")?.getAttribute("aria-expanded") === "false");
 }
 async function assertThemeColor(page, expectedTheme) {
   if (expectedTheme) {
