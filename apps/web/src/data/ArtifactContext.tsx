@@ -28,6 +28,7 @@ import { createPlanningScenarioDefaults } from "./planningScenarioDefaults";
 import { loadReviewedMepsArtifact } from "./reviewedArtifact";
 import { loadReviewedWvLocalContextArtifact } from "./reviewedLocalContext";
 import { isDataRequestCurrentForScenario } from "./dataRequestTemplates";
+import { acquisitionResolver, sanitizeBaseDataRequest } from "@diagnostic-odyssey/acquisition-hints";
 
 interface ArtifactState {
   status: "loading" | "loaded" | "error";
@@ -54,6 +55,8 @@ interface ArtifactState {
   upsertAnalystDataRequest: (request: DataRequest) => void;
   removeAnalystDataRequest: (requestId: string) => void;
   toggleDataRequestForBrief: (requestId: string) => void;
+  attachAcquisitionHint: (requestId: string) => boolean;
+  removeAcquisitionHint: (requestId: string) => void;
 }
 
 const ArtifactContext = createContext<ArtifactState | null>(null);
@@ -205,6 +208,20 @@ export function ArtifactProvider({children}: {children: ReactNode}) {
     );
   };
 
+  const attachAcquisitionHint = (requestId: string): boolean => {
+    // Enrich a session copy only; reviewed ArtifactBundle objects are never modified.
+    const request = analystDataRequests.find(item => item.request_id === requestId);
+    if (!request || !bundle || !scenarioResult) return false;
+    const resolved = acquisitionResolver.attach(request, bundle.context, scenario);
+    if (resolved.state !== "reviewed") return false;
+    upsertAnalystDataRequest(resolved.request);
+    return true; // Brief selection is untouched.
+  };
+  const removeAcquisitionHint = (requestId: string) => {
+    const request = analystDataRequests.find(item => item.request_id === requestId);
+    if (request) upsertAnalystDataRequest(sanitizeBaseDataRequest(request));
+  };
+
   return (
     <ArtifactContext.Provider
       value={{
@@ -231,7 +248,9 @@ export function ArtifactProvider({children}: {children: ReactNode}) {
         selectedDataRequests,
         upsertAnalystDataRequest,
         removeAnalystDataRequest,
-        toggleDataRequestForBrief
+        toggleDataRequestForBrief,
+        attachAcquisitionHint,
+        removeAcquisitionHint
       }}
     >
       {children}

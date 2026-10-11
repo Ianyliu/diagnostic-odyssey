@@ -1,0 +1,302 @@
+{
+  "candidate_registry_id": "final-acquisition-hints-candidate-v2-privacy-amendment-1",
+  "version": "candidate-2-privacy-amendment-1",
+  "status": "awaiting_independent_mapping_privacy_review",
+  "prepared_at": "2026-10-11T03:36:41Z",
+  "code_commit": "e27403af8d878327d28ead2b6f7aeb00657c5239",
+  "released": false,
+  "approved_hint_ids": [],
+  "hints": [
+    {
+      "candidate_hint_id": "ACQ26-TIMING-01",
+      "candidate_version": "2",
+      "eligible_request_family": "session.sensitivity.alternative_window_months",
+      "source_owner_system": "Local referral/navigation program and health-system scheduling/encounter stewards; payer care management only if its local milestones are confirmed",
+      "required_information": [
+        "Locally defined qualifying/recognition milestone; not supplied by a generic order timestamp",
+        "Referral issuance milestone and service type",
+        "Scheduled event milestone, actual completed encounter milestone and cancellation/no-show status",
+        "Definitions of episode linkage, open episodes, missing dates, rescheduling and time zone"
+      ],
+      "minimum_necessary_output": "Locally approved aggregate interval distributions and counts of eligible/completed/open/cancelled/no-show/missing episodes by service/site and month or quarter within the current planning horizon, after local small-cell, overlap and differencing review; no person- or episode-level outputs.",
+      "local_only_preparation": "Any episode linkage and event dates remain with the authorized local steward. No identifiers, raw dates, individual episodes or record-level outputs are transferred to the app.",
+      "official_support": [
+        {
+          "version": "FHIR R4 4.0.1",
+          "url": "https://hl7.org/fhir/R4/servicerequest-definitions.html",
+          "source_path": "sources/servicerequest-definitions.html",
+          "source_sha256": "334f8b561cfa4bbb5ba4f281c9667e892a79577604adbdab2258d8c83b9d506a",
+          "retrieved_at": "2026-10-11T00:56:26Z",
+          "publication_note": "Specification generated 2019-11-01; HTTP last-modified is separate retrieval metadata.",
+          "elements": [
+            {
+              "element": "ServiceRequest.authoredOn",
+              "official_locator": "https://hl7.org/fhir/R4/servicerequest-definitions.html#ServiceRequest.authoredOn"
+            },
+            {
+              "element": "ServiceRequest.status",
+              "official_locator": "https://hl7.org/fhir/R4/servicerequest-definitions.html#ServiceRequest.status"
+            },
+            {
+              "element": "ServiceRequest.code",
+              "official_locator": "https://hl7.org/fhir/R4/servicerequest-definitions.html#ServiceRequest.code"
+            },
+            {
+              "element": "ServiceRequest.performerType",
+              "official_locator": "https://hl7.org/fhir/R4/servicerequest-definitions.html#ServiceRequest.performerType"
+            }
+          ]
+        },
+        {
+          "version": "FHIR R4 4.0.1",
+          "url": "https://hl7.org/fhir/R4/appointment-definitions.html",
+          "source_path": "sources/appointment-definitions.html",
+          "source_sha256": "7bb761298bcb366d28fea8141f73e49b2500f0841708531e529478a8c66cb2a6",
+          "retrieved_at": "2026-10-11T00:56:26Z",
+          "publication_note": "Specification generated 2019-11-01; HTTP last-modified is separate retrieval metadata.",
+          "elements": [
+            {
+              "element": "Appointment.start",
+              "official_locator": "https://hl7.org/fhir/R4/appointment-definitions.html#Appointment.start"
+            },
+            {
+              "element": "Appointment.created",
+              "official_locator": "https://hl7.org/fhir/R4/appointment-definitions.html#Appointment.created"
+            },
+            {
+              "element": "Appointment.status",
+              "official_locator": "https://hl7.org/fhir/R4/appointment-definitions.html#Appointment.status"
+            },
+            {
+              "element": "Appointment.basedOn",
+              "official_locator": "https://hl7.org/fhir/R4/appointment-definitions.html#Appointment.basedOn"
+            }
+          ]
+        },
+        {
+          "version": "FHIR R4 4.0.1",
+          "url": "https://hl7.org/fhir/R4/encounter-definitions.html",
+          "source_path": "sources/encounter-definitions.html",
+          "source_sha256": "31c80e1c6536fd1c35ffd68c161c1e4ef683492ce4f546b98df90601d198d278",
+          "retrieved_at": "2026-10-11T00:56:26Z",
+          "publication_note": "Specification generated 2019-11-01; HTTP last-modified is separate retrieval metadata.",
+          "elements": [
+            {
+              "element": "Encounter.period",
+              "official_locator": "https://hl7.org/fhir/R4/encounter-definitions.html#Encounter.period"
+            },
+            {
+              "element": "Encounter.status",
+              "official_locator": "https://hl7.org/fhir/R4/encounter-definitions.html#Encounter.status"
+            },
+            {
+              "element": "Encounter.appointment",
+              "official_locator": "https://hl7.org/fhir/R4/encounter-definitions.html#Encounter.appointment"
+            }
+          ]
+        }
+      ],
+      "mapping_limits": [
+        "ServiceRequest.authoredOn is when a request became actionable, not recognition/onset.",
+        "Appointment.start is planned event time; created is initial creation, not guaranteed booking transition history.",
+        "Encounter.period is start/end; a finished status and local completion definition are needed.",
+        "Appointment.basedOn and Encounter.appointment are optional links, not guaranteed usable episode joins.",
+        "Intervals do not establish causal workflow effects or justify alternative_window_months calibration."
+      ],
+      "local_confirmation": [
+        "EHR/vendor FHIR version, enabled elements/profiles, history availability and linkage coverage",
+        "Local recognition/referral/booking/completion definitions and service inclusion/exclusions",
+        "Steward-approved summary release, censoring and missingness treatment"
+      ],
+      "review_status": "candidate",
+      "review_provenance": null,
+      "existing_requested_fields": [
+        "recognition or qualifying milestone date",
+        "referral date",
+        "scheduled appointment date",
+        "completed appointment date",
+        "cancellation or no-show indicator",
+        "specialty/service type"
+      ],
+      "field_crosswalk": [
+        {
+          "existing_field": "recognition or qualifying milestone date",
+          "possible_spec_elements": null,
+          "limits": "Local clinical/program definition required; no generic FHIR recognition timestamp."
+        },
+        {
+          "existing_field": "referral date",
+          "possible_spec_elements": "ServiceRequest.authoredOn; ServiceRequest.status",
+          "limits": "Actionable order date only if local steward confirms equivalence to referral issuance. Does not identify symptom recognition or receipt/triage."
+        },
+        {
+          "existing_field": "scheduled appointment date",
+          "possible_spec_elements": "Appointment.start; Appointment.created; Appointment.status",
+          "limits": "start is planned occurrence. created is initial appointment creation, not the time a booking was accepted or a status history. Keep these milestones distinct."
+        },
+        {
+          "existing_field": "completed appointment date",
+          "possible_spec_elements": "Encounter.period; Encounter.status; Encounter.appointment; Appointment.basedOn",
+          "limits": "Encounter start/end plus locally confirmed finished/completed definition. Optional 0..* links need local episode deduplication; appointment status alone is not proof of completed encounter."
+        },
+        {
+          "existing_field": "cancellation or no-show indicator",
+          "possible_spec_elements": "Appointment.status",
+          "limits": "Locally reconcile cancellation/no-show history and multiple appointments; entered-in-error must be excluded."
+        },
+        {
+          "existing_field": "specialty/service type",
+          "possible_spec_elements": "ServiceRequest.code; ServiceRequest.performerType",
+          "limits": "Optional requested service/desired role, not necessarily the performed service; verify local codes and coverage."
+        }
+      ],
+      "preparation_recommendation": "approve_bounded_acquisition_guidance_subject_to_independent_mapping_privacy_context_and_governance_decisions",
+      "proposed_guidance_wording": "Ask the local referral/navigation and scheduling stewards how recognition, referral issuance, appointment creation, planned occurrence and completed encounters are recorded. If FHIR R4 4.0.1 is available locally, ServiceRequest, Appointment and Encounter may describe some order, scheduling and encounter milestones. Order activation is not recognition; appointment creation is not booking acceptance; a planned appointment is not a completed encounter. Confirm local definitions, optional links, missingness, history and vendor support. Request only locally approved aggregate interval distributions and episode counts by service/site and reporting period within the current planning horizon. The local steward must retain person- or episode-level dates, identifiers and linkage records; do not transfer record-level outputs to the app. Review rare cells, overlapping strata and differencing risk; coarsen or suppress as needed. These summaries do not establish intervention effects.",
+      "privacy_limits": [
+        "No identifiers, individual records, exact patient dates, EHR/payer APIs, uploads or data egress.",
+        "Steward performs any necessary episode linkage locally under existing authority; only locally approved aggregate distributions and counts may be requested, never person-level or episode-level outputs.",
+        "Month/quarter/site/service strata require local assessment of rare cells, overlap, differencing and re-identification; suppress/coarsen unsafe outputs, with no universal numerical small-cell threshold assumed.",
+        "No numerical small-cell threshold is invented here. No output is collected by this app."
+      ]
+    },
+    {
+      "candidate_hint_id": "ACQ26-CAPACITY-01",
+      "candidate_version": "2",
+      "eligible_request_family": "session.sensitivity.capacity",
+      "source_owner_system": "Program operations/provider network scheduling steward; HR/roster steward for staffed capacity and FTE",
+      "required_information": [
+        "Staffed usable program capacity and available slots for the modeled pathway/service",
+        "Site/service, catchment geography, wait-time definition, staffing FTE and capacity window",
+        "Local deduplication of shared/multi-participant slots, cancellations, reserve blocks and unit conversion"
+      ],
+      "minimum_necessary_output": "Aggregate site/service weekly or monthly capacity/slot counts over the current planning horizon; aggregate FTE only when needed, with no patient or staff identities",
+      "local_only_preparation": "Operations steward reconciles schedules, staffing, closures and program eligibility locally; this app receives no records.",
+      "official_support": [
+        {
+          "version": "FHIR R4 4.0.1",
+          "url": "https://hl7.org/fhir/R4/slot-definitions.html",
+          "source_path": "sources/slot-definitions.html",
+          "source_sha256": "479cf45cf458c6450a60dd70c4c809bbd30491ef815bee927c439f94e54e367b",
+          "retrieved_at": "2026-10-11T00:56:26Z",
+          "publication_note": "Specification generated 2019-11-01; HTTP last-modified is separate retrieval metadata.",
+          "elements": [
+            {
+              "element": "Slot.status",
+              "official_locator": "https://hl7.org/fhir/R4/slot-definitions.html#Slot.status"
+            },
+            {
+              "element": "Slot.start",
+              "official_locator": "https://hl7.org/fhir/R4/slot-definitions.html#Slot.start"
+            },
+            {
+              "element": "Slot.end",
+              "official_locator": "https://hl7.org/fhir/R4/slot-definitions.html#Slot.end"
+            },
+            {
+              "element": "Slot.schedule",
+              "official_locator": "https://hl7.org/fhir/R4/slot-definitions.html#Slot.schedule"
+            },
+            {
+              "element": "Slot.serviceType",
+              "official_locator": "https://hl7.org/fhir/R4/slot-definitions.html#Slot.serviceType"
+            },
+            {
+              "element": "Slot.specialty",
+              "official_locator": "https://hl7.org/fhir/R4/slot-definitions.html#Slot.specialty"
+            }
+          ]
+        },
+        {
+          "version": "FHIR R4 4.0.1",
+          "url": "https://hl7.org/fhir/R4/schedule-definitions.html",
+          "source_path": "sources/schedule-definitions.html",
+          "source_sha256": "4bc8e6a14e3b329f47f778f0163f2572b8cb63accbe44758326d766aa36f0e01",
+          "retrieved_at": "2026-10-11T00:56:26Z",
+          "publication_note": "Specification generated 2019-11-01; HTTP last-modified is separate retrieval metadata.",
+          "elements": [
+            {
+              "element": "Schedule.actor",
+              "official_locator": "https://hl7.org/fhir/R4/schedule-definitions.html#Schedule.actor"
+            },
+            {
+              "element": "Schedule.planningHorizon",
+              "official_locator": "https://hl7.org/fhir/R4/schedule-definitions.html#Schedule.planningHorizon"
+            }
+          ]
+        }
+      ],
+      "mapping_limits": [
+        "A free Slot is a scheduled availability interval, not staffed usable capacity or a count of unique people.",
+        "Schedule/Slot do not by themselves supply staffing FTE, catchment geography, observed wait time or derived pilot program metrics.",
+        "Available appointments cannot be converted to participants without a locally confirmed service/workload definition."
+      ],
+      "local_confirmation": [
+        "Vendor/version and actual scheduler availability; optional service typing and schedule coverage",
+        "Staffed versus bookable capacity, FTE source and locally valid units",
+        "Privacy/feasibility review of aggregate release and small cells"
+      ],
+      "review_status": "candidate",
+      "review_provenance": null,
+      "existing_requested_fields": [
+        "staffed program capacity",
+        "available appointment or navigation slots",
+        "specialty/service type",
+        "catchment geography",
+        "wait time",
+        "staffing FTE",
+        "capacity time window"
+      ],
+      "field_crosswalk": [
+        {
+          "existing_field": "staffed program capacity",
+          "possible_spec_elements": null,
+          "limits": "Operations/roster definition and workload conversion required; Slot is not staffed usable capacity."
+        },
+        {
+          "existing_field": "available appointment or navigation slots",
+          "possible_spec_elements": "Slot.status; Slot.start; Slot.end; Slot.schedule",
+          "limits": "Availability intervals only; reconcile closures, reserves, shared resources, overlapping slots, multi-participant slots and overbooking locally."
+        },
+        {
+          "existing_field": "specialty/service type",
+          "possible_spec_elements": "Slot.serviceType; Slot.specialty",
+          "limits": "Optional 0..* local service/specialty typing; confirm meaningful coverage."
+        },
+        {
+          "existing_field": "catchment geography",
+          "possible_spec_elements": null,
+          "limits": "Locally defined program catchment; Schedule.actor is not a catchment or eligible denominator."
+        },
+        {
+          "existing_field": "wait time",
+          "possible_spec_elements": null,
+          "limits": "Derived from locally linked milestone definitions, censoring and missingness; not supplied by free slots."
+        },
+        {
+          "existing_field": "staffing FTE",
+          "possible_spec_elements": null,
+          "limits": "Aggregate HR/roster input only if needed; no patient or employee records."
+        },
+        {
+          "existing_field": "capacity time window",
+          "possible_spec_elements": "Schedule.planningHorizon",
+          "limits": "Scheduler booking-acceptance coverage only; intersect with requested current planning horizon. Does not assert program staffing coverage or a reusable scheduling template."
+        }
+      ],
+      "preparation_recommendation": "approve_bounded_acquisition_guidance_subject_to_independent_mapping_privacy_context_and_governance_decisions",
+      "proposed_guidance_wording": "Ask program operations and scheduling stewards for aggregate staffed usable capacity and available appointment or navigation slots by site/service and week or month within the current planning horizon. If FHIR R4 4.0.1 is available locally, Slot and Schedule may describe scheduling intervals and resource availability. Free slots are not staffed capacity, FTE, unique participants, catchment or wait-time metrics. Confirm staffing, workload units, shared resources, reserve blocks, overbooking, service coverage and vendor support locally; use an aggregate HR/roster summary only if FTE is needed. Exclude patient and employee identities and apply local small-cell review. No resource guarantees these program metrics or their availability.",
+      "privacy_limits": [
+        "No identifiers, individual records, exact patient dates, EHR/payer APIs, uploads or data egress.",
+        "Steward performs any necessary linkage locally under existing authority; this hint requests aggregate/de-identified outputs only.",
+        "Month/quarter/site/service strata require local small-cell and re-identification review, including differencing and rare combinations; coarsen or suppress if needed.",
+        "No numerical small-cell threshold is invented here. No output is collected by this app."
+      ]
+    }
+  ],
+  "omissions": [
+    {
+      "family": "session.sensitivity.reach",
+      "reason": "Eligible denominator and outreach/contact/enrolment funnel definitions are local program semantics; no demonstrated useful generic FHIR mapping. Existing aggregate request remains usable without guidance."
+    }
+  ]
+}

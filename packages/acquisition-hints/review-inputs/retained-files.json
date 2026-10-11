@@ -1,0 +1,46 @@
+[
+  {
+    "path": "application-context.json",
+    "sha256": "4d92ff7b7d67423149e1c4207726a5210d4f69d0168c260b76b543fea9253023"
+  },
+  {
+    "path": "context-policy.candidate.json",
+    "sha256": "2c4370d84f6024157a3f645c6b2c8da3d0691a254dc9407226d81d1abb94e64f"
+  },
+  {
+    "path": "mapping-candidates.json",
+    "sha256": "9a117d4a2a5ac1c51d1b8d559fb617be4635306767d21ae06d3ee54668989866"
+  },
+  {
+    "path": "review-subject.json",
+    "sha256": "db919797d7e2dd42cd6c44e8154ccd434181bc3de27009931504124721efb436"
+  },
+  {
+    "path": "source-index.json",
+    "sha256": "0c607a5ef437b40bbdc599a8a74dbcb887f1f369fef4ca0506f782dd20af53ce"
+  },
+  {
+    "path": "sources/appointment-definitions.html",
+    "sha256": "7bb761298bcb366d28fea8141f73e49b2500f0841708531e529478a8c66cb2a6"
+  },
+  {
+    "path": "sources/encounter-definitions.html",
+    "sha256": "31c80e1c6536fd1c35ffd68c161c1e4ef683492ce4f546b98df90601d198d278"
+  },
+  {
+    "path": "sources/license.html",
+    "sha256": "b2aeb02247ca2aa855ed1fce29f62600aeeb8dcc8257ec1e0b40ceaf4fd60a15"
+  },
+  {
+    "path": "sources/schedule-definitions.html",
+    "sha256": "4bc8e6a14e3b329f47f778f0163f2572b8cb63accbe44758326d766aa36f0e01"
+  },
+  {
+    "path": "sources/servicerequest-definitions.html",
+    "sha256": "334f8b561cfa4bbb5ba4f281c9667e892a79577604adbdab2258d8c83b9d506a"
+  },
+  {
+    "path": "sources/slot-definitions.html",
+    "sha256": "479cf45cf458c6450a60dd70c4c809bbd30491ef815bee927c439f94e54e367b"
+  }
+]

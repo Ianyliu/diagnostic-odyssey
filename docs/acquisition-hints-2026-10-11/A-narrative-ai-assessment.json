@@ -1,0 +1,211 @@
+{
+  "assessment_kind": "independent_AI_assisted_exact_byte_technical_review",
+  "status": "UNSIGNED_AI_ASSESSMENT_NOT_RELEASE_EVIDENCE",
+  "reviewer_identity": "OpenAI ChatGPT (GPT-6)",
+  "reviewer_role": "Independent AI-assisted scientific, mapping/privacy-risk and governance review; not a designated human/legal/clinical officer",
+  "reviewer_independence": "Not the packet producer or PR #79 implementation actor; independent of the packaging script; no human identity or professional license asserted",
+  "reviewed_at_utc": "2026-10-11T13:29:41Z",
+  "human_signature": null,
+  "release_authority": false,
+  "repository_mutations": false,
+  "archive_verified": {
+    "v2_manifest_sha256": "f8f4af4fbb93228db5282619745c91da4c8ac02247c8e2520de94bf15eddb40a",
+    "v2_entries": 45,
+    "v1_manifest_sha256": "f4cf1a4819c3ca33f8a45271a8a433f4c4a6866c57b0c96c3f1e855234c2b30c",
+    "v1_entries": 38,
+    "verification_script": "verify-archive.py",
+    "result": "pass"
+  },
+  "review_track": "A_NARRATIVE_SOURCE_RIGHTS_APPLICABILITY",
+  "review_subject_sha256": "fa6f243cb41c71387597e808d0e0c3390b4ae60a819d6d3a9b384ec5f66537ee",
+  "candidate_catalog_sha256": "9178b95b06566afc8510afad1d6784e249303e402f84a7d496ba7d532e06de55",
+  "rights_records_sha256": "8b6cbdd572fccadeddca4abc4ae3779cff7493bf0940b6c739b6aa0c7a7f62bd",
+  "applicability_policy_sha256": "1d21993be093017a3f07bd339355ee7c7ae1328e5f832afc565aba74f76e6d08",
+  "source_claim_matrix_sha256": "f0d2645a7cab2ca784200c277ea7eeb603fbf16b90fcf62579c9291cafd2c542",
+  "source_index_sha256": "a307089f08a9d2cc01a8cd7a00c8d8ddc86063e96c5e0e494acc914ef535979f",
+  "source_rights_assessment": [
+    {
+      "source_id": "macewan-2024-care-coordination",
+      "retained_source_sha256": "f11be189fa8e7a606b98b782be3acecdb55c00457fffa809c12603980a89d688",
+      "finding": "Retained original publisher PDF p6/journal p1299 carries CC BY 4.0 with third-party exceptions; underlying interview data explicitly withheld for privacy. Attribution, source/link/license and changes must be preserved.",
+      "decision": "rights_license_statement_supported; no human legal signoff; no participant data redistribution"
+    },
+    {
+      "source_id": "darbyshire-2024-locomotion",
+      "retained_source_sha256": "f86787bf1a5da731b653bd12350d1836e6be847501634fa596d53a4e8075a592",
+      "finding": "Retained PDF p1 carries CC BY 4.0. DOI 10.1016/j.clinme.2024.100237. Attribution and modification notices required.",
+      "decision": "rights_license_statement_supported; no human legal signoff"
+    },
+    {
+      "source_id": "cdc-long-covid-clinical-guidance-20260309",
+      "retained_source_sha256": null,
+      "finding": "No retained official guidance or agency-rights original preimage. Page update date is not necessarily original publication.",
+      "decision": "defer_both_claims_until_reproducible_archival_and_independent_rights_review"
+    }
+  ],
+  "claim_decisions": [
+    {
+      "claim_id": "CDC26-PC-01",
+      "exact_candidate_wording": "CDC guidance describes patient-centered management in primary care for people with Long COVID.",
+      "wording_assessment": "DEFER_UNVERIFIABLE_RETAINED_PREIMAGE",
+      "source_rights_assessment": "DEFER",
+      "current_context_applicability": "DENY",
+      "permitted_current_runtime_use": null,
+      "approved_exact_context": null,
+      "scientific_assessment": "Not an effect estimate; no pilot transfer or quantitative effect. Official raw guidance/rights bytes not retained.",
+      "reviewer_has_release_authority": false,
+      "limitations_and_prohibitions": [
+        "Clinical guidance is not evidence of program effectiveness.",
+        "No automatic transfer to the app's national cohort, any payer, or a local program.",
+        "Source bytes and reproducible archive not yet retained.",
+        "No causal reduction in diagnostic delay, symptoms, utilization, cost or savings.",
+        "No quantitative effect, scenario parameter, ROI, national prevalence or guaranteed local applicability."
+      ]
+    },
+    {
+      "claim_id": "CDC26-SUPPORT-01",
+      "exact_candidate_wording": "CDC guidance describes validating symptoms and connecting patients with appropriate additional care, services and supports.",
+      "wording_assessment": "DEFER_UNVERIFIABLE_RETAINED_PREIMAGE",
+      "source_rights_assessment": "DEFER",
+      "current_context_applicability": "DENY",
+      "permitted_current_runtime_use": null,
+      "approved_exact_context": null,
+      "scientific_assessment": "Not an effect estimate; no pilot transfer or quantitative effect. Official raw guidance/rights bytes not retained.",
+      "reviewer_has_release_authority": false,
+      "limitations_and_prohibitions": [
+        "Clinical guidance is not evidence of program effectiveness.",
+        "No automatic transfer to the app's national cohort, any payer, or a local program.",
+        "Source bytes and reproducible archive not yet retained.",
+        "No causal reduction in diagnostic delay, symptoms, utilization, cost or savings.",
+        "No quantitative effect, scenario parameter, ROI, national prevalence or guaranteed local applicability."
+      ]
+    },
+    {
+      "claim_id": "MAC24-COORD-01",
+      "exact_candidate_wording": "The studied Ohio State clinic described a nurse care coordinator assisting patients with referrals and follow-up appointments.",
+      "wording_assessment": "SOURCE_SUPPORTED_FOR_UNRELEASED_BACKGROUND_ONLY",
+      "source_rights_assessment": "RETAINED_OPEN_LICENSE_STATEMENT_VERIFIED_WITH_CONDITIONS",
+      "current_context_applicability": "DENY",
+      "permitted_current_runtime_use": null,
+      "approved_exact_context": null,
+      "scientific_assessment": "Not an effect estimate; no pilot transfer or quantitative effect. Source-specific bounded descriptive statement only.",
+      "reviewer_has_release_authority": false,
+      "limitations_and_prohibitions": [
+        "Single academic specialty clinic; many participants had severe symptoms for 1–2 years.",
+        "No remote/nonattending population, no comparator, no quantitative effect; not the national 18–64 MEPS denominator.",
+        "No causal reduction in diagnostic delay, symptoms, utilization, cost or savings.",
+        "No quantitative effect, scenario parameter, ROI, national prevalence or guaranteed local applicability.",
+        "Background only; cannot license an intervention suggestion."
+      ]
+    },
+    {
+      "claim_id": "MAC24-ACCESS-01",
+      "exact_candidate_wording": "Interviewed patients described both barriers and supportive provider interactions while seeking Long COVID care.",
+      "wording_assessment": "SOURCE_SUPPORTED_FOR_UNRELEASED_BACKGROUND_ONLY",
+      "source_rights_assessment": "RETAINED_OPEN_LICENSE_STATEMENT_VERIFIED_WITH_CONDITIONS",
+      "current_context_applicability": "DENY",
+      "permitted_current_runtime_use": null,
+      "approved_exact_context": null,
+      "scientific_assessment": "Not an effect estimate; no pilot transfer or quantitative effect. Source-specific bounded descriptive statement only.",
+      "reviewer_has_release_authority": false,
+      "limitations_and_prohibitions": [
+        "Single academic specialty clinic; many participants had severe symptoms for 1–2 years.",
+        "No remote/nonattending population, no comparator, no quantitative effect; not the national 18–64 MEPS denominator.",
+        "No causal reduction in diagnostic delay, symptoms, utilization, cost or savings.",
+        "No quantitative effect, scenario parameter, ROI, national prevalence or guaranteed local applicability.",
+        "Background only; cannot license an intervention suggestion."
+      ]
+    },
+    {
+      "claim_id": "MAC24-REFERRAL-01",
+      "exact_candidate_wording": "The studied clinic required an internal physician referral and used general internal medicine evaluations before specialty referrals.",
+      "wording_assessment": "SOURCE_SUPPORTED_FOR_UNRELEASED_BACKGROUND_ONLY",
+      "source_rights_assessment": "RETAINED_OPEN_LICENSE_STATEMENT_VERIFIED_WITH_CONDITIONS",
+      "current_context_applicability": "DENY",
+      "permitted_current_runtime_use": null,
+      "approved_exact_context": null,
+      "scientific_assessment": "Not an effect estimate; no pilot transfer or quantitative effect. Source-specific bounded descriptive statement only.",
+      "reviewer_has_release_authority": false,
+      "limitations_and_prohibitions": [
+        "Single academic specialty clinic; many participants had severe symptoms for 1–2 years.",
+        "No remote/nonattending population, no comparator, no quantitative effect; not the national 18–64 MEPS denominator.",
+        "No causal reduction in diagnostic delay, symptoms, utilization, cost or savings.",
+        "No quantitative effect, scenario parameter, ROI, national prevalence or guaranteed local applicability.",
+        "Background only; cannot license an intervention suggestion."
+      ]
+    },
+    {
+      "claim_id": "LOC24-ACCESS-01",
+      "exact_candidate_wording": "Participating NHS services described work on referral criteria, bottlenecks and unequal access, with locally variable results.",
+      "wording_assessment": "SOURCE_SUPPORTED_FOR_UNRELEASED_BACKGROUND_ONLY",
+      "source_rights_assessment": "RETAINED_OPEN_LICENSE_STATEMENT_VERIFIED_WITH_CONDITIONS",
+      "current_context_applicability": "DENY",
+      "permitted_current_runtime_use": null,
+      "approved_exact_context": null,
+      "scientific_assessment": "Not an effect estimate; no pilot transfer or quantitative effect. Source-specific bounded descriptive statement only.",
+      "reviewer_has_release_authority": false,
+      "limitations_and_prohibitions": [
+        "Service evaluation without causal comparator; secular changes and falling incidence affected waiting times.",
+        "NHS and local eligibility/funding cannot be silently transferred to US national/payer settings.",
+        "No causal reduction in diagnostic delay, symptoms, utilization, cost or savings.",
+        "No quantitative effect, scenario parameter, ROI, national prevalence or guaranteed local applicability.",
+        "Background only; cannot license an intervention suggestion."
+      ]
+    },
+    {
+      "claim_id": "LOC24-PATHWAY-01",
+      "exact_candidate_wording": "Participating NHS services refined referral pathways and prerequisite assessments; standardizing across sites proved difficult.",
+      "wording_assessment": "SOURCE_SUPPORTED_FOR_UNRELEASED_BACKGROUND_ONLY",
+      "source_rights_assessment": "RETAINED_OPEN_LICENSE_STATEMENT_VERIFIED_WITH_CONDITIONS",
+      "current_context_applicability": "DENY",
+      "permitted_current_runtime_use": null,
+      "approved_exact_context": null,
+      "scientific_assessment": "Not an effect estimate; no pilot transfer or quantitative effect. Source-specific bounded descriptive statement only.",
+      "reviewer_has_release_authority": false,
+      "limitations_and_prohibitions": [
+        "Service evaluation without causal comparator; secular changes and falling incidence affected waiting times.",
+        "NHS and local eligibility/funding cannot be silently transferred to US national/payer settings.",
+        "No causal reduction in diagnostic delay, symptoms, utilization, cost or savings.",
+        "No quantitative effect, scenario parameter, ROI, national prevalence or guaranteed local applicability.",
+        "Background only; cannot license an intervention suggestion."
+      ]
+    },
+    {
+      "claim_id": "LOC24-WAIT-01",
+      "exact_candidate_wording": "Waiting-time changes in the collaborative provide background context and cannot be attributed wholly to its activities.",
+      "wording_assessment": "SOURCE_SUPPORTED_FOR_UNRELEASED_BACKGROUND_ONLY",
+      "source_rights_assessment": "RETAINED_OPEN_LICENSE_STATEMENT_VERIFIED_WITH_CONDITIONS",
+      "current_context_applicability": "DENY",
+      "permitted_current_runtime_use": null,
+      "approved_exact_context": null,
+      "scientific_assessment": "Not an effect estimate; no pilot transfer or quantitative effect. Source-specific bounded descriptive statement only.",
+      "reviewer_has_release_authority": false,
+      "limitations_and_prohibitions": [
+        "Service evaluation without causal comparator; secular changes and falling incidence affected waiting times.",
+        "NHS and local eligibility/funding cannot be silently transferred to US national/payer settings.",
+        "No causal reduction in diagnostic delay, symptoms, utilization, cost or savings.",
+        "No quantitative effect, scenario parameter, ROI, national prevalence or guaranteed local applicability.",
+        "Background only; cannot license an intervention suggestion."
+      ]
+    }
+  ],
+  "context_assessment": {
+    "actual_target_setting_id": null,
+    "actual_target_payer_id": null,
+    "allow_rules_count": 0,
+    "approved_decisions_count": 0,
+    "decision": "NO_CURRENT_CONTEXT_ADMISSION_FOR_ALL_8",
+    "evidence": "narrative/applicability-policy.candidate.json; verification/application-context.json; narrative/review-subject.json",
+    "limit": "No implicit payer, setting, population or NHS-to-US transfer; no Pilot, intervention option, quantitative effect, Brief or AI citation eligibility"
+  },
+  "source_promotion_authorized": false,
+  "release_allowlist_authorized": false,
+  "evidence_paths": [
+    "final-admission-review-20261011-v2/narrative/sources/macewan-publisher.pdf",
+    "final-admission-review-20261011-v2/narrative/sources/locomotion.pdf",
+    "final-admission-review-20261011-v2/narrative/rights-records.json",
+    "final-admission-review-20261011-v2/narrative/source-claim-matrix.json",
+    "final-admission-review-20261011-v2/narrative/catalog.candidate.json",
+    "final-admission-review-20261011-v2/narrative/applicability-policy.candidate.json"
+  ]
+}

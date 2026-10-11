@@ -1,0 +1,59 @@
+{
+  "status": "retained_review_inputs_not_admitted",
+  "sources": [
+    {
+      "path": "acquisition/sources/servicerequest-definitions.html",
+      "requested_url": "https://hl7.org/fhir/R4/servicerequest-definitions.html",
+      "final_url": "https://hl7.org/fhir/R4/servicerequest-definitions.html",
+      "retrieved_at": "2026-10-11T00:56:26Z",
+      "bytes": 48631,
+      "sha256": "334f8b561cfa4bbb5ba4f281c9667e892a79577604adbdab2258d8c83b9d506a",
+      "last_modified": "Fri, 07 Nov 2025 09:32:44 GMT"
+    },
+    {
+      "path": "acquisition/sources/appointment-definitions.html",
+      "requested_url": "https://hl7.org/fhir/R4/appointment-definitions.html",
+      "final_url": "https://hl7.org/fhir/R4/appointment-definitions.html",
+      "retrieved_at": "2026-10-11T00:56:26Z",
+      "bytes": 35305,
+      "sha256": "7bb761298bcb366d28fea8141f73e49b2500f0841708531e529478a8c66cb2a6",
+      "last_modified": "Fri, 07 Nov 2025 09:32:39 GMT"
+    },
+    {
+      "path": "acquisition/sources/encounter-definitions.html",
+      "requested_url": "https://hl7.org/fhir/R4/encounter-definitions.html",
+      "final_url": "https://hl7.org/fhir/R4/encounter-definitions.html",
+      "retrieved_at": "2026-10-11T00:56:26Z",
+      "bytes": 47804,
+      "sha256": "31c80e1c6536fd1c35ffd68c161c1e4ef683492ce4f546b98df90601d198d278",
+      "last_modified": "Fri, 07 Nov 2025 09:32:41 GMT"
+    },
+    {
+      "path": "acquisition/sources/slot-definitions.html",
+      "requested_url": "https://hl7.org/fhir/R4/slot-definitions.html",
+      "final_url": "https://hl7.org/fhir/R4/slot-definitions.html",
+      "retrieved_at": "2026-10-11T00:56:26Z",
+      "bytes": 18414,
+      "sha256": "479cf45cf458c6450a60dd70c4c809bbd30491ef815bee927c439f94e54e367b",
+      "last_modified": "Fri, 07 Nov 2025 09:32:45 GMT"
+    },
+    {
+      "path": "acquisition/sources/schedule-definitions.html",
+      "requested_url": "https://hl7.org/fhir/R4/schedule-definitions.html",
+      "final_url": "https://hl7.org/fhir/R4/schedule-definitions.html",
+      "retrieved_at": "2026-10-11T00:56:26Z",
+      "bytes": 18219,
+      "sha256": "4bc8e6a14e3b329f47f778f0163f2572b8cb63accbe44758326d766aa36f0e01",
+      "last_modified": "Fri, 07 Nov 2025 09:32:44 GMT"
+    },
+    {
+      "path": "acquisition/sources/license.html",
+      "requested_url": "https://hl7.org/fhir/R4/license.html",
+      "final_url": "https://hl7.org/fhir/R4/license.html",
+      "retrieved_at": "2026-10-11T00:56:26Z",
+      "bytes": 22009,
+      "sha256": "b2aeb02247ca2aa855ed1fce29f62600aeeb8dcc8257ec1e0b40ceaf4fd60a15",
+      "last_modified": "Fri, 07 Nov 2025 09:32:43 GMT"
+    }
+  ]
+}
