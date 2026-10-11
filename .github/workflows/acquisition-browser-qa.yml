@@ -1,0 +1,63 @@
+name: Acquisition Guidance Browser QA
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - "apps/web/**"
+      - "packages/acquisition-hints/**"
+      - "packages/brief-core/**"
+      - "tests/browser/acquisition-**"
+      - "tests/browser/acquisition-fixture/**"
+      - ".github/workflows/acquisition-browser-qa.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  rendered-acquisition:
+    if: github.event.pull_request.number == 98
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Clean install and production bundle
+        run: |
+          npm ci --no-audit --no-fund
+          npm run build
+      - name: Install isolated browser runner (not production dependencies)
+        run: |
+          mkdir -p /tmp/diagnostic-browser-runner
+          npm install --prefix /tmp/diagnostic-browser-runner --no-audit --no-fund --save-exact @playwright/test@1.64.0 axe-core@4.11.1
+          node /tmp/diagnostic-browser-runner/node_modules/playwright/cli.js install chrome
+      - name: Prepare synthetic-only fixture
+        run: node --experimental-strip-types tests/browser/prepare-acquisition-fixture.mjs
+      - name: Run 12 rendered groups, JSON and actual PDF
+        env:
+          PLAYWRIGHT_RUNNER: /tmp/diagnostic-browser-runner/package.json
+          QA_BASE_URL: http://127.0.0.1:4194
+          QA_FIXTURE_URL: http://127.0.0.1:4195
+          QA_OUTPUT: /tmp/diagnostic-acquisition-browser
+        run: |
+          ./node_modules/.bin/vite preview apps/web --host 127.0.0.1 --port 4194 --strictPort >/tmp/acquisition-prod.log 2>&1 &
+          ./node_modules/.bin/vite --config tests/browser/acquisition-fixture/vite.config.mjs --host 127.0.0.1 --port 4195 --strictPort >/tmp/acquisition-fixture.log 2>&1 &
+          for n in $(seq 1 40); do
+            if curl --fail --silent http://127.0.0.1:4194/ >/dev/null &&
+               curl --fail --silent http://127.0.0.1:4195/ >/dev/null; then break; fi
+            sleep 1
+          done
+          curl --fail http://127.0.0.1:4194/ -o /dev/null
+          curl --fail http://127.0.0.1:4195/ -o /dev/null
+          node tests/browser/acquisition-hints.mjs
+      - name: Retain JSON/PDF/axe/screenshot artifacts and logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: acquisition-qa-${{ github.event.pull_request.head.sha }}
+          path: |
+            /tmp/diagnostic-acquisition-browser/
+            /tmp/acquisition-prod.log
+            /tmp/acquisition-fixture.log
+          if-no-files-found: warn
