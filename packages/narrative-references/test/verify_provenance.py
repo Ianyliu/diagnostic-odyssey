@@ -35,10 +35,13 @@ def read_verified(root, descriptor):
             not name.startswith("/") and "\\" not in name,
             "unsafe archive-relative path")
     resolved_root = root.resolve(strict=True)
-    actual = (resolved_root / name).resolve(strict=True)
-    require(actual.is_relative_to(resolved_root) and actual.is_file(),
-            "unsafe or missing file")
-    data = actual.read_bytes()
+    try:
+        actual = (resolved_root / name).resolve(strict=True)
+        require(actual.is_relative_to(resolved_root) and actual.is_file(),
+                "unsafe or missing file")
+        data = actual.read_bytes()
+    except OSError as exc:
+        raise ProvenanceError("missing or unreadable retained file: " + name) from exc
     require(sha(data) == expected, "tampered/mismatched bytes: " + name)
     return data
 
