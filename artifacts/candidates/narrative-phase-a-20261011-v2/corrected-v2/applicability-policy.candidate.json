@@ -1,0 +1,278 @@
+{
+  "candidate_policy_id": "final-narrative-exact-context-policy-candidate-v2",
+  "version": "candidate-2",
+  "status": "awaiting_independent_review",
+  "code_commit": "e27403af8d878327d28ead2b6f7aeb00657c5239",
+  "candidate_catalog_sha256": "9178b95b06566afc8510afad1d6784e249303e402f84a7d496ba7d532e06de55",
+  "source_claim_matrix_sha256": "f0d2645a7cab2ca784200c277ea7eeb603fbf16b90fcf62579c9291cafd2c542",
+  "rights_records_sha256": "8b6cbdd572fccadeddca4abc4ae3779cff7493bf0940b6c739b6aa0c7a7f62bd",
+  "application_context_sha256": "4d92ff7b7d67423149e1c4207726a5210d4f69d0168c260b76b543fea9253023",
+  "approved_decisions": [],
+  "allow_rules": [],
+  "required_exact_context_fields": [
+    "condition_id",
+    "cohort_id",
+    "age_range",
+    "evidence_year",
+    "geography_scope",
+    "local_context_id",
+    "severity_filter",
+    "artifact_version",
+    "target_setting_id",
+    "target_payer_id",
+    "pathway_step",
+    "mechanism",
+    "intended_narrative_use"
+  ],
+  "matching_policy": "Exact independently approved identities only; unknown, absent or mismatched fields deny. No fuzzy matching, wildcard, inferred payer/setting or source-label-to-target mapping.",
+  "observed_application_context": {
+    "main": "e27403af8d878327d28ead2b6f7aeb00657c5239",
+    "artifact_context": {
+      "condition_id": "long-covid-current",
+      "cohort_id": "current-long-covid-adults-18-64-meps-2024-r31-anchor",
+      "age_range": "18-64",
+      "evidence_year": 2024,
+      "geography_scope": "United States national evidence",
+      "local_context_id": null,
+      "severity_filter": null,
+      "artifact_version": "meps-2024-long-covid-candidate-20260926T011343Z"
+    },
+    "artifact_path": "artifacts/reviewed/meps-2024-long-covid-candidate-20260926T011343Z/bundle.json",
+    "artifact_sha256": "5b32bfb3288a28ce0a57de4d0c3ec75fe1d83c0f19ad481e687b70af4a91eca0",
+    "analysis_context_keys": [
+      "condition_id",
+      "cohort_id",
+      "age_range",
+      "evidence_year",
+      "geography_scope",
+      "local_context_id",
+      "severity_filter",
+      "artifact_version"
+    ],
+    "target_setting_id": null,
+    "target_payer_id": null,
+    "default_scenario_pathway_step": "recognition-to-referral",
+    "default_scenario_mechanism": "navigation-support",
+    "null_semantics": "local_context_id=null and severity_filter=null explicitly mean no selected local context/filter. target_setting_id=null and target_payer_id=null mean unknown; never an applicability wildcard.",
+    "scenario_values_are_illustrative": true,
+    "code_preimages": [
+      {
+        "path": "packages/contracts/src/index.ts",
+        "sha256": "db36a841773b7f15663396af5f90dd3f1ee4b6f1241117025300c2d0754b6227"
+      },
+      {
+        "path": "apps/web/src/data/planningScenarioDefaults.ts",
+        "sha256": "9842126b0af49684b06cbbe68df05b89ae3f9b1b384ef3c0da350681583d107c"
+      },
+      {
+        "path": "apps/web/src/data/dataRequestTemplates.ts",
+        "sha256": "f3bd1b4627130617993d75322e83523a826cbdf9205e746b1359c8d80ae0588d"
+      },
+      {
+        "path": "packages/narrative-references/REVIEW_GATES.md",
+        "sha256": "f489b47da0ae2becdeb5b67a4dacc3aea45d6b744f3de91f292112b13f954710"
+      },
+      {
+        "path": "packages/narrative-references/schema/narrative-intervention-references.v1.schema.json",
+        "sha256": "07269e4c7801b59a894f78461a204b5a565500b400a7531763adb9bc2c9ac9fe"
+      }
+    ],
+    "finding": "AnalysisContext has no target setting or payer fields. Local context selection does not supply either or change the national analytic population."
+  },
+  "claim_bindings": [
+    {
+      "claim_id": "CDC26-PC-01",
+      "source_id": "cdc-long-covid-clinical-guidance-20260309",
+      "source_sha256": null,
+      "source_context": {
+        "population": "People with Long COVID; guidance does not define the app's 18–64 analytic cohort",
+        "condition_definition": "CDC clinical Long COVID guidance; not an operational MEPS denominator definition",
+        "setting": "Clinical primary care and patient support",
+        "payer": "Not specified by guidance; no payer-specific result",
+        "geography": "United States guidance",
+        "pathway_step": "primary-care-management",
+        "mechanism": "patient-centered-clinical-care",
+        "applicability_limits": [
+          "Clinical guidance is not evidence of program effectiveness.",
+          "No automatic transfer to the app's national cohort, any payer, or a local program."
+        ]
+      },
+      "proposed_target_context": null,
+      "approved_allowed_use": null,
+      "preparation_recommendation": "withhold_current_context",
+      "reviewer_id": null,
+      "reviewed_at": null,
+      "reason": "Target setting/payer unavailable; no independently reviewed transfer decision. Bounded source wording review alone is not applicability approval."
+    },
+    {
+      "claim_id": "CDC26-SUPPORT-01",
+      "source_id": "cdc-long-covid-clinical-guidance-20260309",
+      "source_sha256": null,
+      "source_context": {
+        "population": "People with Long COVID; guidance does not define the app's 18–64 analytic cohort",
+        "condition_definition": "CDC clinical Long COVID guidance; not an operational MEPS denominator definition",
+        "setting": "Clinical primary care and patient support",
+        "payer": "Not specified by guidance; no payer-specific result",
+        "geography": "United States guidance",
+        "pathway_step": "ongoing-care-and-support",
+        "mechanism": "validation-and-connection-to-services",
+        "applicability_limits": [
+          "Clinical guidance is not evidence of program effectiveness.",
+          "No automatic transfer to the app's national cohort, any payer, or a local program."
+        ]
+      },
+      "proposed_target_context": null,
+      "approved_allowed_use": null,
+      "preparation_recommendation": "withhold_current_context",
+      "reviewer_id": null,
+      "reviewed_at": null,
+      "reason": "Target setting/payer unavailable; no independently reviewed transfer decision. Bounded source wording review alone is not applicability approval."
+    },
+    {
+      "claim_id": "MAC24-COORD-01",
+      "source_id": "macewan-2024-care-coordination",
+      "source_sha256": "f11be189fa8e7a606b98b782be3acecdb55c00457fffa809c12603980a89d688",
+      "source_context": {
+        "population": "21 English-speaking adults, observed ages 19–68, recruited from one post-COVID clinic; interviews Aug–Sep 2022",
+        "condition_definition": "Age ≥18, functioning well before infection, significant life impact ≥3 months after infection",
+        "setting": "Ohio State University Wexner Medical Center post-COVID recovery clinic; internal physician referral",
+        "payer": "Not reported; no payer-specific inference",
+        "geography": "Columbus, Ohio, United States",
+        "pathway_step": "referrals-and-follow-up",
+        "mechanism": "described-nurse-care-coordination",
+        "applicability_limits": [
+          "Single academic specialty clinic; many participants had severe symptoms for 1–2 years.",
+          "No remote/nonattending population, no comparator, no quantitative effect; not the national 18–64 MEPS denominator."
+        ]
+      },
+      "proposed_target_context": null,
+      "approved_allowed_use": null,
+      "preparation_recommendation": "withhold_current_context",
+      "reviewer_id": null,
+      "reviewed_at": null,
+      "reason": "Target setting/payer unavailable; no independently reviewed transfer decision. Bounded source wording review alone is not applicability approval."
+    },
+    {
+      "claim_id": "MAC24-ACCESS-01",
+      "source_id": "macewan-2024-care-coordination",
+      "source_sha256": "f11be189fa8e7a606b98b782be3acecdb55c00457fffa809c12603980a89d688",
+      "source_context": {
+        "population": "21 English-speaking adults, observed ages 19–68, recruited from one post-COVID clinic; interviews Aug–Sep 2022",
+        "condition_definition": "Age ≥18, functioning well before infection, significant life impact ≥3 months after infection",
+        "setting": "Ohio State University Wexner Medical Center post-COVID recovery clinic; internal physician referral",
+        "payer": "Not reported; no payer-specific inference",
+        "geography": "Columbus, Ohio, United States",
+        "pathway_step": "seeking-and-accessing-care",
+        "mechanism": "patient-reported-provider-interactions",
+        "applicability_limits": [
+          "Single academic specialty clinic; many participants had severe symptoms for 1–2 years.",
+          "No remote/nonattending population, no comparator, no quantitative effect; not the national 18–64 MEPS denominator."
+        ]
+      },
+      "proposed_target_context": null,
+      "approved_allowed_use": null,
+      "preparation_recommendation": "withhold_current_context",
+      "reviewer_id": null,
+      "reviewed_at": null,
+      "reason": "Target setting/payer unavailable; no independently reviewed transfer decision. Bounded source wording review alone is not applicability approval."
+    },
+    {
+      "claim_id": "MAC24-REFERRAL-01",
+      "source_id": "macewan-2024-care-coordination",
+      "source_sha256": "f11be189fa8e7a606b98b782be3acecdb55c00457fffa809c12603980a89d688",
+      "source_context": {
+        "population": "21 English-speaking adults, observed ages 19–68, recruited from one post-COVID clinic; interviews Aug–Sep 2022",
+        "condition_definition": "Age ≥18, functioning well before infection, significant life impact ≥3 months after infection",
+        "setting": "Ohio State University Wexner Medical Center post-COVID recovery clinic; internal physician referral",
+        "payer": "Not reported; no payer-specific inference",
+        "geography": "Columbus, Ohio, United States",
+        "pathway_step": "internal-referral-to-initial-evaluation-to-specialty-referral",
+        "mechanism": "observed-clinic-routing",
+        "applicability_limits": [
+          "Single academic specialty clinic; many participants had severe symptoms for 1–2 years.",
+          "No remote/nonattending population, no comparator, no quantitative effect; not the national 18–64 MEPS denominator."
+        ]
+      },
+      "proposed_target_context": null,
+      "approved_allowed_use": null,
+      "preparation_recommendation": "withhold_current_context",
+      "reviewer_id": null,
+      "reviewed_at": null,
+      "reason": "Target setting/payer unavailable; no independently reviewed transfer decision. Bounded source wording review alone is not applicability approval."
+    },
+    {
+      "claim_id": "LOC24-ACCESS-01",
+      "source_id": "darbyshire-2024-locomotion",
+      "source_sha256": "f86787bf1a5da731b653bd12350d1836e6be847501634fa596d53a4e8075a592",
+      "source_context": {
+        "population": "Ten adult NHS long-COVID services participating in 2021–2023 collaborative",
+        "condition_definition": "Adult service populations with locally varying eligibility; no single study-wide analytic denominator matched to MEPS",
+        "setting": "NHS specialist adult long-COVID services; eight England, one Wales, one Scotland",
+        "payer": "NHS; national funding and local pathways differ",
+        "geography": "United Kingdom (England, Wales, Scotland)",
+        "pathway_step": "referral-to-specialist-access",
+        "mechanism": "local-referral-and-access-quality-improvement",
+        "applicability_limits": [
+          "Service evaluation without causal comparator; secular changes and falling incidence affected waiting times.",
+          "NHS and local eligibility/funding cannot be silently transferred to US national/payer settings."
+        ]
+      },
+      "proposed_target_context": null,
+      "approved_allowed_use": null,
+      "preparation_recommendation": "withhold_current_context",
+      "reviewer_id": null,
+      "reviewed_at": null,
+      "reason": "Target setting/payer unavailable; no independently reviewed transfer decision. Bounded source wording review alone is not applicability approval."
+    },
+    {
+      "claim_id": "LOC24-PATHWAY-01",
+      "source_id": "darbyshire-2024-locomotion",
+      "source_sha256": "f86787bf1a5da731b653bd12350d1836e6be847501634fa596d53a4e8075a592",
+      "source_context": {
+        "population": "Ten adult NHS long-COVID services participating in 2021–2023 collaborative",
+        "condition_definition": "Adult service populations with locally varying eligibility; no single study-wide analytic denominator matched to MEPS",
+        "setting": "NHS specialist adult long-COVID services; eight England, one Wales, one Scotland",
+        "payer": "NHS; national funding and local pathways differ",
+        "geography": "United Kingdom (England, Wales, Scotland)",
+        "pathway_step": "pre-referral-assessment-and-local-cross-referral",
+        "mechanism": "local-pathway-refinement",
+        "applicability_limits": [
+          "Service evaluation without causal comparator; secular changes and falling incidence affected waiting times.",
+          "NHS and local eligibility/funding cannot be silently transferred to US national/payer settings."
+        ]
+      },
+      "proposed_target_context": null,
+      "approved_allowed_use": null,
+      "preparation_recommendation": "withhold_current_context",
+      "reviewer_id": null,
+      "reviewed_at": null,
+      "reason": "Target setting/payer unavailable; no independently reviewed transfer decision. Bounded source wording review alone is not applicability approval."
+    },
+    {
+      "claim_id": "LOC24-WAIT-01",
+      "source_id": "darbyshire-2024-locomotion",
+      "source_sha256": "f86787bf1a5da731b653bd12350d1836e6be847501634fa596d53a4e8075a592",
+      "source_context": {
+        "population": "Ten adult NHS long-COVID services participating in 2021–2023 collaborative",
+        "condition_definition": "Adult service populations with locally varying eligibility; no single study-wide analytic denominator matched to MEPS",
+        "setting": "NHS specialist adult long-COVID services; eight England, one Wales, one Scotland",
+        "payer": "NHS; national funding and local pathways differ",
+        "geography": "United Kingdom (England, Wales, Scotland)",
+        "pathway_step": "referral-to-first-appointment",
+        "mechanism": "noncausal-service-evaluation",
+        "applicability_limits": [
+          "Service evaluation without causal comparator; secular changes and falling incidence affected waiting times.",
+          "NHS and local eligibility/funding cannot be silently transferred to US national/payer settings."
+        ]
+      },
+      "proposed_target_context": null,
+      "approved_allowed_use": null,
+      "preparation_recommendation": "withhold_current_context",
+      "reviewer_id": null,
+      "reviewed_at": null,
+      "reason": "Target setting/payer unavailable; no independently reviewed transfer decision. Bounded source wording review alone is not applicability approval."
+    }
+  ],
+  "release_chain": "Independent source/applicability review covers exact candidate, matrix, rights, map and source preimages. A new released catalog pins review/map digests; a separate independently approved allowlist pins released catalog/review/map identities. No self-hash or circular reference. Map revisions invalidate prior applicable release.",
+  "honest_result": "Awaiting independent review; no admitted or applicable released reference. A no-admission disposition is legitimate and does not create an empty released catalog."
+}
