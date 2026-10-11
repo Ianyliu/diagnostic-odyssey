@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://www.cdc.gov/long-covid/hcp/clinical-guidance/index.html",
+    "attempted_at": "2026-10-11T03:27:12.788679+00:00",
+    "method": "HTTPS GET, ordinary browser User-Agent; no bypass",
+    "retained_source": null,
+    "error": "HTTP Error 403: Forbidden",
+    "status": 403,
+    "source_sha256": null
+  },
+  {
+    "url": "https://www.cdc.gov/other/agencymaterials.html",
+    "attempted_at": "2026-10-11T03:27:12.789197+00:00",
+    "method": "HTTPS GET, ordinary browser User-Agent; no bypass",
+    "retained_source": null,
+    "error": "HTTP Error 403: Forbidden",
+    "status": 403,
+    "source_sha256": null
+  }
+]

@@ -1,0 +1,370 @@
+[
+  {
+    "claim_id": "CDC26-PC-01",
+    "source_url": "https://www.cdc.gov/long-covid/hcp/clinical-guidance/index.html",
+    "doi": null,
+    "source_path": null,
+    "publication_date": "2026-03-09 (displayed update; original publication date not verified)",
+    "retrieved_at": null,
+    "source_sha256": null,
+    "precise_locator": "What to know, second bullet; Treatment and symptom management",
+    "primary_passage": "Primary care providers can manage Long COVID using patient-centered approaches.",
+    "passage_note": "Prepared transcription; retained original controls. CDC only web-tool text was readable, not a raw-byte archive.",
+    "population_condition_setting_payer_geography": {
+      "population": "People with Long COVID; guidance does not define the app's 18–64 analytic cohort",
+      "condition_definition": "CDC clinical Long COVID guidance; not an operational MEPS denominator definition",
+      "setting": "Clinical primary care and patient support",
+      "payer": "Not specified by guidance; no payer-specific result",
+      "geography": "United States guidance",
+      "pathway_step": "primary-care-management",
+      "mechanism": "patient-centered-clinical-care",
+      "applicability_limits": [
+        "Clinical guidance is not evidence of program effectiveness.",
+        "No automatic transfer to the app's national cohort, any payer, or a local program."
+      ]
+    },
+    "causal_use_class": "clinical_guidance_non_effect",
+    "proposed_wording": "CDC guidance describes patient-centered management in primary care for people with Long COVID.",
+    "approved_wording": null,
+    "proposed_permitted_use": "planning_option_to_investigate",
+    "transferability_limits": [
+      "Clinical guidance is not evidence of program effectiveness.",
+      "No automatic transfer to the app's national cohort, any payer, or a local program.",
+      "Source bytes and reproducible archive not yet retained."
+    ],
+    "prohibited_stronger_interpretations": [
+      "No causal reduction in diagnostic delay, symptoms, utilization, cost or savings.",
+      "No quantitative effect, scenario parameter, ROI, national prevalence or guaranteed local applicability."
+    ],
+    "review_disposition": "awaiting_independent_source_rights_wording_and_applicability_decisions",
+    "actual_reviewer": null,
+    "actual_review_time": null,
+    "existing_decision": "ID preserved; original binding/applicability handoff not recovered",
+    "preparation_recommendation": "defer",
+    "recommendation_reason": "No retained guidance/rights bytes or approved reproducible archival method.",
+    "source_wording_review": null,
+    "applicability_admission_review": null
+  },
+  {
+    "claim_id": "CDC26-SUPPORT-01",
+    "source_url": "https://www.cdc.gov/long-covid/hcp/clinical-guidance/index.html",
+    "doi": null,
+    "source_path": null,
+    "publication_date": "2026-03-09 (displayed update; original publication date not verified)",
+    "retrieved_at": null,
+    "source_sha256": null,
+    "precise_locator": "What to know, fifth bullet; Treatment and symptom management, final support bullets",
+    "primary_passage": null,
+    "passage_note": "Prepared transcription; retained original controls. CDC only web-tool text was readable, not a raw-byte archive.",
+    "population_condition_setting_payer_geography": {
+      "population": "People with Long COVID; guidance does not define the app's 18–64 analytic cohort",
+      "condition_definition": "CDC clinical Long COVID guidance; not an operational MEPS denominator definition",
+      "setting": "Clinical primary care and patient support",
+      "payer": "Not specified by guidance; no payer-specific result",
+      "geography": "United States guidance",
+      "pathway_step": "ongoing-care-and-support",
+      "mechanism": "validation-and-connection-to-services",
+      "applicability_limits": [
+        "Clinical guidance is not evidence of program effectiveness.",
+        "No automatic transfer to the app's national cohort, any payer, or a local program."
+      ]
+    },
+    "causal_use_class": "clinical_guidance_non_effect",
+    "proposed_wording": "CDC guidance describes validating symptoms and connecting patients with appropriate additional care, services and supports.",
+    "approved_wording": null,
+    "proposed_permitted_use": "planning_option_to_investigate",
+    "transferability_limits": [
+      "Clinical guidance is not evidence of program effectiveness.",
+      "No automatic transfer to the app's national cohort, any payer, or a local program.",
+      "Source bytes and reproducible archive not yet retained."
+    ],
+    "prohibited_stronger_interpretations": [
+      "No causal reduction in diagnostic delay, symptoms, utilization, cost or savings.",
+      "No quantitative effect, scenario parameter, ROI, national prevalence or guaranteed local applicability."
+    ],
+    "review_disposition": "awaiting_independent_source_rights_wording_and_applicability_decisions",
+    "actual_reviewer": null,
+    "actual_review_time": null,
+    "existing_decision": "ID preserved; original binding/applicability handoff not recovered",
+    "preparation_recommendation": "defer",
+    "recommendation_reason": "No retained guidance/rights bytes or approved reproducible archival method.",
+    "source_wording_review": null,
+    "applicability_admission_review": null
+  },
+  {
+    "claim_id": "MAC24-COORD-01",
+    "source_url": "https://doi.org/10.1007/s11606-024-08622-z",
+    "doi": "10.1007/s11606-024-08622-z",
+    "source_path": "sources/macewan-publisher.pdf",
+    "publication_date": "2024-02-02 online; 2024-06 print (retained PMC JATS)",
+    "retrieved_at": "2026-10-11T00:57:54Z",
+    "source_sha256": "f11be189fa8e7a606b98b782be3acecdb55c00457fffa809c12603980a89d688",
+    "precise_locator": "PDF p2 / journal p1295, Methods: Study Population and Setting",
+    "primary_passage": "A nurse care coordinator assists patients as they navigate through referrals and follow-up appointments.",
+    "passage_note": "Prepared transcription checked against extracted PDF and rendered pages; retained original controls.",
+    "population_condition_setting_payer_geography": {
+      "population": "21 English-speaking adults, observed ages 19–68, recruited from one post-COVID clinic; interviews Aug–Sep 2022",
+      "condition_definition": "Age ≥18, functioning well before infection, significant life impact ≥3 months after infection",
+      "setting": "Ohio State University Wexner Medical Center post-COVID recovery clinic; internal physician referral",
+      "payer": "Not reported; no payer-specific inference",
+      "geography": "Columbus, Ohio, United States",
+      "pathway_step": "referrals-and-follow-up",
+      "mechanism": "described-nurse-care-coordination",
+      "applicability_limits": [
+        "Single academic specialty clinic; many participants had severe symptoms for 1–2 years.",
+        "No remote/nonattending population, no comparator, no quantitative effect; not the national 18–64 MEPS denominator."
+      ]
+    },
+    "causal_use_class": "observational_pathway_description",
+    "proposed_wording": "The studied Ohio State clinic described a nurse care coordinator assisting patients with referrals and follow-up appointments.",
+    "approved_wording": null,
+    "proposed_permitted_use": "background_context_only",
+    "transferability_limits": [
+      "Single academic specialty clinic; many participants had severe symptoms for 1–2 years.",
+      "No remote/nonattending population, no comparator, no quantitative effect; not the national 18–64 MEPS denominator."
+    ],
+    "prohibited_stronger_interpretations": [
+      "No causal reduction in diagnostic delay, symptoms, utilization, cost or savings.",
+      "No quantitative effect, scenario parameter, ROI, national prevalence or guaranteed local applicability.",
+      "Background only; cannot license an intervention suggestion."
+    ],
+    "review_disposition": "awaiting_independent_source_rights_wording_and_applicability_decisions",
+    "actual_reviewer": null,
+    "actual_review_time": null,
+    "existing_decision": "ID preserved; original binding/applicability handoff not recovered",
+    "preparation_recommendation": "revise",
+    "recommendation_reason": "Retain clinic-description wording; downgrade proposed use to background. No evidence of intervention effect or applicability to recognition-to-referral.",
+    "source_wording_review": null,
+    "applicability_admission_review": null
+  },
+  {
+    "claim_id": "MAC24-ACCESS-01",
+    "source_url": "https://doi.org/10.1007/s11606-024-08622-z",
+    "doi": "10.1007/s11606-024-08622-z",
+    "source_path": "sources/macewan-publisher.pdf",
+    "publication_date": "2024-02-02 online; 2024-06 print (retained PMC JATS)",
+    "retrieved_at": "2026-10-11T00:57:54Z",
+    "source_sha256": "f11be189fa8e7a606b98b782be3acecdb55c00457fffa809c12603980a89d688",
+    "precise_locator": "PDF pp2–3 / journal pp1295–1296, Results: Access to Care; Fig1 PDF p4 / p1297",
+    "primary_passage": "Patients reported that their regular provider did not seem to believe them",
+    "passage_note": "Prepared transcription checked against extracted PDF and rendered pages; retained original controls.",
+    "population_condition_setting_payer_geography": {
+      "population": "21 English-speaking adults, observed ages 19–68, recruited from one post-COVID clinic; interviews Aug–Sep 2022",
+      "condition_definition": "Age ≥18, functioning well before infection, significant life impact ≥3 months after infection",
+      "setting": "Ohio State University Wexner Medical Center post-COVID recovery clinic; internal physician referral",
+      "payer": "Not reported; no payer-specific inference",
+      "geography": "Columbus, Ohio, United States",
+      "pathway_step": "seeking-and-accessing-care",
+      "mechanism": "patient-reported-provider-interactions",
+      "applicability_limits": [
+        "Single academic specialty clinic; many participants had severe symptoms for 1–2 years.",
+        "No remote/nonattending population, no comparator, no quantitative effect; not the national 18–64 MEPS denominator."
+      ]
+    },
+    "causal_use_class": "qualitative_experience",
+    "proposed_wording": "Interviewed patients described both barriers and supportive provider interactions while seeking Long COVID care.",
+    "approved_wording": null,
+    "proposed_permitted_use": "background_context_only",
+    "transferability_limits": [
+      "Single academic specialty clinic; many participants had severe symptoms for 1–2 years.",
+      "No remote/nonattending population, no comparator, no quantitative effect; not the national 18–64 MEPS denominator."
+    ],
+    "prohibited_stronger_interpretations": [
+      "No causal reduction in diagnostic delay, symptoms, utilization, cost or savings.",
+      "No quantitative effect, scenario parameter, ROI, national prevalence or guaranteed local applicability.",
+      "Background only; cannot license an intervention suggestion."
+    ],
+    "review_disposition": "awaiting_independent_source_rights_wording_and_applicability_decisions",
+    "actual_reviewer": null,
+    "actual_review_time": null,
+    "existing_decision": "ID preserved; original binding/applicability handoff not recovered",
+    "preparation_recommendation": "approve_bounded_wording_only",
+    "recommendation_reason": "Qualitative experiences, not intervention efficacy or a representative denominator.",
+    "source_wording_review": null,
+    "applicability_admission_review": null
+  },
+  {
+    "claim_id": "MAC24-REFERRAL-01",
+    "source_url": "https://doi.org/10.1007/s11606-024-08622-z",
+    "doi": "10.1007/s11606-024-08622-z",
+    "source_path": "sources/macewan-publisher.pdf",
+    "publication_date": "2024-02-02 online; 2024-06 print (retained PMC JATS)",
+    "retrieved_at": "2026-10-11T00:57:54Z",
+    "source_sha256": "f11be189fa8e7a606b98b782be3acecdb55c00457fffa809c12603980a89d688",
+    "precise_locator": "PDF p2 / journal p1295, Methods: Study Population and Setting",
+    "primary_passage": "Patients require a physician referral from within OSUWMC to be seen at the post-COVID recovery clinic",
+    "passage_note": "Prepared transcription checked against extracted PDF and rendered pages; retained original controls.",
+    "population_condition_setting_payer_geography": {
+      "population": "21 English-speaking adults, observed ages 19–68, recruited from one post-COVID clinic; interviews Aug–Sep 2022",
+      "condition_definition": "Age ≥18, functioning well before infection, significant life impact ≥3 months after infection",
+      "setting": "Ohio State University Wexner Medical Center post-COVID recovery clinic; internal physician referral",
+      "payer": "Not reported; no payer-specific inference",
+      "geography": "Columbus, Ohio, United States",
+      "pathway_step": "internal-referral-to-initial-evaluation-to-specialty-referral",
+      "mechanism": "observed-clinic-routing",
+      "applicability_limits": [
+        "Single academic specialty clinic; many participants had severe symptoms for 1–2 years.",
+        "No remote/nonattending population, no comparator, no quantitative effect; not the national 18–64 MEPS denominator."
+      ]
+    },
+    "causal_use_class": "observational_pathway_description",
+    "proposed_wording": "The studied clinic required an internal physician referral and used general internal medicine evaluations before specialty referrals.",
+    "approved_wording": null,
+    "proposed_permitted_use": "background_context_only",
+    "transferability_limits": [
+      "Single academic specialty clinic; many participants had severe symptoms for 1–2 years.",
+      "No remote/nonattending population, no comparator, no quantitative effect; not the national 18–64 MEPS denominator."
+    ],
+    "prohibited_stronger_interpretations": [
+      "No causal reduction in diagnostic delay, symptoms, utilization, cost or savings.",
+      "No quantitative effect, scenario parameter, ROI, national prevalence or guaranteed local applicability.",
+      "Background only; cannot license an intervention suggestion."
+    ],
+    "review_disposition": "awaiting_independent_source_rights_wording_and_applicability_decisions",
+    "actual_reviewer": null,
+    "actual_review_time": null,
+    "existing_decision": "ID preserved; original binding/applicability handoff not recovered",
+    "preparation_recommendation": "approve_bounded_wording_only",
+    "recommendation_reason": "Source-specific workflow description; no transferable requirement.",
+    "source_wording_review": null,
+    "applicability_admission_review": null
+  },
+  {
+    "claim_id": "LOC24-ACCESS-01",
+    "source_url": "https://doi.org/10.1016/j.clinme.2024.100237",
+    "doi": "10.1016/j.clinme.2024.100237",
+    "source_path": "sources/locomotion.pdf",
+    "publication_date": "2024-08-23 online; 2024-09 issue; accepted 2024-08-15 (retained author-repository metadata Dates and PDF p1)",
+    "retrieved_at": "2026-10-11T00:56:26Z",
+    "source_sha256": "f86787bf1a5da731b653bd12350d1836e6be847501634fa596d53a4e8075a592",
+    "precise_locator": "PDF p4, Table2 Topic1 Access; pp4–5, Access, referral criteria and inclusivity",
+    "primary_passage": "Site-based initiatives to improve equity of access led to increased referrals for some but not all disadvantaged groups",
+    "passage_note": "Prepared transcription checked against extracted PDF and rendered pages; retained original controls.",
+    "population_condition_setting_payer_geography": {
+      "population": "Ten adult NHS long-COVID services participating in 2021–2023 collaborative",
+      "condition_definition": "Adult service populations with locally varying eligibility; no single study-wide analytic denominator matched to MEPS",
+      "setting": "NHS specialist adult long-COVID services; eight England, one Wales, one Scotland",
+      "payer": "NHS; national funding and local pathways differ",
+      "geography": "United Kingdom (England, Wales, Scotland)",
+      "pathway_step": "referral-to-specialist-access",
+      "mechanism": "local-referral-and-access-quality-improvement",
+      "applicability_limits": [
+        "Service evaluation without causal comparator; secular changes and falling incidence affected waiting times.",
+        "NHS and local eligibility/funding cannot be silently transferred to US national/payer settings."
+      ]
+    },
+    "causal_use_class": "noncausal_service_evaluation",
+    "proposed_wording": "Participating NHS services described work on referral criteria, bottlenecks and unequal access, with locally variable results.",
+    "approved_wording": null,
+    "proposed_permitted_use": "background_context_only",
+    "transferability_limits": [
+      "Service evaluation without causal comparator; secular changes and falling incidence affected waiting times.",
+      "NHS and local eligibility/funding cannot be silently transferred to US national/payer settings."
+    ],
+    "prohibited_stronger_interpretations": [
+      "No causal reduction in diagnostic delay, symptoms, utilization, cost or savings.",
+      "No quantitative effect, scenario parameter, ROI, national prevalence or guaranteed local applicability.",
+      "Background only; cannot license an intervention suggestion."
+    ],
+    "review_disposition": "awaiting_independent_source_rights_wording_and_applicability_decisions",
+    "actual_reviewer": null,
+    "actual_review_time": null,
+    "existing_decision": "ID preserved; original binding/applicability handoff not recovered",
+    "preparation_recommendation": "revise",
+    "recommendation_reason": "Downgrade proposed use to background. Local NHS initiatives and unequal results do not establish US intervention applicability.",
+    "source_wording_review": null,
+    "applicability_admission_review": null
+  },
+  {
+    "claim_id": "LOC24-PATHWAY-01",
+    "source_url": "https://doi.org/10.1016/j.clinme.2024.100237",
+    "doi": "10.1016/j.clinme.2024.100237",
+    "source_path": "sources/locomotion.pdf",
+    "publication_date": "2024-08-23 online; 2024-09 issue; accepted 2024-08-15 (retained author-repository metadata Dates and PDF p1)",
+    "retrieved_at": "2026-10-11T00:56:26Z",
+    "source_sha256": "f86787bf1a5da731b653bd12350d1836e6be847501634fa596d53a4e8075a592",
+    "precise_locator": "PDF p4, Table2 Topic1; p5, Assessment and care planning, final paragraph",
+    "primary_passage": "standardisation across sites proved difficult",
+    "passage_note": "Prepared transcription checked against extracted PDF and rendered pages; retained original controls.",
+    "population_condition_setting_payer_geography": {
+      "population": "Ten adult NHS long-COVID services participating in 2021–2023 collaborative",
+      "condition_definition": "Adult service populations with locally varying eligibility; no single study-wide analytic denominator matched to MEPS",
+      "setting": "NHS specialist adult long-COVID services; eight England, one Wales, one Scotland",
+      "payer": "NHS; national funding and local pathways differ",
+      "geography": "United Kingdom (England, Wales, Scotland)",
+      "pathway_step": "pre-referral-assessment-and-local-cross-referral",
+      "mechanism": "local-pathway-refinement",
+      "applicability_limits": [
+        "Service evaluation without causal comparator; secular changes and falling incidence affected waiting times.",
+        "NHS and local eligibility/funding cannot be silently transferred to US national/payer settings."
+      ]
+    },
+    "causal_use_class": "observational_pathway_description",
+    "proposed_wording": "Participating NHS services refined referral pathways and prerequisite assessments; standardizing across sites proved difficult.",
+    "approved_wording": null,
+    "proposed_permitted_use": "background_context_only",
+    "transferability_limits": [
+      "Service evaluation without causal comparator; secular changes and falling incidence affected waiting times.",
+      "NHS and local eligibility/funding cannot be silently transferred to US national/payer settings."
+    ],
+    "prohibited_stronger_interpretations": [
+      "No causal reduction in diagnostic delay, symptoms, utilization, cost or savings.",
+      "No quantitative effect, scenario parameter, ROI, national prevalence or guaranteed local applicability.",
+      "Background only; cannot license an intervention suggestion."
+    ],
+    "review_disposition": "awaiting_independent_source_rights_wording_and_applicability_decisions",
+    "actual_reviewer": null,
+    "actual_review_time": null,
+    "existing_decision": "ID preserved; original binding/applicability handoff not recovered",
+    "preparation_recommendation": "approve_bounded_wording_only",
+    "recommendation_reason": "Local variation prevented standardization; not a clinical work-up recommendation.",
+    "source_wording_review": null,
+    "applicability_admission_review": null
+  },
+  {
+    "claim_id": "LOC24-WAIT-01",
+    "source_url": "https://doi.org/10.1016/j.clinme.2024.100237",
+    "doi": "10.1016/j.clinme.2024.100237",
+    "source_path": "sources/locomotion.pdf",
+    "publication_date": "2024-08-23 online; 2024-09 issue; accepted 2024-08-15 (retained author-repository metadata Dates and PDF p1)",
+    "retrieved_at": "2026-10-11T00:56:26Z",
+    "source_sha256": "f86787bf1a5da731b653bd12350d1836e6be847501634fa596d53a4e8075a592",
+    "precise_locator": "PDF p4, Table2 Topic1 Outcome; p5 first paragraph continuation of Access",
+    "primary_passage": "not all improvement can be attributed to the collaborative since incidence of new long cases fell",
+    "passage_note": "Prepared transcription checked against extracted PDF and rendered pages; retained original controls.",
+    "population_condition_setting_payer_geography": {
+      "population": "Ten adult NHS long-COVID services participating in 2021–2023 collaborative",
+      "condition_definition": "Adult service populations with locally varying eligibility; no single study-wide analytic denominator matched to MEPS",
+      "setting": "NHS specialist adult long-COVID services; eight England, one Wales, one Scotland",
+      "payer": "NHS; national funding and local pathways differ",
+      "geography": "United Kingdom (England, Wales, Scotland)",
+      "pathway_step": "referral-to-first-appointment",
+      "mechanism": "noncausal-service-evaluation",
+      "applicability_limits": [
+        "Service evaluation without causal comparator; secular changes and falling incidence affected waiting times.",
+        "NHS and local eligibility/funding cannot be silently transferred to US national/payer settings."
+      ]
+    },
+    "causal_use_class": "noncausal_service_evaluation",
+    "proposed_wording": "Waiting-time changes in the collaborative provide background context and cannot be attributed wholly to its activities.",
+    "approved_wording": null,
+    "proposed_permitted_use": "background_context_only",
+    "transferability_limits": [
+      "Service evaluation without causal comparator; secular changes and falling incidence affected waiting times.",
+      "NHS and local eligibility/funding cannot be silently transferred to US national/payer settings."
+    ],
+    "prohibited_stronger_interpretations": [
+      "No causal reduction in diagnostic delay, symptoms, utilization, cost or savings.",
+      "No quantitative effect, scenario parameter, ROI, national prevalence or guaranteed local applicability.",
+      "Background only; cannot license an intervention suggestion."
+    ],
+    "review_disposition": "awaiting_independent_source_rights_wording_and_applicability_decisions",
+    "actual_reviewer": null,
+    "actual_review_time": null,
+    "existing_decision": "LOC24-WAIT-01 background-only preserved from PR79 README",
+    "preparation_recommendation": "approve_bounded_wording_only",
+    "recommendation_reason": "Background-only remains mandatory; falling incidence confounds observed waiting-time changes.",
+    "source_wording_review": null,
+    "applicability_admission_review": null
+  }
+]
