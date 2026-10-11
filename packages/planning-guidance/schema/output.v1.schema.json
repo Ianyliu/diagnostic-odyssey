@@ -141,6 +141,24 @@
           },
           "disposition": {
             "const": "pending"
+          },
+          "review_sha256": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "applicability_sha256": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "applicability_policy_version": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,79}$"
           }
         },
         "required": [
@@ -150,7 +168,10 @@
           "release_sha256",
           "applicability_decision_id",
           "applicability_policy_sha256",
-          "disposition"
+          "disposition",
+          "review_sha256",
+          "applicability_sha256",
+          "applicability_policy_version"
         ],
         "additionalProperties": false
       },
