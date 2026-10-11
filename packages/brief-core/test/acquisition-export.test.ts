@@ -86,7 +86,7 @@ test("adopted aggregate-only candidate wording survives canonical Brief JSON; no
     assert.equal(g.reference.policy_sha256,expectedPolicy);
     assert.match(g.privacy_boundary,/Aggregate steward-approved summaries and counts only/);
     const effective=[g.wording,g.minimum_necessary_output,g.local_only_preparation,...g.privacy_limits].join(" ");
-    assert.doesNotMatch(effective,/aggregate or de-identified|aggregate\\/de-identified outputs only/i);
+    assert.doesNotMatch(effective,/aggregate or de-identified|aggregate\/de-identified outputs only/i);
     assert.match(effective,/aggregate/i);
     assert.deepEqual(g.reference,parsed.data_requests.find((r:any)=>r.request_id===g.request_id).acquisition_hint);
   }
