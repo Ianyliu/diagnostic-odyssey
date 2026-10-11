@@ -37,7 +37,7 @@ const recordKeys = [
 ] as const;
 const manifestKeys = [
   "schema_version", "artifact_family", "catalog_id", "release_status",
-  "generated_at", "code_commit", "review_manifest_sha256", "automatic_release",
+  "generated_at", "code_commit", "review_manifest_sha256", "applicability_manifest_sha256", "automatic_release",
   "quantitative_effect_eligible"
 ] as const;
 
@@ -131,6 +131,8 @@ function review(value: unknown, path: string, out: Issue[]): void {
   nullableStr(value.reviewer_id, path + ".reviewer_id", out);
   nullableTimestamp(value.reviewed_at, path + ".reviewed_at", out);
   str(value.review_note, path + ".review_note", out);
+  if ((value.reviewer_id === null) !== (value.reviewed_at === null))
+    issue(out, path, "reviewer identity and time must be supplied together");
 }
 function reference(value: unknown, path: string, out: Issue[]): void {
   if (!object(value, path, recordKeys, out)) return;
@@ -155,23 +157,44 @@ function reference(value: unknown, path: string, out: Issue[]): void {
   if (value.release_status === "rejected" &&
       (value.reviewer_status !== "rejected" || value.approved_claim_wording !== null))
     issue(out, path + ".release_status", "rejected reference cannot carry approved wording");
-  if (value.release_status === "reviewed_released") {
-    if (value.reviewer_status !== "approved") issue(out, path + ".reviewer_status", "release requires approval");
-    str(value.approved_claim_wording, path + ".approved_claim_wording", out);
+  const approved = value.reviewer_status === "approved";
+  const approvedRelease = value.release_status === "reviewed_not_released" ||
+    value.release_status === "reviewed_released";
+  if (approvedRelease && !approved)
+    issue(out, path + ".reviewer_status", "reviewed state requires approval; rejection has its own state");
+  if (approved && !approvedRelease)
+    issue(out, path + ".release_status", "approved review must be reviewed_not_released or reviewed_released");
+  if (value.release_status === "candidate" &&
+      value.reviewer_status !== "draft" && value.reviewer_status !== "needs_review")
+    issue(out, path + ".reviewer_status", "candidate must be draft or needs_review");
+
+  const rev = value.review;
+  const reviewObject = typeof rev === "object" && rev !== null && !Array.isArray(rev)
+    ? rev as JsonObject : null;
+  const hasReviewProvenance = reviewObject !== null &&
+    (reviewObject.reviewer_id !== null || reviewObject.reviewed_at !== null);
+  if (value.reviewer_status === "draft" && hasReviewProvenance)
+    issue(out, path + ".review", "draft cannot assert a completed review");
+
+  // Recorded feedback, rejection and approval all bind to exact retained source bytes.
+  // These structural fields do not authenticate the reviewer or establish admission.
+  if (approvedRelease || approved || value.reviewer_status === "rejected" || hasReviewProvenance) {
     const src = value.source;
     if (typeof src === "object" && src !== null && !Array.isArray(src)) {
       match((src as JsonObject).source_sha256, sha256, path + ".source.source_sha256", out);
       timestamp((src as JsonObject).retrieved_at, path + ".source.retrieved_at", out);
     }
-    const rev = value.review;
-    if (typeof rev === "object" && rev !== null && !Array.isArray(rev)) {
-      str((rev as JsonObject).reviewer_id, path + ".review.reviewer_id", out);
-      timestamp((rev as JsonObject).reviewed_at, path + ".review.reviewed_at", out);
+    if (reviewObject) {
+      str(reviewObject.reviewer_id, path + ".review.reviewer_id", out);
+      timestamp(reviewObject.reviewed_at, path + ".review.reviewed_at", out);
     }
+  }
+  if (approved) {
+    str(value.approved_claim_wording, path + ".approved_claim_wording", out);
     if (!Array.isArray(value.prohibited_stronger_claims) || value.prohibited_stronger_claims.length === 0)
-      issue(out, path + ".prohibited_stronger_claims", "release requires explicit prohibited stronger claims");
+      issue(out, path + ".prohibited_stronger_claims", "approval requires explicit prohibited stronger claims");
     if (!Array.isArray(value.limitations) || value.limitations.length === 0)
-      issue(out, path + ".limitations", "release requires explicit limitations");
+      issue(out, path + ".limitations", "approval requires explicit limitations");
   }
 }
 function manifest(value: unknown, path: string, out: Issue[]): void {
@@ -183,14 +206,18 @@ function manifest(value: unknown, path: string, out: Issue[]): void {
   timestamp(value.generated_at, path + ".generated_at", out);
   str(value.code_commit, path + ".code_commit", out);
   nullableHash(value.review_manifest_sha256, path + ".review_manifest_sha256", out);
+  nullableHash(value.applicability_manifest_sha256, path + ".applicability_manifest_sha256", out);
   literal(value.automatic_release, false, path + ".automatic_release", out);
   literal(value.quantitative_effect_eligible, false, path + ".quantitative_effect_eligible", out);
   if (value.release_status === "reviewed_released") {
     match(value.code_commit, commitSha, path + ".code_commit", out);
     match(value.review_manifest_sha256, sha256, path + ".review_manifest_sha256", out);
+    match(value.applicability_manifest_sha256, sha256, path + ".applicability_manifest_sha256", out);
   }
   if (value.release_status === "candidate" && value.review_manifest_sha256 !== null)
     issue(out, path + ".review_manifest_sha256", "candidate catalog cannot imply reviewed promotion");
+  if (value.release_status === "candidate" && value.applicability_manifest_sha256 !== null)
+    issue(out, path + ".applicability_manifest_sha256", "candidate catalog cannot imply applicability admission");
 }
 
 export function validateNarrativeReference(value: unknown, path = "narrative_reference"): Issue[] {

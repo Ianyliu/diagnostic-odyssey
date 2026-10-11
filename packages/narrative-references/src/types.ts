@@ -10,6 +10,7 @@ export type NarrativeCausalUseClass =
   | "noncausal_service_evaluation";
 export type NarrativeAllowedUse = "planning_option_to_investigate" | "background_context_only";
 export type NarrativeReviewerStatus = "draft" | "needs_review" | "approved" | "rejected";
+/** reviewed_not_released means approved, with provenance, but not promoted. */
 export type NarrativeReleaseStatus = "candidate" | "reviewed_not_released" | "reviewed_released" | "rejected";
 export type NarrativeSourceKind = "clinical_guidance" | "peer_reviewed_article" | "official_report";
 export type NarrativeLocatorKind = "section" | "table" | "page" | "paragraph" | "figure" | "web_heading";
@@ -77,6 +78,8 @@ export interface NarrativeReferenceManifest {
   generated_at: string;
   code_commit: string;
   review_manifest_sha256: string | null;
+  /** Digest of the independently reviewed, versioned exact-context decision map. */
+  applicability_manifest_sha256: string | null;
   automatic_release: false;
   quantitative_effect_eligible: false;
 }
