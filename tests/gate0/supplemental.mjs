@@ -61,6 +61,13 @@ await check('Ordinary invalid drafts, result and request live announcements, sta
  await nav(p,'Planning brief');const fresh=await exp(p,'supplemental-refreshed');assert.equal(fresh.data_requests.length,1);assert.equal(fresh.scenario.result.reached_participants,1900);
  return {invalidDraftsRetainScenario:true,staleSelectionRetained:true,liveAnnouncements:true};
 });
+await check('Overflowing arithmetic retains the last finite applied scenario and exported numbers',async()=>{
+ const p=await page();await go(p,'/pilot');await p.locator('#pilot-fixed_cost').fill('1e308');await nav(p,'Planning brief');const finite=await exp(p,'overflow-last-finite');
+ await nav(p,'Pilot planner');await p.locator('#pilot-per_participant_cost').fill('1e308');await nav(p,'Planning brief');const attempted=await exp(p,'overflow-attempt');assert.deepEqual(attempted.scenario,finite.scenario);return {lastFiniteRetained:true};
+});
+await check('Valid scenario survives an unsupported sensitivity range',async()=>{
+ const p=await page();await go(p,'/pilot');await p.locator('#pilot-capacity').fill(String(Number.MAX_VALUE));await p.locator('#sensitivity .field-error[role=status]').waitFor();assert.equal(await p.locator('#sensitivity tbody tr').count(),0);await nav(p,'Planning brief');const b=await exp(p,'unsupported-sensitivity');assert.equal(b.scenario.input.capacity,Number.MAX_VALUE);assert.equal(b.scenario.result.reached_participants,3000);return {appliedScenarioPreserved:true};
+});
 await check('Select all reviewed WV records, remove context, national values never rescale',async()=>{
  const p=await page();await go(p,'/brief');const before=await exp(p,'wv-before');await nav(p,'Local context');
  await p.locator('details').evaluateAll(es=>es.forEach(e=>e.open=true));
