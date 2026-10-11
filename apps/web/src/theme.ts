@@ -3,6 +3,11 @@ export const THEME_STORAGE_KEY = "diagnostic-odyssey.theme";
 export type ThemePreference = "light" | "dark" | "system";
 export type ResolvedTheme = "light" | "dark";
 
+/** Browser chrome follows the existing light/dark canvas colors. */
+export function getThemeColor(theme: ResolvedTheme): string {
+  return theme === "dark" ? "#09131b" : "#f5f2eb";
+}
+
 export function getThemeStorage(): Storage | null {
   try {
     return typeof window === "undefined" ? null : window.localStorage;

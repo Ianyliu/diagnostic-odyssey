@@ -114,6 +114,10 @@ textarea {
   text-transform: uppercase;
 }
 
+/* Prevent legacy nested opacity from washing out the brand subtitle. */
+.brand .brand-copy,
+.brand .brand-copy span { opacity: 1; }
+
 .primary-nav {
   display: flex;
   align-items: stretch;

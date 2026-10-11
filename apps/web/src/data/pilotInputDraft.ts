@@ -1,3 +1,5 @@
+import { calculateScenario } from "@diagnostic-odyssey/scenario-engine";
+import { formatPlanningCurrency, formatPlanningNumber } from "./planningNumberFormatting.ts";
 import {
   validateScenario,
   type Scenario,
@@ -68,12 +70,16 @@ function parseNumericDraft(raw: string): ParsedDraftNumber {
   if (trimmed.length === 0) {
     return {ok: false, message: "Enter a value."};
   }
+  if (trimmed.length > 1024) return {ok: false, message: "Enter a shorter number (at most 1,024 characters)."};
   if (!completeNumberPattern.test(trimmed)) {
     return {ok: false, message: "Enter a valid number."};
   }
   const value = Number(trimmed);
   if (!Number.isFinite(value)) {
     return {ok: false, message: "Enter a valid finite number."};
+  }
+  if (value === 0 && /[1-9]/.test(trimmed.split(/[eE]/)[0] ?? "")) {
+    return {ok: false, message: "This nonzero value is too small to represent. Enter a larger value or an explicit zero."};
   }
   return {ok: true, value};
 }
@@ -89,7 +95,9 @@ function shiftDecimalPoint(raw: string, places: number): string {
   const exponent = Number(exponentText) + places;
   const [integerPart = "", fractionalPart = ""] = coefficient.split(".");
   const digits = (integerPart + fractionalPart) || "0";
+  if (!/[1-9]/.test(digits)) return "0";
   const decimalIndex = integerPart.length + exponent;
+  if (decimalIndex < -324 || decimalIndex > 309) return `${sign}${digits}e${exponent - fractionalPart.length}`;
 
   let plain: string;
   if (decimalIndex <= 0) {
@@ -155,9 +163,9 @@ export function evaluatePilotInputDraft(
       errors[field.key] = result.message;
       continue;
     }
-    parsed[field.key] = field.key === "reach"
-      ? Number(shiftDecimalPoint(draft[field.key], -2))
-      : result.value;
+    const scaled = field.key === "reach" ? parseNumericDraft(shiftDecimalPoint(draft[field.key], -2)) : result;
+    if (!scaled.ok) { errors[field.key] = scaled.message; continue; }
+    parsed[field.key] = scaled.value;
   }
 
   if (Object.keys(errors).length > 0) {
@@ -190,8 +198,12 @@ export function evaluatePilotInputDraft(
     }
   }
 
+  if (issues.length === 0 && Object.values(calculateScenario(candidate)).some(value => typeof value === "number" && !Number.isFinite(value))) {
+    formError = "Calculated planning quantities exceed the supported numeric range. Reduce population, recognition windows, or program costs and try again.";
+  }
+
   return {
-    candidate: issues.length === 0 ? candidate : null,
+    candidate: issues.length === 0 && !formError ? candidate : null,
     errors,
     formError
   };
@@ -207,19 +219,19 @@ export function formatPilotInputHelper(
   const value = parsed.value;
   switch (field) {
     case "eligible_population":
-      return readableNumber.format(value) + " people";
+      return formatPlanningNumber(value, readableNumber) + " people";
     case "reach":
-      return readableNumber.format(value) + "% intended reach";
+      return formatPlanningNumber(value, readableNumber) + "% intended reach";
     case "capacity":
-      return readableNumber.format(value) + " participants capacity";
+      return formatPlanningNumber(value, readableNumber) + " participants capacity";
     case "baseline_window_months":
     case "alternative_window_months":
     case "horizon_months":
-      return readableNumber.format(value) + (value === 1 ? " month" : " months");
+      return formatPlanningNumber(value, readableNumber) + (value === 1 ? " month" : " months");
     case "fixed_cost":
-      return readableCurrency.format(value);
+      return formatPlanningCurrency(value, readableCurrency);
     case "per_participant_cost":
-      return readableCurrency.format(value) + " per participant";
+      return formatPlanningCurrency(value, readableCurrency) + " per participant";
   }
 }
 
@@ -230,8 +242,8 @@ export function getPilotResultSignature(result: ScenarioResult): string {
 export function formatPilotResultAnnouncement(result: ScenarioResult): string {
   return [
     "Planning results updated.",
-    "Reached participants " + readableInteger.format(result.reached_participants) + ".",
-    "Capacity gap " + readableInteger.format(result.capacity_gap) + ".",
-    "Program-resource requirement " + readableCurrency.format(result.program_resource_requirement) + "."
+    "Reached participants " + formatPlanningNumber(result.reached_participants, readableInteger) + ".",
+    "Capacity gap " + formatPlanningNumber(result.capacity_gap, readableInteger) + ".",
+    "Program-resource requirement " + formatPlanningCurrency(result.program_resource_requirement, readableCurrency) + "."
   ].join(" ");
 }
