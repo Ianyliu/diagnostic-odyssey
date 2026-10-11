@@ -32,7 +32,7 @@ test("exact candidate files match a deterministic non-self-referential SHA-256 m
   const lines = readFileSync(new URL("SHA256SUMS", base), "utf8").trimEnd().split("\n");
   assert.equal(lines.length, 13);
   for (const line of lines) {
-    const match = /^([0-9a-f]{64})  ([A-Za-z0-9._/-]+)$/.exec(line);
+    const match = /^([0-9a-f]{64})[ ]{2}([A-Za-z0-9._/-]+)$/.exec(line);
     assert.ok(match, `bad checksum entry: ${line}`);
     assert.equal(sha(match[2]!), match[1], match[2]!);
   }
