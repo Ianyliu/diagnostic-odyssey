@@ -93,6 +93,69 @@ test("input validation is read-only and no scientific/analyst mutation occurs",(
  assert.equal(canonicalJSON(x),before);
 });
 
+test("section states follow trusted evidence when a model omits all findings and drafts",()=>{
+ const x=fixture(),fp=fingerprint(x,authority);
+ const empty:ModelCandidateV1={schema_version:"pg.v1",snapshot_fingerprint:fp,finding_ids:[],options:[],requests:[]};
+ assertCandidate(empty);
+ const original=canonicalJSON(x);
+ const out=bindCandidate(x,authority,empty,"generation1","2026-10-11T12:31:01Z",fp);
+ // Reviewed findings and request templates exist, but none were model-selected.
+ assert.deepEqual(out.sections,{findings:"available",interventions:"insufficient_evidence",requests:"available"});
+ assert.equal(out.supported_findings.length,0);
+ assert.equal(out.draft_requests.length,0);
+ assert.deepEqual(out.warnings,x.warnings);
+ assertOutput(out,x,authority);
+ assert.equal(canonicalJSON(x),original);
+ // The model and downstream output cannot relabel real trusted availability as missing.
+ assert.throws(()=>assertOutput({...out,sections:{...out.sections,findings:"insufficient_evidence"}},x,authority),/section state contradicts trusted evidence: findings/);
+ assert.throws(()=>assertOutput({...out,sections:{...out.sections,requests:"insufficient_evidence"}},x,authority),/section state contradicts trusted evidence: requests/);
+});
+test("eligible reviewed narrative evidence remains available without model option selection",()=>{
+ const x=fixture(),key=contextKey(x.context);
+ const eligible={id:"eligible1",claim_code:"investigate_pathway",context_key:key,allowed_use:"planning_option_to_investigate" as const,applicability_decision_id:"decision1"};
+ const reviewed:VerifiedAuthority={narrative:{release_sha256:hex,review_sha256:hex,applicability_sha256:hex,applicability_policy_version:"policy1",applicability_policy_sha256:hex,references:[eligible]},hints:null};
+ x.narrative_admission={release_sha256:hex,review_sha256:hex,applicability_sha256:hex,applicability_policy_version:"policy1",applicability_policy_sha256:hex,references:[eligible]};
+ assertInput(x,reviewed);
+ const fp=fingerprint(x,reviewed);
+ const empty:ModelCandidateV1={schema_version:"pg.v1",snapshot_fingerprint:fp,finding_ids:[],options:[],requests:[]};
+ const out=bindCandidate(x,reviewed,empty,"generation1","2026-10-11T12:31:01Z",fp);
+ assert.deepEqual(out.sections,{findings:"available",interventions:"available",requests:"available"});
+ assert.deepEqual(out.intervention_options,[]);
+ assertOutput(out,x,reviewed);
+ assert.throws(()=>assertOutput({...out,sections:{...out.sections,interventions:"insufficient_evidence"}},x,reviewed),/section state contradicts trusted evidence: interventions/);
+ // Background-only is reviewed material, but not eligible planning-option evidence.
+ x.narrative_admission.references[0]={...eligible,allowed_use:"background_context_only"};
+ reviewed.narrative!.references[0]={...eligible,allowed_use:"background_context_only"};
+ const fpBackground=fingerprint(x,reviewed);
+ const backgroundOut=bindCandidate(x,reviewed,{...empty,snapshot_fingerprint:fpBackground},"generation1","2026-10-11T12:31:01Z",fpBackground);
+ assert.equal(backgroundOut.sections.interventions,"insufficient_evidence");
+ assert.equal(backgroundOut.intervention_options.length,0);
+ assertOutput(backgroundOut,x,reviewed);
+});
+test("zero reviewed findings/templates and no narrative release give independent insufficient sections",()=>{
+ const x=fixture();
+ x.national_findings=[];
+ x.request_templates=[];
+ const fp=fingerprint(x,authority);
+ const empty:ModelCandidateV1={schema_version:"pg.v1",snapshot_fingerprint:fp,finding_ids:[],options:[],requests:[]};
+ const out=bindCandidate(x,authority,empty,"generation1","2026-10-11T12:31:01Z",fp);
+ assert.deepEqual(out.sections,{findings:"insufficient_evidence",interventions:"insufficient_evidence",requests:"insufficient_evidence"});
+ assertOutput(out,x,authority);
+ for(const section of ["findings","interventions","requests"] as const)
+  assert.throws(()=>assertOutput({...out,sections:{...out.sections,[section]:"available"}},x,authority),/section state contradicts trusted evidence/);
+ // The full national bundle still contains 21 reviewed estimates; this contract subset is empty.
+ assert.equal(x.national_estimate_count,21);
+});
+test("inference unavailable is not a generated success despite independently available inputs",()=>{
+ const x=fixture(),out=unavailable(x,authority);
+ assert.equal(out.generation.state,"unavailable");
+ assert.deepEqual(out.sections,{findings:"unavailable",interventions:"unavailable",requests:"unavailable"});
+ assert.deepEqual(out.supported_findings,[]);
+ assert.deepEqual(out.draft_requests,[]);
+ assertOutput(out,x,authority);
+ assert.throws(()=>assertOutput({...out,sections:{...out.sections,findings:"available"}},x,authority),/unavailable model falsely generated/);
+});
+
 test("mandatory warnings survive empty model selections and output suppression fails",()=>{
  const x=fixture(),fp=fingerprint(x,authority);
  const out=bindCandidate(x,authority,{...candidate(fp),finding_ids:[]}, "generation1","2026-10-11T12:31:01Z",fp);
@@ -158,6 +221,8 @@ test("all four Draft 2020-12 schemas execute and agree on structural positive/ne
   {schema:"candidate",instance:{...c,warning_ids:[]},valid:false},
   {schema:"candidate",instance:{...c,options:[{reference_id:"ref",claim_code:"x",approved:true}]},valid:false},
   {schema:"candidate",instance:{...c,requests:[{template_id:"t1",gap_id:"g1",hint_id:null,disposition:"accepted"}]},valid:false},
+  {schema:"candidate",instance:{...c,finding_ids:[],options:[],requests:[]},valid:true},
+  {schema:"output",instance:bindCandidate(x,authority,{...c,finding_ids:[],options:[],requests:[]},"generation1","2026-10-11T12:31:01Z",fp),valid:true},
   {schema:"output",instance:out,valid:true},
   {schema:"output",instance:{...out,intervention_options:[{proposal_id:"pgp1:"+"a".repeat(64),reference_id:"x",claim_code:"effect",release_sha256:hex,applicability_decision_id:"a",applicability_policy_sha256:hex,disposition:"accepted"}]},valid:false},
   {schema:"output",instance:{...out,sections:{...out.sections,extra:"available"}},valid:false},
