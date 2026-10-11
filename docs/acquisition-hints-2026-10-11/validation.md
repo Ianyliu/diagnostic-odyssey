@@ -1,5 +1,8 @@
 # Focused implementation validation
 
+> **Historical evidence for PR #98 at HEAD `a6bf66848106a40158ac9d906ba9f76b8fd81fd6` only.** The October 11 PM-adopted aggregate-only privacy amendment creates a new HEAD. Prior browser/PDF evidence and source/build-input digests must not be presented as new exact-head validation. Re-run and record new CI, adversarial and rendered checks separately before integration or release. Original source artifacts and historical evidence are retained.
+
+
 This is engineering evidence for an **unmerged** #23 PR, not scientific admission,
 professional privacy certification, release approval or merge authority.
 
