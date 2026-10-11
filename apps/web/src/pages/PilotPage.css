@@ -114,6 +114,10 @@
   color: var(--do-error-text);
 }
 
+.pilot-page .input-helper {
+  overflow-wrap: anywhere;
+}
+
 .pilot-page .form-error,
 .pilot-page .draft-not-applied {
   background: var(--do-warning-surface);
@@ -182,6 +186,15 @@
   font-size: clamp(18px, 2vw, 23px);
   font-variant-numeric: tabular-nums;
   overflow-wrap: anywhere;
+}
+
+.pilot-page .pilot-result-ledger .pilot-result-scientific {
+  grid-column: 1 / -1;
+}
+
+.pilot-page .pilot-result-scientific dd {
+  white-space: nowrap;
+  font-size: 18px;
 }
 
 .pilot-page .sensitivity-paused-state {

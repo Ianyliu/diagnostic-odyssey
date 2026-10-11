@@ -1,3 +1,4 @@
+import { formatPlanningNumber } from "./planningNumberFormatting.ts";
 import type { ScenarioResult } from "@diagnostic-odyssey/contracts";
 
 const integer = new Intl.NumberFormat("en-US", {maximumFractionDigits: 0});
@@ -21,7 +22,7 @@ export function getCapacityCoveragePresentation(
     return {
       headline: "N/A",
       coveragePercent: null,
-      ariaLabel: `No intended participants under the current planning assumptions; capacity gap ${integer.format(result.capacity_gap)}.`,
+      ariaLabel: `No intended participants under the current planning assumptions; capacity gap ${formatPlanningNumber(result.capacity_gap, integer)}.`,
       noDemandCopy: "No intended participants under the current reach assumption."
     };
   }
@@ -32,7 +33,7 @@ export function getCapacityCoveragePresentation(
   return {
     headline: `${coveragePercent.toFixed(0)}%`,
     coveragePercent,
-    ariaLabel: `${integer.format(result.reached_participants)} of ${integer.format(result.intended_reach)} intended participants fit within the current program capacity assumption; capacity gap ${integer.format(result.capacity_gap)}.`,
+    ariaLabel: `${formatPlanningNumber(result.reached_participants, integer)} of ${formatPlanningNumber(result.intended_reach, integer)} intended participants fit within the current program capacity assumption; capacity gap ${formatPlanningNumber(result.capacity_gap, integer)}.`,
     noDemandCopy: null
   };
 }
@@ -42,5 +43,5 @@ export function formatRecognitionWindowDifference(
   baselineMonths: number,
   alternativeMonths: number
 ): string {
-  return windowDelta.format(baselineMonths - alternativeMonths);
+  return formatPlanningNumber(baselineMonths - alternativeMonths, windowDelta);
 }

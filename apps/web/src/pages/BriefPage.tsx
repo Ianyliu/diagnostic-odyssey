@@ -1,3 +1,5 @@
+import { formatPlanningCurrency, formatPlanningNumber } from "../data/planningNumberFormatting.ts";
+import { getBrowserMediaQuery, readMediaQueryMatches, subscribeToMediaQuery } from "../browserMedia.ts";
 import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { buildPlanningBrief, serializeBriefJson } from "@diagnostic-odyssey/brief-core";
@@ -75,15 +77,16 @@ export function BriefPage() {
     printDisclosureState.current = state;
     window.addEventListener("beforeprint", state.prepare);
     window.addEventListener("afterprint", state.restore);
-    const printMedia = window.matchMedia?.("print");
+    const printMedia = getBrowserMediaQuery("print");
     const onPrintMediaChange = () => {
-      if (!printMedia?.matches) state.restore();
+      if (readMediaQueryMatches(printMedia)) state.prepare();
+      else state.restore();
     };
-    printMedia?.addEventListener?.("change", onPrintMediaChange);
+    const unsubscribe = subscribeToMediaQuery(printMedia, onPrintMediaChange);
     return () => {
       window.removeEventListener("beforeprint", state.prepare);
       window.removeEventListener("afterprint", state.restore);
-      printMedia?.removeEventListener?.("change", onPrintMediaChange);
+      unsubscribe();
       state.restore();
       if (printDisclosureState.current === state) printDisclosureState.current = null;
     };
@@ -160,7 +163,7 @@ export function BriefPage() {
       <p>Deterministic synthesis of reviewed national burden, analyst-supplied planning assumptions, explicitly selected implementation context, evidence gaps, and interpretation guardrails.</p>
     </header>
 
-    <div className="print-provenance" aria-label="Planning Brief provenance">
+    <div className="print-provenance" role="group" aria-label="Planning Brief provenance">
       <strong>Brief provenance</strong>
       <span><b>National reviewed artifact:</b> {brief.artifact_version}</span>
       {brief.context.local_context_id && <span><b>Reviewed local-context artifact:</b> {brief.context.local_context_id}</span>}
@@ -293,9 +296,9 @@ export function BriefPage() {
           <h2>Scenario outputs</h2>
           <p className="subtle">Deterministic planning quantities from the applied assumptions above; these are not a forecast or observed evidence.</p>
           <dl className="brief-output-list">
-            <div><dt>Participants within capacity</dt><dd>{brief.scenario.result.reached_participants.toLocaleString()}</dd></div>
-            <div><dt>Person-month planning exposure difference</dt><dd>{brief.scenario.result.difference_person_months.toLocaleString()}</dd></div>
-            <div><dt>Program-resource requirement</dt><dd>{new Intl.NumberFormat("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0}).format(brief.scenario.result.program_resource_requirement)}</dd></div>
+            <div><dt>Participants within capacity</dt><dd>{formatPlanningNumber(brief.scenario.result.reached_participants)}</dd></div>
+            <div><dt>Person-month planning exposure difference</dt><dd>{formatPlanningNumber(brief.scenario.result.difference_person_months)}</dd></div>
+            <div><dt>Program-resource requirement</dt><dd>{formatPlanningCurrency(brief.scenario.result.program_resource_requirement)}</dd></div>
           </dl>
             <section className="brief-decision-trace" aria-labelledby="brief-decision-trace-title">
               <h3 id="brief-decision-trace-title">Decision trace</h3>

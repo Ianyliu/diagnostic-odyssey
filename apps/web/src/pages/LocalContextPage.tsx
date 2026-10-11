@@ -21,7 +21,7 @@ function IndicatorDisclosure({record}: {record: LocalContextRecord}) {
     <p><strong>Geography:</strong> {record.geography_name} ({record.geography_type})</p>
     <p><strong>Universe:</strong> {record.universe}</p>
     <p><strong>Unit:</strong> {record.unit}</p>
-    <p><strong>Uncertainty type:</strong> {record.uncertainty_type ?? "Not published"}</p>
+    <p><strong>Uncertainty type:</strong> {record.uncertainty_type === "published_90_percent_margin_of_error" ? "Published 90% margin of error" : record.uncertainty_type ?? "Not published"}</p>
     <p><strong>Published margin of error:</strong> {record.margin_of_error === null ? "Not applicable / not published" : formatPublishedLocalContextUncertainty(record)}</p>
     <p><strong>Allowed use:</strong> {record.allowed_interpretation}</p>
     <p><strong>Not supported:</strong> {record.prohibited_interpretation.join("; ")}</p>

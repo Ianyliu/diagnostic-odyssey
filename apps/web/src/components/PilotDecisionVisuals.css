@@ -37,6 +37,8 @@
 }
 
 .visual-headline {
+  min-width: 0;
+  overflow-wrap: anywhere;
   color: var(--do-text);
   font-size: 20px;
   font-variant-numeric: tabular-nums;
@@ -45,7 +47,17 @@
 }
 
 .visual-headline-compact {
+  white-space: normal;
+}
+
+.decision-visual-heading-scientific {
+  flex-wrap: wrap;
+}
+
+.visual-headline-scientific {
+  flex-shrink: 0;
   white-space: nowrap;
+  font-size: 18px;
 }
 
 .decision-visual .visual-note {
@@ -86,6 +98,7 @@
 
 .visual-stat-row,
 .resource-legend {
+  overflow-wrap: anywhere;
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
@@ -118,7 +131,8 @@
 .window-row > strong {
   color: var(--do-text);
   font-variant-numeric: tabular-nums;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
   text-align: right;
 }
 

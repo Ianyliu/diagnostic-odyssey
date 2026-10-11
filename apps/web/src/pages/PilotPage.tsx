@@ -1,3 +1,4 @@
+import { formatPlanningCurrency, formatPlanningNumber } from "../data/planningNumberFormatting.ts";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import type { Scenario, ScenarioResult } from "@diagnostic-odyssey/contracts";
@@ -204,7 +205,7 @@ function PilotPlannerWorkspace({
           <p>{pathwayBoundary.modeledBoundaryStatement}</p>
           <p>{pathwayBoundary.assumptionBoundaryStatement}</p>
           <p><strong>Outside this model:</strong> {pathwayBoundary.outsideModelItems.join("; ")}.</p>
-          <div className="pathway-boundary-actions" aria-label="Pathway boundary follow-up">
+          <div className="pathway-boundary-actions" role="group" aria-label="Pathway boundary follow-up">
             <Link className="text-button" to="/pilot#sensitivity">Stress-test these assumptions</Link>
             <Link className="text-button" to="/evidence">Review evidence limits</Link>
           </div>
@@ -230,13 +231,13 @@ function PilotPlannerWorkspace({
         />
         <PilotDecisionVisuals scenario={scenario} result={scenarioResult} />
         <dl className="result-list pilot-result-ledger">
-          <div><dt>Intended reach</dt><dd>{scenarioResult.intended_reach.toLocaleString()}</dd></div>
-          <div><dt>Reached participants</dt><dd>{scenarioResult.reached_participants.toLocaleString()}</dd></div>
-          <div><dt>Capacity gap</dt><dd>{scenarioResult.capacity_gap.toLocaleString()}</dd></div>
-          <div><dt>Baseline person-month exposure</dt><dd>{scenarioResult.baseline_person_months.toLocaleString()}</dd></div>
-          <div><dt>Planning person-month exposure</dt><dd>{scenarioResult.alternative_person_months.toLocaleString()}</dd></div>
-          <div><dt>Difference in person-month exposure</dt><dd>{scenarioResult.difference_person_months.toLocaleString()}</dd></div>
-          <div><dt>Program-resource requirement</dt><dd>{new Intl.NumberFormat("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0}).format(scenarioResult.program_resource_requirement)}</dd></div>
+          <div className={Math.abs(scenarioResult.intended_reach) >= 1e12 ? "pilot-result-scientific" : undefined}><dt>Intended reach</dt><dd>{formatPlanningNumber(scenarioResult.intended_reach)}</dd></div>
+          <div className={Math.abs(scenarioResult.reached_participants) >= 1e12 ? "pilot-result-scientific" : undefined}><dt>Reached participants</dt><dd>{formatPlanningNumber(scenarioResult.reached_participants)}</dd></div>
+          <div className={Math.abs(scenarioResult.capacity_gap) >= 1e12 ? "pilot-result-scientific" : undefined}><dt>Capacity gap</dt><dd>{formatPlanningNumber(scenarioResult.capacity_gap)}</dd></div>
+          <div className={Math.abs(scenarioResult.baseline_person_months) >= 1e12 ? "pilot-result-scientific" : undefined}><dt>Baseline person-month exposure</dt><dd>{formatPlanningNumber(scenarioResult.baseline_person_months)}</dd></div>
+          <div className={Math.abs(scenarioResult.alternative_person_months) >= 1e12 ? "pilot-result-scientific" : undefined}><dt>Planning person-month exposure</dt><dd>{formatPlanningNumber(scenarioResult.alternative_person_months)}</dd></div>
+          <div className={Math.abs(scenarioResult.difference_person_months) >= 1e12 ? "pilot-result-scientific" : undefined}><dt>Difference in person-month exposure</dt><dd>{formatPlanningNumber(scenarioResult.difference_person_months)}</dd></div>
+          <div className={Math.abs(scenarioResult.program_resource_requirement) >= 1e12 ? "pilot-result-scientific" : undefined}><dt>Program-resource requirement</dt><dd>{formatPlanningCurrency(scenarioResult.program_resource_requirement)}</dd></div>
         </dl>
         <div className="sr-only" aria-live="polite" aria-atomic="true">{resultAnnouncement}</div>
         {invalidDraft ? <section id="sensitivity" className="sensitivity-paused-state" aria-labelledby="sensitivity-paused-title">

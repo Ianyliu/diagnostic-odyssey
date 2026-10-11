@@ -32,7 +32,16 @@ export function SensitivityExplorer({
   const [field, setField] = useState<SensitivityField>("capacity");
   const [requestAnnouncement, setRequestAnnouncement] = useState("");
   const values = useMemo(() => buildSensitivityValues(scenario, field), [scenario, field]);
-  const points = useMemo(() => oneWaySensitivity(scenario, field, values), [scenario, field, values]);
+  const sensitivity = useMemo(() => {
+    try {
+      const points = oneWaySensitivity(scenario, field, values);
+      if (points.some(point => Object.values(point.result).some(value => typeof value === "number" && !Number.isFinite(value)))) throw new Error("Non-finite sensitivity output");
+      return {points, error: null};
+    } catch {
+      return {points: [], error: "This sensitivity range exceeds the supported numeric range. The applied scenario is unchanged; reduce the tested assumption to compare values."};
+    }
+  }, [scenario, field, values]);
+  const points = sensitivity.points;
   const metric = field === "alternative_window_months"
     ? "difference_person_months"
     : "capacity_gap";
@@ -72,6 +81,7 @@ export function SensitivityExplorer({
     </div>
     <p className="visual-note">Mechanical test range around the current analyst assumption; the range is not evidence-derived. All other inputs stay fixed.</p>
     <div className="sensitivity-metric"><strong>Outcome shown:</strong> {metricLabel}</div>
+    {sensitivity.error && <p className="field-error" role="status">{sensitivity.error}</p>}
     <div className="sensitivity-bars">
       {points.map((point, index) => {
         const output = outputs[index] ?? 0;
@@ -100,7 +110,7 @@ export function SensitivityExplorer({
         </table>
       </div>
     </details>
-    {onUpsertDataRequest && <div className={"sensitivity-action" + (requestAnnouncement ? " request-acknowledged" : "")}>
+    {!sensitivity.error && onUpsertDataRequest && <div className={"sensitivity-action" + (requestAnnouncement ? " request-acknowledged" : "")}>
       <div>
         <strong>{requestStatus === "stale"
           ? "Scenario changed since this request was created."

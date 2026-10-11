@@ -56,7 +56,7 @@ export function DataRequestsPage() {
           <header className="request-sheet-heading">
             <div>
               <p className="visual-kicker">{isAnalystRequest ? "SESSION PLANNING REQUEST" : "LOADED REQUEST TEMPLATE"}</p>
-              <h2>{request.target_question}</h2>
+              <h2 id={`request-title-${request.request_id}`}>{request.target_question}</h2>
             </div>
             <div className="request-sheet-states" aria-label="Freshness and Brief selection">
               <span className={`status ${stale ? "status-warning" : "status-neutral"}`}>
@@ -80,6 +80,7 @@ export function DataRequestsPage() {
             <label className="brief-selection">
               <input
                 type="checkbox"
+                aria-labelledby={`request-title-${request.request_id} request-action-${request.request_id}`}
                 checked={selected}
                 onChange={() => {
                   toggleDataRequestForBrief(request.request_id);
@@ -91,7 +92,7 @@ export function DataRequestsPage() {
                 }}
               />
               <span>
-                <strong>Include in Planning Brief</strong>
+                <strong id={`request-action-${request.request_id}`}>Include in Planning Brief</strong>
                 <small>
                   {stale && selected
                     ? "Selected state is preserved, but this stale request is excluded from export until refreshed."
