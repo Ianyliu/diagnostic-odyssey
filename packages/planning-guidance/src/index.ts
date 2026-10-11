@@ -46,6 +46,20 @@ export function projectEgress(input:PlanningGuidanceInputV1,authority:VerifiedAu
  hint_ids:input.hint_admission.hints.map(x=>x.id).sort(compareIds)
  };assertEgress(out);return out;
 }
+/** Availability is determined exclusively by validated, independently admitted application
+ * data—not by which optional IDs or drafts an untrusted model chose to return.
+ * A section may be available with zero selected items.
+ */
+function trustedSectionStates(input:PlanningGuidanceInputV1):PlanningGuidanceOutputV1["sections"] {
+ const context=contextKey(input.context);
+ return {
+  findings:input.national_findings.length>0?"available":"insufficient_evidence",
+  interventions:input.narrative_admission.references.some(ref=>
+   ref.context_key===context&&ref.allowed_use==="planning_option_to_investigate"
+  )?"available":"insufficient_evidence",
+  requests:input.request_templates.length>0?"available":"insufficient_evidence"
+ };
+}
 const has=(a:{id:string}[],id:string)=>a.some(x=>x.id===id);
 export function bindCandidate(input:PlanningGuidanceInputV1,authority:VerifiedAuthority,candidate:unknown,generationId:string,generatedAt:string,expectedFingerprint:string):PlanningGuidanceOutputV1{
  assertInput(input,authority);assertCandidate(candidate);
@@ -68,7 +82,7 @@ export function bindCandidate(input:PlanningGuidanceInputV1,authority:VerifiedAu
  });
  const result:PlanningGuidanceOutputV1={
  schema_version:VERSION,snapshot_fingerprint:fp,generation:{state:"available",id:generationId,at:generatedAt},
- sections:{findings:candidate.finding_ids.length?"available":"insufficient_evidence",interventions:opts.length?"available":"insufficient_evidence",requests:reqs.length?"available":"insufficient_evidence"},
+ sections:trustedSectionStates(input),
  supported_findings:input.national_findings.filter(x=>candidate.finding_ids.includes(x.id)).map(x=>structuredClone(x)),
  intervention_options:opts,draft_requests:reqs,warnings:input.warnings.map(x=>structuredClone(x)),
  boundary:"AI_assisted_draft_independently_verify"
@@ -116,7 +130,10 @@ export function assertOutput(out:unknown,input:PlanningGuidanceInputV1,authority
   const expected="pgp1:"+sha("request\n"+x.snapshot_fingerprint+"\n"+g.id+"\n"+t.id+"\n"+t.gap_id+"\n"+(req.hint_id??"none")+"\n"+(input.hint_admission.release_sha256??"none"));
   if(req.proposal_id!==expected||proposalIds.has(expected))throw Error("invalid request binding");proposalIds.add(expected);
  }
- for(const [section,key] of [["findings","supported_findings"],["interventions","intervention_options"],["requests","draft_requests"]] as const){
-  if(s[section]!==((x[key] as unknown[]).length?"available":"insufficient_evidence"))throw Error("impossible section state");
+ // Recompute availability from the independently verified input, not model selection.
+ // Empty selected arrays are valid even when the trusted section is available.
+ const expectedSections=trustedSectionStates(input);
+ for(const section of ["findings","interventions","requests"] as const){
+  if(s[section]!==expectedSections[section])throw Error("section state contradicts trusted evidence: "+section);
  }
 }
