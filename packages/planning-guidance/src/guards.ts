@@ -32,7 +32,7 @@ const empty:VerifiedAuthority={narrative:null,hints:null};
 export function assertInput(x:unknown,authority:VerifiedAuthority=empty):asserts x is PlanningGuidanceInputV1{
  const o=obj(x,"input",["schema_version","captured_at","versions","context","national_estimate_count","national_findings","selected_local_context","scenario_assumptions","deterministic_results","warnings","gaps","request_templates","narrative_admission","hint_admission"]);
  if(o.schema_version!==VERSION||o.national_estimate_count!==21)bad("version or ordinary bundle size");
- if(typeof o.captured_at!=="string"||!/^\\d{4}-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d(?:\\.\\d{1,3})?Z$/.test(o.captured_at)||Number.isNaN(Date.parse(o.captured_at)))bad("captured_at");
+ if(typeof o.captured_at!=="string"||!/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d{1,3})?Z$/.test(o.captured_at)||Number.isNaN(Date.parse(o.captured_at)))bad("captured_at");
  const v=obj(o.versions,"versions",["national_release_id","brief_version","scenario_revision","local_release_id","request_policy_id"]);
  for(const k of ["national_release_id","brief_version","scenario_revision","request_policy_id"])id(v[k],"versions."+k);
  if(v.local_release_id!==null)id(v.local_release_id,"local_release_id");ctx(o.context,"context");
