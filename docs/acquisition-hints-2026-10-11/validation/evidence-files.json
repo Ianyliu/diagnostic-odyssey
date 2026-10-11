@@ -1,0 +1,57 @@
+[
+  {
+    "path": "SYNTHETIC-guidance-360-dark.pdf",
+    "bytes": 284826,
+    "sha256": "56c180397798f45b7d11b3c94eb9bc422493400fc644b454ef8f44cceeb0bbd3"
+  },
+  {
+    "path": "browser-results.json",
+    "bytes": 1859,
+    "sha256": "a732165be0660f962b45bb10e4be7a4ad322b42a5505af4ae9bbccc350ffba50"
+  },
+  {
+    "path": "governed-comparison.json",
+    "bytes": 1965,
+    "sha256": "07ad0f246973f290ea9ee3e2a2f24dde89966224955663069bda9a3941d1c79c"
+  },
+  {
+    "path": "governed-core-comparison.json",
+    "bytes": 9717,
+    "sha256": "ccabc937088ab886eb48f5e01a5df2426631453fd99dff84f1aec7345cb99322"
+  },
+  {
+    "path": "latest-main-pagination.json",
+    "bytes": 2889,
+    "sha256": "1571e95cb675d6e9422b2baa8628e10a30d7eb6025b081b0404cc0cc3144bc69"
+  },
+  {
+    "path": "production-brief-360-dark.pdf",
+    "bytes": 557759,
+    "sha256": "9eb151fa60c052f1eb9792a99f9cc4507b908332d9e7fb44907567b5af5b1643"
+  },
+  {
+    "path": "rendered-source-identities.json",
+    "bytes": 17153,
+    "sha256": "76eca1d8fd792ed2b31317fa1f40b35de97500f4f5d8250c250c63cb72dd966a"
+  },
+  {
+    "path": "request-name-correction.json",
+    "bytes": 612,
+    "sha256": "334e023239fc782e485a9f1b55af5386faefe0f9ccd589b6b51095b7ef0e8095"
+  },
+  {
+    "path": "requests-pending-360-dark.png",
+    "bytes": 183781,
+    "sha256": "de70548782720af12b47f5502b9eba5669d0f884ff7976baf3a9a8da135d7723"
+  },
+  {
+    "path": "reviewed-preservation.json",
+    "bytes": 5744,
+    "sha256": "6425f608cc796261f6023b3aa7ccdff1ed10c950a98739f787e1cf271f0be551"
+  },
+  {
+    "path": "synthetic-cards-360-dark.png",
+    "bytes": 344325,
+    "sha256": "2b912e540995373751453413a647ae4a164c5c0f9f7da19cca3defe77b37fbe6"
+  }
+]

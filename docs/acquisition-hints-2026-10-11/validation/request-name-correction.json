@@ -1,0 +1,17 @@
+{
+  "results": [
+    {
+      "name": "Data request controls have distinguishable accessible names",
+      "status": "PASS",
+      "details": {
+        "questions": [
+          "What provider/program capacity is actually available for this pilot's modeled pathway step?",
+          "What share of the eligible population can the pilot realistically identify, contact, and enroll?",
+          "What timing is observed now within this pilot's modeled pathway step, and what timing is operationally feasible under the assumed workflow?"
+        ],
+        "distinctControls": true
+      }
+    }
+  ],
+  "events": []
+}

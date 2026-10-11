@@ -1,0 +1,4 @@
+# Retained review subjects and primary-source snapshots are exact-byte preimages.
+packages/acquisition-hints/review-inputs/** -text
+docs/acquisition-hints-2026-10-11/*assessment.json -text
+docs/acquisition-hints-2026-10-11/governance-ai-recommendation.json -text

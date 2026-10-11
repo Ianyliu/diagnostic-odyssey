@@ -1,0 +1,80 @@
+{
+  "assessment_kind": "independent_AI_assisted_exact_byte_technical_review",
+  "status": "UNSIGNED_AI_ASSESSMENT_NOT_RELEASE_EVIDENCE",
+  "reviewer_identity": "OpenAI ChatGPT (GPT-6)",
+  "reviewer_role": "Independent AI-assisted scientific, mapping/privacy-risk and governance review; not a designated human/legal/clinical officer",
+  "reviewer_independence": "Not the packet producer or PR #79 implementation actor; independent of the packaging script; no human identity or professional license asserted",
+  "reviewed_at_utc": "2026-10-11T13:29:41Z",
+  "human_signature": null,
+  "release_authority": false,
+  "repository_mutations": false,
+  "archive_verified": {
+    "v2_manifest_sha256": "f8f4af4fbb93228db5282619745c91da4c8ac02247c8e2520de94bf15eddb40a",
+    "v2_entries": 45,
+    "v1_manifest_sha256": "f4cf1a4819c3ca33f8a45271a8a433f4c4a6866c57b0c96c3f1e855234c2b30c",
+    "v1_entries": 38,
+    "verification_script": "verify-archive.py",
+    "result": "pass"
+  },
+  "review_track": "B_ACQUISITION_MAPPING_PRIVACY",
+  "review_subject_sha256": "db919797d7e2dd42cd6c44e8154ccd434181bc3de27009931504124721efb436",
+  "mapping_candidates_sha256": "9a117d4a2a5ac1c51d1b8d559fb617be4635306767d21ae06d3ee54668989866",
+  "context_policy_sha256": "2c4370d84f6024157a3f645c6b2c8da3d0691a254dc9407226d81d1abb94e64f",
+  "source_index_sha256": "0c607a5ef437b40bbdc599a8a74dbcb887f1f369fef4ca0506f782dd20af53ce",
+  "hl7_retained_element_sections_independently_crosschecked": 19,
+  "hl7_retained_sections_count": 19,
+  "hl7_license_finding": "Retained official R4 specification license page describes specification CC0 and separate trademark/third-party terminology limitations; no conformance, certification, vendor availability or terminology redistribution established.",
+  "current_context_policy_assessment": "TECHNICALLY_SOUND_DEFAULT_DENY_CANDIDATE; NOT_RELEASE_AUTHORIZATION",
+  "privacy_assessment": "AGGREGATE_STEWARD_OUTPUT_ONLY_CONDITIONALLY_ACCEPTABLE; local release authority, overlap/small-cell/differencing review required; no patient or employee records, record-level dates or APIs to application",
+  "hint_decisions": [
+    {
+      "hint_id": "ACQ26-TIMING-01",
+      "version": "2",
+      "exact_candidate_guidance_wording": "Ask the local referral/navigation and scheduling stewards how recognition, referral issuance, appointment creation, planned occurrence and completed encounters are recorded. If FHIR R4 4.0.1 is available locally, ServiceRequest, Appointment and Encounter may describe some order, scheduling and encounter milestones. Order activation is not recognition; appointment creation is not booking acceptance; a planned appointment is not a completed encounter. Confirm local definitions, optional links, missingness, history and vendor support. Request only aggregate or de-identified interval summaries and episode counts within the current planning horizon, with locally approved small-cell handling. Keep identifiable records and raw dates with the steward. These summaries do not establish intervention effects.",
+      "mapping_technical_assessment": "ACCEPT_EXACT_TEXT_AS_BOUNDED_PLAUSIBLE_ACQUISITION_HINT_NOT_METRIC_GUARANTEE",
+      "privacy_risk_assessment": "CONDITIONALLY_SUPPORT_AGGREGATE_ONLY_STEWARD_RELEASE; NOT_LEGAL_OR_INSTITUTIONAL_PRIVACY_APPROVAL",
+      "context_policy_assessment": "SUPPORT_EXACT_RESTRICTED_CONTEXT_AS_UNRELEASED_CANDIDATE",
+      "approved_live_hint": false,
+      "release_or_implementation_authorized": false,
+      "source_spec_version": "FHIR R4 4.0.1",
+      "required_conditions": [
+        "Local system/element/version/terminology and operational definitions confirmed; do not imply FHIR certification",
+        "Local data steward approves only minimum-necessary aggregate release, with rare-cell/differencing suppression as needed",
+        "Unknown/stale/mismatched artifact, pathway, family, template/request fingerprint, registry, source or review identity must withhold optional guidance",
+        "No raw patient/staff records or dates, no API access, no automatic Brief inclusion"
+      ],
+      "additional_note": "Timing milestones remain distinct; no causal effects"
+    },
+    {
+      "hint_id": "ACQ26-CAPACITY-01",
+      "version": "2",
+      "exact_candidate_guidance_wording": "Ask program operations and scheduling stewards for aggregate staffed usable capacity and available appointment or navigation slots by site/service and week or month within the current planning horizon. If FHIR R4 4.0.1 is available locally, Slot and Schedule may describe scheduling intervals and resource availability. Free slots are not staffed capacity, FTE, unique participants, catchment or wait-time metrics. Confirm staffing, workload units, shared resources, reserve blocks, overbooking, service coverage and vendor support locally; use an aggregate HR/roster summary only if FTE is needed. Exclude patient and employee identities and apply local small-cell review. No resource guarantees these program metrics or their availability.",
+      "mapping_technical_assessment": "ACCEPT_EXACT_TEXT_AS_BOUNDED_PLAUSIBLE_ACQUISITION_HINT_NOT_METRIC_GUARANTEE",
+      "privacy_risk_assessment": "CONDITIONALLY_SUPPORT_AGGREGATE_ONLY_STEWARD_RELEASE; NOT_LEGAL_OR_INSTITUTIONAL_PRIVACY_APPROVAL",
+      "context_policy_assessment": "SUPPORT_EXACT_RESTRICTED_CONTEXT_AS_UNRELEASED_CANDIDATE",
+      "approved_live_hint": false,
+      "release_or_implementation_authorized": false,
+      "source_spec_version": "FHIR R4 4.0.1",
+      "required_conditions": [
+        "Local system/element/version/terminology and operational definitions confirmed; do not imply FHIR certification",
+        "Local data steward approves only minimum-necessary aggregate release, with rare-cell/differencing suppression as needed",
+        "Unknown/stale/mismatched artifact, pathway, family, template/request fingerprint, registry, source or review identity must withhold optional guidance",
+        "No raw patient/staff records or dates, no API access, no automatic Brief inclusion"
+      ],
+      "additional_note": "Free slots do not yield staffed capacity, FTE, catchment, unique participants or waits"
+    }
+  ],
+  "risks_requiring_review": [
+    "The word de-identified is not a universal disclosure-safe standard; require locally approved aggregate intervals/counts and ensure no individual-level interval records leave the steward.",
+    "Local vendors/profiles/history/linkage may not provide any cited resource.",
+    "The exact request fingerprint, stale registry/policy IDs and direct-constructor/export checks exist only as proposed semantics until independently implemented and tested."
+  ],
+  "code_implementation_or_release_authorized": false,
+  "evidence_paths": [
+    "final-admission-review-20261011-v2/acquisition/mapping-candidates.json",
+    "final-admission-review-20261011-v2/acquisition/context-policy.candidate.json",
+    "final-admission-review-20261011-v2/acquisition/sources/*-definitions.html",
+    "final-admission-review-20261011-v2/acquisition/sources/license.html",
+    "final-admission-review-20261011-v2/verification/fhir-sections-rechecked.json"
+  ]
+}

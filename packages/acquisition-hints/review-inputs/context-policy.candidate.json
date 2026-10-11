@@ -1,0 +1,42 @@
+{
+  "candidate_policy_id": "final-acquisition-exact-request-policy-candidate-v2",
+  "version": "candidate-2",
+  "status": "awaiting_independent_review",
+  "mapping_candidates_sha256": "9a117d4a2a5ac1c51d1b8d559fb617be4635306767d21ae06d3ee54668989866",
+  "source_index_sha256": "0c607a5ef437b40bbdc599a8a74dbcb887f1f369fef4ca0506f782dd20af53ce",
+  "application_context_sha256": "4d92ff7b7d67423149e1c4207726a5210d4f69d0168c260b76b543fea9253023",
+  "approved_decisions": [],
+  "proposed_rule": {
+    "artifact_context_exact": {
+      "condition_id": "long-covid-current",
+      "cohort_id": "current-long-covid-adults-18-64-meps-2024-r31-anchor",
+      "age_range": "18-64",
+      "evidence_year": 2024,
+      "geography_scope": "United States national evidence",
+      "local_context_id": null,
+      "severity_filter": null,
+      "artifact_version": "meps-2024-long-covid-candidate-20260926T011343Z"
+    },
+    "pathway_step": "recognition-to-referral",
+    "target_mechanism": "navigation-support",
+    "eligible_request_ids": [
+      "session.sensitivity.alternative_window_months",
+      "session.sensitivity.capacity"
+    ],
+    "required_checks": [
+      "valid current trusted artifact identity",
+      "valid current scenario",
+      "exact base request equals current deterministic family template",
+      "exact fingerprint of all base fields and current scenario identity",
+      "exact admitted registry/policy/source/review identities",
+      "explicit attach or refresh",
+      "no patient or employee data"
+    ],
+    "allowed_use": "Ask a local steward whether these data classes and definitions exist, then request minimum-necessary aggregate/de-identified summaries. No intervention recommendation, interoperability certification or resource-to-metric guarantee.",
+    "unknown_payer_setting": "Not predicates granting clinical applicability. No local system/payer/vendor is asserted available; mandatory local confirmation precedes any acquisition outside this app.",
+    "other_contexts": "Withhold until separately reviewed exact policy version; local_context_id changes, other pathway/mechanism, unknown family, invalid scenario or changed artifact fail closed."
+  },
+  "currentness": "Base request matching unchanged. Optional hint identity has separate currentness; registry/policy/review/request changes withhold guidance until explicit valid reattachment. No automatic Brief selection.",
+  "release_chain": "Mapping and context policy do not hash a future review. Independent review pins these plus sources; admitted registry then pins review/policy/source digests; external allowlist pins registry and those identities. Changes require new review/release identity.",
+  "gate_requirement": "Gate1 admission or explicit independent governance disposition before advancing Gate2/consumer implementation."
+}

@@ -1,0 +1,56 @@
+{
+  "record_type": "project_owner_adoption_and_bounded_implementation_authorization",
+  "authority": "Project owner, supplied directly by the user in this conversation",
+  "actor": "Ianyliu (project owner, as identified in the repository and user authorization)",
+  "decision_observed_at_utc": "2026-10-11T13:44:46Z",
+  "timestamp_precision": "First tool-clock observation after the adoption message; the user's exact message-authorship timestamp is unavailable. This is not an invented signature time.",
+  "decision_date_timezone": "America/New_York",
+  "decision_evidence": "User message beginning 'I adopt the proposed project-owner disposition, with the following clarification regarding Gate 0.' in the current conversation",
+  "independent_AI_review": {
+    "reviewer": "OpenAI ChatGPT (GPT-6), as reported in the independently supplied records",
+    "reviewed_at_utc": "2026-10-11T13:29:41Z",
+    "record_status": "UNSIGNED_AI_ASSESSMENT_NOT_RELEASE_EVIDENCE",
+    "A_record_sha256": "2d0d37e1ffff07e4bfbc546977942d72c19cf288d0451ae5923a2b0e91778a12",
+    "B_record_sha256": "e1dfa5e462f5af6e1e844eb6af864b3f5a4a9a8d4340c32c144d7745e0ec6774",
+    "governance_record_sha256": "a27d1a484ed6157efc1e26643a01f7ec297fe41c1a64b433fc5bde4fa0be6485",
+    "A_review_subject_sha256": "fa6f243cb41c71387597e808d0e0c3390b4ae60a819d6d3a9b384ec5f66537ee",
+    "B_review_subject_sha256": "db919797d7e2dd42cd6c44e8154ccd434181bc3de27009931504124721efb436",
+    "authority_distinction": "Owner adoption supplies project authorization; it does not turn the independent AI assessment into a human scientific/legal/privacy signature or release admission."
+  },
+  "Gate1": {
+    "adopted": true,
+    "disposition": "reviewed_no_current_context_admission",
+    "candidate_count": 8,
+    "admitted_count": 0,
+    "research_descriptions": "Six supportable as unreleased background only",
+    "CDC_candidates": "Both deferred",
+    "implementation_status": "#26 Phase A remains open and unshipped; no reader or narrative release is authorized"
+  },
+  "Gate0": {
+    "baseline_QA_evidence_accepted": true,
+    "evidence": ["https://github.com/Ianyliu/diagnostic-odyssey/pull/92#issuecomment-6102220045", "https://github.com/Ianyliu/diagnostic-odyssey/pull/93"],
+    "condition": "Narrow reconciliation of draft PR #94 against actual current main, classifying already-fixed, still-present and baseline-only findings; independently resolve material current-main blockers before implementation.",
+    "limitations": "Existing documented accessibility/manual-certification limits remain. No blind PR #94 merge or broad QA restart."
+  },
+  "Gate2": {
+    "exception_adopted_under_issue_38": true,
+    "scope": "Narrow #23 may proceed independently despite Gate1 no admission; remaining mapping/privacy/implementation/export/release gates remain."
+  },
+  "implementation_authorization": {
+    "separate_unmerged_PR_preparation": true,
+    "hint_candidates": ["ACQ26-TIMING-01 v2", "ACQ26-CAPACITY-01 v2"],
+    "reach": "omitted",
+    "preconditions": "Reverify current main, active PRs/ownership and Gate0 reconciliation; do not duplicate active work.",
+    "candidate_admission_boundary": "Candidates and admitted registry entries remain distinct. Unadmitted guidance is withheld while valid base requests remain usable.",
+    "privacy": "Aggregate steward-approved summaries/counts only. No individual intervals, raw dates, identifiers, PHI, records, APIs, acquisition, certification or unverified availability claims. Stewards retain actual release authority.",
+    "exact_wording": "Preserve frozen v2 wording, source/spec limits, context restrictions and provenance; do not silently apply its review to changed bytes.",
+    "required_independent_review": "Exact implementation HEAD, canonical shared resolution, forged/stale metadata, request fingerprint, direct-core/serializer validation, JSON/PDF, scenario staleness and separate Brief selection."
+  },
+  "merge_authorized": false,
+  "static_sync_authorized": false,
+  "production_deployment_authorized": false,
+  "source_promotion_authorized": false,
+  "issue_closure_authorized": false,
+  "AI_integration_authorized": false,
+  "preservation": "Deterministic arithmetic, reviewed artifacts, frozen packets and original independent decision records remain unchanged."
+}
