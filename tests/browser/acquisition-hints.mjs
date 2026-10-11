@@ -75,6 +75,13 @@ for(const width of [1440,820,360]) for(const theme of ["light","dark"]) {
     const brief=await download(page,`synthetic-${width}-${theme}`,"Export synthetic JSON");assert.equal(brief.acquisition_guidance.length,2);
     for(const guidance of brief.acquisition_guidance) {
       assert.match(guidance.privacy_boundary,/No individual-level intervals/);
+      assert.doesNotMatch([guidance.wording,guidance.minimum_necessary_output,...guidance.privacy_limits].join(" "),/aggregate or de-identified|aggregate\\/de-identified outputs only/i);
+      assert.match(guidance.minimum_necessary_output,/aggregate/i);
+      if(guidance.reference.hint_id==="ACQ26-TIMING-01") {
+        assert.match(guidance.wording,/Request only locally approved aggregate interval distributions and episode counts/);
+        assert.match(guidance.wording,/do not transfer record-level outputs to the app/);
+      }
+      assert.equal(guidance.reference.policy_sha256,"5531c472aa795f4c1a4058d35ccf5541ab21832c687f43062b971f0331fb6742");
       assert.deepEqual(guidance.reference,brief.data_requests.find(request=>request.request_id===guidance.request_id).acquisition_hint);
       assert.match(guidance.review.reviewer,/SYNTHETIC/);assert.equal(guidance.reference.hint_version,"2");
       assert.ok(guidance.official_support.every(source=>source.version==="FHIR R4 4.0.1"));
