@@ -7,7 +7,7 @@ import { MetricVisual } from "../components/MetricVisual";
 import { useArtifact } from "../data/ArtifactContext";
 import { formatLocalContextValue } from "../data/formatLocalContextValue";
 import { isSelectableLocalContextRecord } from "../data/localContextSelection";
-import { formatPublishedLocalContextUncertainty, getLocalContextSelectionAccessibility } from "../data/localContextPresentation";
+import { formatLocalContextUncertaintyType, formatPublishedLocalContextUncertainty, getLocalContextSelectionAccessibility } from "../data/localContextPresentation";
 import { formatDataStateLabel, formatReleaseStatusLabel } from "../data/presentationLabels";
 import "./Ledger.css";
 
@@ -21,7 +21,7 @@ function IndicatorDisclosure({record}: {record: LocalContextRecord}) {
     <p><strong>Geography:</strong> {record.geography_name} ({record.geography_type})</p>
     <p><strong>Universe:</strong> {record.universe}</p>
     <p><strong>Unit:</strong> {record.unit}</p>
-    <p><strong>Uncertainty type:</strong> {record.uncertainty_type ?? "Not published"}</p>
+    <p><strong>Uncertainty type:</strong> {formatLocalContextUncertaintyType(record.uncertainty_type)}</p>
     <p><strong>Published margin of error:</strong> {record.margin_of_error === null ? "Not applicable / not published" : formatPublishedLocalContextUncertainty(record)}</p>
     <p><strong>Allowed use:</strong> {record.allowed_interpretation}</p>
     <p><strong>Not supported:</strong> {record.prohibited_interpretation.join("; ")}</p>

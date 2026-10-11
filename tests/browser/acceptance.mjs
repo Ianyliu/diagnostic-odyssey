@@ -2,6 +2,7 @@
 import assert from "node:assert/strict";
 import { mkdir, writeFile, readFile } from "node:fs/promises";
 import { createRequire } from "node:module";
+import { URL } from "node:url";
 const require = createRequire(process.env.PLAYWRIGHT_RUNNER ?? import.meta.url);
 const { chromium } = require("playwright");
 const axe = require("axe-core");
@@ -60,6 +61,17 @@ async function navigate(page, name) {
     await page.getByRole("button", { name: "Menu", exact: true }).click();
   await nav.getByRole("link", { name, exact: true }).click();
   await page.locator("main h1").waitFor();
+}
+async function assertThemeColor(page, expectedTheme) {
+  if (expectedTheme) {
+    await page.waitForFunction(theme => document.documentElement.dataset.theme === theme, expectedTheme);
+  }
+  assert.equal(await page.locator('meta[name="theme-color"]').count(), 1);
+  const colors = await page.evaluate(() => ({
+    metadata: document.querySelector('meta[name="theme-color"]').content,
+    canvas: getComputedStyle(document.documentElement).getPropertyValue("--do-canvas").trim(),
+  }));
+  assert.equal(colors.metadata, colors.canvas);
 }
 async function exportBrief(page, filename) {
   const download = page.waitForEvent("download");
@@ -134,6 +146,7 @@ for (const [device, viewport] of Object.entries({
       const details = [];
       for (const route of routes) {
         await ready(page, route);
+        await assertThemeColor(page, theme);
         const overflow = await page.evaluate(() => ({
           width: innerWidth,
           scroll: document.documentElement.scrollWidth,
@@ -400,6 +413,7 @@ for (const [name, script] of Object.entries({
     page.on("pageerror", (e) => errors.push(String(e)));
     await ready(page, "/");
     await ready(page, "/brief");
+    await assertThemeColor(page);
     assert.deepEqual(errors, []);
     await context.close();
   });
@@ -414,9 +428,102 @@ await check("appearance persistence and reduced motion opening", async () => {
   );
   await page.getByLabel("Appearance", { exact: true }).selectOption("dark");
   assert.equal(await page.locator("html").getAttribute("data-theme"), "dark");
+  await assertThemeColor(page, "dark");
   await page.reload();
   await page.locator("main h1").waitFor();
   assert.equal(await page.locator("html").getAttribute("data-theme"), "dark");
+  await assertThemeColor(page, "dark");
+  await context.close();
+});
+
+await check("local context labels preserve native scores and exported uncertainty across responsive themes", async () => {
+  const reviewed = JSON.parse(await readFile(new URL(
+    "../../artifacts/reviewed/local-context-wv-hrsa-acs-candidate-20260924T052332Z/local-context.json",
+    import.meta.url,
+  ), "utf8"));
+  const ids = ["wv.hrsa.primary-care.max-score", "wv.hrsa.mental-health.max-score", "wv.acs.uninsured_pct"];
+  for (const width of [1440, 820, 360]) for (const theme of ["light", "dark"]) {
+    const context = await browser.newContext({viewport: {width, height: 1000}, colorScheme: theme, reducedMotion: "reduce", acceptDownloads: true});
+    const page = await context.newPage();
+    page.setDefaultTimeout(5000);
+    await ready(page, "/local-context");
+    for (const id of ids) {
+      const checkbox = page.locator(`#select-local-context-${id.replace(/[^a-zA-Z0-9_-]/g, "-")}`);
+      const row = page.locator(".ledger-indicator-row").filter({has: checkbox});
+      const record = reviewed.indicators.find(record => record.indicator_id === id);
+      if (record.unit === "HPSA score points") {
+        assert.ok((await row.locator(".ledger-record-value").innerText()).startsWith(`${record.value} points`));
+      }
+      await checkbox.check();
+      if (id === ids[0]) await row.getByRole("button", {name: /^Use .* in Pilot planning$/}).click();
+    }
+    const localText = await page.locator("main").textContent();
+    assert.ok(localText.includes("Published 90% margin of error"));
+    assert.ok(!localText.includes("published_90_percent_margin_of_error"));
+    await navigate(page, "Pilot planner");
+    assert.equal(await page.locator(".pilot-local-context-value").innerText(), "23 points");
+    await navigate(page, "Planning brief");
+    const values = await page.locator(".brief-local-context-value").allTextContents();
+    assert.ok(values.includes("23 points"));
+    assert.ok(values.includes("24 points"));
+    const brief = await exportBrief(page, `local-context-labels-${width}-${theme}`);
+    assert.equal(brief.local_context.length, 3);
+    for (const id of ids) {
+      assert.deepEqual(brief.local_context.find(record => record.indicator_id === id), reviewed.indicators.find(record => record.indicator_id === id));
+    }
+    const overflow = await page.evaluate(() => ({width: innerWidth, scroll: document.documentElement.scrollWidth}));
+    assert.ok(overflow.scroll <= overflow.width + 1);
+    await page.screenshot({path: `${output}/local-context-labels-brief-${width}-${theme}.png`, fullPage: true});
+    if (width === 1440 && theme === "light") {
+      await page.locator("main details").evaluateAll(els => els.forEach(el => {el.open = true;}));
+      await page.pdf({path: `${output}/local-context-labels.pdf`, format: "Letter", printBackground: true});
+    }
+    await context.close();
+  }
+});
+
+await check("browser theme color follows bootstrap, explicit preferences, system changes and other tabs", async () => {
+  // Prevent React from running so this exercises the actual pre-render bootstrap.
+  for (const [preference, system, expected] of [
+    ["system", "light", "light"], ["system", "dark", "dark"],
+    ["dark", "light", "dark"], ["light", "dark", "light"],
+  ]) {
+    const context = await browser.newContext({colorScheme: system});
+    await context.addInitScript(preference => {
+      window.localStorage.setItem("diagnostic-odyssey.theme", preference);
+    }, preference);
+    await context.route("**/assets/*.js", route => route.abort());
+    const page = await context.newPage();
+    page.setDefaultTimeout(5000);
+    await page.goto(baseURL);
+    await assertThemeColor(page, expected);
+    await context.close();
+  }
+
+  const context = await browser.newContext({colorScheme: "light", reducedMotion: "reduce"});
+  const page = await context.newPage();
+  page.setDefaultTimeout(5000);
+  await ready(page);
+  await assertThemeColor(page, "light");
+  await page.emulateMedia({colorScheme: "dark"});
+  await assertThemeColor(page, "dark");
+  await page.getByLabel("Appearance", {exact: true}).selectOption("light");
+  await assertThemeColor(page, "light");
+  await page.emulateMedia({colorScheme: "light"});
+  await page.emulateMedia({colorScheme: "dark"});
+  await assertThemeColor(page, "light");
+  await page.reload();
+  await page.locator("main h1").waitFor();
+  await assertThemeColor(page, "light");
+
+  const other = await context.newPage();
+  await ready(other);
+  await other.getByLabel("Appearance", {exact: true}).selectOption("dark");
+  await assertThemeColor(page, "dark");
+  await other.getByLabel("Appearance", {exact: true}).selectOption("system");
+  await assertThemeColor(page, "dark");
+  await page.emulateMedia({colorScheme: "light"});
+  await assertThemeColor(page, "light");
   await context.close();
 });
 

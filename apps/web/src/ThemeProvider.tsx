@@ -3,6 +3,7 @@ import type { PropsWithChildren } from "react";
 import {
   THEME_STORAGE_KEY,
   getThemeStorage,
+  getThemeColor,
   parseThemePreference,
   persistThemePreference,
   readThemePreference,
@@ -35,6 +36,7 @@ export function ThemeProvider({ children }: PropsWithChildren) {
   useLayoutEffect(() => {
     document.documentElement.dataset.theme = resolved;
     document.documentElement.dataset.themePreference = preference;
+    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", getThemeColor(resolved));
   }, [preference, resolved]);
 
   useEffect(() => {
