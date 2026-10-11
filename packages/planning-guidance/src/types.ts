@@ -1,0 +1,24 @@
+export const VERSION = "pg.v1" as const;
+export type Id = string;
+export type Context = {condition_id: Id; cohort_id: Id; geography_id: Id; pathway_step_id: Id; mechanism_id: Id};
+export type NumericRecord = {id: Id; source_id: Id; value: number; unit_code: Id; role: "national_reviewed"|"local_context"|"analyst_assumption"|"deterministic_planning_result"};
+export type Reference = {id: Id; claim_code: Id; context_key: string};
+export type Hint = {id: Id; template_id: Id; context_key: string};
+export type PlanningGuidanceInputV1 = {
+ schema_version: typeof VERSION; captured_at: string;
+ versions: {national_release_id: Id; brief_version: Id; scenario_revision: Id; local_release_id: Id|null; request_policy_id: Id};
+ context: Context; national_estimate_count: 21;
+ national_findings: (NumericRecord & {role:"national_reviewed"; estimate_id:Id; uncertainty_kind:"iqr"|"confidence_interval"|"none"; lower:number|null; upper:number|null})[];
+ selected_local_context: (NumericRecord & {role:"local_context"; vintage_id:Id})[];
+ scenario_assumptions: (NumericRecord & {role:"analyst_assumption"})[];
+ deterministic_results: (NumericRecord & {role:"deterministic_planning_result"; metric_code:"person_months"|"planning_count"|"resource_units"})[];
+ warnings: {id:Id; code:Id}[];
+ gaps: {id:Id; pathway_step_id:Id; mechanism_id:Id}[];
+ request_templates: {id:Id; gap_id:Id; field_codes:Id[]; owner_code:Id; granularity_code:Id; window_code:Id; privacy_code:Id}[];
+ narrative_admission: {release_sha256:string|null; review_sha256:string|null; applicability_sha256:string|null; references:Reference[]};
+ hint_admission: {release_sha256:string|null; policy_sha256:string|null; hints:Hint[]};
+};
+export type VerifiedAuthority = {narrative: null|{release_sha256:string;review_sha256:string;applicability_sha256:string;references:Reference[]};hints:null|{release_sha256:string;policy_sha256:string;hints:Hint[]}};
+export type ModelEgressV1 = {schema_version:typeof VERSION; snapshot_fingerprint:string; context:Context; finding_ids:Id[]; local_ids:Id[]; assumption_ids:Id[]; result_ids:Id[]; warning_ids:Id[]; gap_ids:Id[]; template_ids:Id[]; references:{id:Id;claim_code:Id}[]; hint_ids:Id[]};
+export type ModelCandidateV1 = {schema_version:typeof VERSION; snapshot_fingerprint:string; finding_ids:Id[]; options:{reference_id:Id;claim_code:Id}[]; requests:{template_id:Id;gap_id:Id;hint_id:Id|null}[]; warning_ids:Id[]};
+export type PlanningGuidanceOutputV1 = {schema_version:typeof VERSION; snapshot_fingerprint:string; generation:{state:"available"|"unavailable"|"invalid"|"stale";id:Id|null;at:string|null}; sections:{findings:"available"|"insufficient_evidence"|"unavailable"; interventions:"available"|"insufficient_evidence"|"unavailable";requests:"available"|"insufficient_evidence"|"unavailable"}; supported_findings:PlanningGuidanceInputV1["national_findings"]; intervention_options:{proposal_id:string;reference_id:Id;claim_code:Id;release_sha256:string;disposition:"pending"}[]; draft_requests:{proposal_id:string;template:PlanningGuidanceInputV1["request_templates"][number];hint_id:Id|null;disposition:"pending"}[];warnings:PlanningGuidanceInputV1["warnings"];boundary:"AI_assisted_draft_independently_verify"|"no_model_execution"};
