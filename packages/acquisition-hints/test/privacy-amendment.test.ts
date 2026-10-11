@@ -56,7 +56,7 @@ test("revised timing words are exact and capacity's frozen wording is unchanged"
   assert.match(timing.minimum_necessary_output, /no person- or episode-level outputs/);
   assert.match(timing.privacy_limits.join(" "), /differencing/);
   assert.doesNotMatch(timing.proposed_guidance_wording, /aggregate or de-identified/);
-  assert.doesNotMatch(JSON.parse(amendedPolicy()).proposed_rule.allowed_use, /aggregate\\/de-identified|aggregate or de-identified/);
+  assert.doesNotMatch(JSON.parse(amendedPolicy()).proposed_rule.allowed_use, /aggregate\/de-identified|aggregate or de-identified/);
 });
 
 test("amended mapping/policy cannot be silently paired with original preimages or forged review identities", () => {
@@ -88,7 +88,7 @@ test("the effective guidance and export payload are aggregate-only, and individu
       guidance.privacy_limits.join(" "), guidance.privacy_boundary
     ].join(" ");
     assert.match(userFacing, /aggregate/i);
-    assert.doesNotMatch(userFacing, /aggregate or de-identified|aggregate\\/de-identified outputs only/i);
+    assert.doesNotMatch(userFacing, /aggregate or de-identified|aggregate\/de-identified outputs only/i);
     assert.match(guidance.privacy_boundary, /No individual-level intervals, raw dates, identifiers/);
   }
   assert.equal(acquisitionResolver.attach(requestFor("capacity"), context, scenario).state, "awaiting_admission");
