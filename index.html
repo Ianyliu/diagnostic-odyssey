@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f5f2eb" />
+    <link rel="icon" type="image/svg+xml" href="/diagnostic-odyssey-mark.svg" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/diagnostic-odyssey-icon.png" />
+    <link rel="apple-touch-icon" sizes="192x192" href="/diagnostic-odyssey-icon.png" />
+    <meta name="description" content="Diagnostic Odyssey public-health evidence and planning workspace" />
+    <script>
+      (function () {
+        var preference = "system";
+        try {
+          var stored = localStorage.getItem("diagnostic-odyssey.theme");
+          if (stored === "light" || stored === "dark" || stored === "system") preference = stored;
+        } catch (_) { /* Storage is optional. */ }
+        var systemDark = false;
+        try { systemDark = matchMedia("(prefers-color-scheme: dark)").matches; } catch (_) { /* Light fallback. */ }
+        var resolved = preference === "system" ? (systemDark ? "dark" : "light") : preference;
+        document.documentElement.dataset.theme = resolved;
+        document.documentElement.dataset.themePreference = preference;
+        document.querySelector('meta[name="theme-color"]').content = resolved === "dark" ? "#09131b" : "#f5f2eb";
+      })();
+    </script>
+    <title>Diagnostic Odyssey</title>
+    <script type="module" crossorigin src="/assets/index-DzXhtyp7.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-D24PT-ZR.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
