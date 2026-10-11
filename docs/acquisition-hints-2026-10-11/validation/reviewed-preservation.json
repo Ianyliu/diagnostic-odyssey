@@ -1,0 +1,116 @@
+{
+  "baseline": "e27403af8d878327d28ead2b6f7aeb00657c5239",
+  "reviewed_files": 27,
+  "manifest_payload_entries": 23,
+  "all_identical": true,
+  "files": [
+    {
+      "path": "artifacts/reviewed/local-context-wv-hrsa-acs-candidate-20260924T052332Z/SHA256SUMS",
+      "sha256": "5b6e365983783cc109827f87f5aef6b883f7fc8b8c4960db7453fabcf4bdade0"
+    },
+    {
+      "path": "artifacts/reviewed/local-context-wv-hrsa-acs-candidate-20260924T052332Z/acs-source-metadata.json",
+      "sha256": "e84a84385162cf8db7e8ed996b7caf7acca84be2b161cc44e802a5792dd15afa"
+    },
+    {
+      "path": "artifacts/reviewed/local-context-wv-hrsa-acs-candidate-20260924T052332Z/diagnostics.json",
+      "sha256": "3dbff0ba734d1a80b13d0298ce024181c690c3f3dcd50cea3c4f48704399a54c"
+    },
+    {
+      "path": "artifacts/reviewed/local-context-wv-hrsa-acs-candidate-20260924T052332Z/github-actions-run-manifest.json",
+      "sha256": "f8a501f3c87695e2dd2c9d46cc75a8821af8b009440106e99c4d3641a60cfe5f"
+    },
+    {
+      "path": "artifacts/reviewed/local-context-wv-hrsa-acs-candidate-20260924T052332Z/hrsa-source-metadata.json",
+      "sha256": "c6f94c8da0c458cb839af03777b098659ae880117d8edb959a8bdc2519efc306"
+    },
+    {
+      "path": "artifacts/reviewed/local-context-wv-hrsa-acs-candidate-20260924T052332Z/local-context.json",
+      "sha256": "82e3cc5d5c6bd1d084fddb47b36ca08df76be19ab2a641dbba50b8c59c467bc4"
+    },
+    {
+      "path": "artifacts/reviewed/local-context-wv-hrsa-acs-candidate-20260924T052332Z/review-manifest.json",
+      "sha256": "12687fdf7fcf824deda52c4fc4312da2a5b46b0fa1caa3389c4bed6b0b5174d1"
+    },
+    {
+      "path": "artifacts/reviewed/meps-2024-linked-condition-service-use-reviewed-20260929-v1/SHA256SUMS",
+      "sha256": "b6d686170d17bed76163e145c12292bceb8e1050ff88378ba1c697d40ce54ab4"
+    },
+    {
+      "path": "artifacts/reviewed/meps-2024-linked-condition-service-use-reviewed-20260929-v1/candidate-manifest.json",
+      "sha256": "50da47205d1565bc58187793efe0beb2406f2b588212ad02785f876ded7f2435"
+    },
+    {
+      "path": "artifacts/reviewed/meps-2024-linked-condition-service-use-reviewed-20260929-v1/github-actions-run-manifest.json",
+      "sha256": "4cded646ee6ca6d6cc14bf807987863e346c0b8f0a5a6d5521778dfaf3fc24cc"
+    },
+    {
+      "path": "artifacts/reviewed/meps-2024-linked-condition-service-use-reviewed-20260929-v1/linked-condition-candidate-estimates.json",
+      "sha256": "2c72c0069aa3c199feef656bb20f2633a47c156dff25aeaaf2b5bbd45def42c8"
+    },
+    {
+      "path": "artifacts/reviewed/meps-2024-linked-condition-service-use-reviewed-20260929-v1/product-policy.json",
+      "sha256": "7b72a4e48f28fe2003abfc6e06293004bee169649a16f9b002646507275c66d6"
+    },
+    {
+      "path": "artifacts/reviewed/meps-2024-linked-condition-service-use-reviewed-20260929-v1/review-manifest.json",
+      "sha256": "82c5505d25f105d4de469d91139bce08f7494f9233e9a0f1695c69096aeda46e"
+    },
+    {
+      "path": "artifacts/reviewed/meps-2024-linked-condition-service-use-reviewed-20260929-v1/reviewed-diagnostics.json",
+      "sha256": "888195c461e86538b6c776f7d142a9b1a99d897347cbe89c4e12b17cfa93b7ca"
+    },
+    {
+      "path": "artifacts/reviewed/meps-2024-linked-condition-service-use-reviewed-20260929-v1/source-metadata.json",
+      "sha256": "568f3b8db291563cad0b8912ccd79dfb6732a094b4528c2a2b676e66f9bfc03c"
+    },
+    {
+      "path": "artifacts/reviewed/meps-2024-long-covid-candidate-20260923T020607Z/SHA256SUMS",
+      "sha256": "8d6d3b61b57c92cfdbd05661b34f713ece4389059bfe5927b4be73d417f8f5cb"
+    },
+    {
+      "path": "artifacts/reviewed/meps-2024-long-covid-candidate-20260923T020607Z/bundle.json",
+      "sha256": "f5255710da1b53e5d317d768512319453e6a1dab636f92cb0d95abf6db3082f1"
+    },
+    {
+      "path": "artifacts/reviewed/meps-2024-long-covid-candidate-20260923T020607Z/diagnostics.json",
+      "sha256": "a00b136193c90e234e0f1c59dbbfe6afdce68948f4318402311e72d1ffb1bdeb"
+    },
+    {
+      "path": "artifacts/reviewed/meps-2024-long-covid-candidate-20260923T020607Z/github-actions-run-manifest.json",
+      "sha256": "d67c3c8ed3121c6cddcb65871d110b28befbeb45b85f106e721c5b78e4220174"
+    },
+    {
+      "path": "artifacts/reviewed/meps-2024-long-covid-candidate-20260923T020607Z/hc256-source-metadata.json",
+      "sha256": "960a8b7c4a7795f901273b64ed1b7c2166f6aa1db8cbf9f7f083ec0167f503c1"
+    },
+    {
+      "path": "artifacts/reviewed/meps-2024-long-covid-candidate-20260923T020607Z/review-manifest.json",
+      "sha256": "9ce9890fa4234a9be625bfad550034dee60a9ffb0ab64744af34fceef0708567"
+    },
+    {
+      "path": "artifacts/reviewed/meps-2024-long-covid-candidate-20260926T011343Z/SHA256SUMS",
+      "sha256": "2d0bdb6cce0c12606f78ff0686c6c97da6e4d977ce2e8b25f282b953da2d1da3"
+    },
+    {
+      "path": "artifacts/reviewed/meps-2024-long-covid-candidate-20260926T011343Z/bundle.json",
+      "sha256": "5b32bfb3288a28ce0a57de4d0c3ec75fe1d83c0f19ad481e687b70af4a91eca0"
+    },
+    {
+      "path": "artifacts/reviewed/meps-2024-long-covid-candidate-20260926T011343Z/diagnostics.json",
+      "sha256": "6ea703bde35ff3ee2ddc75c21afcaeb9de8b273dec010255dd59174142ac9767"
+    },
+    {
+      "path": "artifacts/reviewed/meps-2024-long-covid-candidate-20260926T011343Z/github-actions-run-manifest.json",
+      "sha256": "d1bd1cabd4e116a2db0481524e982819c80a7c567a5e1e7e27c06b60ada893a3"
+    },
+    {
+      "path": "artifacts/reviewed/meps-2024-long-covid-candidate-20260926T011343Z/hc256-source-metadata.json",
+      "sha256": "f0f704df6ee8d082c01175d7107103a255e8d480471bfdc9935c4d21d6c96ee2"
+    },
+    {
+      "path": "artifacts/reviewed/meps-2024-long-covid-candidate-20260926T011343Z/review-manifest.json",
+      "sha256": "05fa3b743bde8af933bcb52a19cd564038f6416490b444aa073890beccdff994"
+    }
+  ]
+}

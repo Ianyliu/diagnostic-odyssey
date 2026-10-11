@@ -155,6 +155,11 @@ test("a separately pinned release may admit only a reviewed subset", () => {
 
 test("actual unsigned assessment and owner authorization are never release decisions", () => {
   const assessment=readFileSync(new URL("../../../docs/acquisition-hints-2026-10-11/B-acquisition-ai-assessment.json",import.meta.url),"utf8");
+  assert.equal(digest(assessment), "e1dfa5e462f5af6e1e844eb6af864b3f5a4a9a8d4340c32c144d7745e0ec6774");
+  for (const [file, expected] of [
+    ["A-narrative-ai-assessment.json", "2d0d37e1ffff07e4bfbc546977942d72c19cf288d0451ae5923a2b0e91778a12"],
+    ["governance-ai-recommendation.json", "a27d1a484ed6157efc1e26643a01f7ec297fe41c1a64b433fc5bde4fa0be6485"]
+  ]) assert.equal(digest(readFileSync(new URL(`../../../docs/acquisition-hints-2026-10-11/${file}`,import.meta.url),"utf8")),expected);
   const f=fixture();f.bytes.review=assessment;
   const registry=JSON.parse(f.bytes.registry);registry.review_sha256=digest(assessment);f.bytes.registry=JSON.stringify(registry);
   assert.equal(createAcquisitionResolver(f.bytes,[digest(f.bytes.registry)]).attach(request(),context,scenario).state,"artifact_unavailable");
