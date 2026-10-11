@@ -1,24 +1,24 @@
 import {test} from "node:test";
 import assert from "node:assert/strict";
-import {assertInput,assertEgress,assertCandidate,bindCandidate,canonicalJSON,fingerprint,projectEgress,unavailable,assertOutput,contextKey} from "../src/index.ts";
+import {assertInput,assertEgress,assertCandidate,bindCandidate,canonicalJSON,fingerprint,projectEgress,unavailable,assertOutput,contextKey,snapshotContent} from "../src/index.ts";
 import type {PlanningGuidanceInputV1,VerifiedAuthority,ModelCandidateV1} from "../src/types.ts";
 const hex="a".repeat(64);
 const authority:VerifiedAuthority={narrative:null,hints:null};
 function fixture():PlanningGuidanceInputV1{
  return {schema_version:"pg.v1",captured_at:"2026-10-11T12:30:00Z",
- versions:{national_release_id:"MEPS2024",brief_version:"brief1",scenario_revision:"scenario1",local_release_id:null,request_policy_id:"templates1"},
- context:{condition_id:"long_covid",cohort_id:"adult",geography_id:"national",pathway_step_id:"referral",mechanism_id:"delay"},
+ versions:{national_release_id:"MEPS2024",national_release_sha256:hex,brief_version:"brief1",brief_content_sha256:hex,scenario_revision:"scenario1",scenario_content_sha256:hex,local_release_id:null,local_release_sha256:null,request_policy_id:"templates1",request_policy_sha256:hex},
+ context:{condition_id:"long_covid",cohort_id:"adult",population_id:"adults",setting_id:"outpatient",payer_id:"all_payers",geography_id:"national",pathway_step_id:"referral",mechanism_id:"delay"},
  national_estimate_count:21,
  national_findings:[{id:"n1",source_id:"MEPS",estimate_id:"MEPS-EST-1",value:7,unit_code:"persons",role:"national_reviewed",uncertainty_kind:"confidence_interval",lower:5,upper:9}],
  selected_local_context:[],scenario_assumptions:[{id:"a1",source_id:"analyst",value:0.2,unit_code:"fraction",role:"analyst_assumption"}],
  deterministic_results:[{id:"r1",source_id:"engine",value:200,unit_code:"person_months",role:"deterministic_planning_result",metric_code:"person_months"}],
  warnings:[{id:"w1",code:"planning_not_effect"}],gaps:[{id:"g1",pathway_step_id:"referral",mechanism_id:"delay"}],
  request_templates:[{id:"t1",gap_id:"g1",field_codes:["referral_date"],owner_code:"clinic",granularity_code:"aggregate",window_code:"monthly",privacy_code:"aggregate_only"}],
- narrative_admission:{release_sha256:null,review_sha256:null,applicability_sha256:null,references:[]},
+ narrative_admission:{release_sha256:null,review_sha256:null,applicability_sha256:null,applicability_policy_version:null,applicability_policy_sha256:null,references:[]},
  hint_admission:{release_sha256:null,policy_sha256:null,hints:[]}};
 }
 const clone=<T>(x:T):T=>structuredClone(x);
-const candidate=(fp:string):ModelCandidateV1=>({schema_version:"pg.v1",snapshot_fingerprint:fp,finding_ids:["n1"],options:[],requests:[{template_id:"t1",gap_id:"g1",hint_id:null}],warning_ids:["w1"]});
+const candidate=(fp:string):ModelCandidateV1=>({schema_version:"pg.v1",snapshot_fingerprint:fp,finding_ids:["n1"],options:[],requests:[{template_id:"t1",gap_id:"g1",hint_id:null}]});
 test("zero-admission and zero-hint input yields insufficient intervention section and valid unhinted request",()=>{
  const x=fixture();assertInput(x,authority);
  const fp=fingerprint(x,authority);const e=projectEgress(x,authority);assertEgress(e);
@@ -70,9 +70,9 @@ test("stale snapshots and forged numbers and disposition fail closed",()=>{
 });
 test("forged catalog and hint registry fail without separately verified authority",()=>{
  const x=fixture(),key=contextKey(x.context);
- x.narrative_admission={release_sha256:hex,review_sha256:hex,applicability_sha256:hex,references:[{id:"ref1",claim_code:"investigate",context_key:key}]};
+ x.narrative_admission={release_sha256:hex,review_sha256:hex,applicability_sha256:hex,applicability_policy_version:"policy1",applicability_policy_sha256:hex,references:[{id:"ref1",claim_code:"investigate",context_key:key,allowed_use:"planning_option_to_investigate",applicability_decision_id:"decision1"}]};
  assert.throws(()=>assertInput(x,authority));
- x.narrative_admission={release_sha256:null,review_sha256:null,applicability_sha256:null,references:[]};
+ x.narrative_admission={release_sha256:null,review_sha256:null,applicability_sha256:null,applicability_policy_version:null,applicability_policy_sha256:null,references:[]};
  x.hint_admission={release_sha256:hex,policy_sha256:hex,hints:[{id:"hint1",template_id:"t1",context_key:key}]};
  assert.throws(()=>assertInput(x,authority));
 });
@@ -80,4 +80,54 @@ test("input validation is read-only and no scientific/analyst mutation occurs",(
  const x=fixture(),before=canonicalJSON(x),fp=fingerprint(x,authority);
  bindCandidate(x,authority,candidate(fp),"g1","2026-10-11T12:30:01Z",fp);
  assert.equal(canonicalJSON(x),before);
+});
+
+test("mandatory warnings survive empty model selections and output suppression fails",()=>{
+ const x=fixture(),fp=fingerprint(x,authority);
+ const out=bindCandidate(x,authority,{...candidate(fp),finding_ids:[]}, "generation1","2026-10-11T12:31:01Z",fp);
+ assert.deepEqual(out.warnings,x.warnings);
+ assert.throws(()=>assertCandidate({...candidate(fp),warning_ids:[]})); // not even in untrusted schema
+ assert.throws(()=>assertOutput({...out,warnings:[]},x,authority),/mandatory trusted warning/);
+ assert.throws(()=>assertOutput({...out,warnings:[{id:"w1",code:"roi_verified"}]},x,authority));
+});
+test("background-only citation is never an intervention grant; policy/context must match verified authority",()=>{
+ const x=fixture(),key=contextKey(x.context),grant={id:"option1",claim_code:"planning_only",context_key:key,allowed_use:"planning_option_to_investigate" as const,applicability_decision_id:"review_decision1"};
+ const background={...grant,id:"background1",allowed_use:"background_context_only" as const,applicability_decision_id:"review_decision2"};
+ const validAuthority:VerifiedAuthority={narrative:{release_sha256:hex,review_sha256:hex,applicability_sha256:hex,applicability_policy_version:"policy1",applicability_policy_sha256:hex,references:[grant,background]},hints:null};
+ x.narrative_admission={release_sha256:hex,review_sha256:hex,applicability_sha256:hex,applicability_policy_version:"policy1",applicability_policy_sha256:hex,references:[grant,background]};
+ assertInput(x,validAuthority);
+ const fp=fingerprint(x,validAuthority),eg=projectEgress(x,validAuthority);
+ assert.deepEqual(eg.references,[{id:"option1",claim_code:"planning_only"}]);
+ assert.throws(()=>bindCandidate(x,validAuthority,{...candidate(fp),options:[{reference_id:"background1",claim_code:"planning_only"}]},"generation1","2026-10-11T12:31:01Z",fp),/background-only/);
+ const out=bindCandidate(x,validAuthority,{...candidate(fp),options:[{reference_id:"option1",claim_code:"planning_only"}]},"generation1","2026-10-11T12:31:01Z",fp);
+ assert.equal(out.intervention_options[0]?.applicability_decision_id,"review_decision1");
+ assert.equal(out.intervention_options[0]?.disposition,"pending");
+ assertOutput(out,x,validAuthority);
+ assert.throws(()=>assertOutput({...out,intervention_options:[{...out.intervention_options[0],applicability_decision_id:"forged"}]},x,validAuthority));
+ const untrusted=clone(x);untrusted.narrative_admission.references[0]!.allowed_use="background_context_only";
+ assert.throws(()=>assertInput(untrusted,validAuthority),/unverified narrative/);
+ const stalePolicy=clone(x);stalePolicy.narrative_admission.applicability_policy_version="policy2";
+ assert.throws(()=>assertInput(stalePolicy,validAuthority));
+ const wrongPayer=clone(x);wrongPayer.context.payer_id="other_payer";
+ assert.throws(()=>assertInput(wrongPayer,validAuthority));
+ const wrongSetting=clone(x);wrongSetting.context.setting_id="inpatient";
+ assert.throws(()=>assertInput(wrongSetting,validAuthority));
+});
+test("release/scenario content digests bind fingerprints and fail malformed",()=>{
+ const x=fixture(),original=fingerprint(x,authority);
+ const y=clone(x);y.versions.scenario_content_sha256="b".repeat(64);
+ assert.notEqual(fingerprint(y,authority),original);
+ const z=clone(x);z.versions.national_release_sha256="b".repeat(64);
+ assert.notEqual(fingerprint(z,authority),original);
+ const bad=clone(x);bad.versions.request_policy_sha256="not-a-digest";
+ assert.throws(()=>assertInput(bad,authority));
+});
+test("canonical sort is locale independent for uppercase punctuation and lowercase IDs",()=>{
+ const x=fixture();x.warnings=[
+ {id:"z",code:"warning_z"},{id:"a_a",code:"warning_underscore"},
+ {id:"a.a",code:"warning_period"},{id:"a-a",code:"warning_dash"},{id:"Z",code:"warning_capital"}
+ ];
+ const ordered=["Z","a-a","a.a","a_a","z"];
+ assert.deepEqual(projectEgress(x,authority).warning_ids,ordered);
+ assert.deepEqual(snapshotContent(x,authority).warnings.map((v:any)=>v.id),ordered);
 });
