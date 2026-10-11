@@ -46,7 +46,7 @@ test("synthetic admitted entries require explicit attachment, preserve exact wor
     assert.equal(attached.state, "reviewed");
     assert.deepEqual(sanitizeBaseDataRequest(attached.request), base);
     assert.equal(attached.request.acquisition_hint!.request_fingerprint, requestFingerprint(base, context, scenario));
-    assert.equal(attached.guidance!.wording, JSON.parse(readInput("mapping-candidates.json")).hints.find((h: any) => h.eligible_request_family === base.request_id).proposed_guidance_wording);
+    assert.equal(attached.guidance!.wording, JSON.parse(readInput("mapping-candidates.privacy-amendment-1.json")).hints.find((h: any) => h.eligible_request_family === base.request_id).proposed_guidance_wording);
     assert.match(attached.guidance!.privacy_boundary, /Aggregate steward-approved/);
     assert.equal(current.resolve(attached.request, context, scenario).state, "reviewed");
     attached.guidance!.wording = "FORGED"; attached.guidance!.field_crosswalk[0]!.limits = "FORGED";
