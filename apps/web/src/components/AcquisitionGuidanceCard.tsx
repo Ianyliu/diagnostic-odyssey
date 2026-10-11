@@ -37,7 +37,7 @@ export function AcquisitionGuidanceCard({guidance}: {guidance: AcquisitionGuidan
         </span>)}
         <small>Retrieved {source.retrieved_at}; source SHA-256 {source.source_sha256}. {source.publication_note}</small>
       </li>)}</ul>
-      <p>Review: <a href={guidance.review.evidence_url}>{guidance.review.reviewer}</a>, {guidance.review.reviewed_at}; code {guidance.review.code_commit}.</p>
+      <p>Review: <a href={guidance.review.evidence_url} target="_blank" rel="noopener noreferrer">{guidance.review.reviewer}</a>, {guidance.review.reviewed_at}; code {guidance.review.code_commit}.</p>
       <dl className="acquisition-identities">
         <div><dt>Hint / registry</dt><dd>{guidance.reference.hint_id} v{guidance.reference.hint_version} · {guidance.registry_id} {guidance.registry_version}</dd></div>
         {Object.entries(guidance.reference).filter(([key]) => key.endsWith("sha256") || key === "request_fingerprint").map(([key, value]) => <div key={key}><dt>{key.replaceAll("_", " ")}</dt><dd>{value}</dd></div>)}
