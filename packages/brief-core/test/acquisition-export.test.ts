@@ -72,3 +72,33 @@ test("mixed selected-current requests retain base-only reach and reviewed capaci
   const parsed=JSON.parse(codec.serializeBriefJson(different));assert.deepEqual(parsed.data_requests,[reach,sanitizeBaseDataRequest(attached)]);assert.equal(parsed.acquisition_guidance,undefined);
   assert.deepEqual(brief.evidence,[]);assert.deepEqual(brief.scenario!.result,calculateScenario(scenario));
 });
+
+test("adopted aggregate-only candidate wording survives canonical Brief JSON; no individual record release",()=>{
+  const {resolver,codec}=admitted();
+  const attached=["capacity","alternative_window_months"].map(field=>
+    resolver.attach(createSensitivityDataRequest(scenario,field as "capacity" | "alternative_window_months"),context,scenario).request);
+  const brief=codec.buildPlanningBrief(input(attached));
+  assert.equal(brief.data_requests.length,2);
+  const parsed=JSON.parse(codec.serializeBriefJson(brief));
+  assert.equal(parsed.acquisition_guidance.length,2);
+  const expectedPolicy="5531c472aa795f4c1a4058d35ccf5541ab21832c687f43062b971f0331fb6742";
+  for(const g of parsed.acquisition_guidance) {
+    assert.equal(g.reference.policy_sha256,expectedPolicy);
+    assert.match(g.privacy_boundary,/Aggregate steward-approved summaries and counts only/);
+    const effective=[g.wording,g.minimum_necessary_output,g.local_only_preparation,...g.privacy_limits].join(" ");
+    assert.doesNotMatch(effective,/aggregate or de-identified|aggregate\\/de-identified outputs only/i);
+    assert.match(effective,/aggregate/i);
+    assert.deepEqual(g.reference,parsed.data_requests.find((r:any)=>r.request_id===g.request_id).acquisition_hint);
+  }
+  const timing=parsed.acquisition_guidance.find((g:any)=>g.request_id==="session.sensitivity.alternative_window_months");
+  assert.match(timing.wording,/locally approved aggregate interval distributions and episode counts/);
+  assert.match(timing.wording,/do not transfer record-level outputs/);
+  assert.match(timing.wording,/differencing risk/);
+  const withForged=structuredClone(brief);
+  withForged.acquisition_guidance[0].wording="UPLOAD RAW IDENTIFIERS";
+  withForged.acquisition_guidance[1].minimum_necessary_output="TRANSFER EMPLOYEE RECORDS";
+  const safe=codec.serializeBriefJson(withForged);
+  assert.doesNotMatch(safe,/UPLOAD RAW|TRANSFER EMPLOYEE/);
+  assert.ok(safe.includes("Aggregate steward-approved"));
+  assert.equal(JSON.parse(serializeBriefJson(brief)).acquisition_guidance,undefined);
+});
