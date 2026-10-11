@@ -3,6 +3,9 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
 
+permissions:
+  contents: read
+
 concurrency:
   group: jules-review-${{ github.event.pull_request.number }}
   cancel-in-progress: true
@@ -10,12 +13,13 @@ concurrency:
 jobs:
   review:
     runs-on: ubuntu-latest
+    timeout-minutes: 40
     permissions:
       pull-requests: write
       contents: read
       statuses: write
     steps:
-      - uses: sanjay3290/jules-pr-reviewer@v1
+      - uses: sanjay3290/jules-pr-reviewer@66c23eff45e2103fb3d2d6873ba073e6e281ef31 # v1
         with:
           jules_api_key: ${{ secrets.JULES_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}

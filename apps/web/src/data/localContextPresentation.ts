@@ -2,6 +2,14 @@ import type { LocalContextRecord } from "@diagnostic-odyssey/contracts";
 
 const INCLUDE_IN_BRIEF_LABEL = "Include in Planning Brief";
 
+export function formatLocalContextUncertaintyType(type: string | null): string {
+  if (type === null) return "Not published";
+  if (type === "published_90_percent_margin_of_error") {
+    return "Published 90% margin of error";
+  }
+  return "Source-defined uncertainty";
+}
+
 export interface LocalContextSelectionAccessibility {
   displayTitle: string;
   controlId: string;

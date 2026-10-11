@@ -245,6 +245,7 @@
 
 .planning-brief-page .brief-applied-assumptions dd,
 .planning-brief-page .brief-output-list dd {
+  overflow-wrap: anywhere;
   margin: 0;
   color: var(--do-text);
   font-size: .94rem;
@@ -446,9 +447,26 @@
 
   .planning-brief-page .brief-burden-group,
   .planning-brief-page .brief-local-context,
-  .planning-brief-page .brief-decision-trace,
-  .planning-brief-page .decision-trace li {
+  .planning-brief-page .brief-decision-trace {
     break-inside: auto;
+  }
+
+  /* Keep each decision and its explanation together while the ledger can span pages. */
+  .planning-brief-page .decision-trace ol {
+    display: block;
+  }
+
+  .planning-brief-page .decision-trace li,
+  .planning-brief-page .brief-burden-details li {
+    break-inside: avoid;
+  }
+
+  .planning-brief-page .decision-trace li + li {
+    margin-top: 8px;
+  }
+
+  .planning-brief-page .brief-local-context .card-title-row > div > strong {
+    display: block;
   }
 
   /* Let long tables fragment in normal document flow. A grid item can paint
@@ -515,11 +533,15 @@
     content-visibility: visible !important;
   }
 
+  .planning-brief-page #brief-pilot-assumptions {
+    break-inside: avoid;
+  }
+
   .planning-brief-page .brief-applied-assumptions,
   .planning-brief-page .brief-output-list {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     background: #ffffff;
-    break-inside: auto;
+    break-inside: avoid;
   }
 
   .planning-brief-page .brief-applied-assumptions > div,

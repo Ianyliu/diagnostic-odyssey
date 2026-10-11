@@ -1,0 +1,1100 @@
+{
+  "schema_version": "1.0",
+  "audit_date": "2026-10-10",
+  "authoring_status": "Historical PR91 engineering record, completed PR92 release provenance, and separately unmerged repository-hygiene candidate.",
+  "source": {
+    "baseline": "b99d1c703226009f2004a06a332174124fbfd8a3",
+    "last_merged_main_reported": "d578be2df7ce5ccce3facc32b533d9b574ac4bdb",
+    "tested_pr90_head": "5d3425bb6755de049bd95b8b123ea0f3bb6026b6",
+    "pr90_changed_files_independently_byte_matched": 15,
+    "final_main_sha": "1910fd98b84cefa50ed64084af07b226739195cb",
+    "static_commit": "6a216270094519b45421db91a6eb80e7b6c07ee5",
+    "deployment_id": "171fdf6b-839c-4852-9449-6a5aba6516bc",
+    "deployment_url": "https://diagnostic-odyssey.pages.dev",
+    "pr91_reviewed_code_commit": "29e2f5dc425b864f2264410aba2b1ab841e22bed",
+    "tested_pr91_head": "d604fb5ef7e12ebc64e2d11cb44d2d0b63498c88",
+    "final_repaired_application_source": "d578be2df7ce5ccce3facc32b533d9b574ac4bdb",
+    "pr91_ci_run": {
+      "id": 38084611863,
+      "conclusion": "success"
+    },
+    "release_provenance_status": "Historical PR92 release completed; see release_record_url. New hygiene application changes remain unmerged.",
+    "release_record_url": "https://github.com/Ianyliu/diagnostic-odyssey/pull/92#issuecomment-6102220045"
+  },
+  "environment": {
+    "node": "22.23.3",
+    "npm": "10.9.9",
+    "browser": "154.0.8037.98",
+    "playwright": "1.64.0",
+    "axe": "4.11.1",
+    "R_local": "4.5.2",
+    "R_acquisition_workflow": "4.6.1"
+  },
+  "checks": {
+    "javascript": {
+      "tests": 284,
+      "passed": 284,
+      "failed": 0,
+      "workspace_test_counts": {
+        "web": 185,
+        "brief": 14,
+        "contracts": 55,
+        "evidence": 18,
+        "scenario": 12
+      }
+    },
+    "python": {
+      "tests": 51,
+      "passed": 51,
+      "preexisting_fixture_resource_warnings": 3
+    },
+    "R": {
+      "R": "R version 4.5.2 (2025-10-31)",
+      "packages": [
+        "2.5.5",
+        "2.0.0",
+        "4.5",
+        "3.3.2"
+      ],
+      "files": 21,
+      "tests": 116,
+      "assertions": 829,
+      "passed": 829,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "warnings": 0
+    },
+    "reviewed_files_byte_identical": 27,
+    "reviewed_manifest_entries_valid": 23,
+    "full_sha_pinned_external_actions": 20,
+    "workflow_files": 6,
+    "rendered_browser": {
+      "groups": 24,
+      "passed": 24,
+      "source_build_base_url": "http://127.0.0.1:4177",
+      "visual_issue_resolved": "PR91 conditional heading/ledger layout; DOM Range token containment assertions pass for extreme finite values."
+    },
+    "main_protection_read_api": {
+      "date": "2026-10-10",
+      "conventional_protection_http_status": 404,
+      "rulesets": [],
+      "owner_manual_configuration_required": true
+    }
+  },
+  "dependencies": {
+    "lock_sha256": "4bb8387872c5174bcaceb7929c6d4cad3b634282504c2412bf6b6f1f71bdef8b",
+    "installed_packages": 186,
+    "high": 0,
+    "critical": 0,
+    "moderate_package_entries": 2,
+    "remaining_packages": [
+      "react-router",
+      "react-router-dom"
+    ],
+    "source_map_js": "1.2.2",
+    "vite": "6.4.4",
+    "react_router_dom": "6.30.6",
+    "postcss": "8.5.29"
+  },
+  "governed_regression": {
+    "unchanged": true,
+    "capture_bytes": 357903,
+    "capture_sha256": "2cc126c18bbc2e191bae3e2d6bb49c8c84c801d1bc84325d88d2b4df48589513",
+    "scenario_count": 11,
+    "sensitivity_points": 150,
+    "invariants": {
+      "national_estimates": 21,
+      "local_indicators": 34,
+      "reviewed_files": 27,
+      "verified_manifest_entries": 23
+    },
+    "sections": [
+      {
+        "section": "invariants",
+        "before_sha256": "d56b9de581ee40c247fbf713952e898b5586354c3bd3a95d069bee9259aaa45d",
+        "after_sha256": "d56b9de581ee40c247fbf713952e898b5586354c3bd3a95d069bee9259aaa45d",
+        "unchanged": true
+      },
+      {
+        "section": "scenarios",
+        "before_sha256": "100dfff71843619f40063e6655ee945a4046cd2b20301d813703fc5541cb44b8",
+        "after_sha256": "100dfff71843619f40063e6655ee945a4046cd2b20301d813703fc5541cb44b8",
+        "unchanged": true
+      },
+      {
+        "section": "briefs",
+        "before_sha256": "9640cb8696bc397db2c6897680c0428f44bdf8b5af68c7fe81da325603945447",
+        "after_sha256": "9640cb8696bc397db2c6897680c0428f44bdf8b5af68c7fe81da325603945447",
+        "unchanged": true
+      },
+      {
+        "section": "checksums",
+        "before_sha256": "d99fcf7c180ffb26b6f13da4e6ac7f7c540d8b917da6512aba5b712c6fb12f05",
+        "after_sha256": "d99fcf7c180ffb26b6f13da4e6ac7f7c540d8b917da6512aba5b712c6fb12f05",
+        "unchanged": true
+      }
+    ],
+    "briefs": [
+      {
+        "id": "unselected-context-and-requests",
+        "sha256": "c3031878661a52d0818cba95e1bd0a85ebc558ed7d54e6d1c9e22fa8be0aed0d",
+        "exported_estimates": 21,
+        "selected_local_records": 0,
+        "selected_current_data_requests": 0
+      },
+      {
+        "id": "explicit-context-and-current-request",
+        "sha256": "ed3cfbf077a780ca4c27ea66cfc467820399693adbc9220636c15001cc1d4a4a",
+        "exported_estimates": 21,
+        "selected_local_records": 2,
+        "selected_current_data_requests": 1
+      },
+      {
+        "id": "explicit-context-and-stale-request",
+        "sha256": "198ad8bff6cc1dfcb48199ad6d221d83918b47e95ccdecebbe51ec0be9e053bb",
+        "exported_estimates": 21,
+        "selected_local_records": 2,
+        "selected_current_data_requests": 0
+      }
+    ]
+  },
+  "browser_snapshot_comparison": {
+    "before": "/tmp/diagnostic-browser-baseline2/qa-results.json",
+    "after": "/tmp/diagnostic-browser-token-final/qa-results.json",
+    "ignored": "Planning Brief top-level generated_at only",
+    "results": [
+      {
+        "key": "defaultBrief",
+        "status": "PASS",
+        "beforeSha256": "caf3025c68cb9447ea3dbe264425981f36e9bb1611ab840cdd15ed19d6ce023a",
+        "afterSha256": "caf3025c68cb9447ea3dbe264425981f36e9bb1611ab840cdd15ed19d6ce023a"
+      },
+      {
+        "key": "selectedBrief",
+        "status": "PASS",
+        "beforeSha256": "b01b8b85a4d8cae86037dc2df6940e133a8f98e09320422104a3d46391a25e1d",
+        "afterSha256": "b01b8b85a4d8cae86037dc2df6940e133a8f98e09320422104a3d46391a25e1d"
+      },
+      {
+        "key": "staleBrief",
+        "status": "PASS",
+        "beforeSha256": "bb7f58b9fc7351b153cf734826fcc6a14f54ae49352973a98e34ddb722583c4c",
+        "afterSha256": "bb7f58b9fc7351b153cf734826fcc6a14f54ae49352973a98e34ddb722583c4c"
+      },
+      {
+        "key": "refreshedBrief",
+        "status": "PASS",
+        "beforeSha256": "acc05757980e8976128186e78856690c450f3d4f49bcd10414bd93c780e1a85b",
+        "afterSha256": "acc05757980e8976128186e78856690c450f3d4f49bcd10414bd93c780e1a85b"
+      },
+      {
+        "key": "capacitySensitivity",
+        "status": "PASS",
+        "beforeSha256": "8d9b53bf7bf4f4229c6c889c80e97b2edeb9728c9ebc73e72db62253b84b79fe",
+        "afterSha256": "8d9b53bf7bf4f4229c6c889c80e97b2edeb9728c9ebc73e72db62253b84b79fe"
+      },
+      {
+        "key": "reachSensitivity",
+        "status": "PASS",
+        "beforeSha256": "04993f46f3712b7bd3da4c4669f41790db298ffd11c02e01ec0838ffbe93bf17",
+        "afterSha256": "04993f46f3712b7bd3da4c4669f41790db298ffd11c02e01ec0838ffbe93bf17"
+      },
+      {
+        "key": "windowSensitivity",
+        "status": "PASS",
+        "beforeSha256": "2b58c60850043134d697088b12a01b6ff5b6372848abd1ac201e0b27b1cb72ef",
+        "afterSha256": "2b58c60850043134d697088b12a01b6ff5b6372848abd1ac201e0b27b1cb72ef"
+      }
+    ]
+  },
+  "local_performance": {
+    "scope": "Five cold localhost browser contexts. Diagnostic only; no mobile-network or field Core Web Vitals claim.",
+    "baseline": {
+      "sampleCount": 5,
+      "navigationMedianMs": 35.10000002384186,
+      "paint": [
+        [
+          {
+            "name": "first-paint",
+            "ms": 24
+          }
+        ],
+        [
+          {
+            "name": "first-paint",
+            "ms": 24
+          }
+        ],
+        [
+          {
+            "name": "first-paint",
+            "ms": 48
+          }
+        ],
+        [
+          {
+            "name": "first-paint",
+            "ms": 24
+          }
+        ],
+        [
+          {
+            "name": "first-paint",
+            "ms": 24
+          }
+        ]
+      ],
+      "assets": [
+        {
+          "name": "index-DCs6JUE-.js",
+          "gzipBodyBytes": 117400,
+          "transferBytes": 117700,
+          "decodedBodyBytes": 502140,
+          "durationMs": 14.899999976158142
+        },
+        {
+          "name": "index-CuSK_Skz.css",
+          "gzipBodyBytes": 17326,
+          "transferBytes": 17626,
+          "decodedBodyBytes": 100170,
+          "durationMs": 6.100000023841858
+        }
+      ]
+    },
+    "final": {
+      "sampleCount": 5,
+      "navigationMedianMs": 44.60000002384186,
+      "paint": [
+        [
+          {
+            "name": "first-paint",
+            "ms": 40
+          }
+        ],
+        [
+          {
+            "name": "first-paint",
+            "ms": 40
+          }
+        ],
+        [
+          {
+            "name": "first-paint",
+            "ms": 24
+          },
+          {
+            "name": "first-contentful-paint",
+            "ms": 68
+          }
+        ],
+        [
+          {
+            "name": "first-paint",
+            "ms": 28
+          }
+        ],
+        [
+          {
+            "name": "first-paint",
+            "ms": 24
+          }
+        ]
+      ],
+      "assets": [
+        {
+          "name": "index-D79TFG21.js",
+          "gzipBodyBytes": 119274,
+          "transferBytes": 119574,
+          "decodedBodyBytes": 506461,
+          "durationMs": 28.899999976158142
+        },
+        {
+          "name": "index-D24PT-ZR.css",
+          "gzipBodyBytes": 17465,
+          "transferBytes": 17765,
+          "decodedBodyBytes": 100980,
+          "durationMs": 14.199999928474426
+        }
+      ]
+    }
+  },
+  "pr58_disposition": {
+    "status": "closed as superseded, branch preserved; exact-head/history/check review and evidence comment completed by root",
+    "refs": {
+      "PR58": "8b035d45ab2f65b9e9275470b25b82cd27d673aa",
+      "PR59": "da07e3270d176ce6af05f9e381fae174fd6ce591",
+      "main": "b99d1c703226009f2004a06a332174124fbfd8a3"
+    },
+    "merge_base": "f66a225249ffde2eb4c3d5cf913f373c31b5365b",
+    "file_count": 15,
+    "identical_58_vs_59": 8,
+    "needed_cherry_picks": 0,
+    "pr59_to_pr58_additions": 50,
+    "pr59_to_pr58_deletions": 739
+  },
+  "historical_dispositions": {
+    "issues_kept_open": [
+      7,
+      39
+    ],
+    "duplicates_closed_with_surviving_implementation_comments": [
+      69,
+      72,
+      77
+    ],
+    "separate_scope_untouched": {
+      "pull_requests": [
+        79
+      ],
+      "issues": [
+        26,
+        23,
+        68
+      ]
+    },
+    "scientifically_blocked_outside_scope": [
+      19
+    ]
+  },
+  "limits": [
+    "Final main/static/deployment provenance must be populated after remaining merges and real deployment.",
+    "Main protection endpoint404 and empty rulesets; manual owner configuration remains.",
+    "Overview axe incomplete contrast nodes:32 light,29 dark; no screen-reader session or physical print job. Native Chrome/macOS cancellation smoke passed, with seven default-preview pages distinct from the eight-page selected-workflow PDF.",
+    "Local browser timings are small-sample localhost diagnostics, not field/mobile Core Web Vitals.",
+    "Router package findings remain moderate; present-source exposure assessment does not claim a patched Router6 package."
+  ],
+  "evidence_files": [
+    {
+      "path": "/tmp/diagnostic-governed-before.json",
+      "bytes": 357903,
+      "sha256": "2cc126c18bbc2e191bae3e2d6bb49c8c84c801d1bc84325d88d2b4df48589513"
+    },
+    {
+      "path": "/tmp/diagnostic-token-final-governed.json",
+      "bytes": 357903,
+      "sha256": "2cc126c18bbc2e191bae3e2d6bb49c8c84c801d1bc84325d88d2b4df48589513"
+    },
+    {
+      "path": "/tmp/diagnostic-token-final-governed-comparison.json",
+      "bytes": 9717,
+      "sha256": "ccabc937088ab886eb48f5e01a5df2426631453fd99dff84f1aec7345cb99322"
+    },
+    {
+      "path": "/tmp/diagnostic-reviewed-baseline-checksums.json",
+      "bytes": 12831,
+      "sha256": "507c10f9f3a229e1c7bf7800eeddcdfe8fc4f38ab83f7a6e6dd6cbbf6d9c4f99"
+    },
+    {
+      "path": "/tmp/diagnostic-pr58-59-comparison.json",
+      "bytes": 5486,
+      "sha256": "c8df33d7afe07b78e3e726544e0055f64af9226e44e77fe98b83c9f37294a528"
+    },
+    {
+      "path": "/tmp/diagnostic-r-results.json",
+      "bytes": 224,
+      "sha256": "afe19b59c6cd506cedf048e0013fe00bbfaf04ca2c3934f5ddb073cc2a736bd0"
+    },
+    {
+      "path": "/tmp/diagnostic-final-independent-r-tests.log",
+      "bytes": 1560,
+      "sha256": "0421142f02921111c2f7a56bbd88b4e6ad1c740835df0539c325da8588d4649a"
+    },
+    {
+      "path": "/tmp/diagnostic-token-tests.log",
+      "bytes": 62888,
+      "sha256": "9a4e992473c2aab7cd96e5ea9dfc10117ac069b7545c08a2ce16fbc80ccaa69d"
+    },
+    {
+      "path": "/tmp/diagnostic-final-python.log",
+      "bytes": 862,
+      "sha256": "c78afd4500dd44c77a6a0dc3d91721b8c9a625728388f128560b67f083e2eeb0"
+    },
+    {
+      "path": "/tmp/diagnostic-browser-token-final/qa-results.json",
+      "bytes": 368793,
+      "sha256": "e311b52340b3e3cc98805bf2a1f70a273fe8b91d6a411f5e1821e67606564e97"
+    },
+    {
+      "path": "/tmp/diagnostic-browser-token-final/governed-browser-comparison.json",
+      "bytes": 1937,
+      "sha256": "a89609cb00bc956a25ae522356b280b0d73846e9c71809c073e61ae84548a45e"
+    },
+    {
+      "path": "/tmp/diagnostic-browser-token-final/performance-comparison.json",
+      "bytes": 2137,
+      "sha256": "51c57c43f4ed0a6fee032c779e02e413b421048ac76ac838626659a4aa6ba246"
+    },
+    {
+      "path": "/tmp/diagnostic-browser-token-final/planning-brief.pdf",
+      "bytes": 574179,
+      "sha256": "c46338d1860a320952af2a1abf5a3b52b2f9ca7deeb2ec3b0ab2c04f581ec76b"
+    },
+    {
+      "path": "/tmp/diagnostic-browser-token-final/qa-matrix.md",
+      "bytes": 1478,
+      "sha256": "ab61f8c04daec37880f1a72570b09907a7d01565594390f4eb596b32e0686339"
+    },
+    {
+      "path": "/tmp/diagnostic-token-independent-review.md",
+      "bytes": 1445,
+      "sha256": "e9fb7ce7287630df9301da50fc1a4cb7e192d5b55c1a4068fdb145e2110efa3d"
+    },
+    {
+      "path": "/tmp/diagnostic-token-typecheck.log",
+      "bytes": 666,
+      "sha256": "cce03ec7725f716f66796bc4e5ca2e73ca435b578ec2ab51f8dc7c6c5240b255"
+    },
+    {
+      "path": "/tmp/diagnostic-token-lint.log",
+      "bytes": 62,
+      "sha256": "c5ed91ecc78a0ebce479d00d8f12832213ac55c97e0d4638a0fffa69fdad9cf6"
+    }
+  ],
+  "durable_attachments": [
+    "docs/audit-2026-10-10/qa-matrix.md",
+    "docs/audit-2026-10-10/acceptance-summary.json",
+    "docs/audit-2026-10-10/governed-comparison.json",
+    "docs/audit-2026-10-10/governed-browser-comparison.json",
+    "docs/audit-2026-10-10/performance-comparison.json",
+    "docs/audit-2026-10-10/pr58-pr59-comparison.json",
+    "docs/audit-2026-10-10/visual-review.md",
+    "docs/audit-2026-10-10/planning-brief.pdf",
+    "docs/audit-2026-10-10/screenshots/"
+  ],
+  "native_print_smoke": {
+    "date": "2026-10-10",
+    "method": "Native macOS Google Chrome UI through cua_repl",
+    "url": "http://127.0.0.1:4177/brief",
+    "source_code_sha": "d578be2df7ce5ccce3facc32b533d9b574ac4bdb",
+    "initial_disclosures": {
+      "economic": "open",
+      "administrative": "closed",
+      "mental_health": "closed"
+    },
+    "actual_chrome_print_preview": "PASS; default scenario rendered seven Letter pages with all three technical disclosures",
+    "actual_macos_system_print_dialog": "PASS; opened and cancelled without submitting a print job",
+    "restored_disclosures": {
+      "economic": "open",
+      "administrative": "closed",
+      "mental_health": "closed"
+    },
+    "focus_restored": "Print / save PDF button",
+    "user_tabs_preserved": true,
+    "notes": "Dedicated test tab was closed after verification. The separate selected-workflow headless PDF has eight pages and was reviewed independently. No screen-reader or physical-printer claim."
+  },
+  "hygiene_followup": {
+    "baseline_main_sha": "1910fd98b84cefa50ed64084af07b226739195cb",
+    "tested_application_commit": "4a8375add79a5c532def8f40a0bee7822821e8f7",
+    "implementation_commits": [
+      "1116fe5ab71f4d635f3d3fba5fdc2fb9bb5fa248",
+      "4a8375add79a5c532def8f40a0bee7822821e8f7"
+    ],
+    "authorization": "User approved revised plan: two small presentation fixes, annotated historical tags and conditionally safe deletion; independent merge review required; production deployment forbidden without separate authorization.",
+    "branch_inventory": [
+      {
+        "branch": "contracts/narrative-intervention-references-phase-a",
+        "head_sha": "e1da9ebc4a0e9408579b0da7229dfce7c01a241d",
+        "tree_sha": "57c4d9b629f19b6d3c6ab3194ee9a9737d27748f",
+        "associated_prs": [
+          {
+            "number": 79,
+            "state": "open",
+            "merged_at": null,
+            "updated_at": "2026-10-09T16:19:51Z"
+          }
+        ],
+        "ahead": 4,
+        "behind": 64,
+        "merge_base": "b99d1c703226009f2004a06a332174124fbfd8a3",
+        "unique_commits": [
+          "e1da9ebc4a0e9408579b0da7229dfce7c01a241d fix(narrative-contract): accept canonical second-precision UTC timestamps",
+          "929580f3ecea859183fce06df09e204248f157a6 test(narrative-contract): add negative guards and document promotion boundary",
+          "840b36ef653118f4e464093e0ef055c7144b180e feat(narrative-contract): validate provenance, admission gates and closed JSON objects",
+          "123f5b2327440d2d07d8fab092207bd09bc7d0fc feat(narrative-contract): define standalone narrative-only types and closed JSON schema"
+        ],
+        "changed_files": [
+          "A\tpackages/narrative-references/README.md",
+          "A\tpackages/narrative-references/package.json",
+          "A\tpackages/narrative-references/schema/narrative-intervention-references.v1.schema.json",
+          "A\tpackages/narrative-references/src/index.ts",
+          "A\tpackages/narrative-references/src/types.ts",
+          "A\tpackages/narrative-references/src/validate.ts",
+          "A\tpackages/narrative-references/test/narrative-contract.test.ts",
+          "A\tpackages/narrative-references/tsconfig.json"
+        ],
+        "patch_equivalence": [
+          "+ 123f5b2327440d2d07d8fab092207bd09bc7d0fc",
+          "+ 840b36ef653118f4e464093e0ef055c7144b180e",
+          "+ 929580f3ecea859183fce06df09e204248f157a6",
+          "+ e1da9ebc4a0e9408579b0da7229dfce7c01a241d"
+        ],
+        "reason": "Active PR79; separate narrative-reference contract workstream; retained unchanged.",
+        "action": "retained",
+        "archive": null,
+        "disposition": "Keep \u2014 active"
+      },
+      {
+        "branch": "demo/deploy-ready-2026-10-06-b99d1c70",
+        "head_sha": "6a216270094519b45421db91a6eb80e7b6c07ee5",
+        "tree_sha": "d9218b778ec0bf81e05c4e4e488833075e65193e",
+        "associated_prs": [],
+        "independent_history": true,
+        "changed_files": [
+          "README.md",
+          "SHA256SUMS",
+          "_headers",
+          "assets/index-D24PT-ZR.css",
+          "assets/index-D79TFG21.js",
+          "build-provenance.json",
+          "diagnostic-odyssey-horizontal.png",
+          "diagnostic-odyssey-icon.png",
+          "diagnostic-odyssey-mark.svg",
+          "index.html",
+          "netlify.toml",
+          "vercel.json"
+        ],
+        "reason": "Independent-history static release; retained unchanged until source merge review.",
+        "action": "retained",
+        "archive": null,
+        "disposition": "Keep \u2014 active"
+      },
+      {
+        "branch": "main",
+        "head_sha": "1910fd98b84cefa50ed64084af07b226739195cb",
+        "tree_sha": "6c41b657d5e55c827705471c236af80ac1556236",
+        "associated_prs": [],
+        "ahead": 0,
+        "behind": 0,
+        "merge_base": "1910fd98b84cefa50ed64084af07b226739195cb",
+        "unique_commits": [],
+        "changed_files": [],
+        "patch_equivalence": [],
+        "reason": "Approved source baseline; retained unchanged.",
+        "action": "retained",
+        "archive": null,
+        "disposition": "Keep \u2014 active"
+      },
+      {
+        "branch": "methods/meps-linked-condition-candidate-estimators",
+        "head_sha": "8b035d45ab2f65b9e9275470b25b82cd27d673aa",
+        "tree_sha": "b7f72c86db710e569d891233d3e5478074acadc4",
+        "associated_prs": [
+          {
+            "number": 58,
+            "state": "closed",
+            "merged_at": null,
+            "updated_at": "2026-10-10T11:50:46Z"
+          }
+        ],
+        "ahead": 6,
+        "behind": 144,
+        "merge_base": "f66a225249ffde2eb4c3d5cf913f373c31b5365b",
+        "unique_commits": [
+          "8b035d45ab2f65b9e9275470b25b82cd27d673aa test(contracts): guard linked-condition candidate fixture access",
+          "6bc4ce44cf0a99d69d5dc89793fa44bae1555d82 docs(meps): document linked-condition candidate implementation",
+          "45417118610bc019cdf4cd49d54c98a51e90225f ci(meps): add manual linked-condition candidate workflow",
+          "47dcaa1d9d589f1c262091fcacae71aa42948d62 feat(meps): add linked-condition candidate artifact contract",
+          "c235121d0b5de71cb4180370068dcce65dc9664e feat(meps): estimate U09 linked service-use candidates",
+          "b55f88c91dcc5fd720557646a3b6f0596d033888 feat(meps): derive candidate U09 service-use person counts"
+        ],
+        "changed_files": [
+          "A\t.github/workflows/meps-linked-condition-candidate.yml",
+          "M\tanalysis/r/lib/survey_design_diagnostics.R",
+          "M\tanalysis/r/meps/bootstrap.R",
+          "A\tanalysis/r/meps/estimate_linked_condition_service_use.R",
+          "A\tanalysis/r/meps/linked_condition_service_use.R",
+          "A\tanalysis/r/meps/run_linked_condition_candidate.R",
+          "A\tanalysis/r/tests/testthat/test-linked-condition-candidate-runner.R",
+          "A\tanalysis/r/tests/testthat/test-linked-condition-candidate-workflow-contract.R",
+          "A\tanalysis/r/tests/testthat/test-linked-condition-estimators.R",
+          "M\tanalysis/r/tests/testthat/test-linked-condition-feasibility.R",
+          "A\tdocs/methods/meps-2024-linked-condition-candidate-implementation.md",
+          "M\tpackages/contracts/src/index.ts",
+          "A\tpackages/contracts/src/linked-condition-candidate.ts",
+          "A\tpackages/contracts/src/validate-linked-condition-candidate-cli.ts",
+          "A\tpackages/contracts/test/linked-condition-candidate.test.ts"
+        ],
+        "patch_equivalence": [
+          "- b55f88c91dcc5fd720557646a3b6f0596d033888",
+          "- c235121d0b5de71cb4180370068dcce65dc9664e",
+          "- 47dcaa1d9d589f1c262091fcacae71aa42948d62",
+          "- 45417118610bc019cdf4cd49d54c98a51e90225f",
+          "- 6bc4ce44cf0a99d69d5dc89793fa44bae1555d82",
+          "- 8b035d45ab2f65b9e9275470b25b82cd27d673aa"
+        ],
+        "reason": "All six patches have equivalents; PR59 and later precision governance preserve stronger behavior. PR58 closed after 15-file comparison; no needed methodological cherry-pick.",
+        "action": "deleted",
+        "archive": null,
+        "disposition": "Delete \u2014 safe"
+      },
+      {
+        "branch": "methods-variance-review",
+        "head_sha": "c33812d1f8be91727860682425b11957795c427c",
+        "tree_sha": "b717752ced4c63f4c9a24f58a5129c6a4d6ad228",
+        "associated_prs": [],
+        "ahead": 1,
+        "behind": 418,
+        "merge_base": "24ed79154db36b6d8bab9cc8bead32bf57df8c8c",
+        "unique_commits": [
+          "c33812d1f8be91727860682425b11957795c427c test: add real-data MEPS variance policy review"
+        ],
+        "changed_files": [
+          "A\t.github/workflows/meps-variance-review.yml",
+          "A\tanalysis/r/meps/review_variance_policy.R"
+        ],
+        "patch_equivalence": [
+          "+ c33812d1f8be91727860682425b11957795c427c"
+        ],
+        "reason": "Main preserves hardened review tooling and original commit/run provenance. Annotated tag also preserves the complete original script and workflow.",
+        "action": "deleted",
+        "archive": {
+          "branch": "methods-variance-review",
+          "tag": "archive/2026-10-10/methods-variance-review",
+          "tag_object_sha": "8204cafec5208c08bedcc673a94f907679f6d2dc",
+          "target_sha": "c33812d1f8be91727860682425b11957795c427c",
+          "tree_sha": "b717752ced4c63f4c9a24f58a5129c6a4d6ad228"
+        },
+        "disposition": "Archive then delete"
+      },
+      {
+        "branch": "promotion-helper-meps-2024",
+        "head_sha": "15e412913098e1c8b9f74282de6b789e4dfde6ca",
+        "tree_sha": "062fe1b9d046a09c5db16ec0052afe751edc7b8a",
+        "associated_prs": [],
+        "ahead": 2,
+        "behind": 407,
+        "merge_base": "8952bb7446b7b0461e41f1794146ab5e612ebf40",
+        "unique_commits": [
+          "15e412913098e1c8b9f74282de6b789e4dfde6ca fix: harden one-time promotion helper checks",
+          "e3e348980feb0d69c05de0497039c9f043ce35ea chore: add one-time reviewed MEPS promotion helper"
+        ],
+        "changed_files": [
+          "A\t.github/workflows/promote-reviewed-meps-2024.yml"
+        ],
+        "patch_equivalence": [
+          "+ e3e348980feb0d69c05de0497039c9f043ce35ea",
+          "+ 15e412913098e1c8b9f74282de6b789e4dfde6ca"
+        ],
+        "reason": "One-time promotion completed; historical helper contains approved identities/hashes. Complete tree archived without reactivating its write workflow.",
+        "action": "deleted",
+        "archive": {
+          "branch": "promotion-helper-meps-2024",
+          "tag": "archive/2026-10-10/promotion-helper-meps-2024",
+          "tag_object_sha": "edf1bc7a57fb707468ddb29045e83eaf4a9b4198",
+          "target_sha": "15e412913098e1c8b9f74282de6b789e4dfde6ca",
+          "tree_sha": "062fe1b9d046a09c5db16ec0052afe751edc7b8a"
+        },
+        "disposition": "Archive then delete"
+      },
+      {
+        "branch": "security/pin-workflow-actions",
+        "head_sha": "15e6bb2f7de0d073661494bec72d6bf0d169604d",
+        "tree_sha": "29c1ce44d659ae4f5e8454b41b25bdb4dafe268f",
+        "associated_prs": [
+          {
+            "number": 81,
+            "state": "closed",
+            "merged_at": "2026-10-10T11:40:28Z",
+            "updated_at": "2026-10-10T11:42:23Z"
+          }
+        ],
+        "ahead": 0,
+        "behind": 51,
+        "merge_base": "15e6bb2f7de0d073661494bec72d6bf0d169604d",
+        "unique_commits": [],
+        "changed_files": [],
+        "patch_equivalence": [],
+        "reason": "Exact HEAD is an ancestor of main; merged PR81.",
+        "action": "deleted",
+        "archive": null,
+        "disposition": "Delete \u2014 safe"
+      },
+      {
+        "branch": "test/add-try-load-linked-condition-error-path-test-4505736616952437946",
+        "head_sha": "bdc7b059d7de69b9a450a46625f722e4e274721e",
+        "tree_sha": "34b8d0ca450f78585f9c3a2ee699695fb1f6c8ae",
+        "associated_prs": [
+          {
+            "number": 71,
+            "state": "closed",
+            "merged_at": "2026-10-10T11:31:27Z",
+            "updated_at": "2026-10-10T11:31:27Z"
+          }
+        ],
+        "ahead": 0,
+        "behind": 60,
+        "merge_base": "bdc7b059d7de69b9a450a46625f722e4e274721e",
+        "unique_commits": [],
+        "changed_files": [],
+        "patch_equivalence": [],
+        "reason": "Exact HEAD is an ancestor of main; merged PR71.",
+        "action": "deleted",
+        "archive": null,
+        "disposition": "Delete \u2014 safe"
+      },
+      {
+        "branch": "test/brief-page-print-error-path-10108248051161208280",
+        "head_sha": "41aefdc7506e59d1cb8f48e47911c17cc79915c2",
+        "tree_sha": "bdcd245aa596777ad887fbf4943ac5fe078d3443",
+        "associated_prs": [
+          {
+            "number": 72,
+            "state": "closed",
+            "merged_at": null,
+            "updated_at": "2026-10-10T11:39:56Z"
+          }
+        ],
+        "ahead": 3,
+        "behind": 64,
+        "merge_base": "b99d1c703226009f2004a06a332174124fbfd8a3",
+        "unique_commits": [
+          "41aefdc7506e59d1cb8f48e47911c17cc79915c2 test: add error path test for BriefPage print handler",
+          "e7a0178ea3e299dedd87ef358402b54b9396c2c2 test: add error path test for BriefPage print handler",
+          "b4d694c31c74a3661c494c6e2f2c4ed07fe0d431 test: add error path test for BriefPage print handler"
+        ],
+        "changed_files": [
+          "M\tapps/web/src/pages/BriefPage.tsx",
+          "M\tapps/web/src/pages/briefPrint.ts",
+          "M\tapps/web/test/brief-print.test.ts"
+        ],
+        "patch_equivalence": [
+          "+ b4d694c31c74a3661c494c6e2f2c4ed07fe0d431",
+          "- e7a0178ea3e299dedd87ef358402b54b9396c2c2",
+          "- 41aefdc7506e59d1cb8f48e47911c17cc79915c2"
+        ],
+        "reason": "Superseded by merged PR75/84; current tests preserve failure, null-state, asynchronous restoration and cleanup. PR72 closed and agent acknowledged supersession.",
+        "action": "deleted",
+        "archive": null,
+        "disposition": "Delete \u2014 safe"
+      },
+      {
+        "branch": "test/fragment-navigation-decode-error-11645379645524263885",
+        "head_sha": "cd435a94c219c36367e4c42e59dd469bab032b0d",
+        "tree_sha": "005a67bb7a26e4eba51b6fc5abc52f5e551ab7e1",
+        "associated_prs": [
+          {
+            "number": 69,
+            "state": "closed",
+            "merged_at": null,
+            "updated_at": "2026-10-10T11:28:16Z"
+          }
+        ],
+        "ahead": 4,
+        "behind": 64,
+        "merge_base": "b99d1c703226009f2004a06a332174124fbfd8a3",
+        "unique_commits": [
+          "cd435a94c219c36367e4c42e59dd469bab032b0d test(web): add error path test for decodeURIComponent in fragmentNavigation",
+          "6551d3f9a61c2f869fffac1bde32e165f190c5e6 test(web): add error path test for decodeURIComponent in fragmentNavigation",
+          "30c6b73ca12bc0d211a3aa9b4d3b014597e3a7d0 test(web): add error path test for decodeURIComponent in fragmentNavigation",
+          "c4d1d7a36fca91275ef068751767b11557249075 test(web): add error path test for decodeURIComponent in fragmentNavigation"
+        ],
+        "changed_files": [
+          "A\t.github/jules-review-rules.md",
+          "M\tapps/web/test/fragment-navigation.test.ts"
+        ],
+        "patch_equivalence": [
+          "+ c4d1d7a36fca91275ef068751767b11557249075",
+          "- 30c6b73ca12bc0d211a3aa9b4d3b014597e3a7d0",
+          "- 6551d3f9a61c2f869fffac1bde32e165f190c5e6",
+          "+ cd435a94c219c36367e4c42e59dd469bab032b0d"
+        ],
+        "reason": "PR70 preserves required navigation behavior. Tag preserves unique reviewer-rule documentation and test variants. PR69 closed and agent acknowledged stopping work.",
+        "action": "deleted",
+        "archive": {
+          "branch": "test/fragment-navigation-decode-error-11645379645524263885",
+          "tag": "archive/2026-10-10/test/fragment-navigation-decode-error-11645379645524263885",
+          "tag_object_sha": "79c03a99a872e0ad9415b9c85beab9793a7d8a4d",
+          "target_sha": "cd435a94c219c36367e4c42e59dd469bab032b0d",
+          "tree_sha": "005a67bb7a26e4eba51b6fc5abc52f5e551ab7e1"
+        },
+        "disposition": "Archive then delete"
+      },
+      {
+        "branch": "test/governed-maintenance-regressions",
+        "head_sha": "fe24ab40d265e2a3e5fecf194aed09ea1597de6a",
+        "tree_sha": "884837a9556bc94a80e389d932549a96760d31c3",
+        "associated_prs": [
+          {
+            "number": 86,
+            "state": "closed",
+            "merged_at": "2026-10-10T11:47:26Z",
+            "updated_at": "2026-10-10T12:02:20Z"
+          }
+        ],
+        "ahead": 0,
+        "behind": 24,
+        "merge_base": "fe24ab40d265e2a3e5fecf194aed09ea1597de6a",
+        "unique_commits": [],
+        "changed_files": [],
+        "patch_equivalence": [],
+        "reason": "Exact HEAD is an ancestor of main; merged PR86 preserves tests and governed comparison tools.",
+        "action": "deleted",
+        "archive": null,
+        "disposition": "Delete \u2014 safe"
+      }
+    ],
+    "archive_tags": [
+      {
+        "branch": "methods-variance-review",
+        "tag": "archive/2026-10-10/methods-variance-review",
+        "tag_object_sha": "8204cafec5208c08bedcc673a94f907679f6d2dc",
+        "target_sha": "c33812d1f8be91727860682425b11957795c427c",
+        "tree_sha": "b717752ced4c63f4c9a24f58a5129c6a4d6ad228"
+      },
+      {
+        "branch": "promotion-helper-meps-2024",
+        "tag": "archive/2026-10-10/promotion-helper-meps-2024",
+        "tag_object_sha": "edf1bc7a57fb707468ddb29045e83eaf4a9b4198",
+        "target_sha": "15e412913098e1c8b9f74282de6b789e4dfde6ca",
+        "tree_sha": "062fe1b9d046a09c5db16ec0052afe751edc7b8a"
+      },
+      {
+        "branch": "test/fragment-navigation-decode-error-11645379645524263885",
+        "tag": "archive/2026-10-10/test/fragment-navigation-decode-error-11645379645524263885",
+        "tag_object_sha": "79c03a99a872e0ad9415b9c85beab9793a7d8a4d",
+        "target_sha": "cd435a94c219c36367e4c42e59dd469bab032b0d",
+        "tree_sha": "005a67bb7a26e4eba51b6fc5abc52f5e551ab7e1"
+      }
+    ],
+    "cleanup_verified_at_utc": "2026-10-10T21:39:33.973144+00:00",
+    "remaining_initial_branches": {
+      "refs/heads/contracts/narrative-intervention-references-phase-a": "e1da9ebc4a0e9408579b0da7229dfce7c01a241d",
+      "refs/heads/demo/deploy-ready-2026-10-06-b99d1c70": "6a216270094519b45421db91a6eb80e7b6c07ee5",
+      "refs/heads/main": "1910fd98b84cefa50ed64084af07b226739195cb"
+    },
+    "fresh_validation": {
+      "node": "22.23.3",
+      "npm": "10.9.9",
+      "typecheck": "pass",
+      "lint": "pass",
+      "build": "pass",
+      "javascript_tests": 288,
+      "javascript_failures": 0,
+      "reviewed_files_byte_identical": 27,
+      "reviewed_manifest_payloads_valid": 23,
+      "governed_snapshot_sha256": "2cc126c18bbc2e191bae3e2d6bb49c8c84c801d1bc84325d88d2b4df48589513",
+      "governed_unchanged": true,
+      "scenario_count": 11,
+      "sensitivity_points": 150,
+      "serialized_brief_cases": 3,
+      "browser": "154.0.8037.98",
+      "playwright": "1.64.0",
+      "axe": "4.11.1",
+      "browser_groups": 26,
+      "browser_matrix": [
+        {
+          "name": "11 direct routes: desktop light",
+          "status": "PASS"
+        },
+        {
+          "name": "11 direct routes: desktop dark",
+          "status": "PASS"
+        },
+        {
+          "name": "11 direct routes: tablet light",
+          "status": "PASS"
+        },
+        {
+          "name": "11 direct routes: tablet dark",
+          "status": "PASS"
+        },
+        {
+          "name": "11 direct routes: mobile light",
+          "status": "PASS"
+        },
+        {
+          "name": "11 direct routes: mobile dark",
+          "status": "PASS"
+        },
+        {
+          "name": "history, keyboard skip link, mobile menu and anchor focus",
+          "status": "PASS"
+        },
+        {
+          "name": "full explicit selection workflow, sensitivities, actual JSON, stale requests, print restoration",
+          "status": "PASS"
+        },
+        {
+          "name": "browser API fallback: missingMatchMedia",
+          "status": "PASS"
+        },
+        {
+          "name": "browser API fallback: incompleteMatchMedia",
+          "status": "PASS"
+        },
+        {
+          "name": "browser API fallback: throwingMatchMedia",
+          "status": "PASS"
+        },
+        {
+          "name": "browser API fallback: blockedStorage",
+          "status": "PASS"
+        },
+        {
+          "name": "appearance persistence and reduced motion opening",
+          "status": "PASS"
+        },
+        {
+          "name": "local context labels preserve native scores and exported uncertainty across responsive themes",
+          "status": "PASS"
+        },
+        {
+          "name": "browser theme color follows bootstrap, explicit preferences, system changes and other tabs",
+          "status": "PASS"
+        },
+        {
+          "name": "invalid numeric drafts preserve last applied scenario and JSON",
+          "status": "PASS"
+        },
+        {
+          "name": "extreme finite scenario layout and invalid sensitivity remain usable",
+          "status": "PASS"
+        },
+        {
+          "name": "rendered WCAG accessibility: light",
+          "status": "PASS"
+        },
+        {
+          "name": "rendered WCAG accessibility: dark",
+          "status": "PASS"
+        },
+        {
+          "name": "rendered fail-closed artifact error: national",
+          "status": "PASS"
+        },
+        {
+          "name": "rendered fail-closed artifact error: local",
+          "status": "PASS"
+        },
+        {
+          "name": "initial loading DOM commit before synchronous artifact validation",
+          "status": "PASS"
+        },
+        {
+          "name": "opening animation settles, does not replay, and respects motion changes",
+          "status": "PASS"
+        },
+        {
+          "name": "media-query subscriptions clean up across Brief navigation",
+          "status": "PASS"
+        },
+        {
+          "name": "keyboard-only selections, scenario control, request opt-in and JSON export",
+          "status": "PASS"
+        },
+        {
+          "name": "cold browser load measurements",
+          "status": "PASS"
+        }
+      ],
+      "browser_snapshot_comparison": [
+        {
+          "key": "defaultBrief",
+          "status": "PASS",
+          "beforeSha256": "caf3025c68cb9447ea3dbe264425981f36e9bb1611ab840cdd15ed19d6ce023a",
+          "afterSha256": "caf3025c68cb9447ea3dbe264425981f36e9bb1611ab840cdd15ed19d6ce023a"
+        },
+        {
+          "key": "selectedBrief",
+          "status": "PASS",
+          "beforeSha256": "b01b8b85a4d8cae86037dc2df6940e133a8f98e09320422104a3d46391a25e1d",
+          "afterSha256": "b01b8b85a4d8cae86037dc2df6940e133a8f98e09320422104a3d46391a25e1d"
+        },
+        {
+          "key": "staleBrief",
+          "status": "PASS",
+          "beforeSha256": "bb7f58b9fc7351b153cf734826fcc6a14f54ae49352973a98e34ddb722583c4c",
+          "afterSha256": "bb7f58b9fc7351b153cf734826fcc6a14f54ae49352973a98e34ddb722583c4c"
+        },
+        {
+          "key": "refreshedBrief",
+          "status": "PASS",
+          "beforeSha256": "acc05757980e8976128186e78856690c450f3d4f49bcd10414bd93c780e1a85b",
+          "afterSha256": "acc05757980e8976128186e78856690c450f3d4f49bcd10414bd93c780e1a85b"
+        },
+        {
+          "key": "capacitySensitivity",
+          "status": "PASS",
+          "beforeSha256": "8d9b53bf7bf4f4229c6c889c80e97b2edeb9728c9ebc73e72db62253b84b79fe",
+          "afterSha256": "8d9b53bf7bf4f4229c6c889c80e97b2edeb9728c9ebc73e72db62253b84b79fe"
+        },
+        {
+          "key": "reachSensitivity",
+          "status": "PASS",
+          "beforeSha256": "04993f46f3712b7bd3da4c4669f41790db298ffd11c02e01ec0838ffbe93bf17",
+          "afterSha256": "04993f46f3712b7bd3da4c4669f41790db298ffd11c02e01ec0838ffbe93bf17"
+        },
+        {
+          "key": "windowSensitivity",
+          "status": "PASS",
+          "beforeSha256": "2b58c60850043134d697088b12a01b6ff5b6372848abd1ac201e0b27b1cb72ef",
+          "afterSha256": "2b58c60850043134d697088b12a01b6ff5b6372848abd1ac201e0b27b1cb72ef"
+        }
+      ],
+      "visual_review": "Desktop/light and mobile/dark HPSA cards and complete PDF pages 7/8 inspected; native points and uncertainty disclosures are legible with no clipped text. Long existing provenance paragraphs may continue across pages."
+    },
+    "reused_evidence": {
+      "source_sha": "1910fd98b84cefa50ed64084af07b226739195cb",
+      "record": "https://github.com/Ianyliu/diagnostic-odyssey/pull/92#issuecomment-6102220045",
+      "python_tests": 51,
+      "R_assertions": 829,
+      "reason": "Python/R, analytical configuration, workflow code and reviewed inputs are unchanged. Exact-head CI remains required. Native print-dialog cancellation evidence is reused; no new native-dialog or screen-reader session is claimed."
+    },
+    "candidate_build_files": [
+      {
+        "path": "assets/index-D24PT-ZR.css",
+        "bytes": 100980,
+        "sha256": "cfcccb91d15e50bf31de5219877df13f9d8e5cb6ebf7f4faaf2fc0a95a36c6c5",
+        "matches_existing_static": true
+      },
+      {
+        "path": "assets/index-DzXhtyp7.js",
+        "bytes": 506776,
+        "sha256": "7f4d77719ee5d2c0ec59a7ee4826a72a07086ee0084407ca69f3d82dc65a84c6",
+        "matches_existing_static": false
+      },
+      {
+        "path": "diagnostic-odyssey-horizontal.png",
+        "bytes": 58175,
+        "sha256": "c0081b24c9c6826cc0d6911650134754c5a937c1736c1394348281847afa4194",
+        "matches_existing_static": true
+      },
+      {
+        "path": "diagnostic-odyssey-icon.png",
+        "bytes": 39345,
+        "sha256": "47584bd120cb52e41046c58367388b8e58a91542d4bcb3a1138ef0a8885bdad2",
+        "matches_existing_static": true
+      },
+      {
+        "path": "diagnostic-odyssey-mark.svg",
+        "bytes": 444,
+        "sha256": "5a7b4da5d9dcdb6abb802b5cff5a6cd3a1749c338f86ba166555e6b1cced6294",
+        "matches_existing_static": true
+      },
+      {
+        "path": "index.html",
+        "bytes": 1642,
+        "sha256": "5b06322f03a4fee9ff6b9c55d26d1e8ac4ab82784899aaf63afe24c536c15903",
+        "matches_existing_static": false
+      }
+    ],
+    "static_release_gate": {
+      "approved_source_main_sha": "1910fd98b84cefa50ed64084af07b226739195cb",
+      "static_head_before": "6a216270094519b45421db91a6eb80e7b6c07ee5",
+      "static_head_after": "6a216270094519b45421db91a6eb80e7b6c07ee5",
+      "source_candidate_not_merged": true,
+      "candidate_output_differs": true,
+      "action": "No static commit before independent source review and authorized merge. Rebuild exact approved main after merge; refresh only generated output/provenance/checksums if changed.",
+      "production_deployment_triggered": false,
+      "existing_production_deployment_id": "171fdf6b-839c-4852-9449-6a5aba6516bc"
+    },
+    "issue_status": {
+      "7": "Audit and all initial branch dispositions complete; recommend closure after independent acceptance of this evidence. Remaining implementation work is tracked in #39. Not automatically closed.",
+      "39": "Branch cleanup complete; theme-color and labels implemented in unmerged PR candidate. Keep open for deferred readability/regex cleanup and compatibility-reviewed active-manifest migration.",
+      "40": "Maintain #39 and independent Final workstreams as incomplete."
+    },
+    "local_evidence_directory": "/Users/ianliu/code/diagnostic-odyssey/.maintenance-local/hygiene-2026-10-10",
+    "ci_status": "Pending exact final PR HEAD; record workflow identifiers in PR conversation after push."
+  }
+}

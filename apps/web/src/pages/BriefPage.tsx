@@ -1,3 +1,4 @@
+import { formatPlanningCurrency, formatPlanningNumber } from "../data/planningNumberFormatting.ts";
 import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { buildPlanningBrief, serializeBriefJson } from "@diagnostic-odyssey/brief-core";
@@ -35,8 +36,10 @@ import {
   pilotInputFields
 } from "../data/pilotInputDraft";
 import { formatAppliedAssumption } from "./briefAssumptions";
-import { createBriefPrintDisclosureState } from "./briefPrint";
+import { createBriefPrintDisclosureState, executeBriefPrint, watchBriefPrintMedia } from "./briefPrint";
 import "./BriefPage.css";
+
+const resultNumber = new Intl.NumberFormat("en-US");
 
 function AccessibleEstimateInterval({estimate}: {estimate: Estimate}) {
   const interval = formatEstimateInterval(estimate);
@@ -75,15 +78,11 @@ export function BriefPage() {
     printDisclosureState.current = state;
     window.addEventListener("beforeprint", state.prepare);
     window.addEventListener("afterprint", state.restore);
-    const printMedia = window.matchMedia?.("print");
-    const onPrintMediaChange = () => {
-      if (!printMedia?.matches) state.restore();
-    };
-    printMedia?.addEventListener?.("change", onPrintMediaChange);
+    const stopWatchingPrintMedia = watchBriefPrintMedia(state);
     return () => {
       window.removeEventListener("beforeprint", state.prepare);
       window.removeEventListener("afterprint", state.restore);
-      printMedia?.removeEventListener?.("change", onPrintMediaChange);
+      stopWatchingPrintMedia();
       state.restore();
       if (printDisclosureState.current === state) printDisclosureState.current = null;
     };
@@ -143,13 +142,7 @@ export function BriefPage() {
   };
 
   const printBrief = () => {
-    printDisclosureState.current?.prepare();
-    try {
-      window.print();
-    } catch (error) {
-      printDisclosureState.current?.restore();
-      throw error;
-    }
+    executeBriefPrint(printDisclosureState.current);
   };
 
   return <section className="page page-stack planning-brief-page" ref={pageRef}>
@@ -160,7 +153,7 @@ export function BriefPage() {
       <p>Deterministic synthesis of reviewed national burden, analyst-supplied planning assumptions, explicitly selected implementation context, evidence gaps, and interpretation guardrails.</p>
     </header>
 
-    <div className="print-provenance" aria-label="Planning Brief provenance">
+    <div className="print-provenance" role="group" aria-label="Planning Brief provenance">
       <strong>Brief provenance</strong>
       <span><b>National reviewed artifact:</b> {brief.artifact_version}</span>
       {brief.context.local_context_id && <span><b>Reviewed local-context artifact:</b> {brief.context.local_context_id}</span>}
@@ -293,9 +286,9 @@ export function BriefPage() {
           <h2>Scenario outputs</h2>
           <p className="subtle">Deterministic planning quantities from the applied assumptions above; these are not a forecast or observed evidence.</p>
           <dl className="brief-output-list">
-            <div><dt>Participants within capacity</dt><dd>{brief.scenario.result.reached_participants.toLocaleString()}</dd></div>
-            <div><dt>Person-month planning exposure difference</dt><dd>{brief.scenario.result.difference_person_months.toLocaleString()}</dd></div>
-            <div><dt>Program-resource requirement</dt><dd>{new Intl.NumberFormat("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0}).format(brief.scenario.result.program_resource_requirement)}</dd></div>
+            <div><dt>Participants within capacity</dt><dd>{formatPlanningNumber(brief.scenario.result.reached_participants, resultNumber)}</dd></div>
+            <div><dt>Person-month planning exposure difference</dt><dd>{formatPlanningNumber(brief.scenario.result.difference_person_months, resultNumber)}</dd></div>
+            <div><dt>Program-resource requirement</dt><dd>{formatPlanningCurrency(brief.scenario.result.program_resource_requirement)}</dd></div>
           </dl>
             <section className="brief-decision-trace" aria-labelledby="brief-decision-trace-title">
               <h3 id="brief-decision-trace-title">Decision trace</h3>

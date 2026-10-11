@@ -1,3 +1,4 @@
+import { formatPlanningNumber } from "../data/planningNumberFormatting.ts";
 import type { Scenario } from "@diagnostic-odyssey/contracts";
 import type { PilotInputFieldDefinition } from "../data/pilotInputDraft";
 import { formatSensitivityInput } from "../data/sensitivityPresentation.ts";
@@ -5,7 +6,7 @@ import { formatSensitivityInput } from "../data/sensitivityPresentation.ts";
 const readableNumber = new Intl.NumberFormat("en-US", { maximumFractionDigits: 20 });
 
 function exactReadableNumber(value: number): string {
-  const formatted = readableNumber.format(value);
+  const formatted = formatPlanningNumber(value, readableNumber);
   return Number(formatted.replaceAll(",", "")) === value ? formatted : value.toString();
 }
 

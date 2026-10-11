@@ -62,7 +62,7 @@ export function OverviewPage() {
           <p className="overview-lede">
             Diagnostic Odyssey keeps reviewed national burden, local implementation context, and analyst assumptions visibly separate—then carries their provenance into one planning workflow.
           </p>
-          <div className="overview-hero-actions" aria-label="Start exploring Diagnostic Odyssey">
+          <div className="overview-hero-actions" role="group" aria-label="Start exploring Diagnostic Odyssey">
             <Link className="button overview-primary-cta" to="/burden">Explore reviewed burden</Link>
             <Link className="button secondary overview-secondary-cta" to="/pilot">Open Pilot planner</Link>
           </div>

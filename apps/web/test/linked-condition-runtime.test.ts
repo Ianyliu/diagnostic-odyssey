@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import test from "node:test";
+import test, { mock } from "node:test";
 import {
   ACTIVE_LINKED_CONDITION_PRODUCT_POLICY_VERSION,
   ACTIVE_REVIEWED_LINKED_CONDITION_ARTIFACT_VERSION,
@@ -79,6 +79,14 @@ test("specialized loader invokes merged reviewed-package validation before selec
     () => selectReviewedLinkedConditionSecondaryEvidence(malformed),
     /Invalid reviewed linked-condition package/
   );
+
+  const failingLoader = mock.fn(() => {
+    throw new Error("Simulated loader error");
+  });
+  const errorState = tryLoadReviewedLinkedConditionSecondaryEvidence(failingLoader);
+  assert.equal(errorState.status, "unavailable");
+  assert.equal(errorState.evidence, null);
+  assert.equal(failingLoader.mock.calls.length, 1);
 });
 
 test("active runtime pins reject artifact and policy version drift", () => {

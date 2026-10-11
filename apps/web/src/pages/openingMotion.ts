@@ -1,3 +1,5 @@
+import { getBrowserMediaQuery, readMediaQueryMatches } from "../browserMedia.ts";
+
 export const OPENING_SESSION_KEY = "diagnostic-odyssey.opening-seen";
 
 export interface OpeningDecision {
@@ -21,6 +23,14 @@ export function shouldPlayOpening({
   } catch {
     return false;
   }
+}
+
+export function sessionStorageOrNull(): Storage | null {
+  try { return window.sessionStorage; } catch { return null; }
+}
+
+export function reducedMotionRequested(): boolean {
+  return readMediaQueryMatches(getBrowserMediaQuery("(prefers-reduced-motion: reduce)"), true);
 }
 
 export function markOpeningSeen(storage: Pick<Storage, "setItem"> | null): boolean {

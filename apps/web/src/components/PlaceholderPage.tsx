@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 export function PlaceholderPage({title, description}: {title: string; description: string}) {
   return (
     <section className="page page-stack">
-      <div className="context-bar" aria-label="Analytical context">
+      <div className="context-bar" role="group" aria-label="Analytical context">
         <strong>Analytical context</strong>
         <span className="chip">Current Long COVID</span>
         <span className="chip">Adults 18–64</span>

@@ -237,12 +237,13 @@ export function loadReviewedLinkedConditionSecondaryEvidence():
   return selectReviewedLinkedConditionSecondaryEvidence(immutableReviewedPackage);
 }
 
-export function tryLoadReviewedLinkedConditionSecondaryEvidence():
-  ReviewedLinkedConditionRuntimeState {
+export function tryLoadReviewedLinkedConditionSecondaryEvidence(
+  loader: () => ReviewedLinkedConditionSecondaryEvidence = loadReviewedLinkedConditionSecondaryEvidence
+): ReviewedLinkedConditionRuntimeState {
   try {
     return {
       status: "loaded",
-      evidence: loadReviewedLinkedConditionSecondaryEvidence()
+      evidence: loader()
     };
   } catch {
     return { status: "unavailable", evidence: null };

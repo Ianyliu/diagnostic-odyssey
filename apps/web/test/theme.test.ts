@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   THEME_STORAGE_KEY,
+  getThemeColor,
   parseThemePreference,
   persistThemePreference,
   readThemePreference,
@@ -17,6 +18,13 @@ test("theme preference accepts only explicit modes and System follows OS", () =>
   assert.equal(resolveTheme("system", true), "dark");
   assert.equal(resolveTheme("light", true), "light");
   assert.equal(resolveTheme("dark", false), "dark");
+});
+
+test("browser theme color uses the resolved appearance rather than the preference", () => {
+  assert.equal(getThemeColor(resolveTheme("system", false)), "#f5f2eb");
+  assert.equal(getThemeColor(resolveTheme("system", true)), "#09131b");
+  assert.equal(getThemeColor(resolveTheme("light", true)), "#f5f2eb");
+  assert.equal(getThemeColor(resolveTheme("dark", false)), "#09131b");
 });
 
 test("unavailable storage cannot block theme selection", () => {

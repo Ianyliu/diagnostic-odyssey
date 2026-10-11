@@ -1,4 +1,11 @@
 import type { Scenario } from "@diagnostic-odyssey/contracts";
+import {
+  calculateScenario,
+  InvalidScenarioError,
+  InvalidScenarioResultError,
+  oneWaySensitivity,
+  type SensitivityPoint
+} from "@diagnostic-odyssey/scenario-engine";
 
 export type SensitivityField = "reach" | "capacity" | "alternative_window_months";
 
@@ -13,6 +20,12 @@ function uniqueSortedWithCurrent(
   const comparisons: number[] = [];
 
   for (const value of comparisonValues) {
+    if (!Number.isFinite(value)) {
+      throw new InvalidScenarioResultError([{
+        path: "sensitivity.input_value",
+        message: "comparison input must be a finite number"
+      }]);
+    }
     const normalized = roundComparison(value);
     if (
       normalized === current ||
@@ -31,6 +44,7 @@ export function buildSensitivityValues(
   scenario: Scenario,
   field: SensitivityField
 ): number[] {
+  calculateScenario(scenario);
   if (field === "reach") {
     const current = scenario.reach;
     return uniqueSortedWithCurrent(current, [
@@ -62,4 +76,22 @@ export function buildSensitivityValues(
     Math.min(upper, current + 1),
     Math.min(upper, current + 2)
   ]);
+}
+
+export function evaluateScenarioSensitivity(
+  scenario: Scenario,
+  field: SensitivityField
+): {points: SensitivityPoint[]; error: string | null} {
+  try {
+    return {
+      points: oneWaySensitivity(scenario, field, buildSensitivityValues(scenario, field)),
+      error: null
+    };
+  } catch (error) {
+    if (!(error instanceof InvalidScenarioError) && !(error instanceof InvalidScenarioResultError)) throw error;
+    return {
+      points: [],
+      error: "Sensitivity analysis is unavailable because an input or comparison calculation is outside the supported numeric range. Reduce the applied population, capacity, recognition windows, or program costs, or choose another assumption to test."
+    };
+  }
 }

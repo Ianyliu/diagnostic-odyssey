@@ -94,3 +94,132 @@ test("brief requires reviewed release status as well as loaded or partial local-
   assert.ok(brief.local_context.every(record => record.release_status === "reviewed_released"));
   assert.ok(brief.local_context.every(record => record.state === "loaded" || record.state === "partial"));
 });
+
+const scenarioInput = {
+  scenario_id: "test", eligible_population: 12000, reach: 0.25, capacity: 3000,
+  baseline_window_months: 12, alternative_window_months: 6, horizon_months: 12,
+  fixed_cost: 300000, per_participant_cost: 300,
+  target_pathway_step: "recognition-to-referral", mechanism: "navigation-support",
+  assumption_refs: [], artifact_version: "test"
+};
+const scenarioResult = {
+  scenario_id: "test", intended_reach: 3000, reached_participants: 3000, capacity_gap: 0,
+  baseline_person_months: 36000, alternative_person_months: 18000, difference_person_months: 18000,
+  fixed_program_cost: 300000, variable_program_cost: 900000, program_resource_requirement: 1200000,
+  target_pathway_step: "recognition-to-referral", target_mechanism: "navigation-support"
+};
+function validNumericalBrief() {
+  return buildPlanningBrief({
+    context:{condition_id:"c",cohort_id:"x",age_range:"18–64",evidence_year:2024,geography_scope:"United States",local_context_id:null,severity_filter:null,artifact_version:"v1"},
+    estimates:[estimate("reviewed_released", "analytical_artifact")],
+    localContext:[localRecord("reviewed_released")],
+    scenario:{input:{...scenarioInput}, result:{...scenarioResult}},
+    evidence:[], dataRequests:[], generatedAt:"2026-10-08T00:00:00.000Z"
+  });
+}
+
+test("actual serialized Brief JSON preserves finite quantities, valid zeros, and scientific nullable fields", async () => {
+  const {serializeBriefJson} = await import("../src/index.ts");
+  const brief = validNumericalBrief();
+  const serialized = serializeBriefJson(brief);
+  const parsed = JSON.parse(serialized);
+  assert.deepEqual(parsed.scenario.input, scenarioInput);
+  assert.deepEqual(parsed.scenario.result, scenarioResult);
+  assert.equal(parsed.scenario.result.capacity_gap, 0);
+  for (const [key, value] of Object.entries(scenarioResult)) {
+    if (typeof value === "number") {
+      assert.equal(typeof parsed.scenario.result[key], "number");
+      assert.ok(Number.isFinite(parsed.scenario.result[key]));
+      assert.notEqual(parsed.scenario.result[key], null);
+    }
+  }
+  assert.equal(parsed.burden_findings[0].interval_low, null);
+  assert.equal(parsed.local_context[0].margin_of_error, null);
+  assert.doesNotMatch(serialized, /NaN|Infinity/);
+});
+
+test("Brief construction and export reject every non-finite scenario result instead of serializing null", async () => {
+  const {serializeBriefJson} = await import("../src/index.ts");
+  for (const [key, value] of Object.entries(scenarioResult)) {
+    if (typeof value !== "number") continue;
+    for (const invalid of [NaN, Infinity, -Infinity, null]) {
+      const result = {...scenarioResult, [key]: invalid};
+      assert.throws(() => buildPlanningBrief({
+        context:validNumericalBrief().context, estimates:[],localContext:[],
+        scenario:{input:scenarioInput,result:result as typeof scenarioResult}, evidence:[], dataRequests:[]
+      }), /Cannot export Planning Brief/);
+      const brief = validNumericalBrief();
+      brief.scenario!.result = result as typeof scenarioResult;
+      assert.throws(() => serializeBriefJson(brief), /Cannot export Planning Brief/);
+    }
+  }
+});
+
+test("export revalidates finite scenario inputs and catches non-finite values elsewhere in the Brief", async () => {
+  const {serializeBriefJson} = await import("../src/index.ts");
+  for (const invalid of [NaN, Infinity, -Infinity]) {
+    const invalidInput = validNumericalBrief();
+    invalidInput.scenario!.input.fixed_cost = invalid;
+    assert.throws(() => serializeBriefJson(invalidInput), /Cannot export Planning Brief/);
+    const invalidEstimate = validNumericalBrief();
+    invalidEstimate.burden_findings[0]!.value = invalid;
+    assert.throws(() => serializeBriefJson(invalidEstimate), /must be a finite number/);
+    const invalidContext = validNumericalBrief();
+    invalidContext.local_context[0]!.margin_of_error = invalid;
+    assert.throws(() => serializeBriefJson(invalidContext), /must be a finite number/);
+  }
+});
+
+function briefForWarnings(estimates: Estimate[]) {
+  return buildPlanningBrief({
+    context:{condition_id:"c",cohort_id:"x",age_range:"18–64",evidence_year:2024,geography_scope:"United States",local_context_id:null,severity_filter:null,artifact_version:"v1"},
+    estimates, localContext:[], evidence:[], dataRequests:[], generatedAt:"2026-01-01T00:00:00Z"
+  });
+}
+
+const nestedSpendingWarning = "Out-of-pocket/self-family-paid spending is nested within total spending and must not be added to it.";
+const mentalScreenWarning = "K6 measures nonspecific psychological distress and PHQ-2 is a depressive-symptom screen; neither is a psychiatric diagnosis.";
+const esaqTimingWarning = "ESAQ time measures are AHRQ annualized hours-per-year measures; later ESAQ responses do not establish continued current Long COVID after the earlier Round 3/1 status anchor.";
+
+test("generic Brief preserves all three scientific boundary warnings without unrelated conditional warnings", () => {
+  assert.deepEqual(briefForWarnings([estimate("reviewed_released", "analytical_artifact")]).warnings, [
+    "Gross burden is not attributable burden.",
+    "Local context informs implementation and does not modify national burden.",
+    "Scenario outputs are deterministic planning quantities, not savings, ROI, causal benefit, or observed improvement."
+  ]);
+});
+
+test("nested spending warning follows exported component metadata and is emitted once", () => {
+  const component = {...estimate("reviewed_released", "analytical_artifact"), component_of_measure_id:"total_spending"};
+  assert.equal(briefForWarnings([component, {...component, estimate_id:"second-component"}]).warnings.filter(w => w === nestedSpendingWarning).length, 1);
+});
+
+for (const measure_id of ["k6_score", "phq2_score", "K6_serious_distress", "PHQ2_screen_positive"]) {
+  test(`${measure_id} exports the screening interpretation warning`, () => {
+    assert.ok(briefForWarnings([{...estimate("reviewed_released", "analytical_artifact"), measure_id}]).warnings.includes(mentalScreenWarning));
+  });
+}
+
+test("ESAQ warning is specific to the exported ESAQ weight and emitted once", () => {
+  const esaq = {...estimate("reviewed_released", "analytical_artifact"), weight_variable:"ESAQWT24F"};
+  assert.equal(briefForWarnings([esaq, {...esaq, estimate_id:"second-esaq"}]).warnings.filter(w => w === esaqTimingWarning).length, 1);
+  for (const weight_variable of ["PERWT24F", "SAQWT24F", "PESAQWT24F"]) {
+    assert.equal(briefForWarnings([{...esaq, weight_variable}]).warnings.includes(esaqTimingWarning), false);
+  }
+});
+
+test("nonexportable findings do not activate spending, screening or ESAQ warnings", () => {
+  const triggers = {measure_id:"k6_score", component_of_measure_id:"total_spending", weight_variable:"ESAQWT24F"};
+  const filtered = [
+    {...estimate("preliminary", "analytical_artifact"), ...triggers},
+    {...estimate("not_released", "analytical_artifact"), ...triggers},
+    {...estimate("suppressed", "analytical_artifact"), ...triggers},
+    {...estimate("unavailable", "analytical_artifact"), ...triggers},
+    {...estimate("reviewed_released", "illustrative"), ...triggers}
+  ];
+  const brief = briefForWarnings(filtered);
+  assert.deepEqual(brief.burden_findings, []);
+  assert.equal(brief.warnings.includes(nestedSpendingWarning), false);
+  assert.equal(brief.warnings.includes(mentalScreenWarning), false);
+  assert.equal(brief.warnings.includes(esaqTimingWarning), false);
+});

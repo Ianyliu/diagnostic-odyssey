@@ -26,7 +26,7 @@ export function formatLocalContextValue(
   }
 
   if (record.unit === "HPSA score points" && typeof record.value === "number") {
-    return String(record.value);
+    return String(record.value) + " points";
   }
 
   return String(record.value);

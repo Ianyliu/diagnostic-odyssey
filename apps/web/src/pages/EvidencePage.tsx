@@ -57,7 +57,7 @@ export function EvidencePage() {
             <p className="subtle">{record.source}</p>
           </div>
         </div>
-        <div className="evidence-state-grid" aria-label="Distinct evidence use states">
+        <div className="evidence-state-grid" role="group" aria-label="Distinct evidence use states">
           <div><span>Reviewer state</span><strong className={`status ${record.reviewer_status === "approved" ? "status-reviewed" : "status-unavailable"}`}>{formatReviewerStatusLabel(record.reviewer_status)}</strong></div>
           <div><span>Claim admissibility</span><strong>{evidenceClaimLabel(record)}</strong></div>
           <div><span>Current-scenario eligibility</span><strong>{currentUse ? currentUse.allowed ? "Eligible for bounded parameter use" : "Not eligible for parameter use" : "Not checked without a scenario"}</strong></div>

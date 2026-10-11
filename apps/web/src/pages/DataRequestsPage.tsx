@@ -44,7 +44,7 @@ export function DataRequestsPage() {
       <strong>No data requests have been created or loaded.</strong>
       <p>Stress-test a Pilot planner assumption first, then create a request for the operational information that would reduce that uncertainty.</p>
       <Link className="button secondary" to="/pilot#sensitivity">Open sensitivity explorer</Link>
-    </div> : <div className="data-request-grid" aria-label="Available data requests">
+    </div> : <div className="data-request-grid" role="group" aria-label="Available data requests">
       {availableDataRequests.map(request => {
         const isAnalystRequest = analystIds.has(request.request_id);
         const selected = briefDataRequestIds.includes(request.request_id);
@@ -58,7 +58,7 @@ export function DataRequestsPage() {
               <p className="visual-kicker">{isAnalystRequest ? "SESSION PLANNING REQUEST" : "LOADED REQUEST TEMPLATE"}</p>
               <h2>{request.target_question}</h2>
             </div>
-            <div className="request-sheet-states" aria-label="Freshness and Brief selection">
+            <div className="request-sheet-states" role="group" aria-label="Freshness and Brief selection">
               <span className={`status ${stale ? "status-warning" : "status-neutral"}`}>
                 {stale ? "Stale for applied scenario" : isAnalystRequest ? "Current for applied scenario" : "Loaded template"}
               </span>

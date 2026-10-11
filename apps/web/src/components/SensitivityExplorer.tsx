@@ -1,10 +1,10 @@
+import { formatPlanningNumber } from "../data/planningNumberFormatting.ts";
 import "./SensitivityExplorer.css";
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import type { Scenario } from "@diagnostic-odyssey/contracts";
-import { oneWaySensitivity } from "@diagnostic-odyssey/scenario-engine";
 import {
-  buildSensitivityValues,
+  evaluateScenarioSensitivity,
   type SensitivityField
 } from "../data/decisionVisuals";
 import {
@@ -31,8 +31,7 @@ export function SensitivityExplorer({
 }) {
   const [field, setField] = useState<SensitivityField>("capacity");
   const [requestAnnouncement, setRequestAnnouncement] = useState("");
-  const values = useMemo(() => buildSensitivityValues(scenario, field), [scenario, field]);
-  const points = useMemo(() => oneWaySensitivity(scenario, field, values), [scenario, field, values]);
+  const {points, error} = useMemo(() => evaluateScenarioSensitivity(scenario, field), [scenario, field]);
   const metric = field === "alternative_window_months"
     ? "difference_person_months"
     : "capacity_gap";
@@ -45,6 +44,7 @@ export function SensitivityExplorer({
   const requestStatus = dataRequestStatus?.(field) ?? "absent";
 
   const handleRequest = () => {
+    if (error) return;
     if (!onUpsertDataRequest || requestStatus === "current") return;
     onUpsertDataRequest(field);
     setRequestAnnouncement(requestStatus === "stale"
@@ -71,18 +71,19 @@ export function SensitivityExplorer({
       </label>
     </div>
     <p className="visual-note">Mechanical test range around the current analyst assumption; the range is not evidence-derived. All other inputs stay fixed.</p>
+    {error ? <p className="field-error" role="status">{error}</p> : <>
     <div className="sensitivity-metric"><strong>Outcome shown:</strong> {metricLabel}</div>
     <div className="sensitivity-bars">
-      {points.map((point, index) => {
-        const output = outputs[index] ?? 0;
+      {points.map(point => {
+        const output = point.result[metric];
         const width = getSensitivityBarWidth(output, maxOutput);
-        const isCurrent = Math.abs(point.input_value - currentValue) < 1e-9;
+        const isCurrent = point.input_value === currentValue;
         return <div className={`sensitivity-row ${isCurrent ? "current" : ""}`} key={point.input_value}>
           <span className="sensitivity-input">{formatSensitivityInput(field, point.input_value)}{isCurrent ? <small>applied assumption</small> : null}</span>
           <div className="sensitivity-track" aria-hidden="true">
             <span className="sensitivity-fill" style={{width: `${width}%`}} />
           </div>
-          <strong>{integer.format(output)}</strong>
+          <strong>{formatPlanningNumber(output, integer)}</strong>
         </div>;
       })}
     </div>
@@ -94,13 +95,14 @@ export function SensitivityExplorer({
           <thead><tr><th scope="col">{fieldLabels[field]}</th><th scope="col">{metricLabel}</th><th scope="col">Reached participants</th></tr></thead>
           <tbody>{points.map(point => <tr key={point.input_value}>
             <th scope="row">{formatSensitivityInput(field, point.input_value)}</th>
-            <td>{integer.format(point.result[metric])}</td>
-            <td>{integer.format(point.result.reached_participants)}</td>
+            <td>{formatPlanningNumber(point.result[metric], integer)}</td>
+            <td>{formatPlanningNumber(point.result.reached_participants, integer)}</td>
           </tr>)}</tbody>
         </table>
       </div>
     </details>
-    {onUpsertDataRequest && <div className={"sensitivity-action" + (requestAnnouncement ? " request-acknowledged" : "")}>
+    </>}
+    {!error && onUpsertDataRequest && <div className={"sensitivity-action" + (requestAnnouncement ? " request-acknowledged" : "")}>
       <div>
         <strong>{requestStatus === "stale"
           ? "Scenario changed since this request was created."

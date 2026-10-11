@@ -1,0 +1,111 @@
+{
+  "scope": "Five cold localhost browser contexts. Diagnostic only; no mobile-network or field Core Web Vitals claim.",
+  "baseline": {
+    "sampleCount": 5,
+    "navigationMedianMs": 35.10000002384186,
+    "paint": [
+      [
+        {
+          "name": "first-paint",
+          "ms": 24
+        }
+      ],
+      [
+        {
+          "name": "first-paint",
+          "ms": 24
+        }
+      ],
+      [
+        {
+          "name": "first-paint",
+          "ms": 48
+        }
+      ],
+      [
+        {
+          "name": "first-paint",
+          "ms": 24
+        }
+      ],
+      [
+        {
+          "name": "first-paint",
+          "ms": 24
+        }
+      ]
+    ],
+    "assets": [
+      {
+        "name": "index-DCs6JUE-.js",
+        "gzipBodyBytes": 117400,
+        "transferBytes": 117700,
+        "decodedBodyBytes": 502140,
+        "durationMs": 14.899999976158142
+      },
+      {
+        "name": "index-CuSK_Skz.css",
+        "gzipBodyBytes": 17326,
+        "transferBytes": 17626,
+        "decodedBodyBytes": 100170,
+        "durationMs": 6.100000023841858
+      }
+    ]
+  },
+  "final": {
+    "sampleCount": 5,
+    "navigationMedianMs": 44.60000002384186,
+    "paint": [
+      [
+        {
+          "name": "first-paint",
+          "ms": 40
+        }
+      ],
+      [
+        {
+          "name": "first-paint",
+          "ms": 40
+        }
+      ],
+      [
+        {
+          "name": "first-paint",
+          "ms": 24
+        },
+        {
+          "name": "first-contentful-paint",
+          "ms": 68
+        }
+      ],
+      [
+        {
+          "name": "first-paint",
+          "ms": 28
+        }
+      ],
+      [
+        {
+          "name": "first-paint",
+          "ms": 24
+        }
+      ]
+    ],
+    "assets": [
+      {
+        "name": "index-D79TFG21.js",
+        "gzipBodyBytes": 119274,
+        "transferBytes": 119574,
+        "decodedBodyBytes": 506461,
+        "durationMs": 28.899999976158142
+      },
+      {
+        "name": "index-D24PT-ZR.css",
+        "gzipBodyBytes": 17465,
+        "transferBytes": 17765,
+        "decodedBodyBytes": 100980,
+        "durationMs": 14.199999928474426
+      }
+    ]
+  }
+}
