@@ -53,6 +53,7 @@ const catalog = (): NarrativeReferenceCatalog => ({
     generated_at: "2026-10-09T15:00:00Z",
     code_commit: "synthetic-test-only",
     review_manifest_sha256: null,
+    applicability_manifest_sha256: null,
     automatic_release: false,
     quantitative_effect_eligible: false
   },
@@ -155,14 +156,17 @@ test("release needs explicit review, source byte digest and immutable review man
   const v = clone(catalog());
   v.manifest.release_status = "reviewed_released";
   v.records[0]!.release_status = "reviewed_released";
+  assert.ok(paths(v).some(p => p.endsWith("reviewer_status")));
+  v.records[0]!.reviewer_status = "approved";
   const violations = paths(v);
   for (const expected of [
-    "review_manifest_sha256", "code_commit", "reviewer_status",
+    "review_manifest_sha256", "applicability_manifest_sha256", "code_commit",
     "approved_claim_wording", "source_sha256", "retrieved_at",
     "reviewer_id", "reviewed_at", "prohibited_stronger_claims"
   ]) assert.ok(violations.some(p => p.endsWith(expected)), expected);
 
   v.manifest.review_manifest_sha256 = "a".repeat(64);
+  v.manifest.applicability_manifest_sha256 = "d".repeat(64);
   v.manifest.code_commit = "b".repeat(40);
   const r = v.records[0]!;
   r.reviewer_status = "approved";
@@ -208,6 +212,7 @@ test("rejected claim cannot be presented as approved or released", () => {
   v.records[0]!.reviewer_status = "rejected";
   assert.ok(paths(v).some(p => p.endsWith("release_status")));
   v.records[0]!.release_status = "rejected";
+  retainReviewProvenance(v.records[0]!);
   assert.deepEqual(paths(v), []);
   v.records[0]!.approved_claim_wording = "Do not present this.";
   assert.ok(paths(v).some(p => p.endsWith("approved_claim_wording") || p.endsWith("release_status")));
@@ -242,5 +247,120 @@ test("package is not an import into existing quantitative evidence, brief, web o
   for (const file of files) {
     const content = readFileSync(new URL(file, import.meta.url), "utf8");
     assert.equal(content.includes("@diagnostic-odyssey/narrative-references"), false, file);
+  }
+});
+
+// Synthetic identities/digests exercise structure only; no authentic approval is asserted.
+function retainReviewProvenance(r: NarrativeReference): void {
+  r.source.source_sha256 = "c".repeat(64);
+  r.source.retrieved_at = "2026-10-09T15:00:00Z";
+  r.review.reviewer_id = "synthetic-reviewer";
+  r.review.reviewed_at = "2026-10-09T15:01:00Z";
+}
+function approve(r: NarrativeReference): void {
+  retainReviewProvenance(r);
+  r.reviewer_status = "approved";
+  r.release_status = "reviewed_not_released";
+  r.approved_claim_wording = "Synthetic approved wording; not scientific evidence.";
+  r.limitations = ["Synthetic only"];
+  r.prohibited_stronger_claims = ["No effect claim"];
+}
+
+test("review and release combinations distinguish completed review from approval", () => {
+  const reviewers = ["draft", "needs_review", "approved", "rejected"] as const;
+  const releases = ["candidate", "reviewed_not_released", "reviewed_released", "rejected"] as const;
+  const permitted = new Set([
+    "draft/candidate", "needs_review/candidate", "approved/reviewed_not_released",
+    "approved/reviewed_released", "rejected/rejected"
+  ]);
+  for (const reviewer of reviewers) for (const release of releases) {
+    const r = reference();
+    r.reviewer_status = reviewer;
+    r.release_status = release;
+    if (reviewer === "approved") {
+      approve(r);
+      r.release_status = release;
+    } else if (reviewer === "rejected") retainReviewProvenance(r);
+    assert.equal(validateNarrativeReference(r).length === 0,
+      permitted.has(`${reviewer}/${release}`), `${reviewer}/${release}`);
+  }
+});
+
+test("recorded revision feedback and rejection bind source bytes without approved wording", () => {
+  for (const status of ["needs_review", "rejected"] as const) {
+    const r = reference();
+    r.reviewer_status = status;
+    r.release_status = status === "rejected" ? "rejected" : "candidate";
+    retainReviewProvenance(r);
+    assert.deepEqual(validateNarrativeReference(r), []);
+    assert.equal(r.approved_claim_wording, null);
+    for (const key of ["source_sha256", "retrieved_at"] as const) {
+      const bad = clone(r);
+      bad.source[key] = null;
+      assert.ok(validateNarrativeReference(bad).some(i => i.path.endsWith(key)));
+    }
+    for (const key of ["reviewer_id", "reviewed_at"] as const) {
+      const bad = clone(r);
+      bad.review[key] = null;
+      assert.ok(validateNarrativeReference(bad).length > 0);
+    }
+    r.approved_claim_wording = "Forged approval";
+    assert.ok(validateNarrativeReference(r).length > 0);
+  }
+});
+
+test("approved but unpromoted records require complete approval provenance and limits", () => {
+  const r = reference();
+  approve(r);
+  assert.deepEqual(validateNarrativeReference(r), []);
+  const edits: Array<(r: NarrativeReference) => void> = [
+    r => {r.approved_claim_wording = null;},
+    r => {r.source.source_sha256 = null;},
+    r => {r.source.retrieved_at = null;},
+    r => {r.review.reviewer_id = null;},
+    r => {r.review.reviewed_at = null;},
+    r => {r.limitations = [];},
+    r => {r.prohibited_stronger_claims = [];}
+  ];
+  for (const edit of edits) {
+    const bad = clone(r);
+    edit(bad);
+    assert.ok(validateNarrativeReference(bad).length > 0);
+  }
+});
+
+test("draft, feedback, approval and promotion snapshots preserve distinct structural gates", () => {
+  const v = catalog();
+  const r = v.records[0]!;
+  r.reviewer_status = "draft";
+  assert.deepEqual(paths(v), []);
+  retainReviewProvenance(r);
+  assert.ok(paths(v).some(p => p.endsWith(".review")));
+  r.reviewer_status = "needs_review";
+  assert.deepEqual(paths(v), []);
+  approve(r);
+  assert.deepEqual(paths(v), [], "candidate catalog can retain approved unpromoted record");
+  r.release_status = "reviewed_released";
+  assert.ok(paths(v).length > 0, "record alone cannot promote a candidate catalog");
+  v.manifest.release_status = "reviewed_released";
+  v.manifest.code_commit = "b".repeat(40);
+  v.manifest.review_manifest_sha256 = "a".repeat(64);
+  assert.ok(paths(v).some(p => p.endsWith("applicability_manifest_sha256")));
+  v.manifest.applicability_manifest_sha256 = "d".repeat(64);
+  assert.deepEqual(paths(v), [], "structure only; reader still needs authentic promotion");
+});
+
+test("applicability policy digest is mandatory on release and forbidden on candidates", () => {
+  const v = catalog();
+  v.manifest.applicability_manifest_sha256 = "d".repeat(64);
+  assert.ok(paths(v).some(p => p.endsWith("applicability_manifest_sha256")));
+  v.manifest.release_status = "reviewed_released";
+  v.manifest.review_manifest_sha256 = "a".repeat(64);
+  v.manifest.code_commit = "b".repeat(40);
+  approve(v.records[0]!);
+  v.records[0]!.release_status = "reviewed_released";
+  for (const badHash of [null, "", "D".repeat(64), "d".repeat(63)]) {
+    v.manifest.applicability_manifest_sha256 = badHash;
+    assert.ok(paths(v).some(p => p.endsWith("applicability_manifest_sha256")));
   }
 });

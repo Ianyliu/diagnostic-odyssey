@@ -10,7 +10,7 @@ Only contracts, strict runtime validation, a closed Draft 2020-12 JSON Schema, n
 
 ## Structure
 
-The catalog has a manifest and zero or more records. The manifest explicitly declares the distinct family `narrative_intervention_references`, schema version `1.0`, catalog release status, version identifier, generation timestamp, code provenance and review-manifest SHA-256, plus literal `automatic_release: false` and `quantitative_effect_eligible: false`. A catalog may be a *candidate* or *reviewed_released*. A release catalog must be nonempty and consist entirely of reviewed-released records.
+The catalog has a manifest and zero or more records. The manifest explicitly declares the distinct family `narrative_intervention_references`, schema version `1.0`, catalog release status, version identifier, generation timestamp, code provenance, review-manifest SHA-256 and applicability-manifest SHA-256, plus literal `automatic_release: false` and `quantitative_effect_eligible: false`. A catalog may be a *candidate* or *reviewed_released*. A release catalog must be nonempty and consist entirely of reviewed-released records.
 
 Each claim record includes:
 
@@ -27,7 +27,7 @@ The contract does not include an effect value, estimate, interval, parameter, co
 
 ## Promotion is a distinct, future human-governed step
 
-The validator enforces minimum structural gates for `reviewed_released`: approved reviewer state and approved wording, source digest and retrieval timestamp, reviewer identity and timestamp, explicit limitations and prohibited stronger claims, a valid 40-hex code commit and a SHA-256 review-manifest digest. It also disallows released records inside a candidate catalog and prevents `rejected` records from carrying approved wording.
+The validator enforces minimum structural approval gates for both `reviewed_not_released` (approved but not promoted) and `reviewed_released`: approved reviewer state and approved wording, source digest and retrieval timestamp, reviewer identity and timestamp, explicit limitations and prohibited stronger claims, a valid 40-hex code commit and SHA-256 review/applicability-manifest digests on the released catalog. Recorded revision feedback and rejection require reviewer/source provenance without approved wording. See the complete [state table and independent gates](REVIEW_GATES.md). It also disallows released records inside a candidate catalog and prevents `rejected` records from carrying approved wording.
 
 These checks **do not verify** authenticity of a claimed reviewer, physical archive bytes, locator text, hash preimages or immutable Git retention. PR B must independently retrieve/inspect precise source passages, adjudicate each selected claim, verify applicability and stronger-claim exclusions, preserve source byte snapshots and hash them, obtain reviewer sign-off, and promote only a separately approved immutable artifact. These are external scientific/governance controls, not substitutions for schema validation.
 
@@ -39,7 +39,7 @@ These checks **do not verify** authenticity of a claimed reviewer, physical arch
 - The checked TypeScript type alone is not validation. Never use `as NarrativeReferenceCatalog` to bypass runtime checks.
 - Validated shape is **not** scientific admission. The future reader must verify independently promoted artifact identity, reviewer authority and release allowlist before any display or AI citation.
 - A future user-facing recommendation must require `reviewed_released`, reviewer-approved wording, `allowed_use: planning_option_to_investigate`, and target applicability; background-only must not be promoted to recommendation text.
-- A narrative reference must never be transformed or coerced into `EvidenceRecord` or passed to `canDriveScenarioParameter`. A stronger policy should keep narrative sources out of the existing Brief until its independent export rules have been reviewed.
+- A narrative reference must never be transformed or coerced into `EvidenceRecord` or passed to `canDriveScenarioParameter`. Narrative references remain outside the existing Planning Brief. The approved minimal future surface is a distinct read-only Evidence/reference section; standalone narrative JSON/print exports are deferred.
 
 ## Local test commands
 
@@ -53,3 +53,7 @@ npm run build
 ```
 
 Normal PR CI also verifies reviewed artifact digests and executes synthetic R analysis. No real-data workflow should be dispatched for this package.
+
+## Schema and authority
+
+The Draft 2020-12 schema enforces closed-object shape and per-record state/provenance conditions. Runtime validation is authoritative for catalog-wide unique claim IDs, consistent source identities and exact calendar timestamps; JSON Schema alone does not establish those relationships. Neither validates authentic review or source-byte retention. A released catalog's applicability digest binds the independently reviewed exact-context map into the immutable release identity; changing that map requires a new reviewed release.
