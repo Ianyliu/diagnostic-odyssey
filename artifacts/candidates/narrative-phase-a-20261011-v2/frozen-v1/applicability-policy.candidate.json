@@ -1,0 +1,207 @@
+{
+  "candidate_policy_id": "final-narrative-exact-context-policy-candidate-v1",
+  "version": "candidate-1",
+  "status": "awaiting_independent_review",
+  "code_commit": "3cc1a846f2d8d3024d5127b5503039c5adba75b7",
+  "candidate_catalog_sha256": "8c30e9a517aa4a6513c7907f9083561851697dbe423c3d7bd51f363bffad09e7",
+  "approved_decisions": [],
+  "required_exact_context_fields": [
+    "condition_definition_id",
+    "population_id",
+    "setting_id",
+    "payer_id",
+    "geography_id",
+    "pathway_step",
+    "mechanism",
+    "intended_narrative_use"
+  ],
+  "matching_policy": "Exact enumerated identities only. Unknown, absent and mismatched values deny use; no wildcard, fuzzy or substring matching.",
+  "claim_bindings": [
+    {
+      "claim_id": "CDC26-PC-01",
+      "source_id": "cdc-long-covid-clinical-guidance-20260309",
+      "source_sha256": null,
+      "proposed_source_context": {
+        "population": "People with Long COVID; guidance does not define the app's 18–64 analytic cohort",
+        "condition_definition": "CDC clinical Long COVID guidance; not an operational MEPS denominator definition",
+        "setting": "Clinical primary care and patient support",
+        "payer": "Not specified by guidance; no payer-specific result",
+        "geography": "United States guidance",
+        "pathway_step": "recognition-to-referral",
+        "mechanism": "navigation-support",
+        "applicability_limits": [
+          "Clinical guidance is not evidence of program effectiveness.",
+          "No automatic transfer to the app's national cohort, any payer, or a local program."
+        ]
+      },
+      "target_context": null,
+      "approved_allowed_use": null,
+      "reviewer_id": null,
+      "reviewed_at": null,
+      "disposition": "awaiting_explicit_target_context_and_independent_transferability_decision"
+    },
+    {
+      "claim_id": "CDC26-SUPPORT-01",
+      "source_id": "cdc-long-covid-clinical-guidance-20260309",
+      "source_sha256": null,
+      "proposed_source_context": {
+        "population": "People with Long COVID; guidance does not define the app's 18–64 analytic cohort",
+        "condition_definition": "CDC clinical Long COVID guidance; not an operational MEPS denominator definition",
+        "setting": "Clinical primary care and patient support",
+        "payer": "Not specified by guidance; no payer-specific result",
+        "geography": "United States guidance",
+        "pathway_step": "recognition-to-referral",
+        "mechanism": "navigation-support",
+        "applicability_limits": [
+          "Clinical guidance is not evidence of program effectiveness.",
+          "No automatic transfer to the app's national cohort, any payer, or a local program."
+        ]
+      },
+      "target_context": null,
+      "approved_allowed_use": null,
+      "reviewer_id": null,
+      "reviewed_at": null,
+      "disposition": "awaiting_explicit_target_context_and_independent_transferability_decision"
+    },
+    {
+      "claim_id": "MAC24-COORD-01",
+      "source_id": "macewan-2024-care-coordination",
+      "source_sha256": "f11be189fa8e7a606b98b782be3acecdb55c00457fffa809c12603980a89d688",
+      "proposed_source_context": {
+        "population": "21 English-speaking adults, observed ages 19–68, recruited from one post-COVID clinic; interviews Aug–Sep 2022",
+        "condition_definition": "Age ≥18, functioning well before infection, significant life impact ≥3 months after infection",
+        "setting": "Ohio State University Wexner Medical Center post-COVID recovery clinic; internal physician referral",
+        "payer": "Not reported; no payer-specific inference",
+        "geography": "Columbus, Ohio, United States",
+        "pathway_step": "recognition-to-referral",
+        "mechanism": "navigation-support",
+        "applicability_limits": [
+          "Single academic specialty clinic; many participants had severe symptoms for 1–2 years.",
+          "No remote/nonattending population, no comparator, no quantitative effect; not the national 18–64 MEPS denominator."
+        ]
+      },
+      "target_context": null,
+      "approved_allowed_use": null,
+      "reviewer_id": null,
+      "reviewed_at": null,
+      "disposition": "awaiting_explicit_target_context_and_independent_transferability_decision"
+    },
+    {
+      "claim_id": "MAC24-ACCESS-01",
+      "source_id": "macewan-2024-care-coordination",
+      "source_sha256": "f11be189fa8e7a606b98b782be3acecdb55c00457fffa809c12603980a89d688",
+      "proposed_source_context": {
+        "population": "21 English-speaking adults, observed ages 19–68, recruited from one post-COVID clinic; interviews Aug–Sep 2022",
+        "condition_definition": "Age ≥18, functioning well before infection, significant life impact ≥3 months after infection",
+        "setting": "Ohio State University Wexner Medical Center post-COVID recovery clinic; internal physician referral",
+        "payer": "Not reported; no payer-specific inference",
+        "geography": "Columbus, Ohio, United States",
+        "pathway_step": "recognition-to-referral",
+        "mechanism": "navigation-support",
+        "applicability_limits": [
+          "Single academic specialty clinic; many participants had severe symptoms for 1–2 years.",
+          "No remote/nonattending population, no comparator, no quantitative effect; not the national 18–64 MEPS denominator."
+        ]
+      },
+      "target_context": null,
+      "approved_allowed_use": null,
+      "reviewer_id": null,
+      "reviewed_at": null,
+      "disposition": "awaiting_explicit_target_context_and_independent_transferability_decision"
+    },
+    {
+      "claim_id": "MAC24-REFERRAL-01",
+      "source_id": "macewan-2024-care-coordination",
+      "source_sha256": "f11be189fa8e7a606b98b782be3acecdb55c00457fffa809c12603980a89d688",
+      "proposed_source_context": {
+        "population": "21 English-speaking adults, observed ages 19–68, recruited from one post-COVID clinic; interviews Aug–Sep 2022",
+        "condition_definition": "Age ≥18, functioning well before infection, significant life impact ≥3 months after infection",
+        "setting": "Ohio State University Wexner Medical Center post-COVID recovery clinic; internal physician referral",
+        "payer": "Not reported; no payer-specific inference",
+        "geography": "Columbus, Ohio, United States",
+        "pathway_step": "recognition-to-referral",
+        "mechanism": "navigation-support",
+        "applicability_limits": [
+          "Single academic specialty clinic; many participants had severe symptoms for 1–2 years.",
+          "No remote/nonattending population, no comparator, no quantitative effect; not the national 18–64 MEPS denominator."
+        ]
+      },
+      "target_context": null,
+      "approved_allowed_use": null,
+      "reviewer_id": null,
+      "reviewed_at": null,
+      "disposition": "awaiting_explicit_target_context_and_independent_transferability_decision"
+    },
+    {
+      "claim_id": "LOC24-ACCESS-01",
+      "source_id": "darbyshire-2024-locomotion",
+      "source_sha256": "f86787bf1a5da731b653bd12350d1836e6be847501634fa596d53a4e8075a592",
+      "proposed_source_context": {
+        "population": "Ten adult NHS long-COVID services participating in 2021–2023 collaborative",
+        "condition_definition": "Adult service populations with locally varying eligibility; no single study-wide analytic denominator matched to MEPS",
+        "setting": "NHS specialist adult long-COVID services; eight England, one Wales, one Scotland",
+        "payer": "NHS; national funding and local pathways differ",
+        "geography": "United Kingdom (England, Wales, Scotland)",
+        "pathway_step": "recognition-to-referral",
+        "mechanism": "navigation-support",
+        "applicability_limits": [
+          "Service evaluation without causal comparator; secular changes and falling incidence affected waiting times.",
+          "NHS and local eligibility/funding cannot be silently transferred to US national/payer settings."
+        ]
+      },
+      "target_context": null,
+      "approved_allowed_use": null,
+      "reviewer_id": null,
+      "reviewed_at": null,
+      "disposition": "awaiting_explicit_target_context_and_independent_transferability_decision"
+    },
+    {
+      "claim_id": "LOC24-PATHWAY-01",
+      "source_id": "darbyshire-2024-locomotion",
+      "source_sha256": "f86787bf1a5da731b653bd12350d1836e6be847501634fa596d53a4e8075a592",
+      "proposed_source_context": {
+        "population": "Ten adult NHS long-COVID services participating in 2021–2023 collaborative",
+        "condition_definition": "Adult service populations with locally varying eligibility; no single study-wide analytic denominator matched to MEPS",
+        "setting": "NHS specialist adult long-COVID services; eight England, one Wales, one Scotland",
+        "payer": "NHS; national funding and local pathways differ",
+        "geography": "United Kingdom (England, Wales, Scotland)",
+        "pathway_step": "recognition-to-referral",
+        "mechanism": "navigation-support",
+        "applicability_limits": [
+          "Service evaluation without causal comparator; secular changes and falling incidence affected waiting times.",
+          "NHS and local eligibility/funding cannot be silently transferred to US national/payer settings."
+        ]
+      },
+      "target_context": null,
+      "approved_allowed_use": null,
+      "reviewer_id": null,
+      "reviewed_at": null,
+      "disposition": "awaiting_explicit_target_context_and_independent_transferability_decision"
+    },
+    {
+      "claim_id": "LOC24-WAIT-01",
+      "source_id": "darbyshire-2024-locomotion",
+      "source_sha256": "f86787bf1a5da731b653bd12350d1836e6be847501634fa596d53a4e8075a592",
+      "proposed_source_context": {
+        "population": "Ten adult NHS long-COVID services participating in 2021–2023 collaborative",
+        "condition_definition": "Adult service populations with locally varying eligibility; no single study-wide analytic denominator matched to MEPS",
+        "setting": "NHS specialist adult long-COVID services; eight England, one Wales, one Scotland",
+        "payer": "NHS; national funding and local pathways differ",
+        "geography": "United Kingdom (England, Wales, Scotland)",
+        "pathway_step": "recognition-to-referral",
+        "mechanism": "navigation-support",
+        "applicability_limits": [
+          "Service evaluation without causal comparator; secular changes and falling incidence affected waiting times.",
+          "NHS and local eligibility/funding cannot be silently transferred to US national/payer settings."
+        ]
+      },
+      "target_context": null,
+      "approved_allowed_use": null,
+      "reviewer_id": null,
+      "reviewed_at": null,
+      "disposition": "awaiting_explicit_target_context_and_independent_transferability_decision"
+    }
+  ],
+  "current_app_context_gap": "The national analytic cohort and pathway/mechanism are known; target service setting and payer are not selected. Do not treat unspecified values as wildcard matches. Either independently define an exact fit-for-purpose context or withhold planning-option use; no new context UI is authorized here.",
+  "release_chain": "Review covers candidate, source and exact map digests. Released catalog embeds review/map digests; independently approved allowlist pins released catalog/review/map digests and versions. Changing map requires a new release identity and review. No self-digest or circular hash."
+}

@@ -1,0 +1,185 @@
+{
+  "status": "candidate_only_not_scientific_approval",
+  "sources": [
+    {
+      "path": "narrative/sources/cdc-guidance.html",
+      "requested_url": "https://www.cdc.gov/long-covid/hcp/clinical-guidance/index.html",
+      "retrieved_at": "2026-10-11T00:56:25Z",
+      "status": "unavailable",
+      "error": "HTTP Error 403: Forbidden"
+    },
+    {
+      "path": "narrative/sources/cdc-rights.html",
+      "requested_url": "https://www.cdc.gov/other/agencymaterials.html",
+      "retrieved_at": "2026-10-11T00:56:25Z",
+      "status": "unavailable",
+      "error": "HTTP Error 403: Forbidden"
+    },
+    {
+      "path": "narrative/sources/macewan-oa-response.xml",
+      "requested_url": "https://www.ncbi.nlm.nih.gov/pmc/utils/oa/oa.fcgi?id=PMC11169119",
+      "retrieved_at": "2026-10-11T00:56:25Z",
+      "status": "unavailable",
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "path": "narrative/sources/macewan.html",
+      "requested_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11169119/",
+      "retrieved_at": "2026-10-11T00:56:25Z",
+      "status": "unavailable",
+      "final_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11169119/",
+      "http_status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "last_modified": null,
+      "etag": null,
+      "error": "Access challenge, not publication bytes"
+    },
+    {
+      "path": "narrative/sources/locomotion.pdf",
+      "requested_url": "https://eprints.whiterose.ac.uk/id/eprint/220724/1/1-s2.0-S1470211824054228-main.pdf",
+      "retrieved_at": "2026-10-11T00:56:26Z",
+      "status": "retained_candidate_only",
+      "final_url": "https://eprints.whiterose.ac.uk/id/eprint/220724/1/1-s2.0-S1470211824054228-main.pdf",
+      "http_status": 200,
+      "content_type": "application/pdf",
+      "last_modified": "Thu, 12 Dec 2024 12:00:42 GMT",
+      "etag": "d447ec36ad5a8b83ff16e3ee6984eaa2",
+      "bytes": 820169,
+      "sha256": "f86787bf1a5da731b653bd12350d1836e6be847501634fa596d53a4e8075a592"
+    },
+    {
+      "path": "acquisition/sources/servicerequest-definitions.html",
+      "requested_url": "https://hl7.org/fhir/R4/servicerequest-definitions.html",
+      "retrieved_at": "2026-10-11T00:56:26Z",
+      "status": "retained_candidate_only",
+      "final_url": "https://hl7.org/fhir/R4/servicerequest-definitions.html",
+      "http_status": 200,
+      "content_type": "text/html",
+      "last_modified": "Fri, 07 Nov 2025 09:32:44 GMT",
+      "etag": "\"bdf7-642fddd2a0c2e\"",
+      "bytes": 48631,
+      "sha256": "334f8b561cfa4bbb5ba4f281c9667e892a79577604adbdab2258d8c83b9d506a"
+    },
+    {
+      "path": "acquisition/sources/appointment-definitions.html",
+      "requested_url": "https://hl7.org/fhir/R4/appointment-definitions.html",
+      "retrieved_at": "2026-10-11T00:56:26Z",
+      "status": "retained_candidate_only",
+      "final_url": "https://hl7.org/fhir/R4/appointment-definitions.html",
+      "http_status": 200,
+      "content_type": "text/html",
+      "last_modified": "Fri, 07 Nov 2025 09:32:39 GMT",
+      "etag": "\"89e9-642fddcd50ee9\"",
+      "bytes": 35305,
+      "sha256": "7bb761298bcb366d28fea8141f73e49b2500f0841708531e529478a8c66cb2a6"
+    },
+    {
+      "path": "acquisition/sources/encounter-definitions.html",
+      "requested_url": "https://hl7.org/fhir/R4/encounter-definitions.html",
+      "retrieved_at": "2026-10-11T00:56:26Z",
+      "status": "retained_candidate_only",
+      "final_url": "https://hl7.org/fhir/R4/encounter-definitions.html",
+      "http_status": 200,
+      "content_type": "text/html",
+      "last_modified": "Fri, 07 Nov 2025 09:32:41 GMT",
+      "etag": "\"babc-642fddcf77b30\"",
+      "bytes": 47804,
+      "sha256": "31c80e1c6536fd1c35ffd68c161c1e4ef683492ce4f546b98df90601d198d278"
+    },
+    {
+      "path": "acquisition/sources/slot-definitions.html",
+      "requested_url": "https://hl7.org/fhir/R4/slot-definitions.html",
+      "retrieved_at": "2026-10-11T00:56:26Z",
+      "status": "retained_candidate_only",
+      "final_url": "https://hl7.org/fhir/R4/slot-definitions.html",
+      "http_status": 200,
+      "content_type": "text/html",
+      "last_modified": "Fri, 07 Nov 2025 09:32:45 GMT",
+      "etag": "\"47ee-642fddd2bcd63\"",
+      "bytes": 18414,
+      "sha256": "479cf45cf458c6450a60dd70c4c809bbd30491ef815bee927c439f94e54e367b"
+    },
+    {
+      "path": "acquisition/sources/schedule-definitions.html",
+      "requested_url": "https://hl7.org/fhir/R4/schedule-definitions.html",
+      "retrieved_at": "2026-10-11T00:56:26Z",
+      "status": "retained_candidate_only",
+      "final_url": "https://hl7.org/fhir/R4/schedule-definitions.html",
+      "http_status": 200,
+      "content_type": "text/html",
+      "last_modified": "Fri, 07 Nov 2025 09:32:44 GMT",
+      "etag": "\"472b-642fddd29393f\"",
+      "bytes": 18219,
+      "sha256": "4bc8e6a14e3b329f47f778f0163f2572b8cb63accbe44758326d766aa36f0e01"
+    },
+    {
+      "path": "acquisition/sources/license.html",
+      "requested_url": "https://hl7.org/fhir/R4/license.html",
+      "retrieved_at": "2026-10-11T00:56:26Z",
+      "status": "retained_candidate_only",
+      "final_url": "https://hl7.org/fhir/R4/license.html",
+      "http_status": 200,
+      "content_type": "text/html",
+      "last_modified": "Fri, 07 Nov 2025 09:32:43 GMT",
+      "etag": "\"55f9-642fddd119e6e\"",
+      "bytes": 22009,
+      "sha256": "b2aeb02247ca2aa855ed1fce29f62600aeeb8dcc8257ec1e0b40ceaf4fd60a15"
+    },
+    {
+      "path": "narrative/sources/cdc-guidance-directory.html",
+      "requested_url": "https://www.cdc.gov/long-covid/hcp/clinical-guidance/",
+      "retrieved_at": "2026-10-11T00:57:54Z",
+      "status": "unavailable",
+      "error": "HTTP Error 403: Forbidden"
+    },
+    {
+      "path": "narrative/sources/macewan-publisher.pdf",
+      "requested_url": "https://link.springer.com/content/pdf/10.1007/s11606-024-08622-z.pdf",
+      "retrieved_at": "2026-10-11T00:57:54Z",
+      "status": "retained_candidate_only",
+      "final_url": "https://link.springer.com/content/pdf/10.1007/s11606-024-08622-z.pdf?error=cookies_not_supported&code=8aac35fd-57fe-4ae1-82f7-bc1b6c4ad3e4",
+      "http_status": 200,
+      "content_type": "application/pdf",
+      "last_modified": "Thu, 13 Jun 2024 08:15:48 GMT",
+      "etag": "\"1e57c87cba0e2ba86e631d5ddaece378\"",
+      "bytes": 982673,
+      "sha256": "f11be189fa8e7a606b98b782be3acecdb55c00457fffa809c12603980a89d688"
+    },
+    {
+      "path": "narrative/sources/macewan-bioc.xml",
+      "requested_url": "https://www.ncbi.nlm.nih.gov/research/bionlp/RESTful/pmcoa.cgi/BioC_xml/PMC11169119/unicode",
+      "retrieved_at": "2026-10-11T00:57:54Z",
+      "status": "retained_candidate_only",
+      "final_url": "https://www.ncbi.nlm.nih.gov/research/bionlp/RESTful/pmcoa.cgi/BioC_xml/PMC11169119/unicode",
+      "http_status": 200,
+      "content_type": "text/xml",
+      "last_modified": null,
+      "etag": null,
+      "bytes": 62926,
+      "sha256": "64759b0d0e87af81659a940d9aa95a4505e550e3cbb5a693e2334f0bc4662501"
+    },
+    {
+      "path": "narrative/sources/macewan-oai.xml",
+      "requested_url": "https://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/?verb=GetRecord&identifier=oai:pubmedcentral.nih.gov:11169119&metadataPrefix=pmc",
+      "retrieved_at": "2026-10-11T00:57:54Z",
+      "status": "retained_candidate_only",
+      "final_url": "https://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/?verb=GetRecord&identifier=oai:pubmedcentral.nih.gov:11169119&metadataPrefix=pmc",
+      "http_status": 200,
+      "content_type": "application/xml; charset=utf-8",
+      "last_modified": null,
+      "etag": null,
+      "bytes": 71591,
+      "sha256": "088a6176d89d007b8a5eaeb765f710fe883ea35f9ae83efadc7842d49d140e21"
+    },
+    {
+      "path": "narrative/sources/locomotion-metadata.html",
+      "requested_url": "https://eprints.whiterose.ac.uk/id/eprint/220724/",
+      "final_url": "https://eprints.whiterose.ac.uk/id/eprint/220724/",
+      "retrieved_at": "2026-10-11T01:06:53Z",
+      "status": "retained_candidate_only",
+      "content_type": "text/html; charset=utf-8",
+      "bytes": 47029,
+      "sha256": "c842522047fcd0606b3a9391dd733c9230747bc3af9d15a6d2774c99f5240860"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "review_subject_id": "26-phase-a-narrative-v2",
+  "status": "unsigned_review_subject",
+  "code_commit": "e27403af8d878327d28ead2b6f7aeb00657c5239",
+  "candidate_catalog_sha256": "9178b95b06566afc8510afad1d6784e249303e402f84a7d496ba7d532e06de55",
+  "source_claim_matrix_sha256": "f0d2645a7cab2ca784200c277ea7eeb603fbf16b90fcf62579c9291cafd2c542",
+  "rights_records_sha256": "8b6cbdd572fccadeddca4abc4ae3779cff7493bf0940b6c739b6aa0c7a7f62bd",
+  "applicability_policy_sha256": "1d21993be093017a3f07bd339355ee7c7ae1328e5f832afc565aba74f76e6d08",
+  "source_index_sha256": "a307089f08a9d2cc01a8cd7a00c8d8ddc86063e96c5e0e494acc914ef535979f",
+  "application_context_sha256": "4d92ff7b7d67423149e1c4207726a5210d4f69d0168c260b76b543fea9253023",
+  "scope": "Source identity/retention/rights, exact wording, permitted use, limits/prohibitions, explicit context decisions or no-admission disposition. No acquisition approval implied.",
+  "actual_independent_review": null
+}

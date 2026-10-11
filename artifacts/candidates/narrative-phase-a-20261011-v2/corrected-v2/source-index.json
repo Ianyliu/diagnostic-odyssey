@@ -1,0 +1,54 @@
+{
+  "status": "retained_review_inputs_not_admitted",
+  "sources": [
+    {
+      "path": "narrative/sources/locomotion.pdf",
+      "requested_url": "https://eprints.whiterose.ac.uk/id/eprint/220724/1/1-s2.0-S1470211824054228-main.pdf",
+      "final_url": "https://eprints.whiterose.ac.uk/id/eprint/220724/1/1-s2.0-S1470211824054228-main.pdf",
+      "retrieved_at": "2026-10-11T00:56:26Z",
+      "bytes": 820169,
+      "sha256": "f86787bf1a5da731b653bd12350d1836e6be847501634fa596d53a4e8075a592",
+      "last_modified": "Thu, 12 Dec 2024 12:00:42 GMT"
+    },
+    {
+      "path": "narrative/sources/macewan-publisher.pdf",
+      "requested_url": "https://link.springer.com/content/pdf/10.1007/s11606-024-08622-z.pdf",
+      "final_url": "https://link.springer.com/content/pdf/10.1007/s11606-024-08622-z.pdf?error=cookies_not_supported&code=8aac35fd-57fe-4ae1-82f7-bc1b6c4ad3e4",
+      "retrieved_at": "2026-10-11T00:57:54Z",
+      "bytes": 982673,
+      "sha256": "f11be189fa8e7a606b98b782be3acecdb55c00457fffa809c12603980a89d688",
+      "last_modified": "Thu, 13 Jun 2024 08:15:48 GMT"
+    },
+    {
+      "path": "narrative/sources/macewan-bioc.xml",
+      "requested_url": "https://www.ncbi.nlm.nih.gov/research/bionlp/RESTful/pmcoa.cgi/BioC_xml/PMC11169119/unicode",
+      "final_url": "https://www.ncbi.nlm.nih.gov/research/bionlp/RESTful/pmcoa.cgi/BioC_xml/PMC11169119/unicode",
+      "retrieved_at": "2026-10-11T00:57:54Z",
+      "bytes": 62926,
+      "sha256": "64759b0d0e87af81659a940d9aa95a4505e550e3cbb5a693e2334f0bc4662501",
+      "last_modified": null
+    },
+    {
+      "path": "narrative/sources/macewan-oai.xml",
+      "requested_url": "https://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/?verb=GetRecord&identifier=oai:pubmedcentral.nih.gov:11169119&metadataPrefix=pmc",
+      "final_url": "https://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/?verb=GetRecord&identifier=oai:pubmedcentral.nih.gov:11169119&metadataPrefix=pmc",
+      "retrieved_at": "2026-10-11T00:57:54Z",
+      "bytes": 71591,
+      "sha256": "088a6176d89d007b8a5eaeb765f710fe883ea35f9ae83efadc7842d49d140e21",
+      "last_modified": null
+    },
+    {
+      "path": "narrative/sources/locomotion-metadata.html",
+      "requested_url": "https://eprints.whiterose.ac.uk/id/eprint/220724/",
+      "final_url": "https://eprints.whiterose.ac.uk/id/eprint/220724/",
+      "retrieved_at": "2026-10-11T01:06:53Z",
+      "bytes": 47029,
+      "sha256": "c842522047fcd0606b3a9391dd733c9230747bc3af9d15a6d2774c99f5240860",
+      "last_modified": null
+    }
+  ],
+  "unavailable_sources": [
+    "CDC guidance original bytes",
+    "CDC rights original bytes"
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "status": "prepared_rights_observations_not_legal_or_scientific_approval",
+  "records": [
+    {
+      "source_id": "darbyshire-2024-locomotion",
+      "source_sha256": "f86787bf1a5da731b653bd12350d1836e6be847501634fa596d53a4e8075a592",
+      "license": "CC BY 4.0",
+      "locator": "Retained PDF p1 footer; visually checked",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "verification_retention": "Original PDF retained separately from browser bundle; preserve attribution and mark derivative changes.",
+      "browser_publication_proposal": "Only independently approved wording, citation, locator, limits and digest; no complete source PDF in browser.",
+      "fresh_verification": "PDF p1 footer rendered and inspected on 2026-10-11; metadata retained separately."
+    },
+    {
+      "source_id": "macewan-2024-care-coordination",
+      "source_sha256": "f11be189fa8e7a606b98b782be3acecdb55c00457fffa809c12603980a89d688",
+      "license": "CC BY 4.0, subject to third-party credit-line exceptions",
+      "locator": "Retained PDF p6 / journal p1299 Open Access; PMC JATS license; visually checked",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "verification_retention": "Original PDF and official PMC JATS retained; preserve attribution/license/change notice. Do not retrieve underlying participant data: data-sharing statement withholds for privacy.",
+      "browser_publication_proposal": "Only approved narrative/citation/locator/limits/digest; no participant data or full paper bundled.",
+      "fresh_verification": "PDF p6/journal1299 rendered and inspected on 2026-10-11; article license and underlying-data privacy restriction verified."
+    },
+    {
+      "source_id": "cdc-long-covid-clinical-guidance-20260309",
+      "source_sha256": null,
+      "license": "Unresolved source-specific archival/redistribution review",
+      "rights_url": "https://www.cdc.gov/other/agencymaterials.html",
+      "locator": "Web-tool-readable Use of Agency Materials requirements and exceptions; raw rights page retrieval 403",
+      "verification_retention": "Raw guidance and rights bytes unavailable; reproducible approved archive method required before admission.",
+      "browser_publication_proposal": "Pending rights review: attribution, nonendorsement, unchanged meaning, free-original notice and third-party/logo exceptions must be addressed.",
+      "fresh_verification": "Both official pages again returned HTTP403 on 2026-10-11T03:27:12Z. No raw archive retained; web-readable text is discovery only.",
+      "required_resolution": "Independent rights reviewer approves retained official guidance and rights bytes, or a reproducible archive procedure with exact content/version/locator and verifiable retained preimage. Until then withhold both CDC claims; never hash an error response as source."
+    }
+  ],
+  "prepared_at": "2026-10-11T03:36:41Z",
+  "independent_rights_decision": null
+}
