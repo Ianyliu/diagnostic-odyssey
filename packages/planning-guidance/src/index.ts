@@ -64,7 +64,7 @@ function trustedSectionStates(input:PlanningGuidanceInputV1):PlanningGuidanceOut
  * Canonical structured values distinguish `null` from every valid literal hint ID.
  * Domain separation from snapshots, narrative options and historical request IDs.
  */
-function requestProposalId(args:{
+export function requestProposalId(args:{
  snapshotFingerprint:string; generationId:string; templateId:string; gapId:string;
  hintId:string|null; hintReleaseSha256:string|null;
 }):string {
