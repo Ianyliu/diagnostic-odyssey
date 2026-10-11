@@ -1,0 +1,2652 @@
+{
+  "description": "Synthetic structural fixtures only. No real rights, sources, reviewer authority, or admission.",
+  "cases": [
+    {
+      "name": "candidate_draft",
+      "expected_schema": true,
+      "expected_runtime": true,
+      "note": "",
+      "catalog": {
+        "manifest": {
+          "schema_version": "1.0",
+          "artifact_family": "narrative_intervention_references",
+          "catalog_id": "synthetic-v1",
+          "release_status": "candidate",
+          "generated_at": "2026-10-11T10:00:00Z",
+          "code_commit": "synthetic-only",
+          "review_manifest_sha256": null,
+          "applicability_manifest_sha256": null,
+          "automatic_release": false,
+          "quantitative_effect_eligible": false
+        },
+        "records": [
+          {
+            "claim_id": "SYN26-TEST-01",
+            "source": {
+              "source_id": "synthetic-source-1",
+              "citation": "Synthetic contract fixture; not evidence",
+              "title": "Synthetic source only",
+              "authors": [
+                "Synthetic Author"
+              ],
+              "publication_year": 2026,
+              "source_kind": "official_report",
+              "doi": null,
+              "pmcid": null,
+              "url": "https://example.invalid/synthetic",
+              "locators": [
+                {
+                  "kind": "section",
+                  "detail": "Test section 1"
+                }
+              ],
+              "retrieved_at": null,
+              "source_sha256": null
+            },
+            "proposed_claim_wording": "Synthetic proposed text, no scientific claim.",
+            "approved_claim_wording": null,
+            "prohibited_stronger_claims": [],
+            "applicability": {
+              "population": "Synthetic population",
+              "condition_definition": "Synthetic condition",
+              "setting": "Synthetic setting",
+              "payer": "Not reported",
+              "geography": "Synthetic geography",
+              "pathway_step": "Test pathway",
+              "mechanism": "Test mechanism",
+              "applicability_limits": [
+                "Not generalizable"
+              ]
+            },
+            "causal_use_class": "observational_pathway_description",
+            "allowed_use": "background_context_only",
+            "limitations": [
+              "No inference"
+            ],
+            "reviewer_status": "draft",
+            "review": {
+              "reviewer_id": null,
+              "reviewed_at": null,
+              "review_note": "Unreviewed synthetic fixture"
+            },
+            "release_status": "candidate",
+            "quantitative_effect_eligible": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "candidate_needs_review",
+      "expected_schema": true,
+      "expected_runtime": true,
+      "note": "",
+      "catalog": {
+        "manifest": {
+          "schema_version": "1.0",
+          "artifact_family": "narrative_intervention_references",
+          "catalog_id": "synthetic-v1",
+          "release_status": "candidate",
+          "generated_at": "2026-10-11T10:00:00Z",
+          "code_commit": "synthetic-only",
+          "review_manifest_sha256": null,
+          "applicability_manifest_sha256": null,
+          "automatic_release": false,
+          "quantitative_effect_eligible": false
+        },
+        "records": [
+          {
+            "claim_id": "SYN26-TEST-01",
+            "source": {
+              "source_id": "synthetic-source-1",
+              "citation": "Synthetic contract fixture; not evidence",
+              "title": "Synthetic source only",
+              "authors": [
+                "Synthetic Author"
+              ],
+              "publication_year": 2026,
+              "source_kind": "official_report",
+              "doi": null,
+              "pmcid": null,
+              "url": "https://example.invalid/synthetic",
+              "locators": [
+                {
+                  "kind": "section",
+                  "detail": "Test section 1"
+                }
+              ],
+              "retrieved_at": null,
+              "source_sha256": null
+            },
+            "proposed_claim_wording": "Synthetic proposed text, no scientific claim.",
+            "approved_claim_wording": null,
+            "prohibited_stronger_claims": [],
+            "applicability": {
+              "population": "Synthetic population",
+              "condition_definition": "Synthetic condition",
+              "setting": "Synthetic setting",
+              "payer": "Not reported",
+              "geography": "Synthetic geography",
+              "pathway_step": "Test pathway",
+              "mechanism": "Test mechanism",
+              "applicability_limits": [
+                "Not generalizable"
+              ]
+            },
+            "causal_use_class": "observational_pathway_description",
+            "allowed_use": "background_context_only",
+            "limitations": [
+              "No inference"
+            ],
+            "reviewer_status": "needs_review",
+            "review": {
+              "reviewer_id": null,
+              "reviewed_at": null,
+              "review_note": "Unreviewed synthetic fixture"
+            },
+            "release_status": "candidate",
+            "quantitative_effect_eligible": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "reviewed_not_released",
+      "expected_schema": true,
+      "expected_runtime": true,
+      "note": "",
+      "catalog": {
+        "manifest": {
+          "schema_version": "1.0",
+          "artifact_family": "narrative_intervention_references",
+          "catalog_id": "synthetic-v1",
+          "release_status": "candidate",
+          "generated_at": "2026-10-11T10:00:00Z",
+          "code_commit": "synthetic-only",
+          "review_manifest_sha256": null,
+          "applicability_manifest_sha256": null,
+          "automatic_release": false,
+          "quantitative_effect_eligible": false
+        },
+        "records": [
+          {
+            "claim_id": "SYN26-TEST-01",
+            "source": {
+              "source_id": "synthetic-source-1",
+              "citation": "Synthetic contract fixture; not evidence",
+              "title": "Synthetic source only",
+              "authors": [
+                "Synthetic Author"
+              ],
+              "publication_year": 2026,
+              "source_kind": "official_report",
+              "doi": null,
+              "pmcid": null,
+              "url": "https://example.invalid/synthetic",
+              "locators": [
+                {
+                  "kind": "section",
+                  "detail": "Test section 1"
+                }
+              ],
+              "retrieved_at": "2026-10-11T09:59:00Z",
+              "source_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            },
+            "proposed_claim_wording": "Synthetic proposed text, no scientific claim.",
+            "approved_claim_wording": "Synthetic approved text, not a real approval.",
+            "prohibited_stronger_claims": [
+              "Not an effect or ROI"
+            ],
+            "applicability": {
+              "population": "Synthetic population",
+              "condition_definition": "Synthetic condition",
+              "setting": "Synthetic setting",
+              "payer": "Not reported",
+              "geography": "Synthetic geography",
+              "pathway_step": "Test pathway",
+              "mechanism": "Test mechanism",
+              "applicability_limits": [
+                "Not generalizable"
+              ]
+            },
+            "causal_use_class": "observational_pathway_description",
+            "allowed_use": "background_context_only",
+            "limitations": [
+              "Only a test"
+            ],
+            "reviewer_status": "approved",
+            "review": {
+              "reviewer_id": "synthetic-reviewer",
+              "reviewed_at": "2026-10-11T10:01:00Z",
+              "review_note": "Synthetic structural test, not human authentication"
+            },
+            "release_status": "reviewed_not_released",
+            "quantitative_effect_eligible": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "released",
+      "expected_schema": true,
+      "expected_runtime": true,
+      "note": "",
+      "catalog": {
+        "manifest": {
+          "schema_version": "1.0",
+          "artifact_family": "narrative_intervention_references",
+          "catalog_id": "synthetic-v1",
+          "release_status": "reviewed_released",
+          "generated_at": "2026-10-11T10:00:00Z",
+          "code_commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "review_manifest_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "applicability_manifest_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "automatic_release": false,
+          "quantitative_effect_eligible": false
+        },
+        "records": [
+          {
+            "claim_id": "SYN26-TEST-01",
+            "source": {
+              "source_id": "synthetic-source-1",
+              "citation": "Synthetic contract fixture; not evidence",
+              "title": "Synthetic source only",
+              "authors": [
+                "Synthetic Author"
+              ],
+              "publication_year": 2026,
+              "source_kind": "official_report",
+              "doi": null,
+              "pmcid": null,
+              "url": "https://example.invalid/synthetic",
+              "locators": [
+                {
+                  "kind": "section",
+                  "detail": "Test section 1"
+                }
+              ],
+              "retrieved_at": "2026-10-11T09:59:00Z",
+              "source_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            },
+            "proposed_claim_wording": "Synthetic proposed text, no scientific claim.",
+            "approved_claim_wording": "Synthetic approved text, not a real approval.",
+            "prohibited_stronger_claims": [
+              "Not an effect or ROI"
+            ],
+            "applicability": {
+              "population": "Synthetic population",
+              "condition_definition": "Synthetic condition",
+              "setting": "Synthetic setting",
+              "payer": "Not reported",
+              "geography": "Synthetic geography",
+              "pathway_step": "Test pathway",
+              "mechanism": "Test mechanism",
+              "applicability_limits": [
+                "Not generalizable"
+              ]
+            },
+            "causal_use_class": "observational_pathway_description",
+            "allowed_use": "background_context_only",
+            "limitations": [
+              "Only a test"
+            ],
+            "reviewer_status": "approved",
+            "review": {
+              "reviewer_id": "synthetic-reviewer",
+              "reviewed_at": "2026-10-11T10:01:00Z",
+              "review_note": "Synthetic structural test, not human authentication"
+            },
+            "release_status": "reviewed_released",
+            "quantitative_effect_eligible": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "rejected",
+      "expected_schema": true,
+      "expected_runtime": true,
+      "note": "",
+      "catalog": {
+        "manifest": {
+          "schema_version": "1.0",
+          "artifact_family": "narrative_intervention_references",
+          "catalog_id": "synthetic-v1",
+          "release_status": "candidate",
+          "generated_at": "2026-10-11T10:00:00Z",
+          "code_commit": "synthetic-only",
+          "review_manifest_sha256": null,
+          "applicability_manifest_sha256": null,
+          "automatic_release": false,
+          "quantitative_effect_eligible": false
+        },
+        "records": [
+          {
+            "claim_id": "SYN26-TEST-01",
+            "source": {
+              "source_id": "synthetic-source-1",
+              "citation": "Synthetic contract fixture; not evidence",
+              "title": "Synthetic source only",
+              "authors": [
+                "Synthetic Author"
+              ],
+              "publication_year": 2026,
+              "source_kind": "official_report",
+              "doi": null,
+              "pmcid": null,
+              "url": "https://example.invalid/synthetic",
+              "locators": [
+                {
+                  "kind": "section",
+                  "detail": "Test section 1"
+                }
+              ],
+              "retrieved_at": "2026-10-11T09:59:00Z",
+              "source_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            },
+            "proposed_claim_wording": "Synthetic proposed text, no scientific claim.",
+            "approved_claim_wording": null,
+            "prohibited_stronger_claims": [],
+            "applicability": {
+              "population": "Synthetic population",
+              "condition_definition": "Synthetic condition",
+              "setting": "Synthetic setting",
+              "payer": "Not reported",
+              "geography": "Synthetic geography",
+              "pathway_step": "Test pathway",
+              "mechanism": "Test mechanism",
+              "applicability_limits": [
+                "Not generalizable"
+              ]
+            },
+            "causal_use_class": "observational_pathway_description",
+            "allowed_use": "background_context_only",
+            "limitations": [
+              "Only a test"
+            ],
+            "reviewer_status": "rejected",
+            "review": {
+              "reviewer_id": "synthetic-reviewer",
+              "reviewed_at": "2026-10-11T10:01:00Z",
+              "review_note": "Synthetic rejection, not a real review"
+            },
+            "release_status": "rejected",
+            "quantitative_effect_eligible": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "nested_source_unknown",
+      "expected_schema": false,
+      "expected_runtime": false,
+      "note": "",
+      "catalog": {
+        "manifest": {
+          "schema_version": "1.0",
+          "artifact_family": "narrative_intervention_references",
+          "catalog_id": "synthetic-v1",
+          "release_status": "candidate",
+          "generated_at": "2026-10-11T10:00:00Z",
+          "code_commit": "synthetic-only",
+          "review_manifest_sha256": null,
+          "applicability_manifest_sha256": null,
+          "automatic_release": false,
+          "quantitative_effect_eligible": false
+        },
+        "records": [
+          {
+            "claim_id": "SYN26-TEST-01",
+            "source": {
+              "source_id": "synthetic-source-1",
+              "citation": "Synthetic contract fixture; not evidence",
+              "title": "Synthetic source only",
+              "authors": [
+                "Synthetic Author"
+              ],
+              "publication_year": 2026,
+              "source_kind": "official_report",
+              "doi": null,
+              "pmcid": null,
+              "url": "https://example.invalid/synthetic",
+              "locators": [
+                {
+                  "kind": "section",
+                  "detail": "Test section 1"
+                }
+              ],
+              "retrieved_at": null,
+              "source_sha256": null,
+              "extra": "bad"
+            },
+            "proposed_claim_wording": "Synthetic proposed text, no scientific claim.",
+            "approved_claim_wording": null,
+            "prohibited_stronger_claims": [],
+            "applicability": {
+              "population": "Synthetic population",
+              "condition_definition": "Synthetic condition",
+              "setting": "Synthetic setting",
+              "payer": "Not reported",
+              "geography": "Synthetic geography",
+              "pathway_step": "Test pathway",
+              "mechanism": "Test mechanism",
+              "applicability_limits": [
+                "Not generalizable"
+              ]
+            },
+            "causal_use_class": "observational_pathway_description",
+            "allowed_use": "background_context_only",
+            "limitations": [
+              "No inference"
+            ],
+            "reviewer_status": "draft",
+            "review": {
+              "reviewer_id": null,
+              "reviewed_at": null,
+              "review_note": "Unreviewed synthetic fixture"
+            },
+            "release_status": "candidate",
+            "quantitative_effect_eligible": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "nested_locator_unknown",
+      "expected_schema": false,
+      "expected_runtime": false,
+      "note": "",
+      "catalog": {
+        "manifest": {
+          "schema_version": "1.0",
+          "artifact_family": "narrative_intervention_references",
+          "catalog_id": "synthetic-v1",
+          "release_status": "candidate",
+          "generated_at": "2026-10-11T10:00:00Z",
+          "code_commit": "synthetic-only",
+          "review_manifest_sha256": null,
+          "applicability_manifest_sha256": null,
+          "automatic_release": false,
+          "quantitative_effect_eligible": false
+        },
+        "records": [
+          {
+            "claim_id": "SYN26-TEST-01",
+            "source": {
+              "source_id": "synthetic-source-1",
+              "citation": "Synthetic contract fixture; not evidence",
+              "title": "Synthetic source only",
+              "authors": [
+                "Synthetic Author"
+              ],
+              "publication_year": 2026,
+              "source_kind": "official_report",
+              "doi": null,
+              "pmcid": null,
+              "url": "https://example.invalid/synthetic",
+              "locators": [
+                {
+                  "kind": "section",
+                  "detail": "Test section 1",
+                  "extra": 10
+                }
+              ],
+              "retrieved_at": null,
+              "source_sha256": null
+            },
+            "proposed_claim_wording": "Synthetic proposed text, no scientific claim.",
+            "approved_claim_wording": null,
+            "prohibited_stronger_claims": [],
+            "applicability": {
+              "population": "Synthetic population",
+              "condition_definition": "Synthetic condition",
+              "setting": "Synthetic setting",
+              "payer": "Not reported",
+              "geography": "Synthetic geography",
+              "pathway_step": "Test pathway",
+              "mechanism": "Test mechanism",
+              "applicability_limits": [
+                "Not generalizable"
+              ]
+            },
+            "causal_use_class": "observational_pathway_description",
+            "allowed_use": "background_context_only",
+            "limitations": [
+              "No inference"
+            ],
+            "reviewer_status": "draft",
+            "review": {
+              "reviewer_id": null,
+              "reviewed_at": null,
+              "review_note": "Unreviewed synthetic fixture"
+            },
+            "release_status": "candidate",
+            "quantitative_effect_eligible": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "nested_review_unknown",
+      "expected_schema": false,
+      "expected_runtime": false,
+      "note": "",
+      "catalog": {
+        "manifest": {
+          "schema_version": "1.0",
+          "artifact_family": "narrative_intervention_references",
+          "catalog_id": "synthetic-v1",
+          "release_status": "candidate",
+          "generated_at": "2026-10-11T10:00:00Z",
+          "code_commit": "synthetic-only",
+          "review_manifest_sha256": null,
+          "applicability_manifest_sha256": null,
+          "automatic_release": false,
+          "quantitative_effect_eligible": false
+        },
+        "records": [
+          {
+            "claim_id": "SYN26-TEST-01",
+            "source": {
+              "source_id": "synthetic-source-1",
+              "citation": "Synthetic contract fixture; not evidence",
+              "title": "Synthetic source only",
+              "authors": [
+                "Synthetic Author"
+              ],
+              "publication_year": 2026,
+              "source_kind": "official_report",
+              "doi": null,
+              "pmcid": null,
+              "url": "https://example.invalid/synthetic",
+              "locators": [
+                {
+                  "kind": "section",
+                  "detail": "Test section 1"
+                }
+              ],
+              "retrieved_at": null,
+              "source_sha256": null
+            },
+            "proposed_claim_wording": "Synthetic proposed text, no scientific claim.",
+            "approved_claim_wording": null,
+            "prohibited_stronger_claims": [],
+            "applicability": {
+              "population": "Synthetic population",
+              "condition_definition": "Synthetic condition",
+              "setting": "Synthetic setting",
+              "payer": "Not reported",
+              "geography": "Synthetic geography",
+              "pathway_step": "Test pathway",
+              "mechanism": "Test mechanism",
+              "applicability_limits": [
+                "Not generalizable"
+              ]
+            },
+            "causal_use_class": "observational_pathway_description",
+            "allowed_use": "background_context_only",
+            "limitations": [
+              "No inference"
+            ],
+            "reviewer_status": "draft",
+            "review": {
+              "reviewer_id": null,
+              "reviewed_at": null,
+              "review_note": "Unreviewed synthetic fixture",
+              "effect_estimate": 2
+            },
+            "release_status": "candidate",
+            "quantitative_effect_eligible": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "nested_applicability_unknown",
+      "expected_schema": false,
+      "expected_runtime": false,
+      "note": "",
+      "catalog": {
+        "manifest": {
+          "schema_version": "1.0",
+          "artifact_family": "narrative_intervention_references",
+          "catalog_id": "synthetic-v1",
+          "release_status": "candidate",
+          "generated_at": "2026-10-11T10:00:00Z",
+          "code_commit": "synthetic-only",
+          "review_manifest_sha256": null,
+          "applicability_manifest_sha256": null,
+          "automatic_release": false,
+          "quantitative_effect_eligible": false
+        },
+        "records": [
+          {
+            "claim_id": "SYN26-TEST-01",
+            "source": {
+              "source_id": "synthetic-source-1",
+              "citation": "Synthetic contract fixture; not evidence",
+              "title": "Synthetic source only",
+              "authors": [
+                "Synthetic Author"
+              ],
+              "publication_year": 2026,
+              "source_kind": "official_report",
+              "doi": null,
+              "pmcid": null,
+              "url": "https://example.invalid/synthetic",
+              "locators": [
+                {
+                  "kind": "section",
+                  "detail": "Test section 1"
+                }
+              ],
+              "retrieved_at": null,
+              "source_sha256": null
+            },
+            "proposed_claim_wording": "Synthetic proposed text, no scientific claim.",
+            "approved_claim_wording": null,
+            "prohibited_stronger_claims": [],
+            "applicability": {
+              "population": "Synthetic population",
+              "condition_definition": "Synthetic condition",
+              "setting": "Synthetic setting",
+              "payer": "Not reported",
+              "geography": "Synthetic geography",
+              "pathway_step": "Test pathway",
+              "mechanism": "Test mechanism",
+              "applicability_limits": [
+                "Not generalizable"
+              ],
+              "roi": 3
+            },
+            "causal_use_class": "observational_pathway_description",
+            "allowed_use": "background_context_only",
+            "limitations": [
+              "No inference"
+            ],
+            "reviewer_status": "draft",
+            "review": {
+              "reviewer_id": null,
+              "reviewed_at": null,
+              "review_note": "Unreviewed synthetic fixture"
+            },
+            "release_status": "candidate",
+            "quantitative_effect_eligible": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "manifest_unknown",
+      "expected_schema": false,
+      "expected_runtime": false,
+      "note": "",
+      "catalog": {
+        "manifest": {
+          "schema_version": "1.0",
+          "artifact_family": "narrative_intervention_references",
+          "catalog_id": "synthetic-v1",
+          "release_status": "candidate",
+          "generated_at": "2026-10-11T10:00:00Z",
+          "code_commit": "synthetic-only",
+          "review_manifest_sha256": null,
+          "applicability_manifest_sha256": null,
+          "automatic_release": false,
+          "quantitative_effect_eligible": false,
+          "extraneous": true
+        },
+        "records": [
+          {
+            "claim_id": "SYN26-TEST-01",
+            "source": {
+              "source_id": "synthetic-source-1",
+              "citation": "Synthetic contract fixture; not evidence",
+              "title": "Synthetic source only",
+              "authors": [
+                "Synthetic Author"
+              ],
+              "publication_year": 2026,
+              "source_kind": "official_report",
+              "doi": null,
+              "pmcid": null,
+              "url": "https://example.invalid/synthetic",
+              "locators": [
+                {
+                  "kind": "section",
+                  "detail": "Test section 1"
+                }
+              ],
+              "retrieved_at": null,
+              "source_sha256": null
+            },
+            "proposed_claim_wording": "Synthetic proposed text, no scientific claim.",
+            "approved_claim_wording": null,
+            "prohibited_stronger_claims": [],
+            "applicability": {
+              "population": "Synthetic population",
+              "condition_definition": "Synthetic condition",
+              "setting": "Synthetic setting",
+              "payer": "Not reported",
+              "geography": "Synthetic geography",
+              "pathway_step": "Test pathway",
+              "mechanism": "Test mechanism",
+              "applicability_limits": [
+                "Not generalizable"
+              ]
+            },
+            "causal_use_class": "observational_pathway_description",
+            "allowed_use": "background_context_only",
+            "limitations": [
+              "No inference"
+            ],
+            "reviewer_status": "draft",
+            "review": {
+              "reviewer_id": null,
+              "reviewed_at": null,
+              "review_note": "Unreviewed synthetic fixture"
+            },
+            "release_status": "candidate",
+            "quantitative_effect_eligible": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "root_unknown",
+      "expected_schema": false,
+      "expected_runtime": false,
+      "note": "",
+      "catalog": {
+        "manifest": {
+          "schema_version": "1.0",
+          "artifact_family": "narrative_intervention_references",
+          "catalog_id": "synthetic-v1",
+          "release_status": "candidate",
+          "generated_at": "2026-10-11T10:00:00Z",
+          "code_commit": "synthetic-only",
+          "review_manifest_sha256": null,
+          "applicability_manifest_sha256": null,
+          "automatic_release": false,
+          "quantitative_effect_eligible": false
+        },
+        "records": [
+          {
+            "claim_id": "SYN26-TEST-01",
+            "source": {
+              "source_id": "synthetic-source-1",
+              "citation": "Synthetic contract fixture; not evidence",
+              "title": "Synthetic source only",
+              "authors": [
+                "Synthetic Author"
+              ],
+              "publication_year": 2026,
+              "source_kind": "official_report",
+              "doi": null,
+              "pmcid": null,
+              "url": "https://example.invalid/synthetic",
+              "locators": [
+                {
+                  "kind": "section",
+                  "detail": "Test section 1"
+                }
+              ],
+              "retrieved_at": null,
+              "source_sha256": null
+            },
+            "proposed_claim_wording": "Synthetic proposed text, no scientific claim.",
+            "approved_claim_wording": null,
+            "prohibited_stronger_claims": [],
+            "applicability": {
+              "population": "Synthetic population",
+              "condition_definition": "Synthetic condition",
+              "setting": "Synthetic setting",
+              "payer": "Not reported",
+              "geography": "Synthetic geography",
+              "pathway_step": "Test pathway",
+              "mechanism": "Test mechanism",
+              "applicability_limits": [
+                "Not generalizable"
+              ]
+            },
+            "causal_use_class": "observational_pathway_description",
+            "allowed_use": "background_context_only",
+            "limitations": [
+              "No inference"
+            ],
+            "reviewer_status": "draft",
+            "review": {
+              "reviewer_id": null,
+              "reviewed_at": null,
+              "review_note": "Unreviewed synthetic fixture"
+            },
+            "release_status": "candidate",
+            "quantitative_effect_eligible": false
+          }
+        ],
+        "evidence": []
+      }
+    },
+    {
+      "name": "quantitative_effect_true",
+      "expected_schema": false,
+      "expected_runtime": false,
+      "note": "",
+      "catalog": {
+        "manifest": {
+          "schema_version": "1.0",
+          "artifact_family": "narrative_intervention_references",
+          "catalog_id": "synthetic-v1",
+          "release_status": "candidate",
+          "generated_at": "2026-10-11T10:00:00Z",
+          "code_commit": "synthetic-only",
+          "review_manifest_sha256": null,
+          "applicability_manifest_sha256": null,
+          "automatic_release": false,
+          "quantitative_effect_eligible": false
+        },
+        "records": [
+          {
+            "claim_id": "SYN26-TEST-01",
+            "source": {
+              "source_id": "synthetic-source-1",
+              "citation": "Synthetic contract fixture; not evidence",
+              "title": "Synthetic source only",
+              "authors": [
+                "Synthetic Author"
+              ],
+              "publication_year": 2026,
+              "source_kind": "official_report",
+              "doi": null,
+              "pmcid": null,
+              "url": "https://example.invalid/synthetic",
+              "locators": [
+                {
+                  "kind": "section",
+                  "detail": "Test section 1"
+                }
+              ],
+              "retrieved_at": null,
+              "source_sha256": null
+            },
+            "proposed_claim_wording": "Synthetic proposed text, no scientific claim.",
+            "approved_claim_wording": null,
+            "prohibited_stronger_claims": [],
+            "applicability": {
+              "population": "Synthetic population",
+              "condition_definition": "Synthetic condition",
+              "setting": "Synthetic setting",
+              "payer": "Not reported",
+              "geography": "Synthetic geography",
+              "pathway_step": "Test pathway",
+              "mechanism": "Test mechanism",
+              "applicability_limits": [
+                "Not generalizable"
+              ]
+            },
+            "causal_use_class": "observational_pathway_description",
+            "allowed_use": "background_context_only",
+            "limitations": [
+              "No inference"
+            ],
+            "reviewer_status": "draft",
+            "review": {
+              "reviewer_id": null,
+              "reviewed_at": null,
+              "review_note": "Unreviewed synthetic fixture"
+            },
+            "release_status": "candidate",
+            "quantitative_effect_eligible": true
+          }
+        ]
+      }
+    },
+    {
+      "name": "automatic_release_true",
+      "expected_schema": false,
+      "expected_runtime": false,
+      "note": "",
+      "catalog": {
+        "manifest": {
+          "schema_version": "1.0",
+          "artifact_family": "narrative_intervention_references",
+          "catalog_id": "synthetic-v1",
+          "release_status": "candidate",
+          "generated_at": "2026-10-11T10:00:00Z",
+          "code_commit": "synthetic-only",
+          "review_manifest_sha256": null,
+          "applicability_manifest_sha256": null,
+          "automatic_release": true,
+          "quantitative_effect_eligible": false
+        },
+        "records": [
+          {
+            "claim_id": "SYN26-TEST-01",
+            "source": {
+              "source_id": "synthetic-source-1",
+              "citation": "Synthetic contract fixture; not evidence",
+              "title": "Synthetic source only",
+              "authors": [
+                "Synthetic Author"
+              ],
+              "publication_year": 2026,
+              "source_kind": "official_report",
+              "doi": null,
+              "pmcid": null,
+              "url": "https://example.invalid/synthetic",
+              "locators": [
+                {
+                  "kind": "section",
+                  "detail": "Test section 1"
+                }
+              ],
+              "retrieved_at": null,
+              "source_sha256": null
+            },
+            "proposed_claim_wording": "Synthetic proposed text, no scientific claim.",
+            "approved_claim_wording": null,
+            "prohibited_stronger_claims": [],
+            "applicability": {
+              "population": "Synthetic population",
+              "condition_definition": "Synthetic condition",
+              "setting": "Synthetic setting",
+              "payer": "Not reported",
+              "geography": "Synthetic geography",
+              "pathway_step": "Test pathway",
+              "mechanism": "Test mechanism",
+              "applicability_limits": [
+                "Not generalizable"
+              ]
+            },
+            "causal_use_class": "observational_pathway_description",
+            "allowed_use": "background_context_only",
+            "limitations": [
+              "No inference"
+            ],
+            "reviewer_status": "draft",
+            "review": {
+              "reviewer_id": null,
+              "reviewed_at": null,
+              "review_note": "Unreviewed synthetic fixture"
+            },
+            "release_status": "candidate",
+            "quantitative_effect_eligible": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "effect_parameter_injection",
+      "expected_schema": false,
+      "expected_runtime": false,
+      "note": "",
+      "catalog": {
+        "manifest": {
+          "schema_version": "1.0",
+          "artifact_family": "narrative_intervention_references",
+          "catalog_id": "synthetic-v1",
+          "release_status": "candidate",
+          "generated_at": "2026-10-11T10:00:00Z",
+          "code_commit": "synthetic-only",
+          "review_manifest_sha256": null,
+          "applicability_manifest_sha256": null,
+          "automatic_release": false,
+          "quantitative_effect_eligible": false
+        },
+        "records": [
+          {
+            "claim_id": "SYN26-TEST-01",
+            "source": {
+              "source_id": "synthetic-source-1",
+              "citation": "Synthetic contract fixture; not evidence",
+              "title": "Synthetic source only",
+              "authors": [
+                "Synthetic Author"
+              ],
+              "publication_year": 2026,
+              "source_kind": "official_report",
+              "doi": null,
+              "pmcid": null,
+              "url": "https://example.invalid/synthetic",
+              "locators": [
+                {
+                  "kind": "section",
+                  "detail": "Test section 1"
+                }
+              ],
+              "retrieved_at": null,
+              "source_sha256": null
+            },
+            "proposed_claim_wording": "Synthetic proposed text, no scientific claim.",
+            "approved_claim_wording": null,
+            "prohibited_stronger_claims": [],
+            "applicability": {
+              "population": "Synthetic population",
+              "condition_definition": "Synthetic condition",
+              "setting": "Synthetic setting",
+              "payer": "Not reported",
+              "geography": "Synthetic geography",
+              "pathway_step": "Test pathway",
+              "mechanism": "Test mechanism",
+              "applicability_limits": [
+                "Not generalizable"
+              ]
+            },
+            "causal_use_class": "observational_pathway_description",
+            "allowed_use": "background_context_only",
+            "limitations": [
+              "No inference"
+            ],
+            "reviewer_status": "draft",
+            "review": {
+              "reviewer_id": null,
+              "reviewed_at": null,
+              "review_note": "Unreviewed synthetic fixture"
+            },
+            "release_status": "candidate",
+            "quantitative_effect_eligible": false,
+            "scenario_parameter": "test"
+          }
+        ]
+      }
+    },
+    {
+      "name": "roi_injection",
+      "expected_schema": false,
+      "expected_runtime": false,
+      "note": "",
+      "catalog": {
+        "manifest": {
+          "schema_version": "1.0",
+          "artifact_family": "narrative_intervention_references",
+          "catalog_id": "synthetic-v1",
+          "release_status": "candidate",
+          "generated_at": "2026-10-11T10:00:00Z",
+          "code_commit": "synthetic-only",
+          "review_manifest_sha256": null,
+          "applicability_manifest_sha256": null,
+          "automatic_release": false,
+          "quantitative_effect_eligible": false
+        },
+        "records": [
+          {
+            "claim_id": "SYN26-TEST-01",
+            "source": {
+              "source_id": "synthetic-source-1",
+              "citation": "Synthetic contract fixture; not evidence",
+              "title": "Synthetic source only",
+              "authors": [
+                "Synthetic Author"
+              ],
+              "publication_year": 2026,
+              "source_kind": "official_report",
+              "doi": null,
+              "pmcid": null,
+              "url": "https://example.invalid/synthetic",
+              "locators": [
+                {
+                  "kind": "section",
+                  "detail": "Test section 1"
+                }
+              ],
+              "retrieved_at": null,
+              "source_sha256": null
+            },
+            "proposed_claim_wording": "Synthetic proposed text, no scientific claim.",
+            "approved_claim_wording": null,
+            "prohibited_stronger_claims": [],
+            "applicability": {
+              "population": "Synthetic population",
+              "condition_definition": "Synthetic condition",
+              "setting": "Synthetic setting",
+              "payer": "Not reported",
+              "geography": "Synthetic geography",
+              "pathway_step": "Test pathway",
+              "mechanism": "Test mechanism",
+              "applicability_limits": [
+                "Not generalizable"
+              ]
+            },
+            "causal_use_class": "observational_pathway_description",
+            "allowed_use": "background_context_only",
+            "limitations": [
+              "No inference"
+            ],
+            "reviewer_status": "draft",
+            "review": {
+              "reviewer_id": null,
+              "reviewed_at": null,
+              "review_note": "Unreviewed synthetic fixture"
+            },
+            "release_status": "candidate",
+            "quantitative_effect_eligible": false,
+            "estimated_savings": 100
+          }
+        ]
+      }
+    },
+    {
+      "name": "invalid_review_state",
+      "expected_schema": false,
+      "expected_runtime": false,
+      "note": "",
+      "catalog": {
+        "manifest": {
+          "schema_version": "1.0",
+          "artifact_family": "narrative_intervention_references",
+          "catalog_id": "synthetic-v1",
+          "release_status": "candidate",
+          "generated_at": "2026-10-11T10:00:00Z",
+          "code_commit": "synthetic-only",
+          "review_manifest_sha256": null,
+          "applicability_manifest_sha256": null,
+          "automatic_release": false,
+          "quantitative_effect_eligible": false
+        },
+        "records": [
+          {
+            "claim_id": "SYN26-TEST-01",
+            "source": {
+              "source_id": "synthetic-source-1",
+              "citation": "Synthetic contract fixture; not evidence",
+              "title": "Synthetic source only",
+              "authors": [
+                "Synthetic Author"
+              ],
+              "publication_year": 2026,
+              "source_kind": "official_report",
+              "doi": null,
+              "pmcid": null,
+              "url": "https://example.invalid/synthetic",
+              "locators": [
+                {
+                  "kind": "section",
+                  "detail": "Test section 1"
+                }
+              ],
+              "retrieved_at": null,
+              "source_sha256": null
+            },
+            "proposed_claim_wording": "Synthetic proposed text, no scientific claim.",
+            "approved_claim_wording": null,
+            "prohibited_stronger_claims": [],
+            "applicability": {
+              "population": "Synthetic population",
+              "condition_definition": "Synthetic condition",
+              "setting": "Synthetic setting",
+              "payer": "Not reported",
+              "geography": "Synthetic geography",
+              "pathway_step": "Test pathway",
+              "mechanism": "Test mechanism",
+              "applicability_limits": [
+                "Not generalizable"
+              ]
+            },
+            "causal_use_class": "observational_pathway_description",
+            "allowed_use": "background_context_only",
+            "limitations": [
+              "No inference"
+            ],
+            "reviewer_status": "approved",
+            "review": {
+              "reviewer_id": null,
+              "reviewed_at": null,
+              "review_note": "Unreviewed synthetic fixture"
+            },
+            "release_status": "candidate",
+            "quantitative_effect_eligible": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "rejected_with_approved_wording",
+      "expected_schema": false,
+      "expected_runtime": false,
+      "note": "",
+      "catalog": {
+        "manifest": {
+          "schema_version": "1.0",
+          "artifact_family": "narrative_intervention_references",
+          "catalog_id": "synthetic-v1",
+          "release_status": "candidate",
+          "generated_at": "2026-10-11T10:00:00Z",
+          "code_commit": "synthetic-only",
+          "review_manifest_sha256": null,
+          "applicability_manifest_sha256": null,
+          "automatic_release": false,
+          "quantitative_effect_eligible": false
+        },
+        "records": [
+          {
+            "claim_id": "SYN26-TEST-01",
+            "source": {
+              "source_id": "synthetic-source-1",
+              "citation": "Synthetic contract fixture; not evidence",
+              "title": "Synthetic source only",
+              "authors": [
+                "Synthetic Author"
+              ],
+              "publication_year": 2026,
+              "source_kind": "official_report",
+              "doi": null,
+              "pmcid": null,
+              "url": "https://example.invalid/synthetic",
+              "locators": [
+                {
+                  "kind": "section",
+                  "detail": "Test section 1"
+                }
+              ],
+              "retrieved_at": "2026-10-11T09:59:00Z",
+              "source_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            },
+            "proposed_claim_wording": "Synthetic proposed text, no scientific claim.",
+            "approved_claim_wording": "Forbidden",
+            "prohibited_stronger_claims": [],
+            "applicability": {
+              "population": "Synthetic population",
+              "condition_definition": "Synthetic condition",
+              "setting": "Synthetic setting",
+              "payer": "Not reported",
+              "geography": "Synthetic geography",
+              "pathway_step": "Test pathway",
+              "mechanism": "Test mechanism",
+              "applicability_limits": [
+                "Not generalizable"
+              ]
+            },
+            "causal_use_class": "observational_pathway_description",
+            "allowed_use": "background_context_only",
+            "limitations": [
+              "Only a test"
+            ],
+            "reviewer_status": "rejected",
+            "review": {
+              "reviewer_id": "synthetic-reviewer",
+              "reviewed_at": "2026-10-11T10:01:00Z",
+              "review_note": "Synthetic rejection, not a real review"
+            },
+            "release_status": "rejected",
+            "quantitative_effect_eligible": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "approved_without_provenance",
+      "expected_schema": false,
+      "expected_runtime": false,
+      "note": "",
+      "catalog": {
+        "manifest": {
+          "schema_version": "1.0",
+          "artifact_family": "narrative_intervention_references",
+          "catalog_id": "synthetic-v1",
+          "release_status": "candidate",
+          "generated_at": "2026-10-11T10:00:00Z",
+          "code_commit": "synthetic-only",
+          "review_manifest_sha256": null,
+          "applicability_manifest_sha256": null,
+          "automatic_release": false,
+          "quantitative_effect_eligible": false
+        },
+        "records": [
+          {
+            "claim_id": "SYN26-TEST-01",
+            "source": {
+              "source_id": "synthetic-source-1",
+              "citation": "Synthetic contract fixture; not evidence",
+              "title": "Synthetic source only",
+              "authors": [
+                "Synthetic Author"
+              ],
+              "publication_year": 2026,
+              "source_kind": "official_report",
+              "doi": null,
+              "pmcid": null,
+              "url": "https://example.invalid/synthetic",
+              "locators": [
+                {
+                  "kind": "section",
+                  "detail": "Test section 1"
+                }
+              ],
+              "retrieved_at": "2026-10-11T09:59:00Z",
+              "source_sha256": null
+            },
+            "proposed_claim_wording": "Synthetic proposed text, no scientific claim.",
+            "approved_claim_wording": "Synthetic approved text, not a real approval.",
+            "prohibited_stronger_claims": [
+              "Not an effect or ROI"
+            ],
+            "applicability": {
+              "population": "Synthetic population",
+              "condition_definition": "Synthetic condition",
+              "setting": "Synthetic setting",
+              "payer": "Not reported",
+              "geography": "Synthetic geography",
+              "pathway_step": "Test pathway",
+              "mechanism": "Test mechanism",
+              "applicability_limits": [
+                "Not generalizable"
+              ]
+            },
+            "causal_use_class": "observational_pathway_description",
+            "allowed_use": "background_context_only",
+            "limitations": [
+              "Only a test"
+            ],
+            "reviewer_status": "approved",
+            "review": {
+              "reviewer_id": "synthetic-reviewer",
+              "reviewed_at": "2026-10-11T10:01:00Z",
+              "review_note": "Synthetic structural test, not human authentication"
+            },
+            "release_status": "reviewed_not_released",
+            "quantitative_effect_eligible": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "approved_without_limits",
+      "expected_schema": false,
+      "expected_runtime": false,
+      "note": "",
+      "catalog": {
+        "manifest": {
+          "schema_version": "1.0",
+          "artifact_family": "narrative_intervention_references",
+          "catalog_id": "synthetic-v1",
+          "release_status": "candidate",
+          "generated_at": "2026-10-11T10:00:00Z",
+          "code_commit": "synthetic-only",
+          "review_manifest_sha256": null,
+          "applicability_manifest_sha256": null,
+          "automatic_release": false,
+          "quantitative_effect_eligible": false
+        },
+        "records": [
+          {
+            "claim_id": "SYN26-TEST-01",
+            "source": {
+              "source_id": "synthetic-source-1",
+              "citation": "Synthetic contract fixture; not evidence",
+              "title": "Synthetic source only",
+              "authors": [
+                "Synthetic Author"
+              ],
+              "publication_year": 2026,
+              "source_kind": "official_report",
+              "doi": null,
+              "pmcid": null,
+              "url": "https://example.invalid/synthetic",
+              "locators": [
+                {
+                  "kind": "section",
+                  "detail": "Test section 1"
+                }
+              ],
+              "retrieved_at": "2026-10-11T09:59:00Z",
+              "source_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            },
+            "proposed_claim_wording": "Synthetic proposed text, no scientific claim.",
+            "approved_claim_wording": "Synthetic approved text, not a real approval.",
+            "prohibited_stronger_claims": [
+              "Not an effect or ROI"
+            ],
+            "applicability": {
+              "population": "Synthetic population",
+              "condition_definition": "Synthetic condition",
+              "setting": "Synthetic setting",
+              "payer": "Not reported",
+              "geography": "Synthetic geography",
+              "pathway_step": "Test pathway",
+              "mechanism": "Test mechanism",
+              "applicability_limits": [
+                "Not generalizable"
+              ]
+            },
+            "causal_use_class": "observational_pathway_description",
+            "allowed_use": "background_context_only",
+            "limitations": [],
+            "reviewer_status": "approved",
+            "review": {
+              "reviewer_id": "synthetic-reviewer",
+              "reviewed_at": "2026-10-11T10:01:00Z",
+              "review_note": "Synthetic structural test, not human authentication"
+            },
+            "release_status": "reviewed_not_released",
+            "quantitative_effect_eligible": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "approved_without_reviewer",
+      "expected_schema": false,
+      "expected_runtime": false,
+      "note": "",
+      "catalog": {
+        "manifest": {
+          "schema_version": "1.0",
+          "artifact_family": "narrative_intervention_references",
+          "catalog_id": "synthetic-v1",
+          "release_status": "candidate",
+          "generated_at": "2026-10-11T10:00:00Z",
+          "code_commit": "synthetic-only",
+          "review_manifest_sha256": null,
+          "applicability_manifest_sha256": null,
+          "automatic_release": false,
+          "quantitative_effect_eligible": false
+        },
+        "records": [
+          {
+            "claim_id": "SYN26-TEST-01",
+            "source": {
+              "source_id": "synthetic-source-1",
+              "citation": "Synthetic contract fixture; not evidence",
+              "title": "Synthetic source only",
+              "authors": [
+                "Synthetic Author"
+              ],
+              "publication_year": 2026,
+              "source_kind": "official_report",
+              "doi": null,
+              "pmcid": null,
+              "url": "https://example.invalid/synthetic",
+              "locators": [
+                {
+                  "kind": "section",
+                  "detail": "Test section 1"
+                }
+              ],
+              "retrieved_at": "2026-10-11T09:59:00Z",
+              "source_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            },
+            "proposed_claim_wording": "Synthetic proposed text, no scientific claim.",
+            "approved_claim_wording": "Synthetic approved text, not a real approval.",
+            "prohibited_stronger_claims": [
+              "Not an effect or ROI"
+            ],
+            "applicability": {
+              "population": "Synthetic population",
+              "condition_definition": "Synthetic condition",
+              "setting": "Synthetic setting",
+              "payer": "Not reported",
+              "geography": "Synthetic geography",
+              "pathway_step": "Test pathway",
+              "mechanism": "Test mechanism",
+              "applicability_limits": [
+                "Not generalizable"
+              ]
+            },
+            "causal_use_class": "observational_pathway_description",
+            "allowed_use": "background_context_only",
+            "limitations": [
+              "Only a test"
+            ],
+            "reviewer_status": "approved",
+            "review": {
+              "reviewer_id": null,
+              "reviewed_at": "2026-10-11T10:01:00Z",
+              "review_note": "Synthetic structural test, not human authentication"
+            },
+            "release_status": "reviewed_not_released",
+            "quantitative_effect_eligible": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "candidate_with_review_digest",
+      "expected_schema": false,
+      "expected_runtime": false,
+      "note": "",
+      "catalog": {
+        "manifest": {
+          "schema_version": "1.0",
+          "artifact_family": "narrative_intervention_references",
+          "catalog_id": "synthetic-v1",
+          "release_status": "candidate",
+          "generated_at": "2026-10-11T10:00:00Z",
+          "code_commit": "synthetic-only",
+          "review_manifest_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "applicability_manifest_sha256": null,
+          "automatic_release": false,
+          "quantitative_effect_eligible": false
+        },
+        "records": [
+          {
+            "claim_id": "SYN26-TEST-01",
+            "source": {
+              "source_id": "synthetic-source-1",
+              "citation": "Synthetic contract fixture; not evidence",
+              "title": "Synthetic source only",
+              "authors": [
+                "Synthetic Author"
+              ],
+              "publication_year": 2026,
+              "source_kind": "official_report",
+              "doi": null,
+              "pmcid": null,
+              "url": "https://example.invalid/synthetic",
+              "locators": [
+                {
+                  "kind": "section",
+                  "detail": "Test section 1"
+                }
+              ],
+              "retrieved_at": null,
+              "source_sha256": null
+            },
+            "proposed_claim_wording": "Synthetic proposed text, no scientific claim.",
+            "approved_claim_wording": null,
+            "prohibited_stronger_claims": [],
+            "applicability": {
+              "population": "Synthetic population",
+              "condition_definition": "Synthetic condition",
+              "setting": "Synthetic setting",
+              "payer": "Not reported",
+              "geography": "Synthetic geography",
+              "pathway_step": "Test pathway",
+              "mechanism": "Test mechanism",
+              "applicability_limits": [
+                "Not generalizable"
+              ]
+            },
+            "causal_use_class": "observational_pathway_description",
+            "allowed_use": "background_context_only",
+            "limitations": [
+              "No inference"
+            ],
+            "reviewer_status": "draft",
+            "review": {
+              "reviewer_id": null,
+              "reviewed_at": null,
+              "review_note": "Unreviewed synthetic fixture"
+            },
+            "release_status": "candidate",
+            "quantitative_effect_eligible": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "candidate_contains_released",
+      "expected_schema": false,
+      "expected_runtime": false,
+      "note": "",
+      "catalog": {
+        "manifest": {
+          "schema_version": "1.0",
+          "artifact_family": "narrative_intervention_references",
+          "catalog_id": "synthetic-v1",
+          "release_status": "candidate",
+          "generated_at": "2026-10-11T10:00:00Z",
+          "code_commit": "synthetic-only",
+          "review_manifest_sha256": null,
+          "applicability_manifest_sha256": null,
+          "automatic_release": false,
+          "quantitative_effect_eligible": false
+        },
+        "records": [
+          {
+            "claim_id": "SYN26-TEST-01",
+            "source": {
+              "source_id": "synthetic-source-1",
+              "citation": "Synthetic contract fixture; not evidence",
+              "title": "Synthetic source only",
+              "authors": [
+                "Synthetic Author"
+              ],
+              "publication_year": 2026,
+              "source_kind": "official_report",
+              "doi": null,
+              "pmcid": null,
+              "url": "https://example.invalid/synthetic",
+              "locators": [
+                {
+                  "kind": "section",
+                  "detail": "Test section 1"
+                }
+              ],
+              "retrieved_at": "2026-10-11T09:59:00Z",
+              "source_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            },
+            "proposed_claim_wording": "Synthetic proposed text, no scientific claim.",
+            "approved_claim_wording": "Synthetic approved text, not a real approval.",
+            "prohibited_stronger_claims": [
+              "Not an effect or ROI"
+            ],
+            "applicability": {
+              "population": "Synthetic population",
+              "condition_definition": "Synthetic condition",
+              "setting": "Synthetic setting",
+              "payer": "Not reported",
+              "geography": "Synthetic geography",
+              "pathway_step": "Test pathway",
+              "mechanism": "Test mechanism",
+              "applicability_limits": [
+                "Not generalizable"
+              ]
+            },
+            "causal_use_class": "observational_pathway_description",
+            "allowed_use": "background_context_only",
+            "limitations": [
+              "Only a test"
+            ],
+            "reviewer_status": "approved",
+            "review": {
+              "reviewer_id": "synthetic-reviewer",
+              "reviewed_at": "2026-10-11T10:01:00Z",
+              "review_note": "Synthetic structural test, not human authentication"
+            },
+            "release_status": "reviewed_released",
+            "quantitative_effect_eligible": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "released_missing_applicability_digest",
+      "expected_schema": false,
+      "expected_runtime": false,
+      "note": "",
+      "catalog": {
+        "manifest": {
+          "schema_version": "1.0",
+          "artifact_family": "narrative_intervention_references",
+          "catalog_id": "synthetic-v1",
+          "release_status": "reviewed_released",
+          "generated_at": "2026-10-11T10:00:00Z",
+          "code_commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "review_manifest_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "applicability_manifest_sha256": null,
+          "automatic_release": false,
+          "quantitative_effect_eligible": false
+        },
+        "records": [
+          {
+            "claim_id": "SYN26-TEST-01",
+            "source": {
+              "source_id": "synthetic-source-1",
+              "citation": "Synthetic contract fixture; not evidence",
+              "title": "Synthetic source only",
+              "authors": [
+                "Synthetic Author"
+              ],
+              "publication_year": 2026,
+              "source_kind": "official_report",
+              "doi": null,
+              "pmcid": null,
+              "url": "https://example.invalid/synthetic",
+              "locators": [
+                {
+                  "kind": "section",
+                  "detail": "Test section 1"
+                }
+              ],
+              "retrieved_at": "2026-10-11T09:59:00Z",
+              "source_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            },
+            "proposed_claim_wording": "Synthetic proposed text, no scientific claim.",
+            "approved_claim_wording": "Synthetic approved text, not a real approval.",
+            "prohibited_stronger_claims": [
+              "Not an effect or ROI"
+            ],
+            "applicability": {
+              "population": "Synthetic population",
+              "condition_definition": "Synthetic condition",
+              "setting": "Synthetic setting",
+              "payer": "Not reported",
+              "geography": "Synthetic geography",
+              "pathway_step": "Test pathway",
+              "mechanism": "Test mechanism",
+              "applicability_limits": [
+                "Not generalizable"
+              ]
+            },
+            "causal_use_class": "observational_pathway_description",
+            "allowed_use": "background_context_only",
+            "limitations": [
+              "Only a test"
+            ],
+            "reviewer_status": "approved",
+            "review": {
+              "reviewer_id": "synthetic-reviewer",
+              "reviewed_at": "2026-10-11T10:01:00Z",
+              "review_note": "Synthetic structural test, not human authentication"
+            },
+            "release_status": "reviewed_released",
+            "quantitative_effect_eligible": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "released_empty",
+      "expected_schema": false,
+      "expected_runtime": false,
+      "note": "",
+      "catalog": {
+        "manifest": {
+          "schema_version": "1.0",
+          "artifact_family": "narrative_intervention_references",
+          "catalog_id": "synthetic-v1",
+          "release_status": "reviewed_released",
+          "generated_at": "2026-10-11T10:00:00Z",
+          "code_commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "review_manifest_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "applicability_manifest_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "automatic_release": false,
+          "quantitative_effect_eligible": false
+        },
+        "records": []
+      }
+    },
+    {
+      "name": "released_wrong_commit",
+      "expected_schema": false,
+      "expected_runtime": false,
+      "note": "",
+      "catalog": {
+        "manifest": {
+          "schema_version": "1.0",
+          "artifact_family": "narrative_intervention_references",
+          "catalog_id": "synthetic-v1",
+          "release_status": "reviewed_released",
+          "generated_at": "2026-10-11T10:00:00Z",
+          "code_commit": "not-a-commit",
+          "review_manifest_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "applicability_manifest_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "automatic_release": false,
+          "quantitative_effect_eligible": false
+        },
+        "records": [
+          {
+            "claim_id": "SYN26-TEST-01",
+            "source": {
+              "source_id": "synthetic-source-1",
+              "citation": "Synthetic contract fixture; not evidence",
+              "title": "Synthetic source only",
+              "authors": [
+                "Synthetic Author"
+              ],
+              "publication_year": 2026,
+              "source_kind": "official_report",
+              "doi": null,
+              "pmcid": null,
+              "url": "https://example.invalid/synthetic",
+              "locators": [
+                {
+                  "kind": "section",
+                  "detail": "Test section 1"
+                }
+              ],
+              "retrieved_at": "2026-10-11T09:59:00Z",
+              "source_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            },
+            "proposed_claim_wording": "Synthetic proposed text, no scientific claim.",
+            "approved_claim_wording": "Synthetic approved text, not a real approval.",
+            "prohibited_stronger_claims": [
+              "Not an effect or ROI"
+            ],
+            "applicability": {
+              "population": "Synthetic population",
+              "condition_definition": "Synthetic condition",
+              "setting": "Synthetic setting",
+              "payer": "Not reported",
+              "geography": "Synthetic geography",
+              "pathway_step": "Test pathway",
+              "mechanism": "Test mechanism",
+              "applicability_limits": [
+                "Not generalizable"
+              ]
+            },
+            "causal_use_class": "observational_pathway_description",
+            "allowed_use": "background_context_only",
+            "limitations": [
+              "Only a test"
+            ],
+            "reviewer_status": "approved",
+            "review": {
+              "reviewer_id": "synthetic-reviewer",
+              "reviewed_at": "2026-10-11T10:01:00Z",
+              "review_note": "Synthetic structural test, not human authentication"
+            },
+            "release_status": "reviewed_released",
+            "quantitative_effect_eligible": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "released_mixed_records",
+      "expected_schema": false,
+      "expected_runtime": false,
+      "note": "",
+      "catalog": {
+        "manifest": {
+          "schema_version": "1.0",
+          "artifact_family": "narrative_intervention_references",
+          "catalog_id": "synthetic-v1",
+          "release_status": "reviewed_released",
+          "generated_at": "2026-10-11T10:00:00Z",
+          "code_commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "review_manifest_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "applicability_manifest_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "automatic_release": false,
+          "quantitative_effect_eligible": false
+        },
+        "records": [
+          {
+            "claim_id": "SYN26-TEST-01",
+            "source": {
+              "source_id": "synthetic-source-1",
+              "citation": "Synthetic contract fixture; not evidence",
+              "title": "Synthetic source only",
+              "authors": [
+                "Synthetic Author"
+              ],
+              "publication_year": 2026,
+              "source_kind": "official_report",
+              "doi": null,
+              "pmcid": null,
+              "url": "https://example.invalid/synthetic",
+              "locators": [
+                {
+                  "kind": "section",
+                  "detail": "Test section 1"
+                }
+              ],
+              "retrieved_at": "2026-10-11T09:59:00Z",
+              "source_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            },
+            "proposed_claim_wording": "Synthetic proposed text, no scientific claim.",
+            "approved_claim_wording": "Synthetic approved text, not a real approval.",
+            "prohibited_stronger_claims": [
+              "Not an effect or ROI"
+            ],
+            "applicability": {
+              "population": "Synthetic population",
+              "condition_definition": "Synthetic condition",
+              "setting": "Synthetic setting",
+              "payer": "Not reported",
+              "geography": "Synthetic geography",
+              "pathway_step": "Test pathway",
+              "mechanism": "Test mechanism",
+              "applicability_limits": [
+                "Not generalizable"
+              ]
+            },
+            "causal_use_class": "observational_pathway_description",
+            "allowed_use": "background_context_only",
+            "limitations": [
+              "Only a test"
+            ],
+            "reviewer_status": "approved",
+            "review": {
+              "reviewer_id": "synthetic-reviewer",
+              "reviewed_at": "2026-10-11T10:01:00Z",
+              "review_note": "Synthetic structural test, not human authentication"
+            },
+            "release_status": "reviewed_not_released",
+            "quantitative_effect_eligible": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "bad_digest_uppercase",
+      "expected_schema": false,
+      "expected_runtime": false,
+      "note": "",
+      "catalog": {
+        "manifest": {
+          "schema_version": "1.0",
+          "artifact_family": "narrative_intervention_references",
+          "catalog_id": "synthetic-v1",
+          "release_status": "reviewed_released",
+          "generated_at": "2026-10-11T10:00:00Z",
+          "code_commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "review_manifest_sha256": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+          "applicability_manifest_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "automatic_release": false,
+          "quantitative_effect_eligible": false
+        },
+        "records": [
+          {
+            "claim_id": "SYN26-TEST-01",
+            "source": {
+              "source_id": "synthetic-source-1",
+              "citation": "Synthetic contract fixture; not evidence",
+              "title": "Synthetic source only",
+              "authors": [
+                "Synthetic Author"
+              ],
+              "publication_year": 2026,
+              "source_kind": "official_report",
+              "doi": null,
+              "pmcid": null,
+              "url": "https://example.invalid/synthetic",
+              "locators": [
+                {
+                  "kind": "section",
+                  "detail": "Test section 1"
+                }
+              ],
+              "retrieved_at": "2026-10-11T09:59:00Z",
+              "source_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            },
+            "proposed_claim_wording": "Synthetic proposed text, no scientific claim.",
+            "approved_claim_wording": "Synthetic approved text, not a real approval.",
+            "prohibited_stronger_claims": [
+              "Not an effect or ROI"
+            ],
+            "applicability": {
+              "population": "Synthetic population",
+              "condition_definition": "Synthetic condition",
+              "setting": "Synthetic setting",
+              "payer": "Not reported",
+              "geography": "Synthetic geography",
+              "pathway_step": "Test pathway",
+              "mechanism": "Test mechanism",
+              "applicability_limits": [
+                "Not generalizable"
+              ]
+            },
+            "causal_use_class": "observational_pathway_description",
+            "allowed_use": "background_context_only",
+            "limitations": [
+              "Only a test"
+            ],
+            "reviewer_status": "approved",
+            "review": {
+              "reviewer_id": "synthetic-reviewer",
+              "reviewed_at": "2026-10-11T10:01:00Z",
+              "review_note": "Synthetic structural test, not human authentication"
+            },
+            "release_status": "reviewed_released",
+            "quantitative_effect_eligible": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "malformed_timestamp_syntax",
+      "expected_schema": false,
+      "expected_runtime": false,
+      "note": "",
+      "catalog": {
+        "manifest": {
+          "schema_version": "1.0",
+          "artifact_family": "narrative_intervention_references",
+          "catalog_id": "synthetic-v1",
+          "release_status": "candidate",
+          "generated_at": "2026-10-11",
+          "code_commit": "synthetic-only",
+          "review_manifest_sha256": null,
+          "applicability_manifest_sha256": null,
+          "automatic_release": false,
+          "quantitative_effect_eligible": false
+        },
+        "records": [
+          {
+            "claim_id": "SYN26-TEST-01",
+            "source": {
+              "source_id": "synthetic-source-1",
+              "citation": "Synthetic contract fixture; not evidence",
+              "title": "Synthetic source only",
+              "authors": [
+                "Synthetic Author"
+              ],
+              "publication_year": 2026,
+              "source_kind": "official_report",
+              "doi": null,
+              "pmcid": null,
+              "url": "https://example.invalid/synthetic",
+              "locators": [
+                {
+                  "kind": "section",
+                  "detail": "Test section 1"
+                }
+              ],
+              "retrieved_at": null,
+              "source_sha256": null
+            },
+            "proposed_claim_wording": "Synthetic proposed text, no scientific claim.",
+            "approved_claim_wording": null,
+            "prohibited_stronger_claims": [],
+            "applicability": {
+              "population": "Synthetic population",
+              "condition_definition": "Synthetic condition",
+              "setting": "Synthetic setting",
+              "payer": "Not reported",
+              "geography": "Synthetic geography",
+              "pathway_step": "Test pathway",
+              "mechanism": "Test mechanism",
+              "applicability_limits": [
+                "Not generalizable"
+              ]
+            },
+            "causal_use_class": "observational_pathway_description",
+            "allowed_use": "background_context_only",
+            "limitations": [
+              "No inference"
+            ],
+            "reviewer_status": "draft",
+            "review": {
+              "reviewer_id": null,
+              "reviewed_at": null,
+              "review_note": "Unreviewed synthetic fixture"
+            },
+            "release_status": "candidate",
+            "quantitative_effect_eligible": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "invalid_calendar_date_schema_accepts",
+      "expected_schema": true,
+      "expected_runtime": false,
+      "note": "Schema regex checks lexical pattern only; runtime checks exact calendar instant.",
+      "catalog": {
+        "manifest": {
+          "schema_version": "1.0",
+          "artifact_family": "narrative_intervention_references",
+          "catalog_id": "synthetic-v1",
+          "release_status": "candidate",
+          "generated_at": "2026-02-30T00:00:00Z",
+          "code_commit": "synthetic-only",
+          "review_manifest_sha256": null,
+          "applicability_manifest_sha256": null,
+          "automatic_release": false,
+          "quantitative_effect_eligible": false
+        },
+        "records": [
+          {
+            "claim_id": "SYN26-TEST-01",
+            "source": {
+              "source_id": "synthetic-source-1",
+              "citation": "Synthetic contract fixture; not evidence",
+              "title": "Synthetic source only",
+              "authors": [
+                "Synthetic Author"
+              ],
+              "publication_year": 2026,
+              "source_kind": "official_report",
+              "doi": null,
+              "pmcid": null,
+              "url": "https://example.invalid/synthetic",
+              "locators": [
+                {
+                  "kind": "section",
+                  "detail": "Test section 1"
+                }
+              ],
+              "retrieved_at": null,
+              "source_sha256": null
+            },
+            "proposed_claim_wording": "Synthetic proposed text, no scientific claim.",
+            "approved_claim_wording": null,
+            "prohibited_stronger_claims": [],
+            "applicability": {
+              "population": "Synthetic population",
+              "condition_definition": "Synthetic condition",
+              "setting": "Synthetic setting",
+              "payer": "Not reported",
+              "geography": "Synthetic geography",
+              "pathway_step": "Test pathway",
+              "mechanism": "Test mechanism",
+              "applicability_limits": [
+                "Not generalizable"
+              ]
+            },
+            "causal_use_class": "observational_pathway_description",
+            "allowed_use": "background_context_only",
+            "limitations": [
+              "No inference"
+            ],
+            "reviewer_status": "draft",
+            "review": {
+              "reviewer_id": null,
+              "reviewed_at": null,
+              "review_note": "Unreviewed synthetic fixture"
+            },
+            "release_status": "candidate",
+            "quantitative_effect_eligible": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "duplicate_claim_id_runtime_only",
+      "expected_schema": true,
+      "expected_runtime": false,
+      "note": "Catalog-wide uniqueness requires runtime semantic validation.",
+      "catalog": {
+        "manifest": {
+          "schema_version": "1.0",
+          "artifact_family": "narrative_intervention_references",
+          "catalog_id": "synthetic-v1",
+          "release_status": "candidate",
+          "generated_at": "2026-10-11T10:00:00Z",
+          "code_commit": "synthetic-only",
+          "review_manifest_sha256": null,
+          "applicability_manifest_sha256": null,
+          "automatic_release": false,
+          "quantitative_effect_eligible": false
+        },
+        "records": [
+          {
+            "claim_id": "SYN26-TEST-01",
+            "source": {
+              "source_id": "synthetic-source-1",
+              "citation": "Synthetic contract fixture; not evidence",
+              "title": "Synthetic source only",
+              "authors": [
+                "Synthetic Author"
+              ],
+              "publication_year": 2026,
+              "source_kind": "official_report",
+              "doi": null,
+              "pmcid": null,
+              "url": "https://example.invalid/synthetic",
+              "locators": [
+                {
+                  "kind": "section",
+                  "detail": "Test section 1"
+                }
+              ],
+              "retrieved_at": null,
+              "source_sha256": null
+            },
+            "proposed_claim_wording": "Synthetic proposed text, no scientific claim.",
+            "approved_claim_wording": null,
+            "prohibited_stronger_claims": [],
+            "applicability": {
+              "population": "Synthetic population",
+              "condition_definition": "Synthetic condition",
+              "setting": "Synthetic setting",
+              "payer": "Not reported",
+              "geography": "Synthetic geography",
+              "pathway_step": "Test pathway",
+              "mechanism": "Test mechanism",
+              "applicability_limits": [
+                "Not generalizable"
+              ]
+            },
+            "causal_use_class": "observational_pathway_description",
+            "allowed_use": "background_context_only",
+            "limitations": [
+              "No inference"
+            ],
+            "reviewer_status": "draft",
+            "review": {
+              "reviewer_id": null,
+              "reviewed_at": null,
+              "review_note": "Unreviewed synthetic fixture"
+            },
+            "release_status": "candidate",
+            "quantitative_effect_eligible": false
+          },
+          {
+            "claim_id": "SYN26-TEST-01",
+            "source": {
+              "source_id": "synthetic-source-1",
+              "citation": "Synthetic contract fixture; not evidence",
+              "title": "Synthetic source only",
+              "authors": [
+                "Synthetic Author"
+              ],
+              "publication_year": 2026,
+              "source_kind": "official_report",
+              "doi": null,
+              "pmcid": null,
+              "url": "https://example.invalid/synthetic",
+              "locators": [
+                {
+                  "kind": "section",
+                  "detail": "Test section 1"
+                }
+              ],
+              "retrieved_at": null,
+              "source_sha256": null
+            },
+            "proposed_claim_wording": "Synthetic proposed text, no scientific claim.",
+            "approved_claim_wording": null,
+            "prohibited_stronger_claims": [],
+            "applicability": {
+              "population": "Synthetic population",
+              "condition_definition": "Synthetic condition",
+              "setting": "Synthetic setting",
+              "payer": "Not reported",
+              "geography": "Synthetic geography",
+              "pathway_step": "Test pathway",
+              "mechanism": "Test mechanism",
+              "applicability_limits": [
+                "Not generalizable"
+              ]
+            },
+            "causal_use_class": "observational_pathway_description",
+            "allowed_use": "background_context_only",
+            "limitations": [
+              "No inference"
+            ],
+            "reviewer_status": "draft",
+            "review": {
+              "reviewer_id": null,
+              "reviewed_at": null,
+              "review_note": "Unreviewed synthetic fixture"
+            },
+            "release_status": "candidate",
+            "quantitative_effect_eligible": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "conflicting_source_id_runtime_only",
+      "expected_schema": true,
+      "expected_runtime": false,
+      "note": "Same source_id must preserve bibliographic and archived-byte identity.",
+      "catalog": {
+        "manifest": {
+          "schema_version": "1.0",
+          "artifact_family": "narrative_intervention_references",
+          "catalog_id": "synthetic-v1",
+          "release_status": "candidate",
+          "generated_at": "2026-10-11T10:00:00Z",
+          "code_commit": "synthetic-only",
+          "review_manifest_sha256": null,
+          "applicability_manifest_sha256": null,
+          "automatic_release": false,
+          "quantitative_effect_eligible": false
+        },
+        "records": [
+          {
+            "claim_id": "SYN26-TEST-01",
+            "source": {
+              "source_id": "synthetic-source-1",
+              "citation": "Synthetic contract fixture; not evidence",
+              "title": "Synthetic source only",
+              "authors": [
+                "Synthetic Author"
+              ],
+              "publication_year": 2026,
+              "source_kind": "official_report",
+              "doi": null,
+              "pmcid": null,
+              "url": "https://example.invalid/synthetic",
+              "locators": [
+                {
+                  "kind": "section",
+                  "detail": "Test section 1"
+                }
+              ],
+              "retrieved_at": null,
+              "source_sha256": null
+            },
+            "proposed_claim_wording": "Synthetic proposed text, no scientific claim.",
+            "approved_claim_wording": null,
+            "prohibited_stronger_claims": [],
+            "applicability": {
+              "population": "Synthetic population",
+              "condition_definition": "Synthetic condition",
+              "setting": "Synthetic setting",
+              "payer": "Not reported",
+              "geography": "Synthetic geography",
+              "pathway_step": "Test pathway",
+              "mechanism": "Test mechanism",
+              "applicability_limits": [
+                "Not generalizable"
+              ]
+            },
+            "causal_use_class": "observational_pathway_description",
+            "allowed_use": "background_context_only",
+            "limitations": [
+              "No inference"
+            ],
+            "reviewer_status": "draft",
+            "review": {
+              "reviewer_id": null,
+              "reviewed_at": null,
+              "review_note": "Unreviewed synthetic fixture"
+            },
+            "release_status": "candidate",
+            "quantitative_effect_eligible": false
+          },
+          {
+            "claim_id": "SYN26-TEST-02",
+            "source": {
+              "source_id": "synthetic-source-1",
+              "citation": "Synthetic contract fixture; not evidence",
+              "title": "Contradicting identity",
+              "authors": [
+                "Synthetic Author"
+              ],
+              "publication_year": 2026,
+              "source_kind": "official_report",
+              "doi": null,
+              "pmcid": null,
+              "url": "https://example.invalid/synthetic",
+              "locators": [
+                {
+                  "kind": "section",
+                  "detail": "Test section 1"
+                }
+              ],
+              "retrieved_at": null,
+              "source_sha256": null
+            },
+            "proposed_claim_wording": "Synthetic proposed text, no scientific claim.",
+            "approved_claim_wording": null,
+            "prohibited_stronger_claims": [],
+            "applicability": {
+              "population": "Synthetic population",
+              "condition_definition": "Synthetic condition",
+              "setting": "Synthetic setting",
+              "payer": "Not reported",
+              "geography": "Synthetic geography",
+              "pathway_step": "Test pathway",
+              "mechanism": "Test mechanism",
+              "applicability_limits": [
+                "Not generalizable"
+              ]
+            },
+            "causal_use_class": "observational_pathway_description",
+            "allowed_use": "background_context_only",
+            "limitations": [
+              "No inference"
+            ],
+            "reviewer_status": "draft",
+            "review": {
+              "reviewer_id": null,
+              "reviewed_at": null,
+              "review_note": "Unreviewed synthetic fixture"
+            },
+            "release_status": "candidate",
+            "quantitative_effect_eligible": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "same_source_multiple_claims",
+      "expected_schema": true,
+      "expected_runtime": true,
+      "note": "",
+      "catalog": {
+        "manifest": {
+          "schema_version": "1.0",
+          "artifact_family": "narrative_intervention_references",
+          "catalog_id": "synthetic-v1",
+          "release_status": "candidate",
+          "generated_at": "2026-10-11T10:00:00Z",
+          "code_commit": "synthetic-only",
+          "review_manifest_sha256": null,
+          "applicability_manifest_sha256": null,
+          "automatic_release": false,
+          "quantitative_effect_eligible": false
+        },
+        "records": [
+          {
+            "claim_id": "SYN26-TEST-01",
+            "source": {
+              "source_id": "synthetic-source-1",
+              "citation": "Synthetic contract fixture; not evidence",
+              "title": "Synthetic source only",
+              "authors": [
+                "Synthetic Author"
+              ],
+              "publication_year": 2026,
+              "source_kind": "official_report",
+              "doi": null,
+              "pmcid": null,
+              "url": "https://example.invalid/synthetic",
+              "locators": [
+                {
+                  "kind": "section",
+                  "detail": "Test section 1"
+                }
+              ],
+              "retrieved_at": null,
+              "source_sha256": null
+            },
+            "proposed_claim_wording": "Synthetic proposed text, no scientific claim.",
+            "approved_claim_wording": null,
+            "prohibited_stronger_claims": [],
+            "applicability": {
+              "population": "Synthetic population",
+              "condition_definition": "Synthetic condition",
+              "setting": "Synthetic setting",
+              "payer": "Not reported",
+              "geography": "Synthetic geography",
+              "pathway_step": "Test pathway",
+              "mechanism": "Test mechanism",
+              "applicability_limits": [
+                "Not generalizable"
+              ]
+            },
+            "causal_use_class": "observational_pathway_description",
+            "allowed_use": "background_context_only",
+            "limitations": [
+              "No inference"
+            ],
+            "reviewer_status": "draft",
+            "review": {
+              "reviewer_id": null,
+              "reviewed_at": null,
+              "review_note": "Unreviewed synthetic fixture"
+            },
+            "release_status": "candidate",
+            "quantitative_effect_eligible": false
+          },
+          {
+            "claim_id": "SYN26-TEST-02",
+            "source": {
+              "source_id": "synthetic-source-1",
+              "citation": "Synthetic contract fixture; not evidence",
+              "title": "Synthetic source only",
+              "authors": [
+                "Synthetic Author"
+              ],
+              "publication_year": 2026,
+              "source_kind": "official_report",
+              "doi": null,
+              "pmcid": null,
+              "url": "https://example.invalid/synthetic",
+              "locators": [
+                {
+                  "kind": "page",
+                  "detail": "p. 2"
+                }
+              ],
+              "retrieved_at": null,
+              "source_sha256": null
+            },
+            "proposed_claim_wording": "Synthetic proposed text, no scientific claim.",
+            "approved_claim_wording": null,
+            "prohibited_stronger_claims": [],
+            "applicability": {
+              "population": "Synthetic population",
+              "condition_definition": "Synthetic condition",
+              "setting": "Synthetic setting",
+              "payer": "Not reported",
+              "geography": "Synthetic geography",
+              "pathway_step": "Test pathway",
+              "mechanism": "Test mechanism",
+              "applicability_limits": [
+                "Not generalizable"
+              ]
+            },
+            "causal_use_class": "observational_pathway_description",
+            "allowed_use": "background_context_only",
+            "limitations": [
+              "No inference"
+            ],
+            "reviewer_status": "draft",
+            "review": {
+              "reviewer_id": null,
+              "reviewed_at": null,
+              "review_note": "Unreviewed synthetic fixture"
+            },
+            "release_status": "candidate",
+            "quantitative_effect_eligible": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "feedback_without_archived_bytes",
+      "expected_schema": false,
+      "expected_runtime": false,
+      "note": "",
+      "catalog": {
+        "manifest": {
+          "schema_version": "1.0",
+          "artifact_family": "narrative_intervention_references",
+          "catalog_id": "synthetic-v1",
+          "release_status": "candidate",
+          "generated_at": "2026-10-11T10:00:00Z",
+          "code_commit": "synthetic-only",
+          "review_manifest_sha256": null,
+          "applicability_manifest_sha256": null,
+          "automatic_release": false,
+          "quantitative_effect_eligible": false
+        },
+        "records": [
+          {
+            "claim_id": "SYN26-TEST-01",
+            "source": {
+              "source_id": "synthetic-source-1",
+              "citation": "Synthetic contract fixture; not evidence",
+              "title": "Synthetic source only",
+              "authors": [
+                "Synthetic Author"
+              ],
+              "publication_year": 2026,
+              "source_kind": "official_report",
+              "doi": null,
+              "pmcid": null,
+              "url": "https://example.invalid/synthetic",
+              "locators": [
+                {
+                  "kind": "section",
+                  "detail": "Test section 1"
+                }
+              ],
+              "retrieved_at": "2026-10-11T09:59:00Z",
+              "source_sha256": null
+            },
+            "proposed_claim_wording": "Synthetic proposed text, no scientific claim.",
+            "approved_claim_wording": null,
+            "prohibited_stronger_claims": [
+              "Not an effect or ROI"
+            ],
+            "applicability": {
+              "population": "Synthetic population",
+              "condition_definition": "Synthetic condition",
+              "setting": "Synthetic setting",
+              "payer": "Not reported",
+              "geography": "Synthetic geography",
+              "pathway_step": "Test pathway",
+              "mechanism": "Test mechanism",
+              "applicability_limits": [
+                "Not generalizable"
+              ]
+            },
+            "causal_use_class": "observational_pathway_description",
+            "allowed_use": "background_context_only",
+            "limitations": [
+              "Only a test"
+            ],
+            "reviewer_status": "needs_review",
+            "review": {
+              "reviewer_id": "synthetic-reviewer",
+              "reviewed_at": "2026-10-11T10:01:00Z",
+              "review_note": "Synthetic structural test, not human authentication"
+            },
+            "release_status": "candidate",
+            "quantitative_effect_eligible": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "rejected_without_review_time",
+      "expected_schema": false,
+      "expected_runtime": false,
+      "note": "",
+      "catalog": {
+        "manifest": {
+          "schema_version": "1.0",
+          "artifact_family": "narrative_intervention_references",
+          "catalog_id": "synthetic-v1",
+          "release_status": "candidate",
+          "generated_at": "2026-10-11T10:00:00Z",
+          "code_commit": "synthetic-only",
+          "review_manifest_sha256": null,
+          "applicability_manifest_sha256": null,
+          "automatic_release": false,
+          "quantitative_effect_eligible": false
+        },
+        "records": [
+          {
+            "claim_id": "SYN26-TEST-01",
+            "source": {
+              "source_id": "synthetic-source-1",
+              "citation": "Synthetic contract fixture; not evidence",
+              "title": "Synthetic source only",
+              "authors": [
+                "Synthetic Author"
+              ],
+              "publication_year": 2026,
+              "source_kind": "official_report",
+              "doi": null,
+              "pmcid": null,
+              "url": "https://example.invalid/synthetic",
+              "locators": [
+                {
+                  "kind": "section",
+                  "detail": "Test section 1"
+                }
+              ],
+              "retrieved_at": "2026-10-11T09:59:00Z",
+              "source_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            },
+            "proposed_claim_wording": "Synthetic proposed text, no scientific claim.",
+            "approved_claim_wording": null,
+            "prohibited_stronger_claims": [],
+            "applicability": {
+              "population": "Synthetic population",
+              "condition_definition": "Synthetic condition",
+              "setting": "Synthetic setting",
+              "payer": "Not reported",
+              "geography": "Synthetic geography",
+              "pathway_step": "Test pathway",
+              "mechanism": "Test mechanism",
+              "applicability_limits": [
+                "Not generalizable"
+              ]
+            },
+            "causal_use_class": "observational_pathway_description",
+            "allowed_use": "background_context_only",
+            "limitations": [
+              "Only a test"
+            ],
+            "reviewer_status": "rejected",
+            "review": {
+              "reviewer_id": "synthetic-reviewer",
+              "reviewed_at": null,
+              "review_note": "Synthetic rejection, not a real review"
+            },
+            "release_status": "rejected",
+            "quantitative_effect_eligible": false
+          }
+        ]
+      }
+    }
+  ]
+}
