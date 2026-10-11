@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
-  "built_at_utc": "2026-10-11T00:18:27.543903+00:00",
+  "built_at_utc": "2026-10-11T02:37:06.608520+00:00",
   "source_repository": "https://github.com/Ianyliu/diagnostic-odyssey",
-  "source_main_sha": "cb0d0a50d76fcdd9c0492fe4b348cb07969174d9",
+  "source_main_sha": "e27403af8d878327d28ead2b6f7aeb00657c5239",
   "source_checkout_clean": true,
   "static_branch": "demo/deploy-ready-2026-10-06-b99d1c70",
-  "static_parent_sha": "6a216270094519b45421db91a6eb80e7b6c07ee5",
+  "static_parent_sha": "9e6981786325e74bfe968584fae8c2d492a09791",
   "node": "v22.23.3",
   "npm": "10.9.9",
-  "installation": "npm ci",
-  "package_lock_sha256": "4bb8387872c5174bcaceb7929c6d4cad3b634282504c2412bf6b6f1f71bdef8b",
+  "installation": "npm ci --offline --no-audit --no-fund",
+  "package_lock_sha256": "347b7a8499c72ef317907276b85a74bd17ae3334a8af2e32a777d6ff789208a6",
   "build_command": "npm run build",
   "build_output": "apps/web/dist",
   "reviewed_artifacts": {
@@ -95,21 +95,34 @@
   "deployment_note": "Deployment ID and this bundle commit SHA are recorded by Cloudflare deployment metadata and the final release verification report; GitHub push alone does not deploy this Direct Upload project.",
   "publication_status": "GitHub static refresh only; production remains the prior reviewed deployment pending separate authorization.",
   "validation": {
-    "reviewed_pr": 93,
-    "reviewed_pr_head": "a9820ddfc9af2b201687ef122b5d372f24e22e5b",
-    "independent_review": "https://github.com/Ianyliu/diagnostic-odyssey/pull/93#issuecomment-6102535767",
-    "merged_main_ci": "https://github.com/Ianyliu/diagnostic-odyssey/actions/runs/38097873185",
-    "build_equivalent_to_reviewed_candidate": true,
-    "reused_candidate_browser_groups": 26,
+    "reviewed_pr": 79,
+    "reviewed_pr_head": "3cc1a846f2d8d3024d5127b5503039c5adba75b7",
+    "independent_review": "https://github.com/Ianyliu/diagnostic-odyssey/pull/79#issuecomment-6084282796",
+    "review_workflow": "https://github.com/Ianyliu/diagnostic-odyssey/actions/runs/38100436040/attempts/2",
+    "merged_main_ci": "https://github.com/Ianyliu/diagnostic-odyssey/actions/runs/38105703994",
+    "source_tree_identical_to_reviewed_head": true,
+    "generated_web_files_byte_identical": 6,
+    "generated_web_equivalence_static_sha": "9e6981786325e74bfe968584fae8c2d492a09791",
     "reviewed_files_byte_identical": 27,
     "reviewed_payload_checksums_valid": 23,
-    "fresh_static_browser_verification": {
-      "groups": 8,
-      "direct_route_checks": 66,
-      "browser": "154.0.8037.98",
-      "playwright": "1.64.0",
-      "scope": "Actual standalone artifact served locally; 11 routes at 1440/820/360 px in light/dark, theme bootstrap/live changes, native score labels, raw JSON equality and PDF output. No production upload.",
-      "full_matrix_reuse_reason": "All six generated application files are byte-identical to the reviewed 26-group candidate; source merge tree equals reviewed PR HEAD."
-    }
+    "governed_scenarios_unchanged": 11,
+    "governed_sensitivity_points_unchanged": 150,
+    "governed_brief_json_unchanged": 3,
+    "reused_browser_evidence": {
+      "source_static_sha": "9e6981786325e74bfe968584fae8c2d492a09791",
+      "source_review_pr": 93,
+      "candidate_browser_groups": 26,
+      "prior_static_verification": {
+        "groups": 8,
+        "direct_route_checks": 66,
+        "browser": "154.0.8037.98",
+        "playwright": "1.64.0",
+        "scope": "Actual standalone artifact served locally; 11 routes at 1440/820/360 px in light/dark, theme bootstrap/live changes, native score labels, raw JSON equality and PDF output. No production upload.",
+        "full_matrix_reuse_reason": "All six generated application files are byte-identical to the reviewed 26-group candidate; source merge tree equals reviewed PR HEAD."
+      },
+      "reason": "All six fresh exact-main generated web files, security headers and routing configurations are byte-identical. No UI/export or scientific artifact changes in PR79. Prior rendered/JSON/PDF evidence applies to these exact application bytes."
+    },
+    "new_scientific_source_applicability_approval": false,
+    "narrative_catalog_or_acquisition_hint_admitted": false
   }
 }
