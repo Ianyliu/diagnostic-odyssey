@@ -2,7 +2,7 @@ import {test} from "node:test";
 import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
 import assert from "node:assert/strict";
-import {assertInput,assertEgress,assertCandidate,bindCandidate,canonicalJSON,fingerprint,projectEgress,unavailable,assertOutput,contextKey,snapshotContent} from "../src/index.ts";
+import {assertInput,assertEgress,assertCandidate,bindCandidate,canonicalJSON,fingerprint,projectEgress,unavailable,assertOutput,contextKey,snapshotContent,requestProposalId} from "../src/index.ts";
 import type {PlanningGuidanceInputV1,VerifiedAuthority,ModelCandidateV1} from "../src/types.ts";
 const hex="a".repeat(64);
 const authority:VerifiedAuthority={narrative:null,hints:null};
@@ -21,6 +21,67 @@ function fixture():PlanningGuidanceInputV1{
 }
 const clone=<T>(x:T):T=>structuredClone(x);
 const candidate=(fp:string):ModelCandidateV1=>({schema_version:"pg.v1",snapshot_fingerprint:fp,finding_ids:["n1"],options:[],requests:[{template_id:"t1",gap_id:"g1",hint_id:null}]});
+test("request proposal ID v2 canonical golden vectors are injective across nullable and sentinel-like IDs",()=>{
+ const fixed={snapshotFingerprint:"pg1:"+"f".repeat(64),generationId:"generation1",templateId:"t1",gapId:"g1",hintReleaseSha256:hex};
+ const absent=requestProposalId({...fixed,hintId:null});
+ const literalNone=requestProposalId({...fixed,hintId:"none"});
+ const literalNull=requestProposalId({...fixed,hintId:"null"});
+ assert.equal(absent,"pgp1:9e4f12335f8a297e6d0b9625f019106416fcbd1f49fcd7309615add8acf85e1b");
+ assert.equal(literalNone,"pgp1:1cb41944cb3e0245cb810f59e5fa4e619b7d5f796492aae536377d77e30c8376");
+ assert.equal(literalNull,"pgp1:52edad5c658dab6df2467fb4ef88f3be11d0794c0fa50ea6d8d1ca9754299805");
+ assert.equal(new Set([absent,literalNone,literalNull]).size,3);
+});
+test("same validated snapshot/generation distinguishes missing, none, and null released hints",()=>{
+ const x=fixture(),key=contextKey(x.context);
+ const release={release_sha256:hex,policy_sha256:hex,hints:[
+  {id:"none",template_id:"t1",context_key:key},
+  {id:"null",template_id:"t1",context_key:key}
+ ]};
+ x.hint_admission=structuredClone(release);
+ const verified:VerifiedAuthority={narrative:null,hints:structuredClone(release)};
+ assertInput(x,verified);
+ const fp=fingerprint(x,verified),generation="generation1",at="2026-10-11T12:31:01Z";
+ const proposal=(hintId:string|null)=>{
+  const c:ModelCandidateV1={schema_version:"pg.v1",snapshot_fingerprint:fp,finding_ids:[],options:[],requests:[{template_id:"t1",gap_id:"g1",hint_id:hintId}]};
+  const out=bindCandidate(x,verified,c,generation,at,fp);
+  assertOutput(out,x,verified);
+  assert.deepEqual(out.warnings,x.warnings);
+  assert.equal(out.sections.requests,"available");
+  assert.equal(out.draft_requests[0]?.disposition,"pending");
+  assert.equal(out.draft_requests[0]?.hint_id,hintId);
+  return out;
+ };
+ const unhinted=proposal(null),namedNone=proposal("none"),namedNull=proposal("null");
+ const a=unhinted.draft_requests[0]!.proposal_id,b=namedNone.draft_requests[0]!.proposal_id,c=namedNull.draft_requests[0]!.proposal_id;
+ assert.equal(new Set([a,b,c]).size,3);
+ for(const [target,swapped] of [[unhinted,b],[namedNone,a],[unhinted,c],[namedNull,a],[namedNone,c],[namedNull,b]] as const){
+  const forged={...target,draft_requests:[{...target.draft_requests[0]!,proposal_id:swapped}]};
+  assert.throws(()=>assertOutput(forged,x,verified),/invalid request binding/);
+ }
+ const invalid:ModelCandidateV1={schema_version:"pg.v1",snapshot_fingerprint:fp,finding_ids:[],options:[],requests:[{template_id:"t1",gap_id:"g1",hint_id:"unreleased"}]};
+ assert.throws(()=>bindCandidate(x,verified,invalid,generation,at,fp),/unknown\/unreleased hint/);
+ const badDispo={...unhinted,draft_requests:[{...unhinted.draft_requests[0]!,disposition:"accepted"}]};
+ assert.throws(()=>assertOutput(badDispo,x,verified));
+ const tamperedNumber={...unhinted,supported_findings:[{...x.national_findings[0]!,value:999}]};
+ assert.throws(()=>assertOutput(tamperedNumber,x,verified));
+ const tamperedWarn={...unhinted,warnings:[]};
+ assert.throws(()=>assertOutput(tamperedWarn,x,verified),/mandatory trusted warning/);
+ const tamperedRelease={...unhinted,snapshot_fingerprint:"pg1:"+"0".repeat(64)};
+ assert.throws(()=>assertOutput(tamperedRelease,x,verified),/invalid output provenance/);
+});
+test("zero-admission case still fails closed for all explicit hints including sentinel-like IDs",()=>{
+ const x=fixture(),fp=fingerprint(x,authority);
+ const c:ModelCandidateV1={schema_version:"pg.v1",snapshot_fingerprint:fp,finding_ids:[],options:[],requests:[{template_id:"t1",gap_id:"g1",hint_id:null}]};
+ const result=bindCandidate(x,authority,c,"generation1","2026-10-11T12:31:01Z",fp);
+ assert.equal(result.draft_requests[0]!.hint_id,null);
+ assertOutput(result,x,authority);
+ for(const hintId of ["none","null","missing"]){
+  assert.throws(()=>bindCandidate(x,authority,{...c,requests:[{...c.requests[0]!,hint_id:hintId}]},"generation1","2026-10-11T12:31:01Z",fp),/unknown\/unreleased hint/);
+ }
+ assert.equal(x.narrative_admission.references.length,0);
+ assert.equal(x.hint_admission.hints.length,0);
+});
+
 test("zero-admission and zero-hint input yields insufficient intervention section and valid unhinted request",()=>{
  const x=fixture();assertInput(x,authority);
  const fp=fingerprint(x,authority);const e=projectEgress(x,authority);assertEgress(e);
