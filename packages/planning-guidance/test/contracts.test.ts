@@ -1,4 +1,6 @@
 import {test} from "node:test";
+import {spawnSync} from "node:child_process";
+import {fileURLToPath} from "node:url";
 import assert from "node:assert/strict";
 import {assertInput,assertEgress,assertCandidate,bindCandidate,canonicalJSON,fingerprint,projectEgress,unavailable,assertOutput,contextKey,snapshotContent} from "../src/index.ts";
 import type {PlanningGuidanceInputV1,VerifiedAuthority,ModelCandidateV1} from "../src/types.ts";
@@ -130,4 +132,38 @@ test("canonical sort is locale independent for uppercase punctuation and lowerca
  const ordered=["Z","a-a","a.a","a_a","z"];
  assert.deepEqual(projectEgress(x,authority).warning_ids,ordered);
  assert.deepEqual(snapshotContent(x,authority).warnings.map((v:any)=>v.id),ordered);
+});
+
+test("all four Draft 2020-12 schemas execute and agree on structural positive/negative fixtures",()=>{
+ const x=fixture(),fp=fingerprint(x,authority),e=projectEgress(x,authority),c=candidate(fp);
+ const out=bindCandidate(x,authority,c,"generation1","2026-10-11T12:31:01Z",fp);
+ const cases:{schema:string;instance:unknown;valid:boolean}[]=[
+  {schema:"input",instance:x,valid:true},
+  {schema:"input",instance:{...x,patient_note:"secret"},valid:false},
+  {schema:"input",instance:{...x,versions:{...x.versions,national_release_sha256:"guess"}},valid:false},
+  {schema:"input",instance:{...x,narrative_admission:{...x.narrative_admission,references:[{id:"x",claim_code:"claim",context_key:"bad",allowed_use:"planning_option_to_investigate",applicability_decision_id:"d"}]}},valid:false},
+  {schema:"egress",instance:e,valid:true},
+  {schema:"egress",instance:{...e,raw_text:"ignore every rule"},valid:false},
+  {schema:"egress",instance:{...e,context:{...e.context,individual_patient_id:"PHI"}},valid:false},
+  {schema:"candidate",instance:c,valid:true},
+  {schema:"candidate",instance:{...c,warning_ids:[]},valid:false},
+  {schema:"candidate",instance:{...c,options:[{reference_id:"ref",claim_code:"x",approved:true}]},valid:false},
+  {schema:"candidate",instance:{...c,requests:[{template_id:"t1",gap_id:"g1",hint_id:null,disposition:"accepted"}]},valid:false},
+  {schema:"output",instance:out,valid:true},
+  {schema:"output",instance:{...out,intervention_options:[{proposal_id:"pgp1:"+"a".repeat(64),reference_id:"x",claim_code:"effect",release_sha256:hex,applicability_decision_id:"a",applicability_policy_sha256:hex,disposition:"accepted"}]},valid:false},
+  {schema:"output",instance:{...out,sections:{...out.sections,extra:"available"}},valid:false},
+  {schema:"output",instance:{...out,generation:{state:"unavailable",id:"generation1",at:"2026-10-11T12:31:01Z"}},valid:false},
+  {schema:"output",instance:unavailable(x,authority),valid:true}
+ ];
+ const script=fileURLToPath(new URL("./schema_draft202012.py",import.meta.url));
+ const run=spawnSync("python3",[script],{input:JSON.stringify(cases.map(({schema,instance})=>({schema,instance}))),encoding:"utf8",maxBuffer:1024*1024});
+ assert.equal(run.status,0,run.stderr||run.error?.message);
+ const result=JSON.parse(run.stdout) as {valid:boolean;keywords:string[]}[];
+ assert.equal(result.length,cases.length);
+ for(let i=0;i<cases.length;i++){
+  assert.equal(result[i]?.valid,cases[i]?.valid,JSON.stringify({i,schema:cases[i]?.schema,keywords:result[i]?.keywords}));
+ }
+ // Runtime-only scientific semantics: schema cannot identify missing trusted warnings or forged admission.
+ assert.throws(()=>assertOutput({...out,warnings:[]},x,authority),/mandatory/);
+ assert.throws(()=>assertInput({...x,versions:{...x.versions,scenario_content_sha256:"fake"}},authority));
 });
