@@ -266,6 +266,18 @@ export interface QualitativeEvidence {
   limitation: string;
 }
 
+/** Optional identity only. Guidance text is resolved from a separately admitted registry. */
+export interface AcquisitionHintReference {
+  schema_version: "1";
+  hint_id: "ACQ26-TIMING-01" | "ACQ26-CAPACITY-01";
+  hint_version: "2";
+  registry_sha256: string;
+  policy_sha256: string;
+  source_index_sha256: string;
+  review_sha256: string;
+  request_fingerprint: string;
+}
+
 export interface DataRequest {
   request_id: string;
   target_question: string;
@@ -276,6 +288,7 @@ export interface DataRequest {
   granularity_time_window: string;
   rationale: string;
   feasibility_privacy_notes: string;
+  acquisition_hint?: AcquisitionHintReference;
 }
 
 export interface BriefManifest {
@@ -893,6 +906,27 @@ export function validateDataRequest(
     });
   }
 
+  if (Object.hasOwn(value, "acquisition_hint")) {
+    issues.push(...validateAcquisitionHintReference(value.acquisition_hint, `${path}.acquisition_hint`));
+  }
+  return issues;
+}
+
+export function validateAcquisitionHintReference(value: unknown, path = "acquisition_hint"): ValidationIssue[] {
+  if (!isRecord(value)) return [{path, message: "must be a closed versioned reference object"}];
+  const keys = ["schema_version", "hint_id", "hint_version", "registry_sha256", "policy_sha256", "source_index_sha256", "review_sha256", "request_fingerprint"];
+  const issues: ValidationIssue[] = [];
+  for (const key of Object.keys(value)) {
+    if (!keys.includes(key)) issues.push({path: `${path}.${key}`, message: "unexpected reference field"});
+  }
+  if (value.schema_version !== "1") issues.push({path: `${path}.schema_version`, message: "must be 1"});
+  if (value.hint_id !== "ACQ26-TIMING-01" && value.hint_id !== "ACQ26-CAPACITY-01") issues.push({path: `${path}.hint_id`, message: "unknown hint ID"});
+  if (value.hint_version !== "2") issues.push({path: `${path}.hint_version`, message: "unsupported hint version"});
+  for (const key of keys.slice(3)) {
+    if (typeof value[key] !== "string" || !/^[a-f0-9]{64}$/.test(value[key])) {
+      issues.push({path: `${path}.${key}`, message: "must be an exact lowercase SHA-256"});
+    }
+  }
   return issues;
 }
 
