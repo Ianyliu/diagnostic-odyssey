@@ -60,6 +60,26 @@ function trustedSectionStates(input:PlanningGuidanceInputV1):PlanningGuidanceOut
   requests:input.request_templates.length>0?"available":"insufficient_evidence"
  };
 }
+/** Request proposal identity v2: injective with respect to nullable hints.
+ * Canonical structured values distinguish `null` from every valid literal hint ID.
+ * Domain separation from snapshots, narrative options and historical request IDs.
+ */
+function requestProposalId(args:{
+ snapshotFingerprint:string; generationId:string; templateId:string; gapId:string;
+ hintId:string|null; hintReleaseSha256:string|null;
+}):string {
+ const preimage={
+  snapshot_fingerprint:args.snapshotFingerprint,
+  generation_id:args.generationId,
+  template_id:args.templateId,
+  gap_id:args.gapId,
+  hint:args.hintId===null
+   ? {kind:"absent" as const}
+   : {kind:"released" as const,id:args.hintId},
+  hint_release_sha256:args.hintReleaseSha256
+ };
+ return "pgp1:"+sha("DiagnosticOdyssey/PlanningGuidanceRequestProposal/v2\n"+canonical(preimage));
+}
 const has=(a:{id:string}[],id:string)=>a.some(x=>x.id===id);
 export function bindCandidate(input:PlanningGuidanceInputV1,authority:VerifiedAuthority,candidate:unknown,generationId:string,generatedAt:string,expectedFingerprint:string):PlanningGuidanceOutputV1{
  assertInput(input,authority);assertCandidate(candidate);
@@ -78,7 +98,7 @@ export function bindCandidate(input:PlanningGuidanceInputV1,authority:VerifiedAu
   const t=input.request_templates.find(v=>v.id===x.template_id&&v.gap_id===x.gap_id);
   if(!t)throw Error("unknown template/gap relationship");
   if(x.hint_id!==null&&!input.hint_admission.hints.some(v=>v.id===x.hint_id&&v.template_id===t.id))throw Error("unknown/unreleased hint");
-  return {proposal_id:"pgp1:"+sha("request\n"+fp+"\n"+generationId+"\n"+t.id+"\n"+x.gap_id+"\n"+(x.hint_id??"none")+"\n"+(input.hint_admission.release_sha256??"none")),template:structuredClone(t),hint_id:x.hint_id,disposition:"pending" as const};
+  return {proposal_id:requestProposalId({snapshotFingerprint:fp,generationId,templateId:t.id,gapId:t.gap_id,hintId:x.hint_id,hintReleaseSha256:input.hint_admission.release_sha256}),template:structuredClone(t),hint_id:x.hint_id,disposition:"pending" as const};
  });
  const result:PlanningGuidanceOutputV1={
  schema_version:VERSION,snapshot_fingerprint:fp,generation:{state:"available",id:generationId,at:generatedAt},
@@ -127,7 +147,7 @@ export function assertOutput(out:unknown,input:PlanningGuidanceInputV1,authority
   if(!req||Object.keys(req).sort().join(",")!=="disposition,hint_id,proposal_id,template"||req.disposition!=="pending")throw Error("unauthorized request disposition");
   const t=input.request_templates.find(v=>v.id===req.template?.id);
   if(!t||canonical(req.template)!==canonical(t)||req.hint_id!==null&&!input.hint_admission.hints.some(v=>v.id===req.hint_id&&v.template_id===t.id))throw Error("forged request/hint");
-  const expected="pgp1:"+sha("request\n"+x.snapshot_fingerprint+"\n"+g.id+"\n"+t.id+"\n"+t.gap_id+"\n"+(req.hint_id??"none")+"\n"+(input.hint_admission.release_sha256??"none"));
+  const expected=requestProposalId({snapshotFingerprint:x.snapshot_fingerprint,generationId:g.id,templateId:t.id,gapId:t.gap_id,hintId:req.hint_id,hintReleaseSha256:input.hint_admission.release_sha256});
   if(req.proposal_id!==expected||proposalIds.has(expected))throw Error("invalid request binding");proposalIds.add(expected);
  }
  // Recompute availability from the independently verified input, not model selection.
