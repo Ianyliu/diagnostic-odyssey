@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { Buffer } from 'node:buffer';
 
 export const CONTEXT = 'jules/verdict-gate';
 export const MARKER = '<!-- jules-pr-reviewer -->';
