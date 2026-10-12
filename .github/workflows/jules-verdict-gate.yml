@@ -37,9 +37,21 @@ jobs:
           node-version: 22
       - name: Syntax, adversarial fixtures and simulated API/FS integrations
         run: |
+          set -o pipefail
           node --check scripts/ci/jules-verdict-core.mjs
           node --check scripts/ci/verify-jules-run.mjs
-          node --test tests/ci/jules-verdict*.test.mjs
+          node --test tests/ci/jules-verdict*.test.mjs | tee /tmp/jules-stage-a-fixtures.tap
+          sha256sum /tmp/jules-stage-a-fixtures.tap > /tmp/jules-stage-a-fixtures.sha256
+      - name: Preserve simulated fixture output and digest
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: jules-stage-a-fixtures-${{ github.run_id }}
+          path: |
+            /tmp/jules-stage-a-fixtures.tap
+            /tmp/jules-stage-a-fixtures.sha256
+          if-no-files-found: error
+          retention-days: 90
 
   audit:
     if: github.event_name == 'workflow_run' && github.event.action == 'completed'
