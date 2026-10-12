@@ -12,14 +12,31 @@
 | Cloudflare Pages project/domain | `diagnostic-odyssey` / `diagnostic-odyssey.pages.dev` |
 | Configured production branch | `demo/deploy-ready-2026-10-06-b99d1c70` (NOT main) |
 | GitHub head of configured static branch | `29aca3f095e7b1033b498c451841eaceb2b0c759` |
-| Other unconfigured static branch | `demo/deploy-ready-2026-10-11-e27403a` at `93772504080a47dfc772f78422bd5329f1343639` |
-| Latest successful Cloudflare production deployment | `086af799-c1bc-4522-8add-ea7cfc98e5aa` at `2026-10-11T11:09:42.65022Z` |
-| Latest Cloudflare deployment trigger | `ad_hoc`, configured demo branch, **empty commit_hash**, no build command/destination in deployment metadata |
-| Previous Cloudflare production deployment | `171fdf6b-839c-4852-9449-6a5aba6516bc` Oct 10 reports `6a216270094519b45421db91a6eb80e7b6c07ee5`, **not proof for latest upload** |
+| Earlier unconfigured static branch | `demo/deploy-ready-2026-10-11-e27403a` at `93772504080a47dfc772f78422bd5329f1343639`; not the production branch |
+| Newer unconfigured static branch (Oct 12) | `demo/deploy-ready-2026-10-12-17fe339` at `a400ddd10a0d1e2e3b4ac1d974a498ccad4af2cb`; README claims source main `17fe339c01d749bff4922d41318c85055e137149`, built with **`npm install` + `npm run build`**, with self-reported tests. Branch root contains `README.md`, `assets/`, `index.html` and logos, but no `build-provenance.json`; these are **claims, not independently proven reproducibility or deployed-byte parity**. Do not treat `npm install` as a lockfile-frozen `npm ci` build. |
+
+| Latest successful Cloudflare production deployment (Oct 12) | `b296771d-5e5b-46cb-9cd5-89efa9a8c270` at `2026-10-12T11:12:30.591872Z`, success at `2026-10-12T11:12:32.868883Z`, immutable URL `https://b296771d.diagnostic-odyssey.pages.dev` |
+| Previous successful production deployment (Oct 11; historical, **not known-good**) | `086af799-c1bc-4522-8add-ea7cfc98e5aa` at `2026-10-11T11:09:42.65022Z`; historical only; no byte-parity proof |
+| Latest Cloudflare deployment trigger | `ad_hoc`, configured `demo/deploy-ready-2026-10-06-b99d1c70` branch, **empty `commit_hash` and `commit_message`**, no build command/destination in deployment metadata; deployment success does not identify uploaded bytes |
+| Earlier Cloudflare production deployment (Oct 10; historical, **not known-good**) | `171fdf6b-839c-4852-9449-6a5aba6516bc` reports `6a216270094519b45421db91a6eb80e7b6c07ee5`, **not proof for Oct 11 or Oct 12 uploads** |
 | Static branch `build-provenance.json` | Claims `source_main_sha=e27403af8d878327d28ead2b6f7aeb00657c5239`, Node `v22.23.3`, `npm ci --offline --no-audit --no-fund`, and `npm run build`. This claims static-branch bundle origin, not verified deployed bytes. |
 | Static branch `index.html` | JS `/assets/index-DzXhtyp7.js`; CSS `/assets/index-D24PT-ZR.css` |
 
-Source: read-only GitHub branch/content/PR endpoints and connected Cloudflare Pages project/deployment API on Oct 12. Cloudflare Browser Rendering returned HTTP API success and rendered the production `/` HTML with application navigation. Additional browser-rendering route checks hit Cloudflare API rate limit 2001; container direct DNS requests failed. **Deep-link SPA fallback, precise served asset hashes, served provenance JSON, and parity to main remain UNVERIFIED**, not PASS. Note static branch provenance is already behind main, and its assets must not be presumed identical to the deployed upload.
+Source: read-only GitHub branch/content/PR endpoints and connected Cloudflare Pages project/deployment API on Oct 12. Cloudflare Browser Rendering returned HTTP API success and rendered the production `/` HTML with application navigation. Additional browser-rendering route checks hit Cloudflare API rate limit 2001; container direct DNS requests failed. **Deep-link SPA fallback, precise served asset hashes, served provenance JSON, and parity to main remain UNVERIFIED**, not PASS. The configured static branch provenance is behind main, and neither the Oct 11 nor Oct 12 static branch's build claims can establish uploaded bytes. **Oct 12 latest Cloudflare deployment, Oct 11 historical deployment, and all static branches remain separate identities.**
+
+
+## Authoritative TOPx milestone check — do not conflate submission and demo
+
+**Official NIH TOPx HHS Tech Sprint instructions**, accessed 2026-10-12: https://www.nih.gov/challenges/topx-hhs-tech-sprint-ai-invisible-illness (see **Timeline → TOPx Sprint (Phase 2)** and **How to Enter**). The official NIH Challenges index separately labels Phase 2 as open until October 15: https://www.nih.gov/challenges.
+
+| Gate | Official published deadline | What this does and does not establish |
+| --- | --- | --- |
+| Phase 2 TOPx Sprint submission-period close | **October 15, 2026 at 11:59 PM ET** | An actionable, separate submission deadline; do **not** defer the Phase 2 submission because there is an October 22 showcase. |
+| Final Live MVP Demo Showcase submission-period close | **October 22, 2026 at 11:59 PM ET** | Distinct showcase submission milestone; does not extend or replace the October 15 Phase 2 deadline. The published cutoff alone does not establish a specific live presentation appointment. |
+
+NIH explicitly states **HHS may revise, extend or adjust milestone dates**. The accessible official page says Phase 2 entries follow the Challenge-platform instructions at https://invisibleillness.crowdicity.com/ and gives high-level MVP demonstration requirements, but this read-only audit **could not independently verify current authenticated team-specific portal prompts, exact upload fields/formats, access rights, receipt/lock rules, or any updated organizer notice**. Mark those details **UNRESOLVED**; reconcile with the authenticated Challenge portal and any direct organizer instructions, document evidence and acceptance/receipt before October 15. The new unconfigured static branch README independently repeats October 15, but a developer-authored README is **not** the authority.
+
+**Separate, PM-controlled milestones:** approval of the #103 documentation PR for merge; #99 integration and Gate 0 PASS; source/scientific/privacy admission; an exact-byte **release-candidate approval**; authorized Cloudflare deployment/static synchronization; **October 15 Phase 2 entry submission**; and **October 22 Final Live MVP Demo Showcase submission**. Completing any one does not imply the others are complete. No submission or external action is authorized by this document.
 
 ## Independent parity proof (run before GO)
 
@@ -71,14 +88,15 @@ Before stage: close all other tabs, reset state, preselect safe released measure
 
 ## Decision gates and rollback
 
-* **Merge gate:** independent review of #99 exact current head, green CI, substantive reviewer verdict, separate PM authorization. A green workflow alone is insufficient.
-* **Gate 0 gate:** final post-merge main passes C-01/C-02, full original browser suite, valid numeric edge cases and actual export/PDF proof.
-* **Science/privacy gate:** reviewed 21/34 source IDs and hashes, distinct Candidate A, zero candidate narrative promotion, empty acquisition allowlists, no live AI, no PHI leakage.
-* **Static parity gate:** independently rebuilt exact main and verified static branch parity/asset manifest. Branch similarity is insufficient.
-* **Deployment gate:** explicit PM approval of precise artifact, production branch/upload strategy, rollback deployment ID; only then deployment operator acts.
-* **Final submission gate:** timed live/fallback rehearsal, release acceptance matrix signed with evidence, separate final PM GO.
+* **PR merge gate:** independent review and exact-head CI of each proposed PR (#103 documentation and separately #99 corrective), substantive verdict where required, and **separate PM merge authorization**. A green workflow alone is insufficient; merging a documentation PR does not imply Gate 0 PASS.
+* **Gate 0 PASS gate:** separately accepted exact final-main C-01/C-02, full original browser suite, valid numeric edge cases and actual export/PDF proof; no implied PASS from PR status or earlier HEAD.
+* **Source/scientific/privacy admission gate:** independently verify reviewed 21/34 source IDs and hashes, distinct Candidate A, zero candidate narrative promotion, empty acquisition allowlists, no live AI and no PHI leakage; no automatic promotion or release status change.
+* **Release-candidate approval and static parity gate:** PM approves a precise main SHA plus source/lockfile hashes and reproducible bundle **after** separate Gate 0 and science/privacy acceptance. Then independently verify any proposed static branch and upload manifest against it, byte for byte. A branch's claimed source SHA, `npm install`, or matching UI is insufficient.
+* **Deployment gate:** separate explicit PM approval of the exact release-candidate bytes, production branch/upload strategy, and an independently verified recovery artifact; only then a deployment operator acts. No currently listed Cloudflare deployment is certified known-good.
+* **Phase 2 submission gate (Oct 15):** verify authoritative portal-specific requirements and acknowledgment; PM separately authorizes the Phase 2 submission before **2026-10-15 11:59 PM ET**, if the official schedule remains unchanged.
+* **Final MVP Showcase submission gate (Oct 22):** timed live/fallback rehearsal, release acceptance matrix signed with evidence, actual showcase instructions confirmed, and **separate** final PM submission GO before **2026-10-22 11:59 PM ET**; do not infer October 15 submission success or release readiness from a showcase.
 
-Rollback proposal (NOT executed): preserve current production immutable deployment `086af799-c1bc-4522-8add-ea7cfc98e5aa` and frozen manifest. After approved deployment, if a critical invariant fails, halt demo/update, obtain incident authorization to restore previously known-good **verified** deployment or re-upload its preserved exact artifacts, re-run route and export smoke tests, communicate rollback revision. Never roll back to an unverified release merely because it is older.
+Rollback proposal (NOT executed): record the active production deployment `b296771d-5e5b-46cb-9cd5-89efa9a8c270` and historical Oct 11 `086af799-c1bc-4522-8add-ea7cfc98e5aa` as **inventory/forensic references only**, **not known-good rollback targets**. No existing deployment has been proven byte-identical to an approved build or independently certified safe for restoration. Before a future PM-authorized deploy, separately preserve and verify a known-good, immutable, exact-byte recovery artifact plus route/export smoke evidence, verify rollback permissions and strategy, and identify its source tree/manifest and Cloudflare deployment identity. If no verified recovery candidate exists, flag **ROLLBACK BLOCKED** and withhold deployment authorization. On a critical post-deploy failure, stop presentation/update, obtain incident authority, restore **only** the previously independently approved/reverified recovery artifact (if any), rerun smoke checks, and publish incident/revision details. Never restore an older deployment simply because it has a successful Cloudflare status or earlier timestamp.
 
 ## Remaining parallel work and issue hygiene
 
