@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { assessEvidence, auditMarkdown, sha256, MARKER } from '../../scripts/ci/jules-verdict-core.mjs';
+import { assessEvidence, auditMarkdown, sha256, MARKER, sameReviewerWorkflow } from '../../scripts/ci/jules-verdict-core.mjs';
 
 const sha = 'a'.repeat(40);
 const repo = 'Ianyliu/diagnostic-odyssey';
@@ -100,4 +100,12 @@ test('audit is a separate snapshot without an upstream upsert marker', () => {
   assert.ok(!markdown.includes(MARKER));
   assert.ok(markdown.includes(sha256(f.comments[0].body)));
   assert.ok(markdown.includes('352107948494699733'));
+});
+
+test('a PR may not substitute its own reviewer workflow implementation', () => {
+  const original = { path: '.github/workflows/jules-pr-review.yml', sha: 'c'.repeat(40) };
+  assert.equal(sameReviewerWorkflow(original, { ...original }), true);
+  assert.equal(sameReviewerWorkflow({ ...original, sha: 'd'.repeat(40) }, original), false);
+  assert.equal(sameReviewerWorkflow({ ...original, path: '.github/workflows/attacker.yml' }, original), false);
+  assert.equal(sameReviewerWorkflow(null, original), false);
 });
