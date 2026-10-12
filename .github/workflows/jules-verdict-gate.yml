@@ -37,8 +37,29 @@ jobs:
           node --check scripts/ci/verify-jules-run.mjs
           node --test tests/ci/jules-verdict.test.mjs
 
+  pending:
+    if: github.event_name == 'pull_request_target' || (github.event_name == 'workflow_run' && github.event.action != 'completed')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read
+      statuses: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+      - name: Mark exact reviewer HEAD as pending; no PR code execution
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/ci/verify-jules-run.mjs
+
   verify:
-    if: github.event_name == 'workflow_run' || github.event_name == 'pull_request_target'
+    if: github.event_name == 'workflow_run' && github.event.action == 'completed'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
@@ -48,7 +69,6 @@ jobs:
       issues: write
       statuses: write
     steps:
-      # Privileged event: run ONLY default-branch code; never checkout PR head.
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           ref: main
@@ -61,7 +81,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: node scripts/ci/verify-jules-run.mjs
       - name: Preserve exact UTF-8 preimage in per-run artifact
-        if: always() && github.event_name == 'workflow_run' && github.event.action == 'completed'
+        if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: jules-verdict-attempt-${{ github.event.workflow_run.id }}-${{ github.event.workflow_run.run_attempt }}
