@@ -1,5 +1,5 @@
 import fs from 'node:fs';
-import { assessEvidence, auditMarkdown, CONTEXT } from './jules-verdict-core.mjs';
+import { assessEvidence, auditMarkdown, CONTEXT, sameReviewerWorkflow } from './jules-verdict-core.mjs';
 
 const event = JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8'));
 const repo = process.env.GITHUB_REPOSITORY;
@@ -108,12 +108,17 @@ async function main() {
         canonical.pull_requests[0].number !== prNumber) {
       throw new Error('Missing unique GitHub-attested PR mapping');
     }
-    const [pr, jobs, latest] = await Promise.all([
+    const [pr, jobs, latest, headWorkflow, mainWorkflow] = await Promise.all([
       request('/pulls/' + prNumber),
       request('/actions/runs/' + stub.id + '/jobs?per_page=100'),
       request('/actions/workflows/' + canonical.workflow_id +
         '/runs?event=pull_request&head_sha=' + canonical.head_sha + '&per_page=100'),
+      request('/contents/.github/workflows/jules-pr-review.yml?ref=' + canonical.head_sha),
+      request('/contents/.github/workflows/jules-pr-review.yml?ref=main'),
     ]);
+    if (!sameReviewerWorkflow(headWorkflow, mainWorkflow)) {
+      throw new Error('Reviewer workflow source differs from trusted current main');
+    }
     if (jobs.total_count > 100 || !Array.isArray(jobs.jobs) ||
         !Array.isArray(latest.workflow_runs)) throw new Error('Incomplete workflow job/run pages');
     const newest = latest.workflow_runs
