@@ -123,11 +123,14 @@ export function sameReviewerWorkflow(head, main) {
 }
 
 export function auditMarkdown({ run, prNumber, decision, artifactUrl, capture }) {
-  const sources = capture?.sources || (
+  const allSources = capture?.sources || (
     typeof decision?.body === 'string' ? [{
       body: decision.body, body_sha256: sha256(decision.body),
       comment_id: decision.comment_id, matches_session: true,
     }] : []);
+  // GitHub limits comment size. Retain all source preimages in uploaded JSON;
+  // the append-only comment includes the first complete reviewer body only.
+  const sources = allSources.slice(0, 1);
   const escaped = text => clean(text).replace(/&/g, '&amp;').replace(/</g, '&lt;')
     .replace(/>/g, '&gt;');
   const result = [
@@ -158,6 +161,7 @@ export function auditMarkdown({ run, prNumber, decision, artifactUrl, capture })
       escaped(source.body) || '(original text unavailable; do not reconstruct)', '',
       '</details>');
   }
+  if (allSources.length > sources.length) result.push('', 'Other captured bot-comment bodies are available in the JSON artifact (' + allSources.length + ' total).');
   if (sources.length === 0) result.push('', '**No reviewer body available.** Historic overwritten content cannot be recovered from the current comment.');
   return result.join('\n');
 }
