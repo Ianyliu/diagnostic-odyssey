@@ -23,6 +23,15 @@
 
 Source: read-only GitHub branch/content/PR endpoints and connected Cloudflare Pages project/deployment API on Oct 12. Cloudflare Browser Rendering returned HTTP API success and rendered the production `/` HTML with application navigation. Additional browser-rendering route checks hit Cloudflare API rate limit 2001; container direct DNS requests failed. **Deep-link SPA fallback, precise served asset hashes, served provenance JSON, and parity to main remain UNVERIFIED**, not PASS. The configured static branch provenance is behind main, and neither the Oct 11 nor Oct 12 static branch's build claims can establish uploaded bytes. **Oct 12 latest Cloudflare deployment, Oct 11 historical deployment, and all static branches remain separate identities.**
 
+### Post-merge factual addendum — 2026-10-12 (historical baseline retained)
+
+* The observation table above is an **as-of pre-merge audit**, not a current-HEAD assertion: `main@17fe339c01d749bff4922d41318c85055e137149` and PR #99 **open** were accurate historical observations at that time. GitHub now confirms [PR #99](https://github.com/Ianyliu/diagnostic-odyssey/pull/99) was **merged/closed** on 2026-10-12 at 15:33:49 UTC by a standard two-parent merge. The resulting and newly verified `main` is **`5cc772a198f86a92866bf14cb4ad545ff583200e`**; its parents are historical `17fe339c01d749bff4922d41318c85055e137149` and PR #99 HEAD `4b56b381f05ed43ffb7e838cf8ed954d8eddba8c`.
+* [Actual-main CI run 38271157372](https://github.com/Ianyliu/diagnostic-odyssey/actions/runs/38271157372) was **SUCCESS** on the exact new `main` merge SHA (push event); both **`verify`** and **`r-analysis-tests`** completed successfully. This confirms standard CI, **not independent full exact-main Gate 0 acceptance**; C-01/C-02 independent browser/accessibility/JSON/PDF evaluation still requires its separate evidence and disposition.
+* The most recently **observed** production Pages deployment remains `b296771d-5e5b-46cb-9cd5-89efa9a8c270` (ad-hoc upload with blank commit hash). Its served bytes are **NOT ATTESTED** to either historical or post-merge main; no final release candidate is approved. Earlier deployments are **not known-good rollback targets**, and recovery remains **BLOCKED** until an independently verified recovery artifact exists.
+* R01–R13 below remain execution requirements with their original **PENDING/BLOCKED** states (especially R02 **BLOCKED** and R10/R11 **PENDING**); new main and successful standard CI do not satisfy deployed parity, browser/print/export, privacy, rehearsal, or rollback proof by inference.
+* **Independent documentation QA acceptance and any later documentation PR merge are not authorization** for product/public release, Cloudflare/static synchronization, source/privacy admission, production deployment, **October 15 Phase 2 external submission**, or **October 22 Final Showcase external submission**. Each action requires its separately documented gate and explicit PM/user authorization.
+
+
 
 
 ## Authoritative TOPx milestone check — do not conflate submission and demo
