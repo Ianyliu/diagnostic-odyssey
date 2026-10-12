@@ -1,4 +1,4 @@
-/* global globalThis, process, URL, Response */
+/* global process, URL, Response */
 import fs from 'node:fs';
 
 const statePath = process.env.MOCK_STATE_PATH;
