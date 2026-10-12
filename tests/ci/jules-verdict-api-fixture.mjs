@@ -42,7 +42,7 @@ globalThis.fetch = async function(input, opts={}) {
       log.replace('Got final review with VERDICT line on attempt 38.',
         'Timed out waiting for a message containing a VERDICT line; posting the last message received.')
         .replace('Verdict: approve.', 'Verdict: comment.') :
-      s.scenario==='block' ?
+      ['block','many-sources-block'].includes(s.scenario) ?
         log.replace('Verdict: approve.', 'Verdict: block.') :
       s.scenario==='comment' ?
         log.replace('Verdict: approve.', 'Verdict: comment.') : log,
@@ -54,7 +54,7 @@ globalThis.fetch = async function(input, opts={}) {
     }});
   }
   if (path.endsWith('/actions/runs/12')) {
-    return json({id:12,run_attempt:1,name:'Jules PR Review',
+    return json({id:12,run_attempt:s.canonical_attempt??1,name:'Jules PR Review',
       workflow_id:7,path:'.github/workflows/jules-pr-review.yml',
       event:'pull_request',status:'completed',conclusion:'success',
       head_sha:sha,created_at:'2026-10-11T16:00:00Z',
@@ -74,10 +74,28 @@ globalThis.fetch = async function(input, opts={}) {
   if (path.endsWith('/actions/workflows/7/runs')) {
     return json({total_count:1,workflow_runs:[
       {id:s.scenario==='newer-run'?13:12,run_attempt:
-        s.scenario==='newer-attempt'?2:1,
+        s.latest_attempt??(s.scenario==='newer-attempt'?2:1),
       head_sha:sha,event:'pull_request',created_at:'2026-10-11T16:00:00Z'}]});
   }
   if (path.endsWith('/issues/102/comments')) {
+    if (['many-sources-approve','many-sources-block','many-sources-over-budget'].includes(s.scenario)) {
+      const count=s.scenario==='many-sources-over-budget'?20:11;
+      const sources=Array.from({length:count},(_,i)=>{
+        let sourceBody = i===count-1 ? body :
+          body.replace('VERDICT: approve','VERDICT: block')
+            .replace(session,'111111111111111111');
+        if (s.scenario==='many-sources-block' && i===count-1) {
+          sourceBody=sourceBody.replace('VERDICT: approve','VERDICT: block');
+        }
+        if (s.scenario==='many-sources-over-budget') {
+          sourceBody=sourceBody.replace('VERDICT:', 'x'.repeat(55000)+'\nVERDICT:');
+        }
+        return {id:55+i,user:{login:'github-actions[bot]'},
+          body:sourceBody,created_at:'2026-10-11T16:01:00Z',
+          updated_at:'2026-10-11T16:26:42Z'};
+      });
+      return json(sources);
+    }
     return json([{id:55,user:{login:s.scenario==='ambiguous-author'?
       'different[bot]':'github-actions[bot]'},
       body:s.scenario==='block'?body.replace('VERDICT: approve','VERDICT: block'):
