@@ -40,7 +40,9 @@ globalThis.fetch = async function(input, opts={}) {
         'Timed out waiting for a message containing a VERDICT line; posting the last message received.')
         .replace('Verdict: approve.', 'Verdict: comment.') :
       s.scenario==='block' ?
-        log.replace('Verdict: approve.', 'Verdict: block.') : log,
+        log.replace('Verdict: approve.', 'Verdict: block.') :
+      s.scenario==='comment' ?
+        log.replace('Verdict: approve.', 'Verdict: comment.') : log,
     {status:200});
   }
   if (path.endsWith('/actions/jobs/44/logs')) {
@@ -75,7 +77,9 @@ globalThis.fetch = async function(input, opts={}) {
   if (path.endsWith('/issues/102/comments')) {
     return json([{id:55,user:{login:s.scenario==='ambiguous-author'?
       'different[bot]':'github-actions[bot]'},
-      body:s.scenario==='block'?body.replace('approve','block'):
+      body:s.scenario==='block'?body.replace('VERDICT: approve','VERDICT: block'):
+        s.scenario==='comment'?body.replace('VERDICT: approve','VERDICT: comment'):
+        s.scenario==='invalid-verdict'?body.replace('VERDICT: approve','VERDICT: undecidable'):
         s.scenario==='overwritten'?body.replace('VERDICT: approve','still thinking'):
           s.scenario==='timeout'?body.replace('VERDICT: approve','interim message'):body,
       created_at:'2026-10-11T16:01:00Z',updated_at:'2026-10-11T16:26:42Z'}]);
