@@ -1,7 +1,8 @@
 /* global process, fetch, URL, console */
 import fs from 'node:fs';
 import { collectEvidence, assessEvidence, auditMarkdown, CONTEXT, sha256,
-  sameReviewerWorkflow, finalizeDisposition, callbackIsCurrent } from './jules-verdict-core.mjs';
+  sameReviewerWorkflow, finalizeDisposition, callbackIsCurrent,
+  capturedApprovalEvidence } from './jules-verdict-core.mjs';
 
 const mode = process.argv[2];
 const event = JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8'));
@@ -95,9 +96,10 @@ async function collect() {
   const errors = [];
   let provisional = { approved: false, reason: 'Evidence incomplete' };
   try {
-    run = await request('/actions/runs/' + stub.id);
-    if (run.id !== stub.id || run.run_attempt !== stub.run_attempt ||
-        run.head_sha !== stub.head_sha) throw new Error('Run/attempt mismatch');
+    const candidate = await request('/actions/runs/' + stub.id);
+    if (candidate.id !== stub.id || candidate.run_attempt !== stub.run_attempt ||
+        candidate.head_sha !== stub.head_sha) throw new Error('Run/attempt mismatch');
+    run = candidate;
     if (!prNumber || run.pull_requests?.length !== 1 ||
         run.pull_requests[0].number !== prNumber) throw new Error('Missing unique PR identity');
     const values = await Promise.allSettled([
@@ -133,6 +135,10 @@ async function collect() {
   } catch(e) { errors.push(String(e.message || e).slice(0,200)); }
   const capturedAt = new Date().toISOString();
   const capture = collectEvidence({repo,run,pr,jobs,log,comments,capturedAt,errors});
+  if (provisional.approved && !capturedApprovalEvidence({ capture, decision: provisional })) {
+    provisional = { approved: false,
+      reason: 'Matching approval source preimage omitted or not archived in capture' };
+  }
   const record = {
     schema: 'jules-stage-a-audit/v2', repository:repo, pr_number:prNumber,
     reviewer_run_id:stub.id, reviewer_attempt:stub.run_attempt,
@@ -188,7 +194,7 @@ async function finish() {
       request('/contents/.github/workflows/jules-pr-review.yml?ref='+stub.head_sha),
       request('/contents/.github/workflows/jules-pr-review.yml?ref=main'),
     ]);
-    if (!callbackIsCurrent({pr,run,newest})) {
+    if (!callbackIsCurrent({pr,run,newest,eventRun:stub,record})) {
       console.log('Superseded or stale completion: do not overwrite current status');
       return;
     }
@@ -199,7 +205,7 @@ async function finish() {
     const archive=artifacts.artifacts.find(a=>String(a.id)===uploadId);
     const currentComment=record.provisional?.comment_id ?
       await request('/issues/comments/'+record.provisional.comment_id) : null;
-    outcome=finalizeDisposition({record,pr,run,newest,archive,
+    outcome=finalizeDisposition({record,pr,run,newest,eventRun:stub,archive,
       artifactId:uploadId,artifactDigest:process.env.ARCHIVE_DIGEST,
       currentComment,headWorkflow,currentMainWorkflow:mainWorkflow});
     if (process.env.ARCHIVE_OUTCOME !== 'success') {
@@ -210,7 +216,7 @@ async function finish() {
       request('/pulls/'+record.pr_number),request('/actions/runs/'+stub.id),
       latestRun(stub),
     ]);
-    if (!callbackIsCurrent({pr:pr2,run:run2,newest:newest2})) {
+    if (!callbackIsCurrent({pr:pr2,run:run2,newest:newest2,eventRun:stub,record})) {
       console.log('Execution superseded just before final status: skip stale callback');
       return;
     }
@@ -223,7 +229,7 @@ async function finish() {
         stub.pull_requests[0].number : null);
       if (!prNumber) throw new Error('PR mapping unavailable');
       const [pr,newest]=await Promise.all([request('/pulls/'+prNumber),latestRun(stub)]);
-      if (!callbackIsCurrent({pr,run,newest})) {
+      if (!callbackIsCurrent({pr,run,newest,eventRun:stub,record})) {
         console.log('Error on stale callback: no status published');
         return;
       }
