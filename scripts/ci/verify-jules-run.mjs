@@ -10,7 +10,7 @@ const token = process.env.GH_TOKEN;
 const [owner, name] = (repo || '').split('/');
 const root = (process.env.GITHUB_API_URL || 'https://api.github.com') +
   '/repos/' + owner + '/' + name;
-const auditPath = '/tmp/jules-verdict-gate.json';
+const auditPath = process.env.JULES_AUDIT_PATH || '/tmp/jules-verdict-gate.json';
 const stub = event.workflow_run;
 const gateId = Number(process.env.GITHUB_RUN_ID);
 const archiveName = 'jules-attempt-' + stub?.id + '-' + stub?.run_attempt + '-' + gateId;
