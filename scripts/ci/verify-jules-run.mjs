@@ -1,5 +1,5 @@
 import fs from 'node:fs';
-import { assessEvidence, auditMarkdown, CONTEXT, sha256 } from './jules-verdict-core.mjs';
+import { assessEvidence, auditMarkdown, CONTEXT } from './jules-verdict-core.mjs';
 
 const event = JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8'));
 const repo = process.env.GITHUB_REPOSITORY;
