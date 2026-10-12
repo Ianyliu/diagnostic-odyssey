@@ -105,8 +105,27 @@ globalThis.fetch = async function(input, opts={}) {
           s.scenario==='timeout'?body.replace('VERDICT: approve','interim message'):body,
       created_at:'2026-10-11T16:01:00Z',updated_at:'2026-10-11T16:26:42Z'}]);
   }
-  if (path.endsWith('/issues/comments/55')) {
-    return json({id:55,user:{login:'github-actions[bot]'},
+  if (/\/issues\/comments\/\d+$/.test(path)) {
+    const commentId=Number(path.split('/').at(-1));
+    if (['many-sources-approve','many-sources-block','many-sources-over-budget'].includes(s.scenario)) {
+      const count=s.scenario==='many-sources-over-budget'?20:11;
+      if (commentId>=55 && commentId<55+count) {
+        const i=commentId-55;
+        let sourceBody = i===count-1 ? body :
+          body.replace('VERDICT: approve','VERDICT: block')
+            .replace(session,'111111111111111111');
+        if (s.scenario==='many-sources-block' && i===count-1) {
+          sourceBody=sourceBody.replace('VERDICT: approve','VERDICT: block');
+        }
+        if (s.scenario==='many-sources-over-budget') {
+          sourceBody=sourceBody.replace('VERDICT:','x'.repeat(55000)+'\nVERDICT:');
+        }
+        return json({id:commentId,user:{login:'github-actions[bot]'},
+          body:sourceBody,created_at:'2026-10-11T16:01:00Z',
+          updated_at:'2026-10-11T16:26:42Z'});
+      }
+    }
+    if (commentId===55) return json({id:55,user:{login:'github-actions[bot]'},
       body:s.scenario==='edited-after-capture'?body.replace('VERDICT: approve','VERDICT: block'):body,
       created_at:'2026-10-11T16:01:00Z',updated_at:
         s.scenario==='edited-after-capture'?'2026-10-11T17:00:00Z':'2026-10-11T16:26:42Z'});
