@@ -20,7 +20,10 @@ globalThis.fetch = async function(input, opts={}) {
   s.calls=(s.calls||[]).concat(method+' '+path);
   if (method==='POST') {
     if (path.endsWith('/comments') && path.includes('/issues/102/')) {
-      if (s.scenario==='audit-post-failure') {save(s);return json({},500);}
+      if (s.scenario==='audit-post-failure' ||
+          (s.scenario==='final-comment-failure' && (s.audit_comments||[]).length>0)) {
+        save(s);return json({},500);
+      }
       const posted=JSON.parse(opts.body).body;
       s.audit_comments=(s.audit_comments||[]).concat(posted);
       save(s);return json({id:987});
