@@ -162,3 +162,84 @@ test('existing spoofed green is not accepted as review evidence for BLOCK',()=>{
     // Does not prevent a future third-party writer from spoofing the same context: F1.
   } finally { x.cleanup(); }
 });
+
+
+test('same-run rerun: delayed attempt-1 finalizer cannot replace attempt-2 success',()=>{
+  const x=setup('approve');
+  try {
+    assert.equal(x.run('collect').status,0);
+    const before=x.state();
+    before.canonical_attempt=2;
+    before.latest_attempt=2;
+    before.statuses=[{state:'success',context:'jules/verdict-gate',attempt:2}];
+    fs.writeFileSync(x.statePath,JSON.stringify(before));
+    const result=x.run('finalize');
+    assert.equal(result.status,0,result.stderr);
+    assert.deepEqual(x.state().statuses,before.statuses);
+    assert.equal(x.state().audit_comments.length,1,
+      'stale callback must not add a finalization receipt');
+  } finally { x.cleanup(); }
+});
+test('same-run rerun: obsolete attempt cannot post failure from exception path',()=>{
+  const x=setup('approve');
+  try {
+    assert.equal(x.run('collect').status,0);
+    const record=x.record();
+    record.payload_sha256='0'.repeat(64); // force finalization exception
+    fs.writeFileSync(x.auditPath,JSON.stringify(record));
+    const s=x.state();
+    s.canonical_attempt=2;
+    s.latest_attempt=2;
+    s.statuses=[{state:'success',context:'jules/verdict-gate',attempt:2}];
+    fs.writeFileSync(x.statePath,JSON.stringify(s));
+    const result=x.run('finalize');
+    assert.equal(result.status,0,result.stderr);
+    assert.deepEqual(x.state().statuses,s.statuses);
+    assert.equal(x.state().audit_comments.length,1);
+  } finally { x.cleanup(); }
+});
+test('source #11 is captured in JSON and can be approved only after archive',()=>{
+  const x=setup('many-sources-approve');
+  try {
+    assert.equal(x.run('collect').status,0);
+    const r=x.record();
+    assert.equal(r.provisional.approved,true);
+    assert.equal(r.provisional.comment_id,65);
+    assert.equal(r.capture.source_count,11);
+    assert.equal(r.capture.sources.length,11);
+    assert.equal(r.capture.omitted_source_count,0);
+    assert.equal(r.capture.sources[10].body_sha256,sha256(r.capture.sources[10].body));
+    const finish=x.run('finalize');
+    assert.equal(finish.status,0,finish.stderr);
+    assert.equal(x.state().statuses.at(-1).state,'success');
+  } finally { x.cleanup(); }
+});
+test('BLOCK in source position 11 is preserved and never accepted',()=>{
+  const x=setup('many-sources-block');
+  try {
+    assert.equal(x.run('collect').status,0);
+    const r=x.record();
+    assert.equal(r.provisional.approved,false);
+    assert.equal(r.capture.source_count,11);
+    assert.equal(r.capture.sources[10].body_sha256,sha256(r.capture.sources[10].body));
+    assert.match(r.capture.sources[10].body,/VERDICT: block/);
+    assert.notEqual(x.run('finalize').status,0);
+    assert.equal(x.state().statuses.at(-1).state,'failure');
+  } finally { x.cleanup(); }
+});
+test('matching positive source outside budget has reason/hash but cannot authorize success',()=>{
+  const x=setup('many-sources-over-budget');
+  try {
+    assert.equal(x.run('collect').status,0);
+    const r=x.record();
+    assert.equal(r.capture.source_count,20);
+    assert.equal(r.capture.sources.length,20);
+    assert.ok(r.capture.omitted_source_count>0);
+    assert.equal(r.capture.sources[19].body,null);
+    assert.match(r.capture.sources[19].omission_reason,/Aggregate/);
+    assert.match(r.capture.sources[19].body_sha256,/^[a-f0-9]{64}$/);
+    assert.equal(r.provisional.approved,false);
+    assert.notEqual(x.run('finalize').status,0);
+    assert.equal(x.state().statuses.at(-1).state,'failure');
+  } finally { x.cleanup(); }
+});
