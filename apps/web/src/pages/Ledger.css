@@ -221,7 +221,7 @@
 .local-ledger-page .ledger-record-value small { color: var(--do-text-muted); font-size: 0.76rem; line-height: 1.4; }
 .local-ledger-page .ledger-record-group { border-top: 1px solid var(--do-border); }
 .local-ledger-page .ledger-record-group .ledger-indicator-row { border-top: 0; }
-.local-ledger-page .ledger-record-details { margin-top: 0.6rem; }
+.local-ledger-page .ledger-record-details { margin-top: 0.6rem; overflow-wrap: anywhere; }
 .local-ledger-page .ledger-source-group > details:not(.ledger-record-details) { margin-top: 0.7rem; }
 .local-ledger-page .ledger-source-group summary { min-height: 2.7rem; align-content: center; }
 
