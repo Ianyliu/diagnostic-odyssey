@@ -101,3 +101,10 @@ export function auditMarkdown({ run, prNumber, decision, artifactUrl }) {
     'Historical BLOCK/COMMENT/timeout stays non-approval even if the source bot comment is later overwritten.',
   ].join('\n');
 }
+
+export function sameReviewerWorkflow(head, main) {
+  return !!head && !!main && SHA.test(head.sha || '') &&
+    head.sha === main.sha &&
+    head.path === '.github/workflows/jules-pr-review.yml' &&
+    main.path === head.path;
+}
