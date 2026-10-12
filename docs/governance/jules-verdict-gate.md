@@ -16,7 +16,7 @@ Create a separate verifier rather than trusting green status of the third-party 
 
 The proposed required commit status is jules/verdict-gate, never the fixture job or the upstream jules/review status. Approval requires ALL:
 
-1. Authenticated exact reviewer workflow identity and run, completed success, unique non-draft open same-repo PR, live head matching the review run's 40-character SHA, and no later same-head reviewer run.
+1. Authenticated exact reviewer workflow identity and run, completed success, unique non-draft open same-repo PR, live head matching the review run's 40-character SHA, and no later same-head reviewer run. The reviewer-workflow file Git blob at PR HEAD must match the trusted current-main workflow blob; PR-edited reviewer workflow code is never accepted.
 2. Exactly one successful review job with one Jules session, one final-review-with-VERDICT marker and exactly one terminal approve/success log statement; never an interim message, timeout, missing log or verifier exception.
 3. One GitHub-actions bot review comment carrying the same run-session ID, one exact VERDICT:approve line, no [BLOCKING] section, and a GitHub edit timestamp attributable to that run.
 4. An independent new audit issue comment successfully created *before* a success status. A failed audit write yields no approval.
