@@ -58,13 +58,13 @@ jobs:
           node-version: 22
       - name: Verify independently, snapshot reviewer, post distinct PR-head status
         env:
-          GH_TOKEN: \${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: node scripts/ci/verify-jules-run.mjs
       - name: Preserve exact UTF-8 preimage in per-run artifact
         if: always() && github.event_name == 'workflow_run' && github.event.action == 'completed'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: jules-verdict-attempt-\${{ github.event.workflow_run.id }}-\${{ github.event.workflow_run.run_attempt }}
+          name: jules-verdict-attempt-${{ github.event.workflow_run.id }}-${{ github.event.workflow_run.run_attempt }}
           path: /tmp/jules-verdict-gate.json
           if-no-files-found: error
           retention-days: 90
