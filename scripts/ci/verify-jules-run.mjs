@@ -1,3 +1,4 @@
+/* global process, fetch, URL, console */
 import fs from 'node:fs';
 import { assessEvidence, auditMarkdown, CONTEXT, sameReviewerWorkflow } from './jules-verdict-core.mjs';
 
