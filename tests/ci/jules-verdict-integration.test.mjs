@@ -58,6 +58,11 @@ test('APPROVE: capture comment and ZIP-artifact confirmation precede any status'
     const f=x.run('finalize');assert.equal(f.status,0,f.stderr);
     s=x.state();
     assert.equal(s.statuses.at(-1).state,'success');
+    assert.equal(s.audit_comments.length,2);
+    assert.ok(s.audit_comments[1].includes('finalization receipt'));
+    assert.ok(s.audit_comments[1].includes('Archive ZIP digest'));
+    assert.ok(s.calls.lastIndexOf('POST /repos/Ianyliu/diagnostic-odyssey/issues/102/comments') <
+      s.calls.indexOf('POST /repos/Ianyliu/diagnostic-odyssey/statuses/'+head));
     assert.ok(s.calls.indexOf('GET /repos/Ianyliu/diagnostic-odyssey/actions/runs/999/artifacts') <
       s.calls.indexOf('POST /repos/Ianyliu/diagnostic-odyssey/statuses/'+head));
   } finally{x.cleanup();}
@@ -66,7 +71,7 @@ const negative=[
   ['block',true],['comment',true],['invalid-verdict',true],['timeout',true],
   ['log-error',true],['overwritten',true],['ambiguous-author',false],
   ['edited-after-capture',false],['missing-artifact',false],
-  ['audit-post-failure',false],
+  ['audit-post-failure',false],['final-comment-failure',false],
 ];
 for(const [scenario] of negative){
   test('archived '+scenario+' cannot authorize status success',()=>{
