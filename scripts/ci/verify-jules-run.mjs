@@ -232,6 +232,33 @@ async function finish() {
       throw new Error(outcome.reason);
     }
   }
+  // Append a separate intended-disposition receipt. No historical capture is edited.
+  // This receipt cannot prove a following status API write succeeded.
+  try {
+    if (!record?.pr_number) throw new Error('PR identity unavailable for disposition');
+    const lines=[
+      '## Jules Stage A — finalization receipt (append-only, non-authoritative)',
+      '',
+      '- Reviewer run: '+stub.id+' / attempt '+stub.run_attempt,
+      '- Exact reviewer HEAD: '+stub.head_sha,
+      '- Verifier run: '+gateId,
+      '- Intended status: **'+(outcome.approved?'eligible after archive':'NOT APPROVED')+'**',
+      '- Reason: '+outcome.reason,
+      '- Captured payload SHA-256: '+(record.payload_sha256||'unavailable'),
+      '- Archive ID: '+(process.env.ARCHIVE_ID||'unavailable'),
+      '- Archive ZIP digest: '+(process.env.ARCHIVE_DIGEST||'unavailable'),
+      '- Archive workflow run: '+process.env.GITHUB_SERVER_URL+'/'+repo+'/actions/runs/'+gateId,
+      '',
+      'This records intent after verification, NOT confirmation that the following status API write succeeded.',
+      'It is not independently authenticated Jules approval and never overrides a prior BLOCK.',
+    ];
+    await request('/issues/'+record.pr_number+'/comments',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({body:lines.join('\n')}),
+    });
+  } catch(e) {
+    outcome={approved:false,reason:'Final disposition audit append failed: '+String(e.message||e).slice(0,80)};
+  }
   // This context is expressly NOT an independent, authoritative merge check.
   await status(stub.head_sha,outcome.approved?'success':'failure',outcome.reason);
   if (!outcome.approved) throw new Error(outcome.reason);
