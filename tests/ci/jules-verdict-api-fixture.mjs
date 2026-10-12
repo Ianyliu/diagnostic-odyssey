@@ -34,6 +34,7 @@ globalThis.fetch = async function(input, opts={}) {
   }
   save(s);
   if (url.hostname==='archive.blob.core.windows.net') {
+    if (s.scenario==='log-error') return new Response('Unavailable',{status:503});
     return new Response(s.scenario==='timeout' ?
       log.replace('Got final review with VERDICT line on attempt 38.',
         'Timed out waiting for a message containing a VERDICT line; posting the last message received.')
