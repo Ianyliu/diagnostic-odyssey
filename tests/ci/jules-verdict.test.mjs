@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { assessEvidence, auditMarkdown, sha256, MARKER, sameReviewerWorkflow } from '../../scripts/ci/jules-verdict-core.mjs';
+import { assessEvidence, auditMarkdown, sha256, MARKER, sameReviewerWorkflow,
+  collectEvidence, capturedApprovalEvidence, callbackIsCurrent } from '../../scripts/ci/jules-verdict-core.mjs';
 
 const sha = 'a'.repeat(40);
 const repo = 'Ianyliu/diagnostic-odyssey';
@@ -108,4 +109,73 @@ test('a PR may not substitute its own reviewer workflow implementation', () => {
   assert.equal(sameReviewerWorkflow({ ...original, sha: 'd'.repeat(40) }, original), false);
   assert.equal(sameReviewerWorkflow({ ...original, path: '.github/workflows/attacker.yml' }, original), false);
   assert.equal(sameReviewerWorkflow(null, original), false);
+});
+
+
+test('same-run attempt-1 callback is obsolete after canonical and newest advance to attempt 2', () => {
+  const f = fixture();
+  const eventRun = f.run;
+  const oldRecord = { reviewer_run_id: 55, reviewer_attempt: 1, reviewer_head: sha };
+  const canonical = { ...eventRun, run_attempt: 2 };
+  const newest = { ...canonical };
+  assert.equal(callbackIsCurrent({ pr: f.pr, run: canonical, newest, eventRun, record: oldRecord }), false);
+  // The old implementation compared canonical to newest only, incorrectly returning true.
+  assert.equal(callbackIsCurrent({ pr: f.pr, run: canonical, newest, eventRun }), false);
+  const newRecord = { reviewer_run_id: 55, reviewer_attempt: 2, reviewer_head: sha };
+  assert.equal(callbackIsCurrent({
+    pr: f.pr, run: canonical, newest, eventRun: canonical, record: newRecord,
+  }), true);
+  assert.equal(callbackIsCurrent({
+    pr: f.pr, run: canonical, newest, eventRun: canonical, record: oldRecord,
+  }), false);
+  assert.equal(callbackIsCurrent({
+    pr: f.pr, run: canonical, newest,
+  }), false); // no guessed event identity
+});
+
+test('source #11 including a positive verdict survives without silent omission', () => {
+  const f = fixture();
+  const correct = f.comments[0];
+  f.comments = Array.from({length: 11}, (_, i) => ({
+    ...correct,
+    id: i + 100,
+    body: i === 10 ? correct.body : correct.body
+      .replace('VERDICT: approve', 'VERDICT: block')
+      .replace(session, '111111111111111111'),
+  }));
+  const decision = assessEvidence(f);
+  assert.equal(decision.approved, true);
+  assert.equal(decision.comment_id, 110);
+  const capture = collectEvidence({...f, capturedAt: '2026-10-12T15:00:00Z'});
+  assert.equal(capture.sources.length, 11);
+  assert.equal(capture.source_count, 11);
+  assert.equal(capture.omitted_source_count, 0);
+  assert.equal(capture.sources[10].body, correct.body);
+  assert.equal(capture.sources[10].body_sha256, sha256(correct.body));
+  assert.equal(capturedApprovalEvidence({capture, decision}), true);
+});
+
+test('over-budget originals all have IDs, SHA-256 and exact omission reasons', () => {
+  const f = fixture();
+  const original = f.comments[0].body;
+  const large = original.replace('VERDICT:', 'x'.repeat(55000) + '\nVERDICT:');
+  f.comments = Array.from({length:20},(_,i)=>({
+    ...f.comments[0], id:100+i,
+    body:i===19 ? large : large.replace('VERDICT: approve','VERDICT: block')
+      .replace(session,'111111111111111111'),
+  }));
+  const decision = assessEvidence(f);
+  assert.equal(decision.approved,true);
+  const capture=collectEvidence({...f,capturedAt:'2026-10-12T15:00:00Z'});
+  assert.equal(capture.sources.length,20);
+  assert.equal(capture.source_count,20);
+  assert.ok(capture.omitted_source_count>0);
+  assert.equal(capture.omitted_source_count,
+    capture.sources.filter(s=>s.omission_reason).length);
+  assert.equal(capture.sources[19].body,null);
+  assert.equal(capture.sources[19].body_sha256,sha256(large));
+  assert.match(capture.sources[19].omission_reason,/Aggregate/);
+  assert.equal(capturedApprovalEvidence({capture,decision}),false);
+  assert.ok(capture.sources.every(s=>typeof s.body_sha256==='string' &&
+    (s.body!==null || typeof s.omission_reason==='string')));
 });
