@@ -161,3 +161,54 @@ export function auditMarkdown({ run, prNumber, decision, artifactUrl, capture })
   if (sources.length === 0) result.push('', '**No reviewer body available.** Historic overwritten content cannot be recovered from the current comment.');
   return result.join('\n');
 }
+
+
+// A successful archive upload and a fresh GitHub API read are both REQUIRED before
+// any approval status. This is consistency checking, not independent attestation.
+export function finalizeDisposition({ record, pr, run, newest, archive, artifactId,
+  artifactDigest, currentComment, currentMainWorkflow, headWorkflow }) {
+  const fail = reason => ({ approved: false, reason });
+  if (!record || !record.provisional?.approved || !record.archive_comment_id) {
+    return fail('No valid eligible review and successful append-only capture');
+  }
+  if (!archive || String(archive.id) !== String(artifactId) ||
+      archive.name !== record.expected_artifact_name || archive.expired ||
+      archive.workflow_run?.id !== record.gate_run_id ||
+      !/^sha256:[a-f0-9]{64}$/.test(artifactDigest || '') ||
+      archive.digest !== artifactDigest) {
+    return fail('Required durable artifact not independently confirmed');
+  }
+  if (!run || run.id !== record.reviewer_run_id ||
+      run.run_attempt !== record.reviewer_attempt ||
+      run.status !== 'completed' || run.conclusion !== 'success' ||
+      run.head_sha !== record.reviewer_head) {
+    return fail('Reviewer execution identity or attempt changed');
+  }
+  if (!newest || newest.id !== run.id || newest.run_attempt !== run.run_attempt) {
+    return fail('Superseded review execution or attempt');
+  }
+  if (pr?.head?.sha !== record.reviewer_head || pr?.state !== 'open' ||
+      pr?.draft || pr?.number !== record.pr_number ||
+      pr?.head?.repo?.full_name !== record.repository) {
+    return fail('Live PR changed or cannot be authenticated');
+  }
+  if (!sameReviewerWorkflow(headWorkflow, currentMainWorkflow)) {
+    return fail('Reviewer workflow source identity changed');
+  }
+  const expected = record.provisional.body_sha256;
+  if (!expected || !currentComment || currentComment.id !== record.provisional.comment_id ||
+      currentComment.user?.login !== 'github-actions[bot]' ||
+      sha256(clean(currentComment.body)) !== expected ||
+      clean(currentComment.updated_at || currentComment.created_at) !==
+        clean(record.provisional.comment_updated_at)) {
+    return fail('Original review comment changed after evidence capture');
+  }
+  return { approved: true, reason: 'Archived evidence and fresh exact-head review verified (Stage A, non-authoritative)' };
+}
+
+// Never let a delayed or superseded callback overwrite a newer outcome.
+export function callbackIsCurrent({ pr, run, newest }) {
+  return !!pr && !!run && !!newest &&
+    pr.state === 'open' && pr.head?.sha === run.head_sha &&
+    newest.id === run.id && newest.run_attempt === run.run_attempt;
+}
