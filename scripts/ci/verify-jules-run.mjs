@@ -227,7 +227,7 @@ async function finish() {
         console.log('Error on stale callback: no status published');
         return;
       }
-    } catch(_err) {
+    } catch {
       console.error('Cannot establish live callback ordering; no status published');
       throw new Error(outcome.reason);
     }
