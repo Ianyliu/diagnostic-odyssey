@@ -63,7 +63,8 @@ test('APPROVE: capture comment and ZIP-artifact confirmation precede any status'
   } finally{x.cleanup();}
 });
 const negative=[
-  ['block',true],['timeout',true],['overwritten',true],['ambiguous-author',false],
+  ['block',true],['comment',true],['invalid-verdict',true],['timeout',true],
+  ['log-error',true],['overwritten',true],['ambiguous-author',false],
   ['edited-after-capture',false],['missing-artifact',false],
   ['audit-post-failure',false],
 ];
@@ -73,7 +74,7 @@ for(const [scenario] of negative){
     try{
       const c=x.run('collect');assert.equal(c.status,0,c.stderr);
       const record=x.record();
-      if(['block','timeout','overwritten'].includes(scenario)){
+      if(['block','comment','invalid-verdict','timeout','overwritten','log-error'].includes(scenario)){
         assert.ok(record.capture.sources.length>0);
         assert.equal(record.capture.sources[0].body_sha256,
           sha256(record.capture.sources[0].body));
@@ -132,4 +133,27 @@ test('malicious PR description is never interpreted as a reviewer verdict',()=>{
     assert.equal(x.run('finalize').status,0);
     assert.equal(x.state().statuses.at(-1).state,'success');
   }finally{x.cleanup();}
+});
+
+test('archive digest or ID mismatch is never accepted',()=>{
+  for (const env of [{ARCHIVE_DIGEST:'sha256:'+'f'.repeat(64)},{ARCHIVE_ID:'9876'}]) {
+    const x=setup('approve');
+    try {
+      assert.equal(x.run('collect').status,0);
+      assert.notEqual(x.run('finalize',env).status,0);
+      assert.equal(x.state().statuses.at(-1).state,'failure');
+    } finally { x.cleanup(); }
+  }
+});
+test('existing spoofed green is not accepted as review evidence for BLOCK',()=>{
+  const x=setup('block');
+  try {
+    assert.equal(x.run('collect').status,0);
+    const st=x.state();
+    st.statuses.push({state:'success',context:'jules/verdict-gate',actor:'untrusted-writer'});
+    fs.writeFileSync(x.statePath,JSON.stringify(st));
+    assert.notEqual(x.run('finalize').status,0);
+    assert.equal(x.state().statuses.at(-1).state,'failure');
+    // Does not prevent a future third-party writer from spoofing the same context: F1.
+  } finally { x.cleanup(); }
 });
