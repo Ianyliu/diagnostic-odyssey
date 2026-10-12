@@ -21,16 +21,25 @@ export function collectEvidence({ repo, run, pr, jobs, log, comments, capturedAt
   const candidates = Array.isArray(comments) ? comments.filter(c =>
     c?.user?.login === 'github-actions[bot]' &&
     typeof c.body === 'string' && c.body.startsWith(MARKER + '\n')) : [];
-  const sources = candidates.slice(0, 10).map(c => {
-    const body = c.body.length <= 60000 ? c.body : null;
+  // Preserve metadata and SHA-256 for EVERY available source, not just the first ten.
+  // Bound total UTF-8 preimage bytes while recording every omitted identity and reason.
+  const preimageLimit = 1_000_000;
+  let retainedBytes = 0;
+  const sources = candidates.map(c => {
+    const bytes = Buffer.byteLength(c.body, 'utf8');
+    const omissionReason = c.body.length > 60000 ? 'Individual body exceeds 60000 characters' :
+      retainedBytes + bytes > preimageLimit ? 'Aggregate 1000000-byte preimage limit exceeded' : null;
+    const body = omissionReason ? null : c.body;
+    if (body !== null) retainedBytes += bytes;
     return {
       comment_id: c.id ?? null, author: c.user?.login || null, url: c.html_url || null,
       created_at: iso(c.created_at), updated_at: iso(c.updated_at || c.created_at),
-      captured_at: capturedAt, body, body_sha256: body === null ? null : sha256(body),
-      matches_session: !!sessionId && !!body &&
-        body.endsWith('_Session: ' + String.fromCharCode(96) + sessionId +
+      captured_at: capturedAt, body, body_bytes: bytes, body_sha256: sha256(c.body),
+      omission_reason: omissionReason,
+      matches_session: !!sessionId &&
+        c.body.endsWith('_Session: ' + String.fromCharCode(96) + sessionId +
           String.fromCharCode(96) + '_'),
-      limitation: body === null ? 'Reviewer body absent or exceeds bound' :
+      limitation: omissionReason ||
         'Mutable GitHub bot comment; source account is shared; no independently signed Jules attestation',
     };
   });
@@ -48,7 +57,9 @@ export function collectEvidence({ repo, run, pr, jobs, log, comments, capturedAt
       'Reviewer log unavailable; no verdict may be authenticated',
     reported_verdicts: summaries.map(m => ({ verdict: m[1].toLowerCase(), status: m[2].toLowerCase() })),
     review_jobs: (jobs || []).map(j => ({ id: j.id ?? null, name: j.name, conclusion: j.conclusion })),
-    sources, source_count: candidates.length, errors: [...errors],
+    sources, source_count: candidates.length, retained_preimage_bytes: retainedBytes,
+    omitted_source_count: sources.filter(s => s.omission_reason).length,
+    errors: [...errors],
     trust_limitation: 'Stage A is NON-AUTHORITATIVE: a shared bot and third-party status writer do not authenticate a Jules verdict; GitHub comments and artifacts can be deleted',
   };
 }
@@ -115,6 +126,15 @@ export function assessEvidence({ repo, run, pr, jobs, log, comments }) {
   };
 }
 
+export function capturedApprovalEvidence({ capture, decision }) {
+  return !!decision?.approved && !!capture &&
+    capture.sources.some(s => s.comment_id === decision.comment_id &&
+      s.body !== null && typeof s.body === 'string' &&
+      s.body_sha256 === decision.body_sha256 &&
+      sha256(s.body) === decision.body_sha256 &&
+      !s.omission_reason);
+}
+
 export function sameReviewerWorkflow(head, main) {
   return !!head && !!main && SHA.test(head.sha || '') &&
     head.sha === main.sha &&
@@ -161,7 +181,9 @@ export function auditMarkdown({ run, prNumber, decision, artifactUrl, capture })
       escaped(source.body) || '(original text unavailable; do not reconstruct)', '',
       '</details>');
   }
-  if (allSources.length > sources.length) result.push('', 'Other captured bot-comment bodies are available in the JSON artifact (' + allSources.length + ' total).');
+  if (allSources.length > sources.length) result.push('', 'Other captured bot-comment sources are documented in the JSON artifact (' + allSources.length + ' total).');
+  if (capture?.omitted_source_count) result.push('', '**Omitted reviewer preimages:** ' + capture.omitted_source_count +
+    ' (see each source comment ID, hash and explicit omission reason in JSON; no omitted body supports an approval).');
   if (sources.length === 0) result.push('', '**No reviewer body available.** Historic overwritten content cannot be recovered from the current comment.');
   return result.join('\n');
 }
@@ -169,9 +191,12 @@ export function auditMarkdown({ run, prNumber, decision, artifactUrl, capture })
 
 // A successful archive upload and a fresh GitHub API read are both REQUIRED before
 // any approval status. This is consistency checking, not independent attestation.
-export function finalizeDisposition({ record, pr, run, newest, archive, artifactId,
+export function finalizeDisposition({ record, pr, run, newest, eventRun, archive, artifactId,
   artifactDigest, currentComment, currentMainWorkflow, headWorkflow }) {
   const fail = reason => ({ approved: false, reason });
+  if (!callbackIsCurrent({ pr, run, newest, eventRun, record })) {
+    return fail('Superseded run or attempt; cannot finalize stale event');
+  }
   if (!record || !record.provisional?.approved || !record.archive_comment_id) {
     return fail('No valid eligible review and successful append-only capture');
   }
@@ -211,8 +236,18 @@ export function finalizeDisposition({ record, pr, run, newest, archive, artifact
 }
 
 // Never let a delayed or superseded callback overwrite a newer outcome.
-export function callbackIsCurrent({ pr, run, newest }) {
-  return !!pr && !!run && !!newest &&
-    pr.state === 'open' && pr.head?.sha === run.head_sha &&
-    newest.id === run.id && newest.run_attempt === run.run_attempt;
+export function callbackIsCurrent({ pr, run, newest, eventRun, record }) {
+  if (!pr || !run || !newest || !eventRun ||
+      !Number.isSafeInteger(eventRun.id) ||
+      !Number.isSafeInteger(eventRun.run_attempt) || eventRun.run_attempt < 1 ||
+      !SHA.test(eventRun.head_sha || '') ||
+      run.id !== eventRun.id || run.run_attempt !== eventRun.run_attempt ||
+      newest.id !== eventRun.id || newest.run_attempt !== eventRun.run_attempt ||
+      run.head_sha !== eventRun.head_sha || newest.head_sha !== eventRun.head_sha ||
+      pr.state !== 'open' || pr.head?.sha !== eventRun.head_sha) return false;
+  // A lost capture can still be marked failed for the CURRENT attempt. A present
+  // capture MUST match the immutable callback; never fail a newer attempt.
+  return !record || (record.reviewer_run_id === eventRun.id &&
+    record.reviewer_attempt === eventRun.run_attempt &&
+    record.reviewer_head === eventRun.head_sha);
 }
