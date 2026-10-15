@@ -1,0 +1,640 @@
+[
+  {
+    "width": 1440,
+    "theme": "light",
+    "goal": "Explain my Brief",
+    "violations": 0,
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "targets": [
+          [
+            ".fc-orbit-center > span"
+          ],
+          [
+            ".fc-orbit-a"
+          ],
+          [
+            ".fc-orbit-b"
+          ],
+          [
+            ".fc-orbit-c"
+          ],
+          [
+            "#fc-tab-explain_brief > .fc-tab-arrow[aria-hidden=\"true\"]"
+          ],
+          [
+            "#fc-tab-explore_interventions > .fc-tab-arrow[aria-hidden=\"true\"]"
+          ],
+          [
+            "#fc-tab-identify_data_gaps > .fc-tab-arrow[aria-hidden=\"true\"]"
+          ],
+          [
+            "#fc-tab-compare_strategies > .fc-tab-arrow[aria-hidden=\"true\"]"
+          ],
+          [
+            ".fc-flow-symbol"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "goal": "Explore interventions",
+    "violations": 0,
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "targets": [
+          [
+            ".fc-orbit-center > span"
+          ],
+          [
+            ".fc-orbit-a"
+          ],
+          [
+            ".fc-orbit-b"
+          ],
+          [
+            ".fc-orbit-c"
+          ],
+          [
+            "#fc-tab-explain_brief > .fc-tab-arrow[aria-hidden=\"true\"]"
+          ],
+          [
+            "#fc-tab-explore_interventions > .fc-tab-arrow[aria-hidden=\"true\"]"
+          ],
+          [
+            "#fc-tab-identify_data_gaps > .fc-tab-arrow[aria-hidden=\"true\"]"
+          ],
+          [
+            "#fc-tab-compare_strategies > .fc-tab-arrow[aria-hidden=\"true\"]"
+          ],
+          [
+            "button[aria-controls=\"fc-pipeline-detail\"]:nth-child(1) > span[aria-hidden=\"true\"]"
+          ],
+          [
+            "button[aria-controls=\"fc-pipeline-detail\"]:nth-child(2) > span[aria-hidden=\"true\"]"
+          ],
+          [
+            "button[aria-controls=\"fc-pipeline-detail\"]:nth-child(3) > span[aria-hidden=\"true\"]"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "goal": "Identify data gaps",
+    "violations": 0,
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "targets": [
+          [
+            ".fc-orbit-center > span"
+          ],
+          [
+            ".fc-orbit-a"
+          ],
+          [
+            ".fc-orbit-b"
+          ],
+          [
+            ".fc-orbit-c"
+          ],
+          [
+            "#fc-tab-explain_brief > .fc-tab-arrow[aria-hidden=\"true\"]"
+          ],
+          [
+            "#fc-tab-explore_interventions > .fc-tab-arrow[aria-hidden=\"true\"]"
+          ],
+          [
+            "#fc-tab-identify_data_gaps > .fc-tab-arrow[aria-hidden=\"true\"]"
+          ],
+          [
+            "#fc-tab-compare_strategies > .fc-tab-arrow[aria-hidden=\"true\"]"
+          ],
+          [
+            ".fc-map > .fc-role-concept.fc-role"
+          ],
+          [
+            ".fc-map-legend > span:nth-child(1)"
+          ],
+          [
+            ".fc-map-legend > span:nth-child(2)"
+          ],
+          [
+            ".fc-map-legend > span:nth-child(3)"
+          ],
+          [
+            ".fc-map-link[aria-hidden=\"true\"]:nth-child(2)"
+          ],
+          [
+            ".fc-map-link[aria-hidden=\"true\"]:nth-child(4)"
+          ],
+          [
+            "button[aria-controls=\"fc-dependency-inspector\"]:nth-child(1) > span[aria-hidden=\"true\"]:nth-child(3)"
+          ],
+          [
+            "button[aria-controls=\"fc-dependency-inspector\"]:nth-child(2) > span[aria-hidden=\"true\"]:nth-child(3)"
+          ],
+          [
+            "button[aria-controls=\"fc-dependency-inspector\"]:nth-child(3) > span[aria-hidden=\"true\"]:nth-child(3)"
+          ],
+          [
+            ".fc-map-caption"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "goal": "Compare strategies",
+    "violations": 0,
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "targets": [
+          [
+            ".fc-orbit-center > span"
+          ],
+          [
+            ".fc-orbit-a"
+          ],
+          [
+            ".fc-orbit-b"
+          ],
+          [
+            ".fc-orbit-c"
+          ],
+          [
+            "#fc-tab-explain_brief > .fc-tab-arrow[aria-hidden=\"true\"]"
+          ],
+          [
+            "#fc-tab-explore_interventions > .fc-tab-arrow[aria-hidden=\"true\"]"
+          ],
+          [
+            "#fc-tab-identify_data_gaps > .fc-tab-arrow[aria-hidden=\"true\"]"
+          ],
+          [
+            "#fc-tab-compare_strategies > .fc-tab-arrow[aria-hidden=\"true\"]"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "width": 1440,
+    "theme": "dark",
+    "goal": "Explain my Brief",
+    "violations": 0,
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "targets": [
+          [
+            ".fc-orbit-center > span"
+          ],
+          [
+            ".fc-orbit-a"
+          ],
+          [
+            ".fc-orbit-b"
+          ],
+          [
+            ".fc-orbit-c"
+          ],
+          [
+            "#fc-tab-explain_brief > .fc-tab-arrow[aria-hidden=\"true\"]"
+          ],
+          [
+            "#fc-tab-explore_interventions > .fc-tab-arrow[aria-hidden=\"true\"]"
+          ],
+          [
+            "#fc-tab-identify_data_gaps > .fc-tab-arrow[aria-hidden=\"true\"]"
+          ],
+          [
+            "#fc-tab-compare_strategies > .fc-tab-arrow[aria-hidden=\"true\"]"
+          ],
+          [
+            ".fc-flow-symbol"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "width": 1440,
+    "theme": "dark",
+    "goal": "Explore interventions",
+    "violations": 0,
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "targets": [
+          [
+            ".fc-orbit-center > span"
+          ],
+          [
+            ".fc-orbit-a"
+          ],
+          [
+            ".fc-orbit-b"
+          ],
+          [
+            ".fc-orbit-c"
+          ],
+          [
+            "#fc-tab-explain_brief > .fc-tab-arrow[aria-hidden=\"true\"]"
+          ],
+          [
+            "#fc-tab-explore_interventions > .fc-tab-arrow[aria-hidden=\"true\"]"
+          ],
+          [
+            "#fc-tab-identify_data_gaps > .fc-tab-arrow[aria-hidden=\"true\"]"
+          ],
+          [
+            "#fc-tab-compare_strategies > .fc-tab-arrow[aria-hidden=\"true\"]"
+          ],
+          [
+            "button[aria-controls=\"fc-pipeline-detail\"]:nth-child(1) > span[aria-hidden=\"true\"]"
+          ],
+          [
+            "button[aria-controls=\"fc-pipeline-detail\"]:nth-child(2) > span[aria-hidden=\"true\"]"
+          ],
+          [
+            "button[aria-controls=\"fc-pipeline-detail\"]:nth-child(3) > span[aria-hidden=\"true\"]"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "width": 1440,
+    "theme": "dark",
+    "goal": "Identify data gaps",
+    "violations": 0,
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "targets": [
+          [
+            ".fc-orbit-center > span"
+          ],
+          [
+            ".fc-orbit-a"
+          ],
+          [
+            ".fc-orbit-b"
+          ],
+          [
+            ".fc-orbit-c"
+          ],
+          [
+            "#fc-tab-explain_brief > .fc-tab-arrow[aria-hidden=\"true\"]"
+          ],
+          [
+            "#fc-tab-explore_interventions > .fc-tab-arrow[aria-hidden=\"true\"]"
+          ],
+          [
+            "#fc-tab-identify_data_gaps > .fc-tab-arrow[aria-hidden=\"true\"]"
+          ],
+          [
+            "#fc-tab-compare_strategies > .fc-tab-arrow[aria-hidden=\"true\"]"
+          ],
+          [
+            ".fc-map > .fc-role-concept.fc-role"
+          ],
+          [
+            ".fc-map-legend > span:nth-child(1)"
+          ],
+          [
+            ".fc-map-legend > span:nth-child(2)"
+          ],
+          [
+            ".fc-map-legend > span:nth-child(3)"
+          ],
+          [
+            ".fc-map-link[aria-hidden=\"true\"]:nth-child(2)"
+          ],
+          [
+            ".fc-map-link[aria-hidden=\"true\"]:nth-child(4)"
+          ],
+          [
+            "button[aria-controls=\"fc-dependency-inspector\"]:nth-child(1) > span[aria-hidden=\"true\"]:nth-child(3)"
+          ],
+          [
+            "button[aria-controls=\"fc-dependency-inspector\"]:nth-child(2) > span[aria-hidden=\"true\"]:nth-child(3)"
+          ],
+          [
+            "button[aria-controls=\"fc-dependency-inspector\"]:nth-child(3) > span[aria-hidden=\"true\"]:nth-child(3)"
+          ],
+          [
+            ".fc-map-caption"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "width": 1440,
+    "theme": "dark",
+    "goal": "Compare strategies",
+    "violations": 0,
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "targets": [
+          [
+            ".fc-orbit-center > span"
+          ],
+          [
+            ".fc-orbit-a"
+          ],
+          [
+            ".fc-orbit-b"
+          ],
+          [
+            ".fc-orbit-c"
+          ],
+          [
+            "#fc-tab-explain_brief > .fc-tab-arrow[aria-hidden=\"true\"]"
+          ],
+          [
+            "#fc-tab-explore_interventions > .fc-tab-arrow[aria-hidden=\"true\"]"
+          ],
+          [
+            "#fc-tab-identify_data_gaps > .fc-tab-arrow[aria-hidden=\"true\"]"
+          ],
+          [
+            "#fc-tab-compare_strategies > .fc-tab-arrow[aria-hidden=\"true\"]"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "width": 390,
+    "theme": "light",
+    "goal": "Explain my Brief",
+    "violations": 0,
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "targets": [
+          [
+            ".fc-flow-symbol"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "width": 390,
+    "theme": "light",
+    "goal": "Explore interventions",
+    "violations": 0,
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "targets": [
+          [
+            "button[aria-controls=\"fc-pipeline-detail\"]:nth-child(1) > span[aria-hidden=\"true\"]"
+          ],
+          [
+            "button[aria-controls=\"fc-pipeline-detail\"]:nth-child(2) > span[aria-hidden=\"true\"]"
+          ],
+          [
+            "button[aria-controls=\"fc-pipeline-detail\"]:nth-child(3) > span[aria-hidden=\"true\"]"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "width": 390,
+    "theme": "light",
+    "goal": "Identify data gaps",
+    "violations": 0,
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "targets": [
+          [
+            ".fc-map > .fc-role-concept.fc-role"
+          ],
+          [
+            ".fc-map-link[aria-hidden=\"true\"]:nth-child(2)"
+          ],
+          [
+            ".fc-map-link[aria-hidden=\"true\"]:nth-child(4)"
+          ],
+          [
+            "button[aria-controls=\"fc-dependency-inspector\"]:nth-child(1) > span[aria-hidden=\"true\"]:nth-child(3)"
+          ],
+          [
+            "button[aria-controls=\"fc-dependency-inspector\"]:nth-child(2) > span[aria-hidden=\"true\"]:nth-child(3)"
+          ],
+          [
+            "button[aria-controls=\"fc-dependency-inspector\"]:nth-child(3) > span[aria-hidden=\"true\"]:nth-child(3)"
+          ],
+          [
+            ".fc-map-caption"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "width": 390,
+    "theme": "light",
+    "goal": "Compare strategies",
+    "violations": 0,
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "targets": [
+          [
+            "tr:nth-child(1) > td:nth-child(3)"
+          ],
+          [
+            "tr:nth-child(1) > td:nth-child(4)"
+          ],
+          [
+            "tr:nth-child(2) > td:nth-child(3)"
+          ],
+          [
+            "tr:nth-child(2) > td:nth-child(4)"
+          ],
+          [
+            "tr:nth-child(3) > td:nth-child(3)"
+          ],
+          [
+            "tr:nth-child(3) > td:nth-child(4)"
+          ],
+          [
+            "tr:nth-child(4) > td:nth-child(3) > .fc-unknown"
+          ],
+          [
+            "tr:nth-child(4) > td:nth-child(4) > .fc-unknown"
+          ],
+          [
+            "tr:nth-child(5) > td:nth-child(3) > .fc-unknown"
+          ],
+          [
+            "tr:nth-child(5) > td:nth-child(4) > .fc-unknown"
+          ],
+          [
+            "tr:nth-child(6) > td:nth-child(3) > .fc-unknown"
+          ],
+          [
+            "tr:nth-child(6) > td:nth-child(4) > .fc-unknown"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "width": 390,
+    "theme": "dark",
+    "goal": "Explain my Brief",
+    "violations": 0,
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "targets": [
+          [
+            ".fc-flow-symbol"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "width": 390,
+    "theme": "dark",
+    "goal": "Explore interventions",
+    "violations": 0,
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "targets": [
+          [
+            "button[aria-controls=\"fc-pipeline-detail\"]:nth-child(1) > span[aria-hidden=\"true\"]"
+          ],
+          [
+            "button[aria-controls=\"fc-pipeline-detail\"]:nth-child(2) > span[aria-hidden=\"true\"]"
+          ],
+          [
+            "button[aria-controls=\"fc-pipeline-detail\"]:nth-child(3) > span[aria-hidden=\"true\"]"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "width": 390,
+    "theme": "dark",
+    "goal": "Identify data gaps",
+    "violations": 0,
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "targets": [
+          [
+            ".fc-map > .fc-role-concept.fc-role"
+          ],
+          [
+            ".fc-map-link[aria-hidden=\"true\"]:nth-child(2)"
+          ],
+          [
+            ".fc-map-link[aria-hidden=\"true\"]:nth-child(4)"
+          ],
+          [
+            "button[aria-controls=\"fc-dependency-inspector\"]:nth-child(1) > span[aria-hidden=\"true\"]:nth-child(3)"
+          ],
+          [
+            "button[aria-controls=\"fc-dependency-inspector\"]:nth-child(2) > span[aria-hidden=\"true\"]:nth-child(3)"
+          ],
+          [
+            "button[aria-controls=\"fc-dependency-inspector\"]:nth-child(3) > span[aria-hidden=\"true\"]:nth-child(3)"
+          ],
+          [
+            ".fc-map-caption"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "width": 390,
+    "theme": "dark",
+    "goal": "Compare strategies",
+    "violations": 0,
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "targets": [
+          [
+            "tr:nth-child(1) > td:nth-child(3)"
+          ],
+          [
+            "tr:nth-child(1) > td:nth-child(4)"
+          ],
+          [
+            "tr:nth-child(2) > td:nth-child(3)"
+          ],
+          [
+            "tr:nth-child(2) > td:nth-child(4)"
+          ],
+          [
+            "tr:nth-child(3) > td:nth-child(3)"
+          ],
+          [
+            "tr:nth-child(3) > td:nth-child(4)"
+          ],
+          [
+            "tr:nth-child(4) > td:nth-child(3) > .fc-unknown"
+          ],
+          [
+            "tr:nth-child(4) > td:nth-child(4) > .fc-unknown"
+          ],
+          [
+            "tr:nth-child(5) > td:nth-child(3) > .fc-unknown"
+          ],
+          [
+            "tr:nth-child(5) > td:nth-child(4) > .fc-unknown"
+          ],
+          [
+            "tr:nth-child(6) > td:nth-child(3) > .fc-unknown"
+          ],
+          [
+            "tr:nth-child(6) > td:nth-child(4) > .fc-unknown"
+          ]
+        ]
+      }
+    ]
+  }
+]
