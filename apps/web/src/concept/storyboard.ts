@@ -1,4 +1,4 @@
-import fixture from "../../../../docs/ai-experience-preview/prototype-stories.v1.json";
+import fixture from "../../../../docs/ai-experience-preview/prototype-stories.v1.json" with {type: "json"};
 
 /** Local presentation fixtures. These are never evidence or an inference response. */
 export const conceptLabel = fixture.global_required_label;
