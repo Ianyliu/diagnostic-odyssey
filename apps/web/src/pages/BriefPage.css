@@ -563,7 +563,8 @@
   .planning-brief-page .brief-print-footer {
     position: fixed;
     right: 0;
-    bottom: -1pt;
+    /* Place the fixed footer in the existing 0.6in page margin, outside body flow. */
+    bottom: -18pt;
     left: 0;
     display: flex;
     justify-content: space-between;
