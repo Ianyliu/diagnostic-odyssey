@@ -68,6 +68,13 @@ denominators, record IDs and source locators. Investigation prompts and
 intervention options are absent from the printed summary. PDF pages were rendered
 with Poppler and inspected; text alone was not used as visual QA.
 
+Long-context visual inspection identified a fixed-footer collision. The opt-in
+summary now uses native page-margin footers; the default print path is unchanged.
+`verify-insights-pdfs.py` checks all 49 pages across the four feature PDF cases
+for footer presence and body clearance, plus native population/denominator
+metadata and exclusion of unaccepted prompts. All checks pass. This supports the
+tested Chromium print engine, not a cross-browser print guarantee.
+
 ## Reproduction
 
 Use Node 22 with a clean checkout and the repository's existing test-only Python
@@ -82,6 +89,7 @@ and a fresh `QA_OUTPUT`, then run:
 node tests/browser/acceptance.mjs
 node tests/browser/planning-insights.mjs
 node tests/browser/gate0-accessibility.mjs
+python3 tests/browser/verify-insights-pdfs.py "$QA_OUTPUT"
 ```
 
 For acquisition regressions, first run

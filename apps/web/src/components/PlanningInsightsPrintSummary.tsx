@@ -7,10 +7,24 @@ import { formatMechanismLabel, formatPathwayStepLabel } from "../data/pathwayBou
 import { pilotInputFields } from "../data/pilotInputDraft";
 import { formatAppliedAssumption } from "../pages/briefAssumptions";
 
+function printMarginStyles(artifactVersion: string): string {
+  // Only a bounded identifier enters CSS; no free text, URLs, or provider content.
+  const identity = /^[A-Za-z0-9_.:-]{1,160}$/.test(artifactVersion)
+    ? JSON.stringify(artifactVersion) : '"Artifact identity unavailable"';
+  return `@media print {
+    .planning-brief-page .brief-print-footer { display: none !important; }
+    @page {
+      @bottom-left { content: "Diagnostic Odyssey"; font: 6.8pt sans-serif; color: #4b5750; }
+      @bottom-center { content: ${identity}; font: 6.8pt sans-serif; color: #4b5750; }
+      @bottom-right { content: "Page " counter(page) " of " counter(pages); font: 6.8pt sans-serif; color: #4b5750; }
+    }
+  }`;
+}
+
 /** Deliberately excludes intervention options, investigation prompts and request proposals. */
 export function PlanningInsightsPrintSummary({model}: {model: PlanningInsightsModelV1}) {
   const applied = model.scenario.applied;
-  return <section className="insights-print-summary" aria-labelledby="insights-print-title">
+  return <><style>{printMarginStyles(model.artifactVersion)}</style><section className="insights-print-summary" aria-labelledby="insights-print-title">
     <h2 id="insights-print-title">Planning insights summary</h2>
     <p>Deterministic planning preview — no live AI inference. Selected highlights; full reviewed findings, assumptions, provenance and selected requests follow in the Brief.</p>
     <section aria-labelledby="print-insight-national">
@@ -49,5 +63,5 @@ export function PlanningInsightsPrintSummary({model}: {model: PlanningInsightsMo
       <p>{model.scenario.explanation}</p>
       <h3>Interpretation boundaries</h3><ul>{model.warnings.map(warning => <li key={warning}>{warning}</li>)}</ul>
     </section>
-  </section>;
+  </section></>;
 }

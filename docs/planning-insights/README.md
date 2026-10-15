@@ -96,6 +96,12 @@ summary pages; page counts vary with content. Investigation prompts and
 intervention options never enter this summary. Canonical JSON is unchanged.
 Existing print disclosure preparation/restoration remains intact.
 
+Opt-in summary mode uses native CSS page-margin footers with the national
+artifact identifier and page counts, avoiding fixed-footer collisions in long
+documents. The default print path retains its existing footer. Page-margin boxes
+are supported in Chrome 131+ ([Chrome documentation](https://developer.chrome.com/blog/print-margins));
+other print engines require independent verification.
+
 To roll back this feature, use the disabled build or revert its feature commits
 through normal review. This is not a claim that any historical Cloudflare
 deployment is a certified production recovery target.
