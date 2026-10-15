@@ -2,6 +2,7 @@
 import assert from "node:assert/strict";
 import { mkdir, writeFile, readFile } from "node:fs/promises";
 import { createRequire } from "node:module";
+import { URL } from "node:url";
 const require = createRequire(process.env.PLAYWRIGHT_RUNNER ?? import.meta.url);
 const { chromium } = require("playwright");
 const axe = require("axe-core");
@@ -11,16 +12,20 @@ await mkdir(output, {recursive: true});
 const browser = await chromium.launch({channel: "chrome", headless: true});
 const results = [];
 const errors = [];
+const externalRequests = [];
 async function run(name, body) {
   try { results.push({name, status: "PASS", details: await body()}); }
   catch (error) { results.push({name, status: "FAIL", error: String(error.stack ?? error)}); }
   for (const context of browser.contexts()) await context.close();
-  await writeFile(`${output}/results.json`, JSON.stringify({results, errors}, null, 2));
+  await writeFile(`${output}/results.json`, JSON.stringify({results, errors, externalRequests}, null, 2));
 }
 async function session(width = 1440, theme = "light", reducedMotion = "reduce") {
   const context = await browser.newContext({viewport: {width, height: 1000}, colorScheme: theme, reducedMotion});
   const page = await context.newPage();
   page.on("pageerror", error => errors.push(String(error)));
+  page.on("request", request => {
+    if (new URL(request.url()).origin !== new URL(base).origin) externalRequests.push(request.url());
+  });
   await page.goto(`${base}/brief`);
   await page.locator("#planning-insights-title").waitFor();
   return {context, page};
@@ -115,18 +120,52 @@ await run("current state, local selection, requests and canonical JSON isolation
   assert.equal(stale.burden_findings.length, 21);
   return {canonicalUnchanged: true, explicitSelection: true, staleExcluded: true};
 });
-await run("huge finite scenario presentation stays readable at 360px", async () => {
-  const {page} = await session(360, "dark");
+for (const width of [1440, 820, 390, 360]) await run(`huge finite scenario presentation stays readable at ${width}px`, async () => {
+  const {page} = await session(width, "dark");
   await navigate(page, "Pilot planner");
   await page.locator("#pilot-fixed_cost").fill(String(Number.MAX_VALUE));
   await navigate(page, "Planning brief");
-  await page.screenshot({path: `${output}/insights-extreme-360-dark.png`, fullPage: true});
+  await page.screenshot({path: `${output}/insights-extreme-${width}-dark.png`, fullPage: true});
   const value = page.locator(".insight-results dd").last();
   assert.match(await value.innerText(), /1\.7976931348623157e\+308/);
   const box = await value.boundingBox();
-  assert.ok(box.x + box.width <= 360, JSON.stringify(box));
+  assert.ok(box.x + box.width <= width, JSON.stringify(box));
   assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1));
+});
+await run("optional actual PDF summary preserves JSON and excludes unaccepted suggestions", async () => {
+  const {page} = await session();
+  const choice = page.getByRole("checkbox", {name: /Include insights summary in printed Brief/});
+  assert.equal(await choice.isChecked(), false);
+  const before = await exportJson(page, "print-before");
+  await page.emulateMedia({media: "print"});
+  assert.equal(await page.locator(".insights-print-summary").count(), 0);
+  assert.equal(await page.locator("#planning-insights").isVisible(), false);
+  await page.pdf({path: `${output}/summary-off.pdf`, format: "Letter", printBackground: true});
+  await page.emulateMedia({media: "screen"});
+  await choice.check();
+  const after = await exportJson(page, "print-after");
+  delete before.generated_at; delete after.generated_at;
+  assert.deepEqual(after, before);
+  await page.emulateMedia({media: "print"});
+  const summary = page.locator(".insights-print-summary");
+  assert.equal(await summary.isVisible(), true);
+  assert.equal(await summary.locator(".investigation-card, .intervention-gap").count(), 0);
+  assert.doesNotMatch(await summary.innerText(), /Verify pathway timing|Verify available capacity|Possible source owner/);
+  await page.pdf({path: `${output}/summary-on.pdf`, format: "Letter", printBackground: true});
+  await page.emulateMedia({media: "screen"});
+  await page.getByRole("button", {name: "Hide insights", exact: true}).click();
+  await page.emulateMedia({media: "print"});
+  assert.equal(await summary.isVisible(), true, "Explicit print choice survives hiding the screen preview");
+  await page.emulateMedia({media: "screen"});
+  await navigate(page, "Local context");
+  await page.locator("main details").evaluateAll(elements => elements.forEach(element => {element.open = true;}));
+  for (const checkbox of await page.locator('input[id^="select-local-context-"]').all()) await checkbox.check();
+  await navigate(page, "Planning brief");
+  await page.getByRole("checkbox", {name: /Include insights summary in printed Brief/}).check();
+  await page.emulateMedia({media: "print"});
+  await page.pdf({path: `${output}/summary-all-context.pdf`, format: "Letter", printBackground: true});
+  return {defaultOff: true, jsonUnchanged: true, suggestionsExcluded: true};
 });
 await browser.close();
 console.log(JSON.stringify(results.map(({name, status, error}) => ({name, status, error})), null, 2));
-if (results.some(row => row.status === "FAIL") || errors.length) process.exitCode = 1;
+if (results.some(row => row.status === "FAIL") || errors.length || externalRequests.length) process.exitCode = 1;

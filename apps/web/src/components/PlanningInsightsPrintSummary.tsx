@@ -1,0 +1,53 @@
+import type { PlanningInsightsModelV1 } from "../data/planningInsights";
+import { formatEstimateInterval, formatEstimateValue } from "../data/formatEstimateValue";
+import { formatLocalContextValue } from "../data/formatLocalContextValue";
+import { formatPublishedLocalContextUncertainty } from "../data/localContextPresentation";
+import { formatPlanningCurrency, formatPlanningNumber } from "../data/planningNumberFormatting";
+import { formatMechanismLabel, formatPathwayStepLabel } from "../data/pathwayBoundary";
+import { pilotInputFields } from "../data/pilotInputDraft";
+import { formatAppliedAssumption } from "../pages/briefAssumptions";
+
+/** Deliberately excludes intervention options, investigation prompts and request proposals. */
+export function PlanningInsightsPrintSummary({model}: {model: PlanningInsightsModelV1}) {
+  const applied = model.scenario.applied;
+  return <section className="insights-print-summary" aria-labelledby="insights-print-title">
+    <h2 id="insights-print-title">Planning insights summary</h2>
+    <p>Deterministic planning preview — no live AI inference. Selected highlights; full reviewed findings, assumptions, provenance and selected requests follow in the Brief.</p>
+    <section aria-labelledby="print-insight-national">
+      <h3 id="print-insight-national">Reviewed national evidence</h3>
+      {model.national.highlights.length ? model.national.highlights.map(({estimate, source}) => <div className="print-insight-finding" key={estimate.estimate_id}>
+        <strong>{estimate.label}: {formatEstimateValue(estimate)}</strong>
+        <span>{estimate.unit} · {formatEstimateInterval(estimate)}</span>
+        <span>Universe: {estimate.universe} · Denominator: {estimate.denominator}</span>
+        <span>{estimate.estimate_id} · {source.source_ref} · {estimate.source_locator ?? source.locator}</span>
+      </div>) : <p>{model.national.explanation}</p>}
+      {model.national.highlights.length > 0 && <p>{model.national.explanation}</p>}
+    </section>
+    <section aria-labelledby="print-insight-local">
+      <h3 id="print-insight-local">Selected local implementation context</h3>
+      {model.local.records.slice(0, 2).map(record => <div className="print-insight-finding" key={record.indicator_id}>
+        <strong>{record.label}: {formatLocalContextValue(record)}</strong>
+        <span>{record.geography_name} · {record.source_agency} · {record.source_release_vintage} · {formatPublishedLocalContextUncertainty(record)}</span>
+        <span>{record.indicator_id} · {record.source_ref} · {record.source_locator}</span>
+      </div>)}
+      {model.local.records.length > 2 && <p>First two of {model.local.records.length} selected indicators shown; inspect the complete selection in the Brief below.</p>}
+      {model.local.artifactVersion && <p><strong>Local artifact:</strong> {model.local.artifactVersion}</p>}
+      <p>{model.local.explanation}</p>
+    </section>
+    <section className="print-insight-planning" aria-labelledby="print-insight-scenario">
+      <h3 id="print-insight-scenario">Analyst assumptions and deterministic planning outputs</h3>
+      {applied && <>
+        <p>{formatPathwayStepLabel(applied.input.target_pathway_step)} · {formatMechanismLabel(applied.input.mechanism)} · {applied.input.scenario_id} · {applied.input.artifact_version}</p>
+        <dl className="print-insight-quantities">{pilotInputFields.map(field => <div key={field.key}><dt>{field.label} (assumption)</dt><dd>{formatAppliedAssumption(applied.input, field)}</dd></div>)}</dl>
+        <dl className="print-insight-quantities">
+          <div><dt>Participants within capacity (result)</dt><dd>{formatPlanningNumber(applied.result.reached_participants)}</dd></div>
+          <div><dt>Modeled capacity gap (result)</dt><dd>{formatPlanningNumber(applied.result.capacity_gap)}</dd></div>
+          <div><dt>Person-month exposure difference (result)</dt><dd>{formatPlanningNumber(applied.result.difference_person_months)}</dd></div>
+          <div><dt>Program-resource requirement (result)</dt><dd>{formatPlanningCurrency(applied.result.program_resource_requirement)}</dd></div>
+        </dl>
+      </>}
+      <p>{model.scenario.explanation}</p>
+      <h3>Interpretation boundaries</h3><ul>{model.warnings.map(warning => <li key={warning}>{warning}</li>)}</ul>
+    </section>
+  </section>;
+}

@@ -10,6 +10,7 @@ import { PLANNING_DEFAULTS_LABEL } from "../data/planningScenarioDefaults";
 import { pilotInputFields } from "../data/pilotInputDraft";
 import { formatAppliedAssumption } from "../pages/briefAssumptions";
 import { DistributionSummaryText } from "./DistributionSummaryText";
+import { PlanningInsightsPrintSummary } from "./PlanningInsightsPrintSummary";
 import "./PlanningInsights.css";
 
 const numbers = new Intl.NumberFormat("en-US", {maximumFractionDigits: 2});
@@ -20,6 +21,11 @@ const roles: Record<InsightRole, string> = {
 
 export function InsightRoleBadge({role}: {role: InsightRole}) {
   return <span className={`insight-role insight-role-${role}`}><span aria-hidden="true" />{roles[role]}</span>;
+}
+
+function PlanningQuantity({value, currency = false}: {value: number; currency?: boolean}) {
+  const label = currency ? formatPlanningCurrency(value) : formatPlanningNumber(value, numbers);
+  return <span className={label.includes("e+") ? "insight-scientific-value" : undefined}>{label}</span>;
 }
 
 function FindingDetails({finding}: {finding: InsightFinding}) {
@@ -117,12 +123,14 @@ function Investigations({model}: {model: PlanningInsightsModelV1}) {
 
 export function PlanningInsights({model}: {model: PlanningInsightsModelV1}) {
   const [expanded, setExpanded] = useState(true);
+  const [includePrintSummary, setIncludePrintSummary] = useState(false);
   const applied = model.scenario.applied;
-  return <section id="planning-insights" className="planning-insights" aria-labelledby="planning-insights-title">
+  return <><section id="planning-insights" className="planning-insights" aria-labelledby="planning-insights-title">
     <header className="insights-heading">
       <div><p className="visual-kicker">AT A GLANCE</p><h2 id="planning-insights-title">Your current planning picture</h2><p className="insight-caption">Deterministic planning preview — no live AI inference.</p></div>
       <button type="button" className="text-button" aria-expanded={expanded} aria-controls="planning-insights-content" onClick={() => setExpanded(value => !value)}>{expanded ? "Hide insights" : "Show insights"}</button>
     </header>
+    <label className="insights-print-choice"><input type="checkbox" checked={includePrintSummary} onChange={event => setIncludePrintSummary(event.target.checked)} /><span>Include insights summary in printed Brief<small>Reviewed findings and applied assumptions; investigation prompts stay on screen.</small></span></label>
     <div id="planning-insights-content" hidden={!expanded}>
       <div className="insight-summary-grid">
         <section className="insight-card insight-national" aria-labelledby="insight-national-title">
@@ -156,9 +164,9 @@ export function PlanningInsights({model}: {model: PlanningInsightsModelV1}) {
           {applied ? <>
             <p className="insight-caption">{formatPathwayStepLabel(applied.input.target_pathway_step)} · {formatMechanismLabel(applied.input.mechanism)}</p>
             <dl className="insight-results">
-              <div><dt>Participants within capacity</dt><dd>{formatPlanningNumber(applied.result.reached_participants, numbers)}</dd></div>
-              <div><dt>Modeled capacity gap</dt><dd>{formatPlanningNumber(applied.result.capacity_gap, numbers)}</dd></div>
-              <div><dt>Program-resource requirement</dt><dd>{formatPlanningCurrency(applied.result.program_resource_requirement)}</dd></div>
+              <div><dt>Participants within capacity</dt><dd><PlanningQuantity value={applied.result.reached_participants} /></dd></div>
+              <div><dt>Modeled capacity gap</dt><dd><PlanningQuantity value={applied.result.capacity_gap} /></dd></div>
+              <div><dt>Program-resource requirement</dt><dd><PlanningQuantity value={applied.result.program_resource_requirement} currency /></dd></div>
             </dl>
             <details className="insight-disclosure"><summary>Applied assumptions &amp; exposure difference</summary>
               <InsightRoleBadge role="assumption" /><p>{PLANNING_DEFAULTS_LABEL}. Inputs remain planning assumptions, not observed evidence.</p>
@@ -188,5 +196,5 @@ export function PlanningInsights({model}: {model: PlanningInsightsModelV1}) {
       <InterventionEvidenceGap explanation={model.interventions.explanation} />
       <Investigations model={model} />
     </div>
-  </section>;
+  </section>{includePrintSummary && <PlanningInsightsPrintSummary model={model} />}</>;
 }

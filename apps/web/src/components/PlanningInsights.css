@@ -5,6 +5,10 @@
 .planning-insights .visual-kicker, .intervention-gap .visual-kicker { margin: 0 0 .4rem; }
 .insight-caption { color: var(--do-text-muted); font-size: .82rem; line-height: 1.55; }
 .insights-heading .insight-caption { margin: 0; }
+.insights-print-choice { display: flex; align-items: start; gap: .6rem; width: fit-content; margin: -.2rem 0 1.2rem; color: var(--do-text); font-size: .8rem; cursor: pointer; }
+.insights-print-choice input { margin: .1rem 0 0; accent-color: var(--do-accent); }
+.insights-print-choice small { display: block; margin-top: .2rem; color: var(--do-text-muted); font-weight: 400; }
+.insights-print-summary { display: none; }
 .insight-summary-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 1rem; }
 .insight-card { min-width: 0; padding: clamp(1rem, 2vw, 1.5rem); background: var(--do-surface); border: 1px solid var(--do-border); border-radius: var(--do-radius-card); }
 .insight-card h3 { font-size: 1.08rem; line-height: 1.35; margin: .9rem 0 1rem; letter-spacing: -.015em; }
@@ -45,7 +49,7 @@
 .insight-results > div { min-width: 0; padding-left: .8rem; border-left: 2px solid var(--do-selection-border); }
 .insight-results dt { font-size: .78rem; color: var(--do-text-muted); line-height: 1.45; }
 .insight-results dd { margin: .45rem 0 0; font-size: clamp(1.1rem, 1.9vw, 1.65rem); font-weight: 750; color: var(--do-text); font-variant-numeric: tabular-nums; }
-.insight-results .scientific-token { font-size: clamp(.8rem, 1.4vw, 1rem); }
+.insight-scientific-value { white-space: nowrap; font-size: .82rem; letter-spacing: -.02em; }
 .insight-boundaries { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; gap: .3rem 2rem; border-left: 3px solid var(--do-warning-border); }
 .insight-boundaries h3, .insight-boundaries p { margin: .2rem 0; }
 .insight-boundaries > p { font-size: .85rem; }
@@ -104,4 +108,19 @@
 }
 @media print {
   .planning-insights, .intervention-gap { display: none !important; }
+  .planning-brief-page .insights-print-summary { display: block; break-after: page; color: #18354b; background: #fff; font-size: 8pt; line-height: 1.35; }
+  .insights-print-summary h2 { font-size: 15pt; margin: 0 0 6pt; }
+  .insights-print-summary h3 { font-size: 10pt; margin: 5pt 0 3pt; break-after: avoid; }
+  .insights-print-summary p { margin: 2pt 0; overflow-wrap: anywhere; }
+  .insights-print-summary > section { border-top: 1px solid #b2b8b3; padding-top: 3pt; }
+  .print-insight-planning { break-inside: avoid; }
+  .print-insight-finding { margin: 5pt 0; break-inside: avoid; }
+  .print-insight-finding strong, .print-insight-finding span { display: block; overflow-wrap: anywhere; }
+  .print-insight-finding span { font-size: 7pt; color: #465660; }
+  .print-insight-quantities { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4pt 16pt; margin: 5pt 0; }
+  .print-insight-quantities > div { display: flex; gap: 6pt; justify-content: space-between; align-items: baseline; min-width: 0; break-inside: avoid; }
+  .print-insight-quantities dt { color: #465660; }
+  .print-insight-quantities dd { margin: 0; text-align: right; font-weight: 700; font-size: 8pt; white-space: nowrap; }
+  .insights-print-summary ul { margin: 4pt 0; padding-left: 12pt; }
+  .insights-print-summary li { margin: 2pt 0; break-inside: avoid; }
 }

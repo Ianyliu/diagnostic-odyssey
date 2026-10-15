@@ -115,6 +115,23 @@ test("unreleased, suppressed, illustrative, invalid, forged and mismatched findi
   assert.ok(stale.scenario.applied);
 });
 
+test("unreleased, suppressed, invalid and changed selected local records are withheld independently", () => {
+  const selected = loadReviewedWvLocalContextArtifact().indicators.filter(record => record.indicator_id === "wv.acs.uninsured_pct");
+  const {brief, sources} = fixture(undefined, selected);
+  for (const changed of [
+    {...selected[0], release_status: "preliminary" as const},
+    {...selected[0], state: "suppressed" as const},
+    {...selected[0], value: Number.NaN},
+    {...selected[0], source_ref: "unreleased-source"}
+  ]) {
+    const model = buildPlanningInsights({...brief, local_context: [changed]}, sources);
+    assert.equal(model.local.records.length, 0);
+    assert.equal(model.local.availability, "withheld");
+    assert.equal(model.national.findingsCount, 21);
+    assert.doesNotMatch(JSON.stringify(model), /unreleased-source/);
+  }
+});
+
 test("every highlighted number and citation is copied from its authoritative reviewed record", () => {
   const {brief, sources} = fixture();
   for (const row of buildPlanningInsights(brief, sources).national.highlights) {
