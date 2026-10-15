@@ -4,6 +4,7 @@ import type { PlanningBrief } from "@diagnostic-odyssey/brief-core";
 import { createAiHandoffText, type AiGoal, type AiHandoffTextV1 } from "../data/aiHandoff";
 import { AI_GOALS, AI_GOAL_TEMPLATES } from "../data/aiHandoffTemplates";
 import { aiHandoffQuestionLength, inspectAiHandoffSource, type AiHandoffSourceState } from "../data/aiHandoffSession";
+import { copyAiHandoffText, downloadAiHandoff } from "../data/aiHandoffTransfer";
 import "./AiHandoff.css";
 
 interface Props { brief: PlanningBrief | null; sourceState: AiHandoffSourceState }
@@ -19,6 +20,11 @@ export function AiHandoff(props: Props) {
 function HandoffDialog({brief, sourceState, onClose}: Props & {onClose: () => void}) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const goalRef = useRef<HTMLSelectElement>(null);
+  const textRef = useRef<HTMLTextAreaElement>(null);
+  const transferEpoch = useRef(0);
+  const mounted = useRef(false);
+  const [transferStatus, setTransferStatus] = useState("");
+  const [copying, setCopying] = useState(false);
   const [goal, setGoal] = useState<AiGoal>("comprehensive");
   const [question, setQuestion] = useState("");
   const source = inspectAiHandoffSource(brief, sourceState);
@@ -33,26 +39,66 @@ function HandoffDialog({brief, sourceState, onClose}: Props & {onClose: () => vo
   const [session, setSession] = useState(() => ({observed: identity, snapshot: generate(), stale: false}));
   // Latch drift during rendering: neither a rapid action nor changing back to the
   // previous state can re-enable a preview without explicit regeneration.
-  if (session.observed !== identity) setSession({...session, observed: identity, stale: true});
+  if (session.observed !== identity) {
+    setSession({...session, observed: identity, stale: true});
+    setTransferStatus("");
+  }
   const current = !problem && !session.stale && session.observed === identity && !!session.snapshot;
   const snapshot = session.snapshot;
   const payload = snapshot?.envelope.payload;
 
   useLayoutEffect(() => {
+    transferEpoch.current++;
+  }, [identity, snapshot]);
+
+  useLayoutEffect(() => {
     const dialog = dialogRef.current!;
     const previousFocus = document.activeElement;
     const previousOverflow = document.body.style.overflow;
+    mounted.current = true;
     dialog.showModal();
     document.body.style.overflow = "hidden";
     goalRef.current?.focus();
     return () => {
+      mounted.current = false;
+      transferEpoch.current++;
       dialog.close();
       document.body.style.overflow = previousOverflow;
       if (previousFocus instanceof HTMLElement && previousFocus.isConnected) previousFocus.focus();
     };
   }, []);
 
+  const copy = async () => {
+    if (!current || !snapshot || copying) return;
+    const epoch = transferEpoch.current;
+    setCopying(true);
+    setTransferStatus("Copying complete prompt…");
+    const outcome = await copyAiHandoffText(snapshot.markdown, navigator.clipboard, window.isSecureContext);
+    if (!mounted.current) return;
+    setCopying(false);
+    if (epoch !== transferEpoch.current) {
+      setTransferStatus("The Brief or options changed while copying. Your clipboard may contain the older preview; regenerate and copy again.");
+      return;
+    }
+    setTransferStatus(outcome === "copied" ? "Complete prompt copied to clipboard." :
+      `${outcome === "insecure" ? "Automatic copying requires a secure browser context." : outcome === "unsupported" ? "This browser does not support clipboard copying." : "Clipboard access was denied or failed."} Use Select complete prompt, then your device’s Copy command, or download Markdown.`);
+  };
+
+  const download = () => {
+    if (!current || !snapshot) return;
+    try { downloadAiHandoff(snapshot); setTransferStatus("Markdown download requested with the complete preview text."); }
+    catch { setTransferStatus("The download could not start. Use Select complete prompt and your device’s Copy command."); }
+  };
+
   return <dialog ref={dialogRef} className="ai-handoff-dialog" aria-labelledby="ai-handoff-title" aria-describedby="ai-handoff-intro"
+    onKeyDown={event => {
+      if (event.key !== "Tab") return;
+      const controls = Array.from(event.currentTarget.querySelectorAll<HTMLElement>("button, select, textarea, summary, [href], [tabindex]"))
+        .filter(element => !element.matches(":disabled") && element.tabIndex >= 0 && element.getClientRects().length > 0);
+      const first = controls[0], last = controls.at(-1);
+      if (event.shiftKey && document.activeElement === first) {event.preventDefault(); last?.focus();}
+      else if (!event.shiftKey && document.activeElement === last) {event.preventDefault(); first?.focus();}
+    }}
     onCancel={event => {event.preventDefault(); onClose();}}>
     <div className="ai-handoff-header">
       <div><p className="eyebrow">PLANNING BRIEF · AI HANDOFF</p><h2 id="ai-handoff-title">Analyze with AI</h2></div>
@@ -79,7 +125,10 @@ function HandoffDialog({brief, sourceState, onClose}: Props & {onClose: () => vo
       </div>
       <div className="ai-handoff-preview">
         <div className="ai-handoff-preview-heading"><h3>Frozen prompt preview</h3>
-          <button className="button secondary" type="button" disabled={!!problem} onClick={() => setSession({observed: identity, snapshot: generate(), stale: false})}>Regenerate preview</button>
+          <button className="button secondary" type="button" disabled={!!problem} onClick={() => {
+            setSession({observed: identity, snapshot: generate(), stale: false});
+            setTransferStatus("");
+          }}>Regenerate preview</button>
         </div>
         <p className={current ? "ai-handoff-ready" : "ai-handoff-warning"} role="status">
           {problem ?? (session.stale ? "The Brief or options changed. Regenerate the preview before copying or downloading."
@@ -103,9 +152,20 @@ function HandoffDialog({brief, sourceState, onClose}: Props & {onClose: () => vo
           </details>
         </>}
         <label htmlFor="ai-handoff-text">Complete prompt · {snapshot?.plainTextLength.toLocaleString("en-US") ?? 0} Unicode characters</label>
-        <textarea id="ai-handoff-text" className="ai-handoff-text" readOnly value={snapshot?.markdown ?? ""} spellCheck={false}
+        <textarea ref={textRef} id="ai-handoff-text" className="ai-handoff-text" readOnly value={snapshot?.markdown ?? ""} spellCheck={false}
           aria-describedby="ai-handoff-text-help" />
         <p id="ai-handoff-text-help" className="ai-handoff-help">Full text, without truncation. Source text is displayed literally. Sensitivity series and unselected workspace records are not included.</p>
+        <div className="ai-handoff-actions">
+          <button className="button" type="button" disabled={!current || copying} onClick={() => void copy()}>Copy complete prompt</button>
+          <button className="button secondary" type="button" disabled={!current} onClick={download}>Download Markdown</button>
+          <button className="button secondary" type="button" disabled={!current} onClick={() => {
+            if (!current) return;
+            textRef.current?.focus();
+            textRef.current?.select();
+            setTransferStatus("Complete prompt selected. Use your device’s Copy command.");
+          }}>Select complete prompt</button>
+        </div>
+        <p className="ai-handoff-help ai-handoff-transfer-status" role="status">{transferStatus}</p>
       </div>
     </div>
   </dialog>;
