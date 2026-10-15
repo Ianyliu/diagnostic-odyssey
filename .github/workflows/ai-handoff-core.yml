@@ -1,0 +1,74 @@
+name: AI Handoff Exact Head
+on:
+  pull_request:
+    paths:
+      - "apps/web/src/data/aiHandoff*.ts"
+      - "apps/web/test/ai-handoff.test.ts"
+      - "apps/web/test/fixtures/ai-handoff-*.json"
+      - "docs/ai-handoff/**"
+      - ".github/workflows/ai-handoff-core.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  exact-head:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22.23.3
+      - name: Verify exact revision and Node version
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          git rev-parse HEAD
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          node --version
+          node -e 'if (process.versions.node.split(".")[0] !== "22") process.exit(1)'
+      - name: Clean install and complete workspace verification
+        run: |
+          npm ci --no-audit --no-fund
+          python3 -m pip install --disable-pip-version-check jsonschema==4.26.0
+          npm run typecheck
+          npm test
+          npm run lint
+          npm run build
+          python3 -m unittest discover -s packages/narrative-references/test -p 'test_provenance.py'
+          python3 -m unittest discover -s analysis/local_context/tests -p 'test_*.py'
+          bash analysis/local_context/tests/test_candidate_output_verifier.sh
+          for manifest in artifacts/reviewed/*/SHA256SUMS; do
+            (cd "$(dirname "$manifest")" && sha256sum -c SHA256SUMS)
+          done
+      - name: Install isolated browser runner
+        run: |
+          npm install --prefix /tmp/diagnostic-browser-runner --no-audit --no-fund --save-exact @playwright/test@1.64.0 axe-core@4.11.1
+          node /tmp/diagnostic-browser-runner/node_modules/playwright/cli.js install chrome
+      - name: Run existing browser acceptance and accessibility suites
+        env:
+          PLAYWRIGHT_RUNNER: /tmp/diagnostic-browser-runner/package.json
+          QA_BASE_URL: http://127.0.0.1:4186
+          QA_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          ./node_modules/.bin/vite preview apps/web --host 127.0.0.1 --port 4186 --strictPort >/tmp/ai-handoff-preview.log 2>&1 &
+          for n in $(seq 1 40); do
+            if curl --fail --silent http://127.0.0.1:4186/ >/dev/null; then break; fi
+            sleep 1
+          done
+          curl --fail http://127.0.0.1:4186/ -o /dev/null
+          QA_OUTPUT=/tmp/ai-handoff-acceptance node tests/browser/acceptance.mjs
+          QA_OUTPUT=/tmp/ai-handoff-accessibility node tests/browser/gate0-accessibility.mjs
+      - name: Retain exact-head browser evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: ai-handoff-${{ github.event.pull_request.head.sha }}
+          path: |
+            /tmp/ai-handoff-acceptance/
+            /tmp/ai-handoff-accessibility/
+            /tmp/ai-handoff-preview.log
+          if-no-files-found: warn
