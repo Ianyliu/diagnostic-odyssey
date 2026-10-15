@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { AppShell } from "./components/AppShell";
 import { ArtifactState } from "./components/ArtifactState";
@@ -13,6 +14,10 @@ import { EvidencePage } from "./pages/EvidencePage";
 import { DataRequestsPage } from "./pages/DataRequestsPage";
 import { BriefPage } from "./pages/BriefPage";
 
+// Exact opt-in only. Vite eliminates the lazy import and fixtures from default builds.
+const FutureAIExperiencePage = import.meta.env.VITE_FUTURE_AI_EXPERIENCE_DEMO === "on"
+  ? lazy(() => import("./concept/FutureAIExperiencePage")) : null;
+
 export function App() {
   return <ErrorBoundary><ArtifactProvider><ArtifactState><Routes>
     <Route element={<AppShell />}>
@@ -27,6 +32,9 @@ export function App() {
       <Route path="evidence" element={<EvidencePage />} />
       <Route path="data-requests" element={<DataRequestsPage />} />
       <Route path="brief" element={<BriefPage />} />
+      <Route path="concept/future-ai" element={FutureAIExperiencePage
+        ? <Suspense fallback={<p className="page" role="status">Opening concept workspace…</p>}><FutureAIExperiencePage /></Suspense>
+        : <Navigate to="/brief" replace />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Route>
   </Routes></ArtifactState></ArtifactProvider></ErrorBoundary>;
