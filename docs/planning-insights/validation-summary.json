@@ -1,5 +1,5 @@
 {
-  "source_code_commit": "1768bdc1d1efebcc83d8433130f27db0610f7396",
+  "source_code_commit": "f87b7278dcce1804bee329c02f93570537778caf",
   "baseline_main": "5cc772a198f86a92866bf14cb4ad545ff583200e",
   "node": "22.23.3",
   "npm": "10.9.9",
@@ -16,32 +16,6 @@
   "candidate_output_verifier": "PASS",
   "synthetic_r": "PASS (R 4.5.2; isolated testthat 3.3.2)",
   "governed_comparison": true,
-  "reviewed_web_payload_files": {
-    "assets/index-BrbK_2G4.js": {
-      "bytes": 542962,
-      "sha256": "b01aebbcfc54dfbb6a82fe5c792f79c11c2c36963c427f7e3f8e246b712bc165"
-    },
-    "assets/index-CGya64Yi.css": {
-      "bytes": 111882,
-      "sha256": "b2be17ba59164fd39c929658f0909ef16846cd4d6542654a85abe453e9ed0afc"
-    },
-    "diagnostic-odyssey-horizontal.png": {
-      "bytes": 58175,
-      "sha256": "c0081b24c9c6826cc0d6911650134754c5a937c1736c1394348281847afa4194"
-    },
-    "diagnostic-odyssey-icon.png": {
-      "bytes": 39345,
-      "sha256": "47584bd120cb52e41046c58367388b8e58a91542d4bcb3a1138ef0a8885bdad2"
-    },
-    "diagnostic-odyssey-mark.svg": {
-      "bytes": 444,
-      "sha256": "5a7b4da5d9dcdb6abb802b5cff5a6cd3a1749c338f86ba166555e6b1cced6294"
-    },
-    "index.html": {
-      "bytes": 1642,
-      "sha256": "abe0acd836c10faedc80d51d05f2f42e666205b2b23cf199c93af0d36ecfe5ff"
-    }
-  },
   "independent_review": "pending",
   "release_authorization": "absent",
   "existing_browser": {
@@ -64,12 +38,64 @@
     "previewAbsent": true,
     "printChoiceAbsent": true,
     "evidencePanelAbsent": true,
-    "canonicalDefaultBriefUnchanged": true
+    "canonicalDefaultBriefUnchanged": true,
+    "overviewEntryAbsent": true
   },
   "pdf_comparison": {
     "default_print_pages_before": 8,
     "default_print_pages_after": 8,
     "default_print_page_text_unchanged": true,
     "timestamp_normalization_only": true
+  },
+  "web_payload_files": {
+    "assets/index-BghFAWYh.js": {
+      "bytes": 543554,
+      "sha256": "7a08990d5ecb054199c243ccc02d52508e17344ffba8258e71004db83d59f96f"
+    },
+    "assets/index-CGya64Yi.css": {
+      "bytes": 111882,
+      "sha256": "b2be17ba59164fd39c929658f0909ef16846cd4d6542654a85abe453e9ed0afc"
+    },
+    "diagnostic-odyssey-horizontal.png": {
+      "bytes": 58175,
+      "sha256": "c0081b24c9c6826cc0d6911650134754c5a937c1736c1394348281847afa4194"
+    },
+    "diagnostic-odyssey-icon.png": {
+      "bytes": 39345,
+      "sha256": "47584bd120cb52e41046c58367388b8e58a91542d4bcb3a1138ef0a8885bdad2"
+    },
+    "diagnostic-odyssey-mark.svg": {
+      "bytes": 444,
+      "sha256": "5a7b4da5d9dcdb6abb802b5cff5a6cd3a1749c338f86ba166555e6b1cced6294"
+    },
+    "index.html": {
+      "bytes": 1642,
+      "sha256": "ef1092824c5cb0531872a01e3554334dd2c3326d0956575151b1d865a4440ecc"
+    }
+  },
+  "pdf_verification": {
+    "passed": true,
+    "results": [
+      {
+        "file": "summary-off.pdf",
+        "pages": 7,
+        "minimum_footer_clearance_pt": 24.70499867062506
+      },
+      {
+        "file": "summary-on.pdf",
+        "pages": 9,
+        "minimum_footer_clearance_pt": 45.76771515565588
+      },
+      {
+        "file": "summary-all-context.pdf",
+        "pages": 24,
+        "minimum_footer_clearance_pt": 26.267715968156608
+      },
+      {
+        "file": "summary-extreme.pdf",
+        "pages": 9,
+        "minimum_footer_clearance_pt": 45.76771515565588
+      }
+    ]
   }
 }

@@ -1,6 +1,6 @@
 # Validation and handoff
 
-Tested application commit: `1768bdc1d1efebcc83d8433130f27db0610f7396`.
+Tested application commit: `f87b7278dcce1804bee329c02f93570537778caf`.
 Baseline: verified current main `5cc772a198f86a92866bf14cb4ad545ff583200e`.
 Documentation and test-only follow-ups do not change the tested web payload.
 These are engineering results, not independent scientific admission or release
