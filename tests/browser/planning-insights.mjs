@@ -131,6 +131,11 @@ for (const width of [1440, 820, 390, 360]) await run(`huge finite scenario prese
   const box = await value.boundingBox();
   assert.ok(box.x + box.width <= width, JSON.stringify(box));
   assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1));
+  if (width === 360) {
+    await page.getByRole("checkbox", {name: /Include insights summary in printed Brief/}).check();
+    await page.emulateMedia({media: "print"});
+    await page.pdf({path: `${output}/summary-extreme.pdf`, format: "Letter", printBackground: true});
+  }
 });
 await run("optional actual PDF summary preserves JSON and excludes unaccepted suggestions", async () => {
   const {page} = await session();
