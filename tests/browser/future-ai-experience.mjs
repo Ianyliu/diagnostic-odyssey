@@ -60,7 +60,7 @@ if (disabled) {
   });
 } else {
   await check("four substantive layouts across desktop/mobile and light/dark; screenshots and axe", async () => {
-    for (const width of [1440, 390]) for (const theme of ["light", "dark"]) {
+    for (const width of [1440, 768, 390]) for (const theme of ["light", "dark"]) {
       const ctx = await context({viewport: {width, height: width === 1440 ? 1000 : 844}, colorScheme: theme});
       const page = await ctx.newPage(); await ready(page);
       for (let i = 0; i < goals.length; i++) {
@@ -80,7 +80,7 @@ if (disabled) {
       }
       await ctx.close();
     }
-    return {screenshots: 16, axeEvaluations: 16};
+    return {screenshots: 24, axeEvaluations: 24};
   });
   await check("keyboard goal navigation has one tab stop and meaningful accessible states", async () => {
     const page = await (await context()).newPage(); await ready(page);
@@ -150,6 +150,55 @@ if (disabled) {
     await page.emulateMedia({media: "print"}); assert.equal(await page.locator(".brief-concept-entry a").isVisible(), false);
     await page.pdf({path: `${output}/canonical-brief.pdf`, format: "Letter", printBackground: true});
     return {selectedLocal: 1, selectedRequests: 1, exactCanonicalEquality: true};
+  });
+  await check("stale selected request warning parity, canonical exclusion and analyst-only dispositions", async () => {
+    const page = await (await context({acceptDownloads: true})).newPage(); await ready(page, "/pilot");
+    await page.getByLabel("Test assumption").selectOption("capacity");
+    await page.getByRole("button", {name: "Add to data requests", exact: true}).click();
+    await nav(page, "Data requests");
+    const request = page.locator(".data-request-sheet").filter({hasText: "SESSION PLANNING REQUEST"});
+    assert.equal(await request.count(), 1);
+    await request.getByRole("checkbox").check();
+    await nav(page, "Planning brief");
+    const current = await exportBrief(page, "current-selected-request"); assert.equal(current.data_requests.length, 1);
+    await nav(page, "Pilot planner"); await page.locator("#pilot-capacity").fill("2000");
+    await nav(page, "Data requests");
+    await request.getByText("Stale for applied scenario", {exact: true}).waitFor();
+    const requestBefore = await request.innerText();
+    assert.equal(await request.getByRole("checkbox").isChecked(), true);
+    await nav(page, "Planning brief");
+    const before = await exportBrief(page, "stale-before-exploration");
+    assert.equal(before.data_requests.length, 0);
+    const staleWarnings = before.warnings.filter(warning => /selected data request is stale/.test(warning));
+    assert.equal(staleWarnings.length, 1);
+    const realWarnings = await page.locator("#brief-interpretation-boundaries li").allTextContents();
+    assert.deepEqual(realWarnings, before.warnings);
+    await page.getByRole("link", {name: "Explore future AI concept"}).click();
+    await page.locator(".fc-boundaries summary").click();
+    assert.deepEqual(await page.locator(".fc-boundaries li").allTextContents(), realWarnings);
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.screenshot({path: `${output}/stale-warning-concept.png`, fullPage: true});
+    await goal(page, goals[1]); await page.getByRole("button", {name: "Sources & limits"}).click();
+    await goal(page, goals[3]); await page.getByLabel("Comparison lens").selectOption("evidence");
+    await goal(page, goals[2]); await page.getByRole("radio", {name: "Assess implementation feasibility"}).check();
+    await page.getByRole("link", {name: "Open real Data Requests"}).click();
+    assert.equal(await request.innerText(), requestBefore);
+    assert.equal(await request.getByRole("checkbox").isChecked(), true);
+    assert.equal(await request.getByRole("button", {name: "Refresh data request", exact: true}).count(), 1);
+    await nav(page, "Planning brief");
+    assert.deepEqual(await exportBrief(page, "stale-after-exploration"), before);
+    // An explicit analyst deselection is the only operation that removes this warning.
+    await nav(page, "Data requests"); await request.getByRole("checkbox").uncheck();
+    const unselectedBefore = await request.innerText();
+    await nav(page, "Planning brief");
+    const deselected = await exportBrief(page, "stale-explicitly-deselected");
+    assert.equal(deselected.warnings.some(warning => /selected data request is stale/.test(warning)), false);
+    await page.getByRole("link", {name: "Explore future AI concept"}).click();
+    assert.deepEqual(await page.locator(".fc-boundaries li").allTextContents(), deselected.warnings);
+    await goal(page, goals[2]); await page.getByRole("link", {name: "Open real Data Requests"}).click();
+    assert.equal(await request.innerText(), unselectedBefore);
+    assert.equal(await request.getByRole("checkbox").isChecked(), false);
+    return {staleWarnings, exactWarningParity: true, staleExcluded: true, requestBodyAndSelectionPreserved: true, explicitDeselectionRespected: true};
   });
   await check("320px reflow, reduced motion, progressive disclosure and concept print exclusion", async () => {
     const page = await (await context({viewport: {width: 320, height: 800}, colorScheme: "dark"})).newPage(); await ready(page);
