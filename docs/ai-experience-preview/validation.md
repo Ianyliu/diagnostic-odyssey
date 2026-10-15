@@ -1,5 +1,10 @@
 # Executed validation
 
+For the latest branch after the reviewer correction and ordinary main merge, see
+[integrated verification](integration-validation.md) and
+[machine-readable integration results](integration-results.json). The results
+below describe the original implementation revision and remain historical evidence.
+
 Validated against `main@5cc772a198f86a92866bf14cb4ad545ff583200e` in the managed Linux workspace. Runtime implementation is recorded in the foundation/UI commits; the proof commit adds tests and CI. The documentation commit adds only review evidence and instructions. Original PR #106 specification/fixture bytes are preserved.
 
 ## Local checks

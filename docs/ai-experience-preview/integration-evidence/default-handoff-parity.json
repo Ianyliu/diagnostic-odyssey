@@ -1,0 +1,200 @@
+{
+  "status": "PASS",
+  "results": [
+    {
+      "file": "default-brief.json",
+      "goals": 6,
+      "stale": false
+    },
+    {
+      "file": "extreme-capacity-1440-dark.json",
+      "goals": 6,
+      "stale": false
+    },
+    {
+      "file": "extreme-capacity-1440-light.json",
+      "goals": 6,
+      "stale": false
+    },
+    {
+      "file": "extreme-capacity-360-dark.json",
+      "goals": 6,
+      "stale": false
+    },
+    {
+      "file": "extreme-capacity-360-light.json",
+      "goals": 6,
+      "stale": false
+    },
+    {
+      "file": "extreme-capacity-820-dark.json",
+      "goals": 6,
+      "stale": false
+    },
+    {
+      "file": "extreme-capacity-820-light.json",
+      "goals": 6,
+      "stale": false
+    },
+    {
+      "file": "extreme-finite-1440-dark.json",
+      "goals": 6,
+      "stale": false
+    },
+    {
+      "file": "extreme-finite-1440-light.json",
+      "goals": 6,
+      "stale": false
+    },
+    {
+      "file": "extreme-finite-360-dark.json",
+      "goals": 6,
+      "stale": false
+    },
+    {
+      "file": "extreme-finite-360-light.json",
+      "goals": 6,
+      "stale": false
+    },
+    {
+      "file": "extreme-finite-820-dark.json",
+      "goals": 6,
+      "stale": false
+    },
+    {
+      "file": "extreme-finite-820-light.json",
+      "goals": 6,
+      "stale": false
+    },
+    {
+      "file": "extreme-max-cost-1440-dark.json",
+      "goals": 6,
+      "stale": false
+    },
+    {
+      "file": "extreme-max-cost-1440-light.json",
+      "goals": 6,
+      "stale": false
+    },
+    {
+      "file": "extreme-max-cost-360-dark.json",
+      "goals": 6,
+      "stale": false
+    },
+    {
+      "file": "extreme-max-cost-360-light.json",
+      "goals": 6,
+      "stale": false
+    },
+    {
+      "file": "extreme-max-cost-820-dark.json",
+      "goals": 6,
+      "stale": false
+    },
+    {
+      "file": "extreme-max-cost-820-light.json",
+      "goals": 6,
+      "stale": false
+    },
+    {
+      "file": "extreme-max-reached-1440-dark.json",
+      "goals": 6,
+      "stale": false
+    },
+    {
+      "file": "extreme-max-reached-1440-light.json",
+      "goals": 6,
+      "stale": false
+    },
+    {
+      "file": "extreme-max-reached-360-dark.json",
+      "goals": 6,
+      "stale": false
+    },
+    {
+      "file": "extreme-max-reached-360-light.json",
+      "goals": 6,
+      "stale": false
+    },
+    {
+      "file": "extreme-max-reached-820-dark.json",
+      "goals": 6,
+      "stale": false
+    },
+    {
+      "file": "extreme-max-reached-820-light.json",
+      "goals": 6,
+      "stale": false
+    },
+    {
+      "file": "invalid-overflow-draft.json",
+      "goals": 6,
+      "stale": false
+    },
+    {
+      "file": "invalid-tiny-draft.json",
+      "goals": 6,
+      "stale": false
+    },
+    {
+      "file": "keyboard-brief.json",
+      "goals": 6,
+      "stale": false
+    },
+    {
+      "file": "local-context-labels-1440-dark.json",
+      "goals": 6,
+      "stale": false
+    },
+    {
+      "file": "local-context-labels-1440-light.json",
+      "goals": 6,
+      "stale": false
+    },
+    {
+      "file": "local-context-labels-360-dark.json",
+      "goals": 6,
+      "stale": false
+    },
+    {
+      "file": "local-context-labels-360-light.json",
+      "goals": 6,
+      "stale": false
+    },
+    {
+      "file": "local-context-labels-820-dark.json",
+      "goals": 6,
+      "stale": false
+    },
+    {
+      "file": "local-context-labels-820-light.json",
+      "goals": 6,
+      "stale": false
+    },
+    {
+      "file": "refreshed-brief.json",
+      "goals": 6,
+      "stale": false
+    },
+    {
+      "file": "selected-brief.json",
+      "goals": 6,
+      "stale": false
+    },
+    {
+      "file": "stale-brief.json",
+      "goals": 6,
+      "stale": true
+    },
+    {
+      "file": "unavailable-local-context.json",
+      "goals": 6,
+      "stale": false
+    },
+    {
+      "file": "zero-reach.json",
+      "goals": 6,
+      "stale": false
+    }
+  ]
+}

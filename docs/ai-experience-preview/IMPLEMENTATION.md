@@ -48,6 +48,10 @@ Use arrow keys, Home and End in the four-goal tab list; Tab enters the selected 
 
 ## Review evidence
 
+Latest: [final integration and PR #105 plan](integration-review.md) ·
+[integrated executed outcomes](integration-validation.md) ·
+[integrated machine-readable results](integration-results.json).
+
 See [executed validation](validation.md), [machine-readable summary](validation-summary.json), [browser results](browser-results.json), [disabled-build results](disabled-results.json), [axe summary including incomplete findings](accessibility-summary.json), and [governed snapshot comparison](governed-browser-comparison.json).
 
 | Experience | Desktop light | Mobile dark |
