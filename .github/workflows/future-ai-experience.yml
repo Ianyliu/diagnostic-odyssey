@@ -1,0 +1,64 @@
+name: Future experience browser checks
+
+on:
+  pull_request:
+    paths:
+      - "apps/web/**"
+      - "packages/**"
+      - "docs/ai-experience-preview/**"
+      - "tests/browser/future-ai-experience.mjs"
+      - ".github/workflows/future-ai-experience.yml"
+      - "package-lock.json"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  concept-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        build: [default, demo]
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 22
+      - run: npm ci --no-audit --no-fund
+      - name: Install isolated browser tools
+        run: npm install --prefix /tmp/concept-browser --save-exact --no-audit --no-fund playwright@1.62.1 axe-core@4.11.1
+      - name: Build exact opt-in or default-disabled bundle
+        env:
+          CONCEPT_BUILD: ${{ matrix.build }}
+        run: |
+          if [ "$CONCEPT_BUILD" = demo ]; then
+            VITE_FUTURE_AI_EXPERIENCE_DEMO=on npm run build
+          else
+            env -u VITE_FUTURE_AI_EXPERIENCE_DEMO npm run build
+          fi
+      - name: Exercise real browser and capture screenshots
+        env:
+          CONCEPT_BUILD: ${{ matrix.build }}
+          PLAYWRIGHT_RUNNER: /tmp/concept-browser/package.json
+          QA_OUTPUT: /tmp/concept-results
+          QA_BASE_URL: http://127.0.0.1:4175
+        run: |
+          npm exec --workspace @diagnostic-odyssey/web -- vite preview --host 127.0.0.1 --port 4175 > /tmp/concept-preview.log 2>&1 &
+          preview_pid=$!
+          trap 'kill "$preview_pid"' EXIT
+          for attempt in {1..30}; do
+            if curl --silent --fail http://127.0.0.1:4175/ > /dev/null; then break; fi
+            sleep 1
+          done
+          if [ "$CONCEPT_BUILD" = default ]; then export QA_BUILD=off; fi
+          export QA_CHROME="$(command -v google-chrome)"
+          export QA_DIST="$GITHUB_WORKSPACE/apps/web/dist"
+          node tests/browser/future-ai-experience.mjs
+      - name: Retain browser evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: future-experience-${{ matrix.build }}
+          path: /tmp/concept-results
