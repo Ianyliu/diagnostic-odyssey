@@ -11,7 +11,7 @@ import {createRequire} from "node:module";
 const require = createRequire(process.env.PLAYWRIGHT_RUNNER ?? import.meta.url);
 const {chromium} = require("playwright");
 const base = process.env.QA_BASE_URL ?? "http://127.0.0.1:4175";
-const demo = process.env.QA_BUILD === "demo";
+const demo = process.env.CONCEPT_BUILD === "demo";
 const insights = process.env.QA_INSIGHTS_BUILD !== "off";
 const browser = await chromium.launch(process.env.QA_CHROME
   ? {executablePath: process.env.QA_CHROME, headless: true, args: ["--no-sandbox"]}
