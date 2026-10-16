@@ -1,0 +1,35 @@
+{
+  "status": "PASS",
+  "results": [
+    {
+      "file": "after-exploration.json",
+      "goals": 6,
+      "stale": false
+    },
+    {
+      "file": "before-exploration.json",
+      "goals": 6,
+      "stale": false
+    },
+    {
+      "file": "current-selected-request.json",
+      "goals": 6,
+      "stale": false
+    },
+    {
+      "file": "stale-after-exploration.json",
+      "goals": 6,
+      "stale": true
+    },
+    {
+      "file": "stale-before-exploration.json",
+      "goals": 6,
+      "stale": true
+    },
+    {
+      "file": "stale-explicitly-deselected.json",
+      "goals": 6,
+      "stale": false
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+[
+  {
+    "build": "main",
+    "pages": 8,
+    "normalized_text_sha256": "f519e32e9e09dc4468972a3b1024aaa66b4cec5f8ec379d10fd5ceda9614bb1e",
+    "contains_concept": false
+  },
+  {
+    "build": "default",
+    "pages": 8,
+    "normalized_text_sha256": "f519e32e9e09dc4468972a3b1024aaa66b4cec5f8ec379d10fd5ceda9614bb1e",
+    "contains_concept": false
+  },
+  {
+    "build": "on",
+    "pages": 8,
+    "normalized_text_sha256": "f519e32e9e09dc4468972a3b1024aaa66b4cec5f8ec379d10fd5ceda9614bb1e",
+    "contains_concept": false
+  }
+]

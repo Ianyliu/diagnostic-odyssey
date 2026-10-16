@@ -1,0 +1,235 @@
+{
+  "schema_version": "concept-storyboard.v1",
+  "release_state": "design_fixture_only",
+  "is_live_ai": false,
+  "research_performed": false,
+  "reviewed_recommendations": false,
+  "purpose": "Product-design storyboard only. All concept content is illustrative, not current evidence or a generated analysis.",
+  "global_required_label": "Future AI experience — interactive concept, not live AI or verified recommendations",
+  "public_build_default": "disabled",
+  "data_origin_policy": {
+    "real_brief_values": "only_from_validated_current_brief_at_runtime; never from fixture",
+    "illustrative_content": "explicitly_labeled_storyboard_text",
+    "narrative_references": "none_admitted",
+    "provider_egress": "none",
+    "actions": "navigate_only; never mutate analyst or reviewed state",
+    "export": "excluded_from_canonical_json_and_print"
+  },
+  "goals": [
+    {
+      "id": "explain_brief",
+      "title": "Explain my Brief",
+      "layout": "visual_evidence_story",
+      "mode": "real_brief_projection_with_illustrative_future_workflow",
+      "lead": "See how a future assistant might help organize verified findings, planning assumptions, uncertainty, and an evidence-bound next question.",
+      "panels": [
+        {
+          "id": "national",
+          "type": "trusted_slot",
+          "slot": "validated_released_national_highlights",
+          "fallback": "No released finding available to summarize"
+        },
+        {
+          "id": "local",
+          "type": "trusted_slot",
+          "slot": "explicitly_selected_reviewed_local_context",
+          "fallback": "Local context not selected; no local disease-burden claim"
+        },
+        {
+          "id": "pilot",
+          "type": "trusted_slot",
+          "slot": "valid_applied_deterministic_pilot",
+          "fallback": "Apply a valid Pilot scenario before interpreting planning quantities"
+        },
+        {
+          "id": "future",
+          "type": "illustrative_question",
+          "label": "Example follow-up research question",
+          "text": "What independently reviewed intervention evaluations would be applicable to this planning context?"
+        }
+      ],
+      "visual_pattern": "segmented_national_context_assumptions_outputs_with_provenance",
+      "action": {
+        "kind": "navigate",
+        "href": "/brief",
+        "label": "Return to the current reviewed Brief"
+      }
+    },
+    {
+      "id": "explore_interventions",
+      "title": "Explore interventions",
+      "layout": "literature_research_board",
+      "mode": "illustrative_only",
+      "lead": "Illustrative research targets. No literature search has been performed and no intervention has been verified or recommended.",
+      "research_targets": [
+        {
+          "id": "navigation",
+          "title": "Care navigation",
+          "kind": "research_topic_not_recommendation",
+          "framing": "What evaluations examine assistance with care navigation or referral coordination?",
+          "intended_setting": "To be established by source review",
+          "population": "Not reviewed",
+          "study_design": "Not reviewed",
+          "outcomes": "Not assessed",
+          "source_status": "not_reviewed",
+          "citation": null,
+          "doi": null,
+          "pmcid": null,
+          "source_url": null,
+          "effectiveness": null,
+          "cost_savings": null,
+          "applicability": "not_evaluated",
+          "limitations": "Neither benefit nor transferability established",
+          "questions": [
+            "What was the study setting and comparator?",
+            "Which pathway milestone was evaluated?",
+            "Would the population and payer context match?"
+          ]
+        },
+        {
+          "id": "education",
+          "title": "Provider education",
+          "kind": "research_topic_not_recommendation",
+          "framing": "What evaluations examine clinician education or recognition-support workflows?",
+          "intended_setting": "To be established by source review",
+          "population": "Not reviewed",
+          "study_design": "Not reviewed",
+          "outcomes": "Not assessed",
+          "source_status": "not_reviewed",
+          "citation": null,
+          "doi": null,
+          "pmcid": null,
+          "source_url": null,
+          "effectiveness": null,
+          "cost_savings": null,
+          "applicability": "not_evaluated",
+          "limitations": "Neither benefit nor transferability established",
+          "questions": [
+            "Was an outcome measured beyond attendance?",
+            "Which recognition/referral step was targeted?",
+            "Was there an appropriate comparator?"
+          ]
+        },
+        {
+          "id": "coordination",
+          "title": "Remote care coordination",
+          "kind": "research_topic_not_recommendation",
+          "framing": "What evaluations examine remote coordination for access or follow-up?",
+          "intended_setting": "To be established by source review",
+          "population": "Not reviewed",
+          "study_design": "Not reviewed",
+          "outcomes": "Not assessed",
+          "source_status": "not_reviewed",
+          "citation": null,
+          "doi": null,
+          "pmcid": null,
+          "source_url": null,
+          "effectiveness": null,
+          "cost_savings": null,
+          "applicability": "not_evaluated",
+          "limitations": "Neither benefit nor transferability established",
+          "questions": [
+            "How was digital access addressed?",
+            "Which service capacity constraints mattered?",
+            "What adverse or unintended outcomes were assessed?"
+          ]
+        }
+      ],
+      "visual_pattern": "study_cards_with_explicit_empty_evidence_fields_and_transferability_questions",
+      "action": {
+        "kind": "navigate",
+        "href": "/evidence",
+        "label": "Inspect actual evidence eligibility"
+      }
+    },
+    {
+      "id": "identify_data_gaps",
+      "title": "Identify data gaps",
+      "layout": "decision_data_dependency_map",
+      "mode": "illustrative_only",
+      "lead": "These are example data questions for a future evidence investigation, not findings of missing local data.",
+      "examples": [
+        {
+          "id": "referral",
+          "status": "hypothetical_question",
+          "decision": "Understand recognition-to-referral timing",
+          "needed_information": "Timestamped pathway milestones",
+          "verification": "Assess availability, definitions, time window, and privacy before a request"
+        },
+        {
+          "id": "capacity",
+          "status": "hypothetical_question",
+          "decision": "Assess implementation feasibility",
+          "needed_information": "Staffed capacity and appointment availability",
+          "verification": "Confirm source owner, geographic scope, and measurement consistency"
+        },
+        {
+          "id": "reach",
+          "status": "hypothetical_question",
+          "decision": "Assess outreach feasibility",
+          "needed_information": "Operational counts for identification, contact, enrollment",
+          "verification": "Check denominator and de-duplication before comparing stages"
+        }
+      ],
+      "visual_pattern": "decision_to_question_to_possible_data_to_review_gate",
+      "action": {
+        "kind": "navigate",
+        "href": "/data-requests",
+        "label": "Open real analyst-controlled Data Requests"
+      }
+    },
+    {
+      "id": "compare_strategies",
+      "title": "Compare strategies",
+      "layout": "qualitative_strategy_matrix",
+      "mode": "illustrative_only",
+      "lead": "Compare what would need to be established; these are not ranked options or evidence-backed recommendations.",
+      "options": [
+        {
+          "id": "navigation",
+          "title": "Care navigation",
+          "mechanism_question": "Would coordination address the target referral step?",
+          "operational_question": "What staffing and workflow would be needed?",
+          "research_requirement": "Comparable reviewed evaluation",
+          "effectiveness": "not_established",
+          "cost_effect": "not_established",
+          "fit": "not_evaluated"
+        },
+        {
+          "id": "education",
+          "title": "Provider education",
+          "mechanism_question": "Would education change recognition or referral behavior?",
+          "operational_question": "How would training uptake and sustainability be assessed?",
+          "research_requirement": "Reviewed behavior/outcome evaluation",
+          "effectiveness": "not_established",
+          "cost_effect": "not_established",
+          "fit": "not_evaluated"
+        },
+        {
+          "id": "coordination",
+          "title": "Remote care coordination",
+          "mechanism_question": "Would remote support address a documented access bottleneck?",
+          "operational_question": "What digital-access and staffing dependencies apply?",
+          "research_requirement": "Reviewed feasibility/outcome evaluation",
+          "effectiveness": "not_established",
+          "cost_effect": "not_established",
+          "fit": "not_evaluated"
+        }
+      ],
+      "compare_fields": [
+        "mechanism_question",
+        "operational_question",
+        "research_requirement",
+        "effectiveness",
+        "cost_effect",
+        "fit"
+      ],
+      "visual_pattern": "parallel_comparison_cards_and_evidence_unknown_matrix",
+      "action": {
+        "kind": "navigate",
+        "href": "/pilot",
+        "label": "Return to assumption-based Pilot"
+      }
+    }
+  ]
+}

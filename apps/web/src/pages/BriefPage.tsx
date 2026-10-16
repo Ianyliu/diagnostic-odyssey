@@ -158,6 +158,11 @@ export function BriefPage() {
       <p>Deterministic synthesis of reviewed national burden, analyst-supplied planning assumptions, explicitly selected implementation context, evidence gaps, and interpretation guardrails.</p>
     </header>
 
+    {import.meta.env.VITE_FUTURE_AI_EXPERIENCE_DEMO === "on" && <div className="brief-concept-entry" style={{display: "contents"}}>
+      <style>{"@media print{.brief-concept-entry{display:none!important}}"}</style>
+      <Link className="button secondary" to="/concept/future-ai">Explore future AI concept →</Link>
+    </div>}
+
     <div className="print-provenance" role="group" aria-label="Planning Brief provenance">
       <strong>Brief provenance</strong>
       <span><b>National reviewed artifact:</b> {brief.artifact_version}</span>
