@@ -8,7 +8,7 @@ const base=process.env.QA_BASE_URL ?? "http://127.0.0.1:4194";
 const synthetic=process.env.QA_FIXTURE_URL ?? "http://127.0.0.1:4195";
 const output=process.env.QA_OUTPUT ?? "/tmp/diagnostic-acquisition-browser";
 await mkdir(output,{recursive:true});
-const browser=await chromium.launch({channel:"chrome",headless:true});
+const browser=await chromium.launch(process.env.QA_CHROME ? {executablePath: process.env.QA_CHROME, headless: true} : {channel: "chrome", headless: true});
 const results=[];const events=[];
 async function check(name,body) {
   try {await body();results.push({name,status:"PASS"});}

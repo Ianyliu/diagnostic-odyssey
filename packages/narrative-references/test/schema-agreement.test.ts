@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { spawnSync } from "node:child_process";
+import { runPythonJson } from "../../../scripts/testing/run-python-json.ts";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import test from "node:test";
@@ -24,19 +24,13 @@ const intentionalSchemaOnly = new Set([
 
 test("committed synthetic cases execute against *actual* Draft 2020-12 schema and runtime", () => {
   assert.equal(new Set(fixtures.cases.map(c => c.name)).size, fixtures.cases.length, "unique case names");
-  const python = spawnSync("python3", [
-    fileURLToPath(new URL("./schema_draft202012.py", import.meta.url)),
-    fileURLToPath(new URL("../schema/narrative-intervention-references.v1.schema.json", import.meta.url))
-  ], {
-    input: JSON.stringify(fixtures.cases.map(c => c.catalog)),
-    encoding: "utf8",
-    maxBuffer: 16 * 1024 * 1024
-  });
-  assert.equal(python.status, 0,
-    `Draft 2020-12 runner failed: ${python.error?.message ?? python.stderr}`);
-  const schemaResults = JSON.parse(python.stdout) as Array<{
+  const schemaResults = runPythonJson<Array<{
     valid: boolean; errors: Array<{path: Array<string | number>; keyword: string; message: string}>
-  }>;
+  }>>(
+    fileURLToPath(new URL("./schema_draft202012.py", import.meta.url)),
+    [fileURLToPath(new URL("../schema/narrative-intervention-references.v1.schema.json", import.meta.url))],
+    fixtures.cases.map(c => c.catalog)
+  );
   assert.equal(schemaResults.length, fixtures.cases.length);
   const observedSchemaOnly: string[] = [];
 

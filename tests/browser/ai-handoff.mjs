@@ -10,7 +10,7 @@ const base = process.env.QA_BASE_URL ?? "http://127.0.0.1:4186";
 const fixture = process.env.QA_AI_FIXTURE_URL ?? "http://127.0.0.1:4197";
 const output = process.env.QA_OUTPUT ?? "/tmp/ai-handoff-browser";
 await mkdir(output, {recursive: true});
-const browser = await chromium.launch({channel: "chrome", headless: true});
+const browser = await chromium.launch(process.env.QA_CHROME ? {executablePath: process.env.QA_CHROME, headless: true} : {channel: "chrome", headless: true});
 const results = [], errors = [], externalRequests = [];
 const allowedOrigins = new Set([new URL(base).origin, new URL(fixture).origin]);
 const filter = process.env.QA_FILTER ? new RegExp(process.env.QA_FILTER) : null;
