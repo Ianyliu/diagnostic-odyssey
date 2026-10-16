@@ -2,6 +2,7 @@ import { Component, type ErrorInfo, type ReactNode } from "react";
 
 interface ErrorBoundaryProps {
   children: ReactNode;
+  fallback?: ReactNode;
 }
 
 interface ErrorBoundaryState {
@@ -21,6 +22,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
   render() {
     if (!this.state.error) return this.props.children;
+    if (this.props.fallback !== undefined) return this.props.fallback;
 
     return <>
       <a className="skip-link" href="#main-content">Skip to main content</a>

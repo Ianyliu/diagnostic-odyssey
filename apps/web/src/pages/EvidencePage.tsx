@@ -4,6 +4,8 @@ import {
   evidenceClaimLabel
 } from "@diagnostic-odyssey/evidence-core";
 import { ContextBar } from "../components/ContextBar";
+import { InterventionEvidenceGap } from "../components/PlanningInsights";
+import { planningInsightsEnabled } from "../data/planningInsightsEnabled";
 import { useArtifact } from "../data/ArtifactContext";
 import { formatReviewerStatusLabel } from "../data/presentationLabels";
 import {
@@ -35,6 +37,11 @@ export function EvidencePage() {
           : `${scenarioEligibleCount} of ${bundle.evidence.length} record${bundle.evidence.length === 1 ? "" : "s"} pass the current-scenario use check`}</h2>
       <p>Burden estimates are descriptive national evidence. Pilot inputs remain analyst assumptions. A record's reviewer state, claim admissibility, and current-scenario eligibility are separate checks.</p>
     </section>
+
+    {planningInsightsEnabled && <>
+      <InterventionEvidenceGap id="evidence-narrative-options" />
+      <Link className="text-button" to="/brief#planning-insights">See the current deterministic planning picture →</Link>
+    </>}
 
     {bundle.evidence.length === 0 ? <div className="empty-state evidence-empty-state">
       <strong>No reviewed intervention-effect parameter is currently available for this planning model.</strong>
