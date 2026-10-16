@@ -148,6 +148,11 @@
   min-width: 0;
   align-self: start;
   container: pilot-result / inline-size;
+  /* Explicit single column: the implicit `auto` column stretched toward the
+     h2's max-content width and blew the 246px content box at 320px viewports,
+     producing page-level horizontal overflow. minmax(0, 1fr) caps the track
+     at the available width (same pattern as .pilot-visual-stack). */
+  grid-template-columns: minmax(0, 1fr);
   background: var(--do-surface);
   border-color: var(--do-border);
 }
