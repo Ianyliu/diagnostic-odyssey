@@ -1,0 +1,84 @@
+name: Planning Intelligence integration matrix
+
+on:
+  pull_request:
+    paths:
+      - "apps/web/**"
+      - "tests/browser/planning-intelligence-integration.mjs"
+      - "tests/browser/planning-insights.mjs"
+      - "tests/browser/verify-insights-pdfs.py"
+      - ".github/workflows/planning-intelligence-integration.yml"
+      - "package-lock.json"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  combined-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - case: default
+            insights: "off"
+            concept: "off"
+          - case: deterministic-only
+            insights: "on"
+            concept: "off"
+          - case: concept-only
+            insights: "off"
+            concept: "on"
+          - case: all-enabled
+            insights: "on"
+            concept: "on"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Verify tested exact revision
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+      - run: npm ci --no-audit --no-fund
+      - name: Build exact combination
+        env:
+          VITE_PLANNING_INSIGHTS_PREVIEW: ${{ matrix.insights }}
+          VITE_FUTURE_AI_EXPERIENCE_DEMO: ${{ matrix.concept }}
+        run: npm run build
+      - name: Install isolated browser dependencies
+        run: npm install --prefix /tmp/integration-browser --save-exact --no-audit --no-fund playwright@1.62.1 axe-core@4.11.1
+      - name: Test combined features in Chromium
+        env:
+          PLAYWRIGHT_RUNNER: /tmp/integration-browser/package.json
+          QA_BASE_URL: http://127.0.0.1:4199
+          QA_OUTPUT: /tmp/integration-results
+          QA_INSIGHTS_MODE: ${{ matrix.insights }}
+          QA_CONCEPT_MODE: ${{ matrix.concept }}
+        run: |
+          npm exec --workspace @diagnostic-odyssey/web -- vite preview --host 127.0.0.1 --port 4199 > /tmp/integration-preview.log 2>&1 &
+          preview_pid=$!
+          trap 'kill "$preview_pid"' EXIT
+          for attempt in {1..30}; do
+            if curl --silent --fail http://127.0.0.1:4199/ > /dev/null; then break; fi
+            sleep 1
+          done
+          node tests/browser/planning-intelligence-integration.mjs
+          if [ "$QA_INSIGHTS_MODE" = on ]; then
+            QA_OUTPUT=/tmp/insights-pdf-results node tests/browser/planning-insights.mjs
+            python3 -m pip install --disable-pip-version-check pdfplumber==0.11.7
+            python3 tests/browser/verify-insights-pdfs.py /tmp/insights-pdf-results
+          fi
+      - name: Upload results including PDF evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: planning-intelligence-${{ matrix.case }}-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            /tmp/integration-results
+            /tmp/insights-pdf-results
