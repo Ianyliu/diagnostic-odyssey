@@ -56,6 +56,7 @@ export function OverviewPage() {
       <section className="overview-hero" aria-labelledby="overview-title">
         <div className="overview-hero-grid" aria-hidden="true" />
         <div className="overview-hero-copy">
+          <p className="overview-kicker">Evidence for better planning</p>
           <h1 id="overview-title">
             Evidence into planning,
             <span>with boundaries intact.</span>
@@ -66,7 +67,7 @@ export function OverviewPage() {
           <div className="overview-hero-actions" role="group" aria-label="Start exploring Diagnostic Odyssey">
             <Link className="button overview-primary-cta" to="/burden">Explore reviewed burden</Link>
             <Link className="button secondary overview-secondary-cta" to="/pilot">Open Pilot planner</Link>
-            {planningInsightsEnabled && <Link className="button secondary overview-secondary-cta" to="/brief#planning-insights">See planning insights</Link>}
+            {planningInsightsEnabled && <Link className="overview-tertiary-cta" to="/brief#planning-insights">See planning insights <span aria-hidden="true">→</span></Link>}
           </div>
           <dl className="overview-proof" aria-label="Current workspace evidence">
             <div>
@@ -78,6 +79,7 @@ export function OverviewPage() {
               <dd>reviewed local-context indicators</dd>
             </div>
           </dl>
+          <p className="overview-source-note">Grounded in <strong>MEPS</strong>, <strong>HRSA</strong> and <strong>ACS</strong> · source boundaries stay visible.</p>
         </div>
         <OpeningProvenance />
       </section>
