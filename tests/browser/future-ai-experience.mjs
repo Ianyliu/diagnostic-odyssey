@@ -82,6 +82,22 @@ if (disabled) {
     }
     return {screenshots: 24, axeEvaluations: 24};
   });
+  await check("visitor-controlled preview visibility is reversible within the app without exporting state", async () => {
+    const ctx = await context({acceptDownloads: true}); const page = await ctx.newPage();
+    await ready(page, "/brief");
+    const toggle = page.getByRole("checkbox", {name: "Show future AI concept", exact: true});
+    assert.equal(await toggle.isChecked(), true);
+    await toggle.uncheck();
+    assert.equal(await page.locator('a[href="/concept/future-ai"]').count(), 0);
+    await toggle.check();
+    await page.getByRole("link", {name: "Explore future AI concept" }).click();
+    await page.getByRole("button", {name: "Hide future AI concept", exact: true}).click();
+    await page.waitForURL("**/brief");
+    assert.equal(await toggle.isChecked(), false);
+    await toggle.check();
+    assert.equal(await page.locator('a[href="/concept/future-ai"]').count(), 1);
+    return {defaultVisible: true, canHide: true, canRestore: true};
+  });
   await check("keyboard goal navigation has one tab stop and meaningful accessible states", async () => {
     const page = await (await context()).newPage(); await ready(page);
     const first = page.getByRole("tab").first(); await first.focus(); await page.keyboard.press("ArrowRight");

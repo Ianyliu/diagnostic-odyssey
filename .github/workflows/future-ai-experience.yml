@@ -49,14 +49,14 @@ jobs:
           done
       - name: Install isolated browser tools
         run: npm install --prefix /tmp/concept-browser --save-exact --no-audit --no-fund playwright@1.62.1 axe-core@4.11.1
-      - name: Build exact opt-in or default-disabled bundle
+      - name: Build exact concept-enabled or explicitly disabled bundle
         env:
           CONCEPT_BUILD: ${{ matrix.build }}
         run: |
           if [ "$CONCEPT_BUILD" = demo ]; then
             VITE_FUTURE_AI_EXPERIENCE_DEMO=on npm run build
           else
-            env -u VITE_FUTURE_AI_EXPERIENCE_DEMO npm run build
+            VITE_FUTURE_AI_EXPERIENCE_DEMO=off npm run build
           fi
       - name: Exercise real browser and capture screenshots
         env:

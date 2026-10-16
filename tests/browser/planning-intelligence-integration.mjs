@@ -86,6 +86,27 @@ await check("AI handoff, optional print, and navigation do not mutate canonical 
   const after = await canonical(page);
   assert.deepEqual(after,before);
 });
+await check("visitor can turn the illustrative concept off and back on without changing canonical Brief", async page => {
+  const before = await canonical(page);
+  const toggle = page.getByRole("checkbox", {name: "Show future AI concept", exact: true});
+  if (!conceptEnabled) {
+    assert.equal(await toggle.count(), 0, "build-level off excludes concept visibility controls");
+  } else {
+    assert.equal(await toggle.isChecked(), true, "concept starts visible when build permits it");
+    await toggle.uncheck();
+    assert.equal(await page.getByRole("link", {name: /Explore future AI concept/}).count(), 0);
+    await toggle.check();
+    await page.getByRole("link", {name: /Explore future AI concept/}).click();
+    await page.getByRole("tablist", {name: "Future experience goals"}).waitFor();
+    await page.getByRole("button", {name: "Hide future AI concept", exact: true}).click();
+    await page.waitForURL("**/brief");
+    assert.equal(await toggle.isChecked(), false, "hiding from concept returns to the Brief with preference retained");
+    assert.equal(await page.getByRole("link", {name: /Explore future AI concept/}).count(), 0);
+    await toggle.check();
+    assert.equal(await page.getByRole("link", {name: /Explore future AI concept/}).count(), 1);
+  }
+  assert.deepEqual(await canonical(page), before, "toggling cannot change reviewed evidence or analyst state");
+});
 async function nav(page, name) {
   const menu = page.getByRole("navigation", {name: "Primary navigation"});
   if (!await menu.isVisible()) await page.getByRole("button", {name: "Menu", exact: true}).click();
