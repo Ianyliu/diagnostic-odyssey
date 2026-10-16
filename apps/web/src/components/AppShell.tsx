@@ -3,6 +3,10 @@ import { Link, NavLink, Outlet, useLocation, useNavigationType } from "react-rou
 import { useArtifact } from "../data/ArtifactContext";
 import { focusTarget, scrollToFragment } from "../data/fragmentNavigation";
 import { ThemeControl } from "./ThemeControl";
+import { displayBuildProvenance, type BuildProvenance } from "../data/buildProvenance";
+
+/** Replaced with a validated Git checkout identity by Vite at build time. */
+declare const __DO_BUILD_PROVENANCE__: BuildProvenance;
 
 const nav = [
   ["/", "Overview"],
@@ -106,6 +110,7 @@ export function AppShell() {
         ? "West Virginia implementation context · reviewed state data"
         : "Local implementation context · unavailable";
   const approvedEvidenceCount = bundle?.evidence.filter(record => record.reviewer_status === "approved").length ?? 0;
+  const buildIdentity = displayBuildProvenance(__DO_BUILD_PROVENANCE__);
 
   return (
     <div className="app-shell">
@@ -159,6 +164,7 @@ export function AppShell() {
       <footer>
         <span>Diagnostic Odyssey</span>
         <span>No PHI · no state-specific Long COVID cost · no causal ROI claim</span>
+        <small className="source-revision" aria-label="Application source revision">{buildIdentity.url ? <a href={buildIdentity.url} target="_blank" rel="noopener noreferrer">{buildIdentity.label}</a> : buildIdentity.label}</small>
       </footer>
     </div>
   );
