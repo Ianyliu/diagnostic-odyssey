@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { researchTargets } from "./storyboard";
-import { DemoBibliography, DemoLiteratureNotice, DemoSourceList } from "./DemoLiterature";
-import { demoTopicExamples, type DemoTopicId } from "./demoLiterature";
+import { DemoBibliography, DemoLiteratureNotice, DemoSourceCitation, DemoSourceList } from "./DemoLiterature";
+import { demoTopicExamples, getDemoPublication, type DemoTopicId } from "./demoLiterature";
 import { ConceptCard, QuestionList, TransferabilityQuestions, ViewHeading } from "./ConceptPrimitives";
 
 const pipeline = [
@@ -38,6 +38,7 @@ export function ExploreInterventions() {
             <div><dt>Potential local analysis</dt><dd>{example.localTranslation}</dd></div>
             <div><dt>Candidate data fields</dt><dd>{example.candidateFields.join(", ")}</dd></div>
           </dl>}
+          {lens === "profile" && <div className="fc-demo-profile-source"><h4>Example published source</h4><DemoSourceCitation compact source={getDemoPublication(example.sourceIds[0]!)} /></div>}
           {lens === "transfer" && <><p>{example.appraisal}</p><TransferabilityQuestions /></>}
           {lens === "source" && <><p><strong>Product evidence status:</strong> None admitted. Source links below are demonstration research, not reviewer-approved claims.</p><DemoSourceList sourceIds={example.sourceIds} /></>}
         </div>
