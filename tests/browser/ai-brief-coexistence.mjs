@@ -1,3 +1,4 @@
+/* global process, console */
 /* PR #111 integration-only browser smoke test across both feature flags.
  * Confirms three independently gated Brief surfaces use the same canonical Brief.
  * It is intentionally not imported by application/runtime code.
