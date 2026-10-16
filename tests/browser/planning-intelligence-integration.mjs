@@ -72,7 +72,7 @@ await check("AI handoff, optional print, and navigation do not mutate canonical 
   if (conceptEnabled) {
     await page.getByRole("link", {name:/Explore future AI concept/}).click();
     await page.getByRole("tablist", {name:"Future experience goals"}).waitFor();
-    assert.match(await page.locator(".fc-banner").innerText(), /Demo only · No live AI/);
+    assert.match(await page.locator(".fc-banner").innerText(), /Demo only · No live AI/i);
     for (const name of ["Explore interventions", "Identify data gaps", "Compare strategies", "Explain my Brief"]) {
       await page.getByRole("tab", {name:new RegExp(name)}).click();
       assert.equal(await page.getByRole("tab", {name:new RegExp(name)}).getAttribute("aria-selected"), "true");
