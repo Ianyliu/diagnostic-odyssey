@@ -259,7 +259,7 @@ Read the full [scientific guardrails](docs/scientific-guardrails.md) before inte
 
 ## Visual QA
 
-See the [current audit and before/after gallery](docs/audit-2026-10-16/README.md) for exact revisions, commands, results and limitations. The earlier [Gate 0 matrix](artifacts/generated/gate0-20261011-b99d1c7/route-viewport-mode-matrix.md) is historical evidence for its recorded revision, not a claim about every later change.
+See the [current audit and before/after gallery](docs/audit-2026-10-16/README.md) for exact revisions, commands, results and limitations. Earlier QA records apply to their recorded revisions, not every later change.
 
 ## Repository map
 
