@@ -210,7 +210,8 @@
 
 .pilot-page .pilot-result-scientific dd {
   white-space: nowrap;
-  font-size: 13px;
+  /* Preserve every digit while fitting the full finite-number token at 320px. */
+  font-size: clamp(.875rem, 5cqi, 1.125rem);
 }
 
 .pilot-page .sensitivity-paused-state {

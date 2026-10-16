@@ -1,4 +1,4 @@
-/* global process, document, innerWidth, console, window, NodeFilter */
+/* global process, document, innerWidth, console, getComputedStyle, navigator, location, URL */
 import assert from "node:assert/strict";
 import {createRequire} from "node:module";
 import {mkdir, writeFile} from "node:fs/promises";
@@ -8,44 +8,46 @@ const base = process.env.QA_BASE_URL ?? "http://127.0.0.1:4175";
 const output = process.env.QA_OUTPUT ?? "/tmp/visual-quality";
 await mkdir(output, {recursive: true});
 const browser = await chromium.launch(process.env.QA_CHROME ? {executablePath: process.env.QA_CHROME} : {channel: "chrome"});
-
-// Screenshot-first overflow assertion: a failing width must leave usable
-// evidence, and the failure message names the route, viewport, measured
-// widths, and offending elements. The assertion itself is unchanged:
-// documentElement.scrollWidth must never exceed the viewport width.
-async function assertNoHorizontalOverflow(page, route, width, theme, shotPath) {
-  await page.screenshot({path: shotPath, fullPage: true});
-  const diagnosis = await page.evaluate(() => {
-    const viewportWidth = window.innerWidth;
-    const pageWidth = document.documentElement.scrollWidth;
-    const offenders = [];
-    if (pageWidth > viewportWidth) {
-      const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_ELEMENT);
-      let element = walker.nextNode();
-      while (element && offenders.length < 12) {
-        const rect = element.getBoundingClientRect();
-        if ((rect.width > 0 || rect.height > 0) && (rect.right > viewportWidth + 0.5 || rect.left < -0.5)) {
-          const classes = typeof element.className === "string" && element.className.trim()
-            ? `.${element.className.trim().split(/\s+/).slice(0, 3).join(".")}`
-            : "";
-          offenders.push(`${element.tagName.toLowerCase()}${element.id ? `#${element.id}` : ""}${classes}@right=${Math.round(rect.right)}`);
-        }
-        element = walker.nextNode();
-      }
-    }
-    return {viewportWidth, pageWidth, offenders};
-  });
-  assert.equal(
-    diagnosis.pageWidth > diagnosis.viewportWidth,
-    false,
-    `horizontal overflow on ${route} at ${width}px/${theme}: ` +
-      `innerWidth=${diagnosis.viewportWidth} scrollWidth=${diagnosis.pageWidth} ` +
-      `screenshot=${shotPath} offenders=${JSON.stringify(diagnosis.offenders)}`,
-  );
-}
 const results = [];
-for (const width of [320, 390, 768, 1440]) for (const theme of ["light", "dark"]) {
-  const page = await browser.newPage({viewport: {width, height: 1000}, reducedMotion: "reduce", colorScheme: theme});
+async function assertNoPageOverflow(page, label) {
+  const diagnostic = await page.evaluate(() => {
+    const selector = element => element.tagName.toLowerCase() + (element.id ? `#${element.id}` : "") +
+      [...element.classList].map(name => `.${name}`).join("");
+    const describe = element => {
+      const rect = element.getBoundingClientRect(), style = getComputedStyle(element);
+      return {selector: selector(element), left: rect.left, right: rect.right, width: rect.width,
+        clientWidth: element.clientWidth, scrollWidth: element.scrollWidth,
+        display: style.display, gridTemplateColumns: style.gridTemplateColumns,
+        minWidth: style.minWidth, overflowX: style.overflowX, overflowWrap: style.overflowWrap,
+        whiteSpace: style.whiteSpace, fontFamily: style.fontFamily, fontSize: style.fontSize};
+    };
+    const offenders = [...document.querySelectorAll("body *")].flatMap(element => {
+      const box = describe(element);
+      if (!box.width || (box.right <= innerWidth && box.left >= 0)) return [];
+      // A wide table inside its own scroll region is intentional; distinguish
+      // that from content which actually escapes into the document viewport.
+      for (let parent = element.parentElement; parent; parent = parent.parentElement) {
+        const bounds = parent.getBoundingClientRect();
+        if (["auto", "scroll", "hidden", "clip"].includes(getComputedStyle(parent).overflowX) &&
+            bounds.left >= 0 && bounds.right <= innerWidth) return [];
+      }
+      return [{...box, text: element.textContent.trim().slice(0, 160),
+        parent: element.parentElement ? describe(element.parentElement) : null}];
+    });
+    return {route: location.pathname, viewportWidth: innerWidth, documentWidth: document.documentElement.scrollWidth,
+      userAgent: navigator.userAgent, bodyFont: getComputedStyle(document.body).fontFamily, offenders};
+  });
+  if (diagnostic.documentWidth > diagnostic.viewportWidth) {
+    await writeFile(`${output}/${label}-overflow.json`, JSON.stringify(diagnostic, null, 2));
+    await page.screenshot({path: `${output}/${label}-overflow.png`, fullPage: true});
+  }
+  assert.equal(diagnostic.documentWidth > diagnostic.viewportWidth, false,
+    `${diagnostic.route} ${label}: document ${diagnostic.documentWidth}px exceeds viewport ${diagnostic.viewportWidth}px; ` +
+    `offenders: ${JSON.stringify(diagnostic.offenders)}; artifacts: ${label}-overflow.{json,png}`);
+}
+for (const width of [320, 390, 768, 1440]) for (const theme of ["light", "dark"]) for (const motion of ["reduce", "no-preference"]) {
+  const page = await browser.newPage({viewport: {width, height: 1000}, reducedMotion: motion, colorScheme: theme});
+  const label = `${width}-${theme}-${motion}`;
   try {
     await page.goto(base + "/pilot");
     await page.locator(".visual-headline").first().waitFor();
@@ -59,26 +61,43 @@ for (const width of [320, 390, 768, 1440]) for (const theme of ["light", "dark"]
     assert.ok(geometry.every(item => item.lines === 1 && item.contained), JSON.stringify(geometry));
     assert.ok(geometry.some(item => item.text === "$1,200,000"));
     assert.ok(geometry.some(item => item.text === "6 mo"));
-    await assertNoHorizontalOverflow(page, "/pilot", width, theme, `${output}/pilot-${width}-${theme}.png`);
+    await assertNoPageOverflow(page, `pilot-${label}`);
+    await page.screenshot({path: `${output}/pilot-${label}.png`, fullPage: true});
+    await page.locator("#pilot-fixed_cost").fill(String(Number.MAX_VALUE));
+    await page.locator(".pilot-result-ledger").screenshot({path: `${output}/pilot-max-${label}.png`});
+    await assertNoPageOverflow(page, `pilot-max-${label}`);
+    const maxGeometry = await page.locator(".pilot-result-scientific dd").evaluateAll(elements => elements.map(element => {
+      const range = document.createRange(); range.selectNodeContents(element);
+      const row = element.parentElement.getBoundingClientRect();
+      const fragments = [...range.getClientRects()];
+      return {text: element.textContent, rowWidth: row.width, fontSize: getComputedStyle(element).fontSize,
+        lines: new Set(fragments.map(r => Math.round(r.top))).size,
+        contained: fragments.every(r => r.left >= row.left - 1 && r.right <= row.right + 1)};
+    }));
+    assert.ok(maxGeometry.some(item => item.text === `$${Number.MAX_VALUE}`), `Missing full finite token: ${label}`);
+    assert.ok(maxGeometry.every(item => item.lines === 1 && item.contained), `/pilot max ${label}: ${JSON.stringify(maxGeometry)}`);
     for (const route of ["/", "/brief"]) {
       await page.goto(base + route);
       await page.waitForLoadState("networkidle");
-      await assertNoHorizontalOverflow(page, route, width, theme, `${output}/${route === "/" ? "overview" : "brief"}-${width}-${theme}.png`);
+      const routeLabel = `${route === "/" ? "overview" : "brief"}-${label}`;
+      await assertNoPageOverflow(page, routeLabel);
+      await page.screenshot({path: `${output}/${routeLabel}.png`, fullPage: true});
     }
     if (width < 768) {
       const menu = page.getByRole("button", {name: "Menu", exact: true});
       await menu.focus(); await page.keyboard.press("Enter");
       await page.getByRole("navigation", {name: "Primary navigation"}).waitFor();
-      await page.screenshot({path: `${output}/navigation-${width}-${theme}.png`});
+      await assertNoPageOverflow(page, `navigation-${label}`);
+      await page.screenshot({path: `${output}/navigation-${label}.png`});
       await page.keyboard.press("Escape");
       assert.equal(await menu.evaluate(e => document.activeElement === e), true);
       assert.equal(await menu.getAttribute("aria-expanded"), "false");
     }
-    results.push({width, theme, status: "PASS", geometry});
-  } catch (error) { results.push({width, theme, status: "FAIL", error: String(error)}); }
+    results.push({width, theme, motion, status: "PASS", geometry, maxGeometry});
+  } catch (error) { results.push({width, theme, motion, route: new URL(page.url()).pathname, status: "FAIL", error: String(error)}); }
   finally { await page.close(); }
 }
 await browser.close();
-await writeFile(`${output}/results.json`, JSON.stringify({results}, null, 2));
+await writeFile(`${output}/results.json`, JSON.stringify({revision: process.env.QA_SHA, browser: browser.version(), results}, null, 2));
 console.log(JSON.stringify(results));
 if (results.some(row => row.status !== "PASS")) process.exitCode = 1;
