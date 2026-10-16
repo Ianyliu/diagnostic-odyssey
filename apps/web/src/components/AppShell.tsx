@@ -158,7 +158,7 @@ export function AppShell() {
           ? "Intervention effect · no approved record loaded"
           : `Intervention evidence · ${approvedEvidenceCount} approved record${approvedEvidenceCount === 1 ? "" : "s"}; check scenario eligibility`}</span>
       </div>
-      <main id="main-content" tabIndex={-1}>
+      <main id="main-content" tabIndex={-1} data-navigation={navigationType}>
         <Outlet />
       </main>
       <footer>

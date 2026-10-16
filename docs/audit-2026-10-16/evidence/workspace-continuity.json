@@ -1,0 +1,12 @@
+{
+  "results": [
+    {
+      "name": "Incomplete Pilot draft survives navigation; canonical export retains the last valid input",
+      "status": "PASS"
+    },
+    {
+      "name": "JSON download failure is announced, recoverable, and preserves the Brief",
+      "status": "PASS"
+    }
+  ]
+}

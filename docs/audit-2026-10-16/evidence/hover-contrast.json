@@ -1,0 +1,76 @@
+{
+  "results": [
+    {
+      "theme": "light",
+      "text": "Describe burden",
+      "ratio": 6.856823584206458,
+      "status": "PASS"
+    },
+    {
+      "theme": "light",
+      "text": "Review local constraints",
+      "ratio": 6.856823584206458,
+      "status": "PASS"
+    },
+    {
+      "theme": "light",
+      "text": "Scope a feasible pilot",
+      "ratio": 6.856823584206458,
+      "status": "PASS"
+    },
+    {
+      "theme": "light",
+      "text": "Test evidence claims",
+      "ratio": 6.856823584206458,
+      "status": "PASS"
+    },
+    {
+      "theme": "light",
+      "text": "Record data needs",
+      "ratio": 6.856823584206458,
+      "status": "PASS"
+    },
+    {
+      "theme": "light",
+      "text": "Create a planning brief",
+      "ratio": 6.856823584206458,
+      "status": "PASS"
+    },
+    {
+      "theme": "dark",
+      "text": "Describe burden",
+      "ratio": 8.25227124354039,
+      "status": "PASS"
+    },
+    {
+      "theme": "dark",
+      "text": "Review local constraints",
+      "ratio": 8.25227124354039,
+      "status": "PASS"
+    },
+    {
+      "theme": "dark",
+      "text": "Scope a feasible pilot",
+      "ratio": 8.25227124354039,
+      "status": "PASS"
+    },
+    {
+      "theme": "dark",
+      "text": "Test evidence claims",
+      "ratio": 8.25227124354039,
+      "status": "PASS"
+    },
+    {
+      "theme": "dark",
+      "text": "Record data needs",
+      "ratio": 8.25227124354039,
+      "status": "PASS"
+    },
+    {
+      "theme": "dark",
+      "text": "Create a planning brief",
+      "ratio": 8.25227124354039,
+      "status": "PASS"
+    }
+  ]
+}

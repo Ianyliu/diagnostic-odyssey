@@ -11,7 +11,7 @@ const output = process.env.QA_OUTPUT ?? "/tmp/planning-intelligence-integration"
 const insightsEnabled = process.env.QA_INSIGHTS_MODE !== "off";
 const conceptEnabled = process.env.QA_CONCEPT_MODE === "on";
 await mkdir(output, {recursive: true});
-const browser = await chromium.launch({channel: "chrome", headless: true});
+const browser = await chromium.launch(process.env.QA_CHROME ? {executablePath: process.env.QA_CHROME, headless: true} : {channel: "chrome", headless: true});
 const results = [];
 const failures = [];
 async function check(name, callback) {

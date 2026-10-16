@@ -1,5 +1,5 @@
 import {test} from "node:test";
-import {spawnSync} from "node:child_process";
+import {runPythonJson} from "../../../scripts/testing/run-python-json.ts";
 import {fileURLToPath} from "node:url";
 import assert from "node:assert/strict";
 import {assertInput,assertEgress,assertCandidate,bindCandidate,canonicalJSON,fingerprint,projectEgress,unavailable,assertOutput,contextKey,snapshotContent,requestProposalId} from "../src/index.ts";
@@ -291,9 +291,7 @@ test("all four Draft 2020-12 schemas execute and agree on structural positive/ne
   {schema:"output",instance:unavailable(x,authority),valid:true}
  ];
  const script=fileURLToPath(new URL("./schema_draft202012.py",import.meta.url));
- const run=spawnSync("python3",[script],{input:JSON.stringify(cases.map(({schema,instance})=>({schema,instance}))),encoding:"utf8",maxBuffer:1024*1024});
- assert.equal(run.status,0,run.stderr||run.error?.message);
- const result=JSON.parse(run.stdout) as {valid:boolean;keywords:string[]}[];
+ const result=runPythonJson<{valid:boolean;keywords:string[]}[]>(script,[],cases.map(({schema,instance})=>({schema,instance})),{maxBuffer:1024*1024});
  assert.equal(result.length,cases.length);
  for(let i=0;i<cases.length;i++){
   assert.equal(result[i]?.valid,cases[i]?.valid,JSON.stringify({i,schema:cases[i]?.schema,keywords:result[i]?.keywords}));

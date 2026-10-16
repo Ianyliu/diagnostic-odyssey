@@ -9,7 +9,7 @@ const axe = require("axe-core");
 const base = process.env.QA_BASE_URL ?? "http://127.0.0.1:4188";
 const output = process.env.QA_OUTPUT ?? "/tmp/diagnostic-insights-browser";
 await mkdir(output, {recursive: true});
-const browser = await chromium.launch({channel: "chrome", headless: true});
+const browser = await chromium.launch(process.env.QA_CHROME ? {executablePath: process.env.QA_CHROME, headless: true} : {channel: "chrome", headless: true});
 const results = [];
 const errors = [];
 const externalRequests = [];

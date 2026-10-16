@@ -1,0 +1,14 @@
+{
+  "results": [
+    {
+      "name": "Incomplete Pilot draft survives navigation; canonical export retains the last valid input",
+      "status": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n'2400' !== '2e'\n"
+    },
+    {
+      "name": "JSON download failure is announced, recoverable, and preserves the Brief",
+      "status": "FAIL",
+      "error": "TimeoutError: locator.waitFor: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('status').filter({ hasText: 'JSON download could not start' }) to be visible\u001b[22m\n"
+    }
+  ]
+}

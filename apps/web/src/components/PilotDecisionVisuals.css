@@ -16,10 +16,13 @@
 
 .decision-visual-heading {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   gap: 12px;
   align-items: start;
 }
+
+.decision-visual-heading > div { flex: 1 1 150px; }
 
 .decision-visual h3 {
   margin: 3px 0 0;
@@ -37,8 +40,8 @@
 }
 
 .visual-headline {
-  min-width: 0;
-  overflow-wrap: anywhere;
+  flex: 0 0 auto;
+  white-space: nowrap;
   color: var(--do-text);
   font-size: 20px;
   font-variant-numeric: tabular-nums;
@@ -47,7 +50,7 @@
 }
 
 .visual-headline-compact {
-  white-space: normal;
+  white-space: nowrap;
 }
 
 .decision-visual-heading-scientific {

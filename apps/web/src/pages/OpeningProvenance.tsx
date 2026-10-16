@@ -8,7 +8,7 @@ const documentEntry = typeof window !== "undefined" ? {
   hash: window.location.hash
 } : { pathname: "/", search: "", hash: "" };
 
-export function OpeningProvenance() {
+export function useOpeningMotion() {
   const [playing, setPlaying] = useState(() => shouldPlayOpening({
     ...documentEntry,
     reducedMotion: reducedMotionRequested(),
@@ -43,6 +43,10 @@ export function OpeningProvenance() {
     };
   }, [playing]);
 
+  return playing;
+}
+
+export function OpeningProvenance({playing = false}: {playing?: boolean}) {
   return <figure className={"overview-provenance" + (playing ? " is-playing" : "")}>
     <div className="workspace-preview">
       <div className="preview-chrome">

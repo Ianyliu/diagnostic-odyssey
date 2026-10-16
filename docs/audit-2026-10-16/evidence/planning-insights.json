@@ -1,0 +1,144 @@
+{
+  "results": [
+    {
+      "name": "layout, contrast, provenance and keyboard 1440 light",
+      "status": "PASS",
+      "details": {
+        "axeViolations": 0,
+        "axeIncomplete": 1,
+        "layout": {
+          "width": 1440,
+          "scroll": 1440,
+          "overflow": []
+        }
+      }
+    },
+    {
+      "name": "layout, contrast, provenance and keyboard 1440 dark",
+      "status": "PASS",
+      "details": {
+        "axeViolations": 0,
+        "axeIncomplete": 1,
+        "layout": {
+          "width": 1440,
+          "scroll": 1440,
+          "overflow": []
+        }
+      }
+    },
+    {
+      "name": "layout, contrast, provenance and keyboard 768 light",
+      "status": "PASS",
+      "details": {
+        "axeViolations": 0,
+        "axeIncomplete": 1,
+        "layout": {
+          "width": 768,
+          "scroll": 768,
+          "overflow": []
+        }
+      }
+    },
+    {
+      "name": "layout, contrast, provenance and keyboard 768 dark",
+      "status": "PASS",
+      "details": {
+        "axeViolations": 0,
+        "axeIncomplete": 1,
+        "layout": {
+          "width": 768,
+          "scroll": 768,
+          "overflow": []
+        }
+      }
+    },
+    {
+      "name": "layout, contrast, provenance and keyboard 390 light",
+      "status": "PASS",
+      "details": {
+        "axeViolations": 0,
+        "axeIncomplete": 1,
+        "layout": {
+          "width": 390,
+          "scroll": 390,
+          "overflow": []
+        }
+      }
+    },
+    {
+      "name": "layout, contrast, provenance and keyboard 390 dark",
+      "status": "PASS",
+      "details": {
+        "axeViolations": 0,
+        "axeIncomplete": 1,
+        "layout": {
+          "width": 390,
+          "scroll": 390,
+          "overflow": []
+        }
+      }
+    },
+    {
+      "name": "layout, contrast, provenance and keyboard 360 light",
+      "status": "PASS",
+      "details": {
+        "axeViolations": 0,
+        "axeIncomplete": 1,
+        "layout": {
+          "width": 360,
+          "scroll": 360,
+          "overflow": []
+        }
+      }
+    },
+    {
+      "name": "layout, contrast, provenance and keyboard 360 dark",
+      "status": "PASS",
+      "details": {
+        "axeViolations": 0,
+        "axeIncomplete": 1,
+        "layout": {
+          "width": 360,
+          "scroll": 360,
+          "overflow": []
+        }
+      }
+    },
+    {
+      "name": "current state, local selection, requests and canonical JSON isolation",
+      "status": "PASS",
+      "details": {
+        "canonicalUnchanged": true,
+        "explicitSelection": true,
+        "staleExcluded": true
+      }
+    },
+    {
+      "name": "huge finite scenario presentation stays readable at 1440px",
+      "status": "PASS"
+    },
+    {
+      "name": "huge finite scenario presentation stays readable at 820px",
+      "status": "PASS"
+    },
+    {
+      "name": "huge finite scenario presentation stays readable at 390px",
+      "status": "PASS"
+    },
+    {
+      "name": "huge finite scenario presentation stays readable at 360px",
+      "status": "PASS"
+    },
+    {
+      "name": "optional actual PDF summary preserves JSON and excludes unaccepted suggestions",
+      "status": "PASS",
+      "details": {
+        "defaultOff": true,
+        "jsonUnchanged": true,
+        "suggestionsExcluded": true
+      }
+    }
+  ],
+  "errors": [],
+  "externalRequests": []
+}

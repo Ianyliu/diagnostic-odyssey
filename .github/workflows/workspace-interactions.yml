@@ -1,0 +1,55 @@
+name: Workspace interaction regressions
+
+on:
+  pull_request:
+    paths:
+      - "apps/web/**"
+      - "packages/ui/**"
+      - "package-lock.json"
+      - "tests/browser/workspace-continuity.mjs"
+      - "tests/browser/visual-quality.mjs"
+      - "tests/browser/motion.mjs"
+      - ".github/workflows/workspace-interactions.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  workspace:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+      - run: npm ci --no-audit --no-fund
+      - run: npm run build
+      - name: Install isolated browser runner
+        run: npm install --prefix /tmp/workspace-browser --save-exact --no-audit --no-fund playwright@1.64.0
+      - name: Exercise drafts, downloads, reflow, keyboard and motion
+        env:
+          PLAYWRIGHT_RUNNER: /tmp/workspace-browser/package.json
+          QA_BASE_URL: http://127.0.0.1:4186
+        run: |
+          ./node_modules/.bin/vite preview apps/web --host 127.0.0.1 --port 4186 --strictPort > /tmp/workspace-preview.log 2>&1 &
+          preview_pid=$!
+          trap 'kill "$preview_pid"' EXIT
+          for attempt in {1..30}; do
+            if curl --silent --fail "$QA_BASE_URL" >/dev/null; then break; fi
+            sleep 1
+          done
+          for suite in workspace-continuity visual-quality motion; do
+            QA_OUTPUT="/tmp/workspace-regressions/$suite" node "tests/browser/$suite.mjs"
+          done
+      - name: Upload regression evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: workspace-interactions-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            /tmp/workspace-regressions/
+            /tmp/workspace-preview.log

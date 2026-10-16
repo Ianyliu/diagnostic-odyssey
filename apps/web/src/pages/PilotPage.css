@@ -148,8 +148,24 @@
   min-width: 0;
   align-self: start;
   container: pilot-result / inline-size;
+  /* Explicit single column: the implicit `auto` column stretched toward the
+     h2's max-content width and blew the 246px content box at 320px viewports,
+     producing page-level horizontal overflow. minmax(0, 1fr) caps the track
+     at the available width (same pattern as .pilot-visual-stack). */
+  grid-template-columns: minmax(0, 1fr);
   background: var(--do-surface);
   border-color: var(--do-border);
+}
+
+/* Grid blowout guard: grid items with wrappable content may shrink below
+   their automatic minimum so long words cannot force page-level horizontal
+   overflow at 320px viewports. (The result-card's own track is capped above;
+   .pilot-visual-stack is intentionally exempt so extreme single-line tokens
+   can still size their heading, per the acceptance suite.) */
+.pilot-page .page-stack > *,
+.pilot-page .pilot-grid > *,
+.pilot-page .sensitivity-visual > * {
+  min-width: 0;
 }
 
 .pilot-page .result-card > .subtle {
@@ -194,7 +210,7 @@
 
 .pilot-page .pilot-result-scientific dd {
   white-space: nowrap;
-  font-size: 18px;
+  font-size: 13px;
 }
 
 .pilot-page .sensitivity-paused-state {

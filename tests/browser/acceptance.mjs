@@ -10,7 +10,7 @@ const playwrightVersion = require("playwright/package.json").version;
 const baseURL = process.env.QA_BASE_URL ?? "http://127.0.0.1:4175";
 const output = process.env.QA_OUTPUT ?? "/tmp/diagnostic-browser-baseline";
 await mkdir(output, { recursive: true });
-const browser = await chromium.launch({ channel: "chrome", headless: true });
+const browser = await chromium.launch(process.env.QA_CHROME ? {executablePath: process.env.QA_CHROME, headless: true} : {channel: "chrome", headless: true});
 const browserVersion = browser.version();
 const filter = process.env.QA_FILTER ? new RegExp(process.env.QA_FILTER) : null;
 const matrix = [];

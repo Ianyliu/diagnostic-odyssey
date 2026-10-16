@@ -1,5 +1,5 @@
 import { formatPlanningCurrency, formatPlanningNumber } from "../data/planningNumberFormatting.ts";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { buildPlanningBrief, serializeBriefJson, type PlanningBrief } from "@diagnostic-odyssey/brief-core";
 import { AcquisitionGuidanceCard } from "../components/AcquisitionGuidanceCard";
@@ -61,6 +61,35 @@ function AccessibleEstimateInterval({estimate}: {estimate: Estimate}) {
   return <>
     <span aria-hidden="true">{interval}</span>
     <span className="sr-only">{accessibleInterval}</span>
+  </>;
+}
+
+// Transfer feedback is local to the control: it must not recompose the Brief
+// (and its generated_at timestamp) after the serialized download is captured.
+function BriefJsonExport({brief}: {brief: PlanningBrief}) {
+  const [exportStatus, setExportStatus] = useState("");
+  const exportJson = () => {
+    let url: string | undefined;
+    const anchor = document.createElement("a");
+    try {
+      url = URL.createObjectURL(new Blob([serializeBriefJson(brief)], {type: "application/json"}));
+      anchor.href = url;
+      anchor.download = brief.artifact_version + "-planning-brief.json";
+      document.body.append(anchor);
+      anchor.click();
+      setExportStatus("JSON download requested with the current Planning Brief.");
+    } catch {
+      setExportStatus("JSON download could not start. Your Brief is unchanged; try again or use Print / save PDF.");
+    } finally {
+      anchor.remove();
+      // Let the browser consume the URL before releasing it, as for Markdown.
+      if (url) { const downloadUrl = url; setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000); }
+    }
+  };
+
+  return <>
+    <button className="button" onClick={exportJson}>Export JSON companion</button>
+    <p className="brief-export-status subtle" role="status">{exportStatus}</p>
   </>;
 }
 
@@ -150,16 +179,6 @@ export function BriefPage({conceptAvailable = false, showFutureConcept = false, 
   const localContextAvailable =
     localContextStatus === "loaded" && localContext !== null;
 
-  const exportJson = () => {
-    const blob = new Blob([serializeBriefJson(brief)],{type:"application/json"});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href=url;
-    a.download=brief.artifact_version + "-planning-brief.json";
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
   const printBrief = () => {
     executeBriefPrint(printDisclosureState.current);
   };
@@ -237,7 +256,7 @@ export function BriefPage({conceptAvailable = false, showFutureConcept = false, 
             localArtifactVersion: localContext?.manifest.artifact_version ?? null,
             scenario, scenarioValid: !scenario || !!scenarioResult,
             selectedLocalContextIds, pilotLocalContextId, briefDataRequestIds}} />
-          <button className="button" onClick={exportJson}>Export JSON companion</button>
+          <BriefJsonExport brief={brief} />
           <button className="button secondary" onClick={printBrief}>Print / save PDF</button>
         </div>
       </aside>

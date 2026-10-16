@@ -1,0 +1,7 @@
+local-context.json: OK
+diagnostics.json: OK
+review-manifest.json: OK
+hrsa-source-metadata.json: OK
+acs-source-metadata.json: OK
+github-actions-run-manifest.json: OK
+candidate output verifier regression tests passed
