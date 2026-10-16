@@ -580,3 +580,7 @@
 .brief-print-footer {
   display: none;
 }
+
+/* Demo entry is illustrative; never suggest a live, billable model is available. */
+.planning-brief-page .brief-concept-note{display:block;margin:.25rem 0 1rem;color:var(--do-text-muted);font-size:.74rem;line-height:1.45}
+@media print{.planning-brief-page .brief-concept-note{display:none!important}}

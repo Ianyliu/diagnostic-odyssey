@@ -170,6 +170,7 @@ export function BriefPage() {
     {import.meta.env.VITE_FUTURE_AI_EXPERIENCE_DEMO === "on" && <div className="brief-concept-entry" style={{display: "contents"}}>
       <style>{"@media print{.brief-concept-entry{display:none!important}}"}</style>
       <Link className="button secondary" to="/concept/future-ai">Explore future AI concept →</Link>
+      <small className="brief-concept-note">* Interactive concept only · No live AI or model API calls.</small>
     </div>}
 
     <div className="print-provenance" role="group" aria-label="Planning Brief provenance">
