@@ -55,7 +55,7 @@ test("Pilot renders the committed Scenario boundary beside assumptions with desc
   const pilot = readSource("../src/pages/PilotPage.tsx");
   const assumptionsIndex = pilot.indexOf("Planning assumptions");
   const boundaryIndex = pilot.indexOf("Modeled pathway boundary");
-  const resultsIndex = pilot.indexOf("Baseline vs recognition/navigation scenario");
+  const resultsIndex = pilot.indexOf("Baseline vs recognition/");
 
   assert.ok(assumptionsIndex >= 0);
   assert.ok(boundaryIndex > assumptionsIndex);

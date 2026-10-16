@@ -217,7 +217,7 @@ function PilotPlannerWorkspace({
       </div>
       <article id="pilot-results" className="card result-card">
         <p className="visual-kicker pilot-result-kicker">APPLIED PLANNING SCENARIO</p>
-        <h2>Baseline vs recognition/navigation scenario</h2>
+        <h2>Baseline vs recognition/<wbr />navigation scenario</h2>
         <p className="subtle">Deterministic planning arithmetic · not observed evidence or an evidence-derived effect</p>
         {invalidDraft && <div className="draft-not-applied" role="status">
           <strong>Draft not applied</strong>

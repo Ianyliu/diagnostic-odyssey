@@ -157,6 +157,18 @@
   border-color: var(--do-border);
 }
 
+/* Grid blowout guard: every grid item on the pilot page may shrink below
+   its automatic minimum. Long unbroken runs (e.g. the result-card h2's
+   "recognition/navigation") otherwise force their item — and the page —
+   wider than the 320px viewport when fonts render even slightly wider
+   than expected (CI failure: scrollWidth 344 at 320px). */
+.pilot-page .page-stack > *,
+.pilot-page .pilot-grid > *,
+.pilot-page .result-card > *,
+.pilot-page .sensitivity-visual > * {
+  min-width: 0;
+}
+
 .pilot-page .result-card > .subtle {
   margin: 0;
 }
