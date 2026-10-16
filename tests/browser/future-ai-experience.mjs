@@ -118,7 +118,9 @@ if (disabled) {
     await page.getByRole("button", {name: "Sources & limits"}).click(); assert.match(await page.locator(".fc-lens-content").innerText(), /None admitted/);
     await page.getByText("Open investigation questions", {exact: true}).click(); assert.match(await page.locator(".fc-study").innerText(), /digital access/);
     assert.match(await page.locator(".fc-study").innerText(), /Illustrative \/ not source-verified/);
-    assert.equal(await page.locator(".fc-study a").count(), 0);
+    assert.match(await page.locator(".fc-study").innerText(), /Source: not reviewed|None admitted|not independently admitted|not admitted/i);
+    assert.ok(await page.locator(".fc-study a[href^=\"https://doi.org/\"]").count() >= 2, "worked sample must have source DOIs");
+    assert.equal(await page.locator(".fc-study a[href*=\"?\"]").count(), 0, "no prompt or query data in source links");
     await page.evaluate(() => window.scrollTo(0, 0));
     await page.screenshot({path: `${output}/research-expanded.png`, fullPage: true});
   });
@@ -138,7 +140,7 @@ if (disabled) {
     assert.equal(await page.locator(".fc-strategy").count(), 2); assert.equal(await page.locator("thead th").count(), 3);
     assert.equal(await page.getByRole("checkbox", {name: "Care navigation", exact: true}).isDisabled(), true);
     await page.getByLabel("Comparison lens").selectOption("evidence"); assert.equal(await page.locator("tbody tr").count(), 3);
-    assert.match(await page.locator("tbody").innerText(), /Not established/); assert.match(await page.locator("tbody").innerText(), /Not evaluated/);
+    assert.match(await page.locator("tbody").innerText(), /No matched comparative estimate/); assert.match(await page.locator("tbody").innerText(), /Not evaluated for local Pilot/);
     await page.getByText("Inspect transferability questions", {exact: true}).first().click();
     assert.match(await page.locator(".fc-strategy").first().innerText(), /Geography & health system/);
     await page.getByLabel("Comparison lens").selectOption("implementation"); assert.equal(await page.locator("tbody tr").count(), 3);
