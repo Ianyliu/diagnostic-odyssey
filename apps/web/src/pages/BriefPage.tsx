@@ -1,5 +1,5 @@
 import { formatPlanningCurrency, formatPlanningNumber } from "../data/planningNumberFormatting.ts";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { buildPlanningBrief, serializeBriefJson, type PlanningBrief } from "@diagnostic-odyssey/brief-core";
 import { AcquisitionGuidanceCard } from "../components/AcquisitionGuidanceCard";
@@ -70,6 +70,7 @@ interface FutureConceptControlProps {
   onFutureConceptChange?: (enabled: boolean) => void;
 }
 export function BriefPage({conceptAvailable = false, showFutureConcept = false, onFutureConceptChange}: FutureConceptControlProps = {}) {
+  const [exportStatus, setExportStatus] = useState("");
   const pageRef = useRef<HTMLElement>(null);
   const printDisclosureState = useRef<ReturnType<typeof createBriefPrintDisclosureState> | null>(null);
   const {
@@ -151,13 +152,22 @@ export function BriefPage({conceptAvailable = false, showFutureConcept = false, 
     localContextStatus === "loaded" && localContext !== null;
 
   const exportJson = () => {
-    const blob = new Blob([serializeBriefJson(brief)],{type:"application/json"});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href=url;
-    a.download=brief.artifact_version + "-planning-brief.json";
-    a.click();
-    URL.revokeObjectURL(url);
+    let url: string | undefined;
+    const anchor = document.createElement("a");
+    try {
+      url = URL.createObjectURL(new Blob([serializeBriefJson(brief)], {type: "application/json"}));
+      anchor.href = url;
+      anchor.download = brief.artifact_version + "-planning-brief.json";
+      document.body.append(anchor);
+      anchor.click();
+      setExportStatus("JSON download requested with the current Planning Brief.");
+    } catch {
+      setExportStatus("JSON download could not start. Your Brief is unchanged; try again or use Print / save PDF.");
+    } finally {
+      anchor.remove();
+      // Let the browser consume the URL before releasing it, as for Markdown.
+      if (url) { const downloadUrl = url; setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000); }
+    }
   };
 
   const printBrief = () => {
@@ -238,6 +248,7 @@ export function BriefPage({conceptAvailable = false, showFutureConcept = false, 
             scenario, scenarioValid: !scenario || !!scenarioResult,
             selectedLocalContextIds, pilotLocalContextId, briefDataRequestIds}} />
           <button className="button" onClick={exportJson}>Export JSON companion</button>
+          <p className="brief-export-status subtle" role="status">{exportStatus}</p>
           <button className="button secondary" onClick={printBrief}>Print / save PDF</button>
         </div>
       </aside>

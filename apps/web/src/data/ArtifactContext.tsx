@@ -25,6 +25,7 @@ import {
   type PilotLocalContextSelectionState
 } from "./pilotLocalContextSelection";
 import { createPlanningScenarioDefaults } from "./planningScenarioDefaults";
+import { createPilotInputDraft, type PilotInputDraft } from "./pilotInputDraft";
 import { loadReviewedMepsArtifact } from "./reviewedArtifact";
 import { loadReviewedWvLocalContextArtifact } from "./reviewedLocalContext";
 import { isDataRequestCurrentForScenario } from "./dataRequestTemplates";
@@ -48,6 +49,8 @@ interface ArtifactState {
   scenario: Scenario | null;
   scenarioResult: ScenarioResult | null;
   setScenario: (scenario: Scenario) => void;
+  pilotInputDraft: PilotInputDraft | null;
+  setPilotInputDraft: (draft: PilotInputDraft) => void;
   analystDataRequests: DataRequest[];
   availableDataRequests: DataRequest[];
   briefDataRequestIds: string[];
@@ -74,6 +77,7 @@ export function ArtifactProvider({children}: {children: ReactNode}) {
   const [pilotLocalContextSelection, setPilotLocalContextSelection] =
     useState<PilotLocalContextSelectionState>(createEmptyPilotLocalContextSelection);
   const [scenario, setScenario] = useState<Scenario | null>(null);
+  const [pilotInputDraft, setPilotInputDraft] = useState<PilotInputDraft | null>(null);
   const [analystDataRequests, setAnalystDataRequests] = useState<DataRequest[]>([]);
   const [briefDataRequestIds, setBriefDataRequestIds] = useState<string[]>([]);
 
@@ -81,7 +85,9 @@ export function ArtifactProvider({children}: {children: ReactNode}) {
     try {
       const candidate = loadReviewedMepsArtifact();
       setBundle(candidate);
-      setScenario(createPlanningScenarioDefaults());
+      const defaults = createPlanningScenarioDefaults();
+      setScenario(defaults);
+      setPilotInputDraft(createPilotInputDraft(defaults));
       setError(null);
       setStatus("loaded");
     } catch (cause) {
@@ -242,6 +248,8 @@ export function ArtifactProvider({children}: {children: ReactNode}) {
         scenario,
         scenarioResult,
         setScenario,
+        pilotInputDraft,
+        setPilotInputDraft,
         analystDataRequests,
         availableDataRequests,
         briefDataRequestIds,

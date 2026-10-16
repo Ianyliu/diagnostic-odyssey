@@ -97,15 +97,17 @@ function PilotPlannerWorkspace({
   const {
     bundle,
     setScenario,
+    pilotInputDraft,
+    setPilotInputDraft,
     analystDataRequests,
     upsertAnalystDataRequest,
     pilotLocalContext,
     localContextStatus,
     clearPilotLocalContext
   } = useArtifact();
-  const [draft, setDraft] = useState<PilotInputDraft>(
-    () => createPilotInputDraft(scenario)
-  );
+  // Keep unfinished edits in the workspace across route changes. Only a valid
+  // candidate updates the applied scenario used by the Brief and its exports.
+  const draft: PilotInputDraft = pilotInputDraft ?? createPilotInputDraft(scenario);
   const evaluation = useMemo(
     () => evaluatePilotInputDraft(draft, scenario),
     [draft, scenario]
@@ -130,7 +132,7 @@ function PilotPlannerWorkspace({
 
   const updateDraft = (key: PilotNumericField, raw: string) => {
     const nextDraft = {...draft, [key]: raw};
-    setDraft(nextDraft);
+    setPilotInputDraft(nextDraft);
     const nextEvaluation = evaluatePilotInputDraft(nextDraft, scenario);
     if (nextEvaluation.candidate) {
       setScenario(nextEvaluation.candidate);
