@@ -76,6 +76,64 @@ await check("AI handoff, optional print, and navigation do not mutate canonical 
   const after = await canonical(page);
   assert.deepEqual(after,before);
 });
+async function nav(page, name) {
+  const menu = page.getByRole("navigation", {name: "Primary navigation"});
+  if (!await menu.isVisible()) await page.getByRole("button", {name: "Menu", exact: true}).click();
+  await menu.getByRole("link", {name, exact: true}).click();
+}
+function envelope(text) {
+  const match = text.match(/\nBEGIN_DIAGNOSTIC_ODYSSEY_DATA\n\n```json\n\n([\s\S]*?)\n\n```\n\nEND_DIAGNOSTIC_ODYSSEY_DATA\n/);
+  assert.ok(match, "AI handoff envelope delimiters must be present");
+  return JSON.parse(match[1]);
+}
+await check("stale data request forces a current AI handoff snapshot; exploration preserves canonical state", async page => {
+  await nav(page, "Local context");
+  await page.locator('input[id^="select-local-context-"]').first().check();
+  await nav(page, "Pilot planner");
+  await page.locator("#pilot-capacity").fill("5000");
+  await page.getByLabel("Test assumption").selectOption("capacity");
+  await page.getByRole("button", {name: "Add to data requests", exact: true}).click();
+  await nav(page, "Data requests");
+  const sheet = page.locator(".data-request-sheet").filter({hasText: "SESSION PLANNING REQUEST"});
+  await sheet.getByRole("checkbox").check();
+  await nav(page, "Planning brief");
+  assert.equal((await canonical(page)).data_requests.length, 1);
+  await nav(page, "Pilot planner");
+  await page.locator("#pilot-capacity").fill("2000");
+  await nav(page, "Data requests");
+  await sheet.getByText("Stale for applied scenario", {exact: true}).waitFor();
+  await nav(page, "Planning brief");
+  const stale = await canonical(page);
+  assert.equal(stale.data_requests.length, 0);
+  assert.equal(stale.warnings.filter(warning => /selected data request is stale/.test(warning)).length, 1);
+  await page.getByRole("button", {name: "Analyze with AI", exact: true}).click();
+  const dialog = page.getByRole("dialog", {name: "Analyze with AI", exact: true});
+  await dialog.waitFor();
+  const preview = dialog.getByLabel(/^Complete prompt ·/);
+  const handoffPayload = envelope(await preview.inputValue()).payload;
+  delete handoffPayload.generated_at;
+  assert.deepEqual(handoffPayload, stale);
+  const copy = dialog.getByRole("button", {name: "Copy complete prompt", exact: true});
+  const download = dialog.getByRole("button", {name: "Download Markdown", exact: true});
+  assert.equal(await copy.isDisabled(), false);
+  await dialog.getByLabel("Analysis goal").selectOption("executive");
+  await dialog.getByText("The Brief or options changed. Regenerate the preview before copying or downloading.", {exact: true}).waitFor();
+  assert.equal(await copy.isDisabled(), true);
+  assert.equal(await download.isDisabled(), true);
+  await dialog.getByRole("button", {name: "Regenerate preview", exact: true}).click();
+  assert.equal(await copy.isDisabled(), false);
+  const pending = page.waitForEvent("download");
+  await download.click();
+  assert.equal(await readFile(await (await pending).path(), "utf8"), await preview.inputValue());
+  await dialog.getByRole("button", {name: "Close Analyze with AI", exact: true}).click();
+  if (conceptEnabled) {
+    await page.getByRole("link", {name: /Explore future AI concept/}).click();
+    await page.getByRole("tablist", {name: "Future experience goals"}).waitFor();
+    await page.getByRole("tab", {name: /Compare strategies/}).click();
+    await page.getByRole("link", {name: /Back to current Brief/}).click();
+  }
+  assert.deepEqual(await canonical(page), stale);
+});
 await browser.close();
 await writeFile(join(output,"summary.json"),JSON.stringify({passed: results.every(x=>x.status==="PASS") && failures.length===0, build:{insightsEnabled,conceptEnabled},results,failures},null,2)+"\n");
 console.log(JSON.stringify({results,failures},null,2));
