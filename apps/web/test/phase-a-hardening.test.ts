@@ -59,7 +59,7 @@ test("Planning Brief print contract hides chrome but retains substantive content
 test("JSON companion remains derived from the same gated brief object and artifact version", () => {
   const brief = readSource("../src/pages/BriefPage.tsx");
   assert.match(brief, /serializeBriefJson\(brief\)/);
-  assert.match(brief, /a\.download=brief\.artifact_version \+ "-planning-brief\.json"/);
+  assert.match(brief, /anchor\.download\s*=\s*brief\.artifact_version \+ "-planning-brief\.json"/);
   assert.match(brief, /dataRequests: selectedDataRequests/);
   assert.match(brief, /localContext: briefLocalContext/);
   assert.match(brief, /withStaleSelectedDataRequestWarning/);
