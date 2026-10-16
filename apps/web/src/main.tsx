@@ -4,6 +4,7 @@ import { BrowserRouter } from "react-router-dom";
 import "@diagnostic-odyssey/ui/styles.css";
 import "./styles.css";
 import "./workspace.css";
+import "./motion.css";
 import { App } from "./App";
 import { ThemeProvider } from "./ThemeProvider";
 

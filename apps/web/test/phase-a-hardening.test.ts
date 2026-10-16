@@ -10,7 +10,7 @@ function readSource(path: string): string {
 test("AppShell exposes a working skip link and focusable main target", () => {
   const shell = readSource("../src/components/AppShell.tsx");
   assert.match(shell, /className="skip-link" href="#main-content"/);
-  assert.match(shell, /<main id="main-content" tabIndex=\{-1\}>/);
+  assert.match(shell, /<main id="main-content" tabIndex=\{-1\}[^>]*>/);
 });
 
 test("unexpected render failures use an accessible evidence-honest fallback", () => {

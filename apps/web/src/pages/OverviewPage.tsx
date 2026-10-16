@@ -3,7 +3,7 @@ import { canExportEstimate } from "@diagnostic-odyssey/contracts";
 import { ContextBar } from "../components/ContextBar";
 import { DecisionStateRail } from "../components/DecisionStateRail";
 import { useArtifact } from "../data/ArtifactContext";
-import { OpeningProvenance } from "./OpeningProvenance";
+import { OpeningProvenance, useOpeningMotion } from "./OpeningProvenance";
 import { planningInsightsEnabled } from "../data/planningInsightsEnabled";
 import "./OverviewPage.css";
 
@@ -43,6 +43,7 @@ const roles = [
 ] as const;
 
 export function OverviewPage() {
+  const opening = useOpeningMotion();
   const {bundle, localContext, localContextStatus} = useArtifact();
   const reviewedCount = bundle?.burden_domains
     .flatMap(domain => domain.measures)
@@ -52,7 +53,7 @@ export function OverviewPage() {
     : null;
 
   return (
-    <section className="page page-stack overview-page">
+    <section className={"page page-stack overview-page" + (opening ? " is-opening" : "")}>
       <section className="overview-hero" aria-labelledby="overview-title">
         <div className="overview-hero-grid" aria-hidden="true" />
         <div className="overview-hero-copy">
@@ -81,7 +82,7 @@ export function OverviewPage() {
           </dl>
           <p className="overview-source-note">Grounded in <strong>MEPS</strong>, <strong>HRSA</strong> and <strong>ACS</strong> · source boundaries stay visible.</p>
         </div>
-        <OpeningProvenance />
+        <OpeningProvenance playing={opening} />
       </section>
 
       <ContextBar />
