@@ -1,0 +1,85 @@
+{
+  "schema_version": "future-experience-integration.v1",
+  "tested_code_revision": "3f4b0c662d1345c53086094fbcc1b6f198227e5e",
+  "main": "a3a94acfcfc4c0ef004d719e355f433f331b191c",
+  "reviewer_correction": "e3a83850d2ec72b5b3ce782355758f291819da21",
+  "merge": "34e200f11f2876e9323312c6223aa0fe8a94995a",
+  "pr105_unchanged": "c176e8843780039661cc1439ab56da6cb69a059f",
+  "checks": {
+    "clean_install": "PASS",
+    "typecheck": "PASS",
+    "unit_tests": 390,
+    "ai_handoff_unit_tests_included": 14,
+    "lint": "PASS",
+    "builds": [
+      "enabled",
+      "default-unset",
+      "explicit-off"
+    ],
+    "default_off_payload_bytes_identical": true,
+    "concept_browser_groups": 9,
+    "disabled_browser_groups": 2,
+    "full_browser_groups": {
+      "main": 26,
+      "default": 26,
+      "enabled": 26
+    },
+    "gate0_groups": {
+      "default": 14,
+      "enabled": 14
+    },
+    "acquisition_groups": 12,
+    "concept_axe_evaluations": 24,
+    "concept_axe_violations": 0,
+    "canonical_snapshots_equal_to_main": {
+      "default": 7,
+      "enabled": 7
+    },
+    "fresh_default_pdf_pages": 7,
+    "selected_workflow_pdf_pages": 8,
+    "pdf_text_equal_to_main_except_generation_timestamp": true,
+    "browser_exports_verified_across_six_handoff_goals": 84,
+    "handoff_payload_comparisons": 504,
+    "python_provenance_tests": 32,
+    "python_local_context_tests": 51,
+    "reviewed_sha256_manifests": 4,
+    "candidate_verifier": "PASS",
+    "synthetic_R": "PASS in exact-head GitHub workflow",
+    "external_or_runtime_requests": 0,
+    "page_errors": 0
+  },
+  "incomplete_review": {
+    "concept": {
+      "nodes": 126,
+      "measured": 48,
+      "decorative": 78,
+      "minimum_measured_ratio": 5.464198596211767
+    },
+    "overview": {
+      "nodes": 61,
+      "measured": 37,
+      "decorative": 24,
+      "minimum_measured_ratio": 4.775615176044341
+    },
+    "method": "Gate 0 raster foreground/background comparison; scroll clipped table cells into view; classify decorative aria-hidden nodes separately; this is not accessibility certification"
+  },
+  "visuals": {
+    "original_goal_screenshots_byte_identical": 16,
+    "new_tablet_screenshots": 8,
+    "new_stale_warning_screenshot": 1
+  },
+  "remote_evidence": {
+    "CI": "https://github.com/Ianyliu/diagnostic-odyssey/actions/runs/38774890784",
+    "exact_head_browser_and_R": "https://github.com/Ianyliu/diagnostic-odyssey/actions/runs/38774890811",
+    "default_artifact_id": 11992564111,
+    "demo_artifact_id": 11992644009
+  },
+  "limitations": [
+    "Manual screen-reader speech, non-Chromium/OS print and tagged PDF are not certified.",
+    "No scientific source admission, formal security/privacy audit or release authorization is inferred.",
+    "Existing Vite chunk-size warning remains.",
+    "Parallel local Gate 0 screenshot timeouts and transient worker disconnection were resolved by serial reruns without weakened assertions.",
+    "PR #105 shared-producer/projection-core extraction is planned for after its acceptance."
+  ],
+  "recommendation": "APPROVE engineering integration; public activation/merge/deployment remain separately authorized"
+}

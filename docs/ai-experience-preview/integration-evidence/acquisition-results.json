@@ -1,0 +1,54 @@
+{
+  "browser": "154.0.8037.57",
+  "results": [
+    {
+      "name": "production requests/Brief 1440 light: empty, pending, explicit selection, staleness, refresh and removal",
+      "status": "PASS"
+    },
+    {
+      "name": "synthetic admitted guidance 1440 light: exact card, disclosures, canonical JSON and print",
+      "status": "PASS"
+    },
+    {
+      "name": "production requests/Brief 1440 dark: empty, pending, explicit selection, staleness, refresh and removal",
+      "status": "PASS"
+    },
+    {
+      "name": "synthetic admitted guidance 1440 dark: exact card, disclosures, canonical JSON and print",
+      "status": "PASS"
+    },
+    {
+      "name": "production requests/Brief 820 light: empty, pending, explicit selection, staleness, refresh and removal",
+      "status": "PASS"
+    },
+    {
+      "name": "synthetic admitted guidance 820 light: exact card, disclosures, canonical JSON and print",
+      "status": "PASS"
+    },
+    {
+      "name": "production requests/Brief 820 dark: empty, pending, explicit selection, staleness, refresh and removal",
+      "status": "PASS"
+    },
+    {
+      "name": "synthetic admitted guidance 820 dark: exact card, disclosures, canonical JSON and print",
+      "status": "PASS"
+    },
+    {
+      "name": "production requests/Brief 360 light: empty, pending, explicit selection, staleness, refresh and removal",
+      "status": "PASS"
+    },
+    {
+      "name": "synthetic admitted guidance 360 light: exact card, disclosures, canonical JSON and print",
+      "status": "PASS"
+    },
+    {
+      "name": "production requests/Brief 360 dark: empty, pending, explicit selection, staleness, refresh and removal",
+      "status": "PASS"
+    },
+    {
+      "name": "synthetic admitted guidance 360 dark: exact card, disclosures, canonical JSON and print",
+      "status": "PASS"
+    }
+  ],
+  "events": []
+}

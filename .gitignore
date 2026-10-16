@@ -21,6 +21,7 @@ analysis/r/output/
 artifacts/generated/
 
 # Local tooling
+/work/
 .DS_Store
 Thumbs.db
 .vscode/

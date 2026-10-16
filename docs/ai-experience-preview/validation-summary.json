@@ -1,0 +1,144 @@
+{
+  "schema_version": "future-experience-validation.v1",
+  "base": "5cc772a198f86a92866bf14cb4ad545ff583200e",
+  "specification": "fef4f501998916c17a580120ced871e0afdfd1e9",
+  "runtime_revision": "386ef1f74e09a14e85d0baf8ce4c41c4b8f2f6e0",
+  "proof_revision": "2d23b331b4e3f6dadfee07052943eb50cde5b232",
+  "environment": {
+    "node": "24.19.0",
+    "chromium": "154.0.8037.57",
+    "playwright": "1.62.1",
+    "axe": "4.11.1"
+  },
+  "checks": {
+    "typecheck": "PASS",
+    "lint": "PASS",
+    "workspace_unit_tests": {
+      "passed": 376,
+      "failed": 0
+    },
+    "focused_unit_tests": 11,
+    "concept_browser_groups": 8,
+    "disabled_browser_groups": 2,
+    "baseline_browser_groups": 26,
+    "implementation_browser_groups": 26,
+    "governed_snapshot_comparisons": 7,
+    "default_pdf": {
+      "before_pages": 8,
+      "after_pages": 8,
+      "text_equal_except_generation_timestamp": true
+    },
+    "axe": {
+      "evaluations": 16,
+      "violations": 0,
+      "incomplete_findings": 16
+    },
+    "external_or_runtime_requests": 0,
+    "page_errors": 0,
+    "default_and_explicit_off_byte_identical": true,
+    "reviewed_sha256_manifests": 4,
+    "python_provenance_tests": 32,
+    "python_local_context_tests": 51,
+    "candidate_verifier": "PASS"
+  },
+  "screenshots": [
+    {
+      "file": "screenshots/comparison-320-dark.png",
+      "sha256": "8591fcd9ff7bff1a08f1a5d2c7e415aa242657ceb98ba7e0fd471e4e1a83414d"
+    },
+    {
+      "file": "screenshots/comparison-two-options.png",
+      "sha256": "b0421433360985a6c88cc5256b8cb6128bc68988e16dca63c95e00261420a557"
+    },
+    {
+      "file": "screenshots/default-build-brief.png",
+      "sha256": "024ade8482d2f2a64588f59d0fa6f2614ab0bd2bddb5cc9df16e8fb04e058fbb"
+    },
+    {
+      "file": "screenshots/goal-1-1440-dark.png",
+      "sha256": "769415ec6efcc16f8120570337b11dc4030f50e2785f78ab8e38705f02b040d7"
+    },
+    {
+      "file": "screenshots/goal-1-1440-light.png",
+      "sha256": "acf7ada7de5bcfcf5f69f029b9c5382a25857da0e2dfb2f39743c1f2e37328dd"
+    },
+    {
+      "file": "screenshots/goal-1-390-dark.png",
+      "sha256": "1b24731a3d6661684347abcd0f0d9fdfc8c693f96ffb544755d14942919d5163"
+    },
+    {
+      "file": "screenshots/goal-1-390-light.png",
+      "sha256": "14a9f578dab9ea25d0280c404192551fbd301f63295fdc8c795458a38843748e"
+    },
+    {
+      "file": "screenshots/goal-2-1440-dark.png",
+      "sha256": "afa81eb410aafa26e8fd18573081d7480fbab1824225b9c131b14a088f803cf0"
+    },
+    {
+      "file": "screenshots/goal-2-1440-light.png",
+      "sha256": "ce05e3953e2802727df39f266b4c1e0bae67d65e55f5369d7458997dfb44f5ca"
+    },
+    {
+      "file": "screenshots/goal-2-390-dark.png",
+      "sha256": "669a0562db4f5826f4ce68225c4ec28402ead3417eb4bcc95ee9c7245758fb4c"
+    },
+    {
+      "file": "screenshots/goal-2-390-light.png",
+      "sha256": "7f1131e14bacb9464e3437f557d9463a4595fdc717c5f9a5c3a538843082ed9b"
+    },
+    {
+      "file": "screenshots/goal-3-1440-dark.png",
+      "sha256": "31e2121aa4856617e93fc23cb2f2e70e621519a3539ccbb1158b39ea487dfca9"
+    },
+    {
+      "file": "screenshots/goal-3-1440-light.png",
+      "sha256": "78c78f12acd16ff52c2d1d512a7ebe1a11d419d9f4b33031bc81d0f74d31a48c"
+    },
+    {
+      "file": "screenshots/goal-3-390-dark.png",
+      "sha256": "da96cabb7b1003f038fcd57e3457fbf37d13c2ee1c4f82caa9a31d0016015733"
+    },
+    {
+      "file": "screenshots/goal-3-390-light.png",
+      "sha256": "bd25258b6a2a58a10b022d5cc981a12bb07fec224e839dfd93af746a44419222"
+    },
+    {
+      "file": "screenshots/goal-4-1440-dark.png",
+      "sha256": "af71d03acead8465233690501de5e2c179b12589efb83c76eeeb106dc62462bf"
+    },
+    {
+      "file": "screenshots/goal-4-1440-light.png",
+      "sha256": "75b0ef3133475e82387efe3fd6dd7dd482666b9463d9425eef62126d3467f284"
+    },
+    {
+      "file": "screenshots/goal-4-390-dark.png",
+      "sha256": "69c3d52eaf3d10ebec27d85a684b1aaf1779bcf728ec55367388c8036082f98b"
+    },
+    {
+      "file": "screenshots/goal-4-390-light.png",
+      "sha256": "d68c3fb65bf676df0b31aa14ba80d90ccd159a9df594c7526683d5c7cb6ee78d"
+    },
+    {
+      "file": "screenshots/research-expanded.png",
+      "sha256": "f586ca06e6aff40930ba025b821cb5d0fb61d9b94b7d17551e908aaf439bbbf2"
+    }
+  ],
+  "boundaries": {
+    "live_ai": false,
+    "retrieval": false,
+    "source_admission": false,
+    "analyst_state_mutations": false,
+    "canonical_export_changes": false,
+    "merged": false,
+    "deployed": false,
+    "static_synchronization": false,
+    "external_submission": false
+  },
+  "limitations": [
+    "Automated accessibility is not screen-reader or non-Chromium certification.",
+    "Axe incomplete findings retained for human judgment.",
+    "Existing Vite main-chunk-size warning.",
+    "Local R suite not rerun; existing CI retains it.",
+    "Independent review and exact-revision release authorization remain separate."
+  ]
+}
