@@ -1,5 +1,8 @@
 # Analyze with AI — PR A
 
+This page records the merged PR A foundation. See [PR B](PR-B.md) for the
+Planning Brief preview, copy/download interface, source-drift rules and validation.
+
 This is the read-only data/prompt core for the October 15, 2026 v1.0 handoff
 specification. It is not connected to the application UI. No model, provider,
 clipboard, download, network, credential, storage or telemetry code is introduced.

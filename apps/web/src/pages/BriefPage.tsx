@@ -3,6 +3,7 @@ import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { buildPlanningBrief, serializeBriefJson } from "@diagnostic-odyssey/brief-core";
 import { AcquisitionGuidanceCard } from "../components/AcquisitionGuidanceCard";
+import { AiHandoff } from "../components/AiHandoff";
 import {
   canDisplayDistributionSummary,
   type Estimate
@@ -58,13 +59,16 @@ export function BriefPage() {
   const pageRef = useRef<HTMLElement>(null);
   const printDisclosureState = useRef<ReturnType<typeof createBriefPrintDisclosureState> | null>(null);
   const {
+    status,
     bundle,
     scenario,
     scenarioResult,
     localContext,
     localContextStatus,
     selectedLocalContext,
+    selectedLocalContextIds,
     pilotLocalContext,
+    pilotLocalContextId,
     availableDataRequests,
     briefDataRequestIds,
     selectedDataRequests
@@ -207,6 +211,10 @@ export function BriefPage() {
         </div>
         </div>
         <div className="brief-export-actions">
+          <AiHandoff brief={brief} sourceState={{status, localContextStatus,
+            localArtifactVersion: localContext?.manifest.artifact_version ?? null,
+            scenario, scenarioValid: !scenario || !!scenarioResult,
+            selectedLocalContextIds, pilotLocalContextId, briefDataRequestIds}} />
           <button className="button" onClick={exportJson}>Export JSON companion</button>
           <button className="button secondary" onClick={printBrief}>Print / save PDF</button>
         </div>
