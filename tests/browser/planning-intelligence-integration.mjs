@@ -117,6 +117,47 @@ function envelope(text) {
   assert.ok(match, "AI handoff envelope delimiters must be present");
   return JSON.parse(match[1]);
 }
+// Retain the useful fresh-state parity assurance from superseded PR #111, while
+// exercising it inside the accepted #110 four-build integration test instead of
+// reintroducing its older feature flags, UI, or redundant Git history.
+await check("fresh Brief: six complete AI goals match canonical export and downloaded Markdown", async page => {
+  const original = await canonical(page);
+  await page.getByRole("button", {name: "Analyze with AI", exact: true}).click();
+  const dialog = page.getByRole("dialog", {name: "Analyze with AI", exact: true});
+  await dialog.waitFor();
+  const selectGoal = dialog.getByLabel("Analysis goal");
+  const preview = dialog.getByLabel(/^Complete prompt ·/);
+  const copy = dialog.getByRole("button", {name: "Copy complete prompt", exact: true});
+  const download = dialog.getByRole("button", {name: "Download Markdown", exact: true});
+  for (const goal of ["comprehensive", "executive", "evidence_audit", "pilot_planning", "data_gaps", "technical"]) {
+    if (await selectGoal.inputValue() !== goal) {
+      await selectGoal.selectOption(goal);
+      assert.equal(await copy.isDisabled(), true, "goal change must disable stale transfers");
+      assert.equal(await download.isDisabled(), true, "goal change must disable stale downloads");
+      await dialog.getByRole("button", {name: "Regenerate preview", exact: true}).click();
+    }
+    assert.equal(await copy.isDisabled(), false, "generated snapshot is transferable");
+    const text = await preview.inputValue();
+    assert.match(text, /BEGIN_DIAGNOSTIC_ODYSSEY_DATA/, "complete JSON delimiter is present");
+    assert.match(text, /Gross all-cause burden is not illness-attributable/, "scientific guardrail survives");
+    const handoff = envelope(text);
+    assert.equal(handoff.analysis_goal, goal);
+    assert.equal(handoff.data_scope, "current_brief");
+    assert.equal(handoff.sensitivity_status, "not_in_planning_brief");
+    assert.equal(handoff.provenance.national_artifact_version, original.artifact_version);
+    assert.equal(handoff.payload.artifact_version, original.artifact_version);
+    const payload = {...handoff.payload};
+    delete payload.generated_at;
+    assert.deepEqual(payload, original, "all selected, eligible Brief fields match the canonical export");
+    const pending = page.waitForEvent("download");
+    await download.click();
+    const fullMarkdown = await readFile(await (await pending).path(), "utf8");
+    assert.equal(fullMarkdown, text, "download is byte-for-byte identical without truncation");
+  }
+  await dialog.getByRole("button", {name: "Close Analyze with AI", exact: true}).click();
+  assert.deepEqual(await canonical(page), original, "six goal previews never mutate the Brief");
+});
+
 await check("stale data request forces a current AI handoff snapshot; exploration preserves canonical state", async page => {
   await nav(page, "Local context");
   await page.locator('input[id^="select-local-context-"]').first().check();
