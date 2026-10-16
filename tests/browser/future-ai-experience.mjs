@@ -116,7 +116,7 @@ if (disabled) {
     await page.getByLabel("Research topic", {exact: true}).selectOption("coordination"); assert.equal(await page.locator(".fc-study").count(), 1);
     await page.getByRole("button", {name: "Transferability", exact: true}).click(); assert.match(await page.locator(".fc-lens-content").innerText(), /Geography & health system/);
     await page.getByRole("button", {name: "Sources & limits"}).click(); assert.match(await page.locator(".fc-lens-content").innerText(), /None admitted/);
-    await page.getByText("Open investigation questions", {exact: true}).click(); assert.match(await page.locator(".fc-study").innerText(), /digital access/);
+    await page.getByText("Questions for an independent reviewer", {exact: true}).click(); assert.match(await page.locator(".fc-study").innerText(), /digital access/);
     assert.match(await page.locator(".fc-study").innerText(), /Illustrative \/ not source-verified/);
     assert.match(await page.locator(".fc-study").innerText(), /Source: not reviewed|None admitted|not independently admitted|not admitted/i);
     assert.ok(await page.locator(".fc-study a[href^=\"https://doi.org/\"]").count() >= 2, "worked sample must have source DOIs");
