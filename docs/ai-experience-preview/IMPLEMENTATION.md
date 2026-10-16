@@ -9,14 +9,16 @@ npm ci
 VITE_FUTURE_AI_EXPERIENCE_DEMO=on npm run dev
 ```
 
-Open `/brief` and choose **Explore future AI concept**, or open `/concept/future-ai` directly. The entry is available only in the opted-in build. For a production-build demonstration:
+Open `/brief` and choose **Explore future AI concept**, or open `/concept/future-ai` directly. The visitor-facing entry and show/hide checkbox are available in ordinary builds unless the explicit build-time kill switch is set to `off`. For a production-build demonstration:
 
 ```sh
 VITE_FUTURE_AI_EXPERIENCE_DEMO=on npm run build
 npm exec --workspace @diagnostic-odyssey/web -- vite preview --host 127.0.0.1 --port 4175
 ```
 
-The feature flag defaults **off**. Only the exact value `on` enables it; URL parameters, saved settings and browser interactions cannot activate it. With the flag absent or `off`, the concept route redirects to `/brief`, no entry is rendered, and no concept JavaScript, CSS or fixture text is shipped. Tested absent-flag and explicit-off builds have identical bytes across all six payload files.
+**October 15 release-policy update:** The illustrative concept is now available by default in public builds, with a **Show future AI concept** checkbox on `/brief` (initially checked). Visitors can turn it off, re-enable it, or hide it from the concept page. The choice persists while navigating the running app but is not stored or transmitted; reloading starts with the concept visible. This is a visual/demo preference, **not** permission to run a model or admit new evidence. No provider key, inference endpoint or billable model call exists.
+
+**Build-level emergency kill switch:** `VITE_FUTURE_AI_EXPERIENCE_DEMO=off` excludes the route, optional import, interface toggle and concept fixtures entirely at build time. `on` or an absent flag includes the concept. QA uses an explicit `off` build to verify excluded assets and redirect behavior. A visitor cannot override build-level `off` in the browser; build/deploy configuration determines whether the concept is available.
 
 ## What is real, illustrative, or future
 
@@ -67,4 +69,4 @@ Also captured: desktop dark, mobile light, [expanded research](screenshots/resea
 
 This is branch-only review work. PR #105 and PR #106 retain their own history and review status. Issues #68, #26, #23 and #100 remain independently governed; no issue is closed by this work. A public release requires separate authorization for the exact reviewed revision and build. Nothing has been merged, synchronized to the static branch, deployed to Cloudflare or submitted externally.
 
-Rollback is to omit `VITE_FUTURE_AI_EXPERIENCE_DEMO` (or set `off`) and rebuild. There are no state migrations or stored concept preferences to undo. The existing product, canonical Brief, reviewed artifacts and analyst-controlled requests continue through their existing workflows.
+Rollback is to set `VITE_FUTURE_AI_EXPERIENCE_DEMO=off` and rebuild; omitting the variable intentionally includes the concept. There are no state migrations or stored concept preferences to undo. The existing product, canonical Brief, reviewed artifacts and analyst-controlled requests continue through their existing workflows.
