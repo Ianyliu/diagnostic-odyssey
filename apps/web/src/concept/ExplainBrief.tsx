@@ -25,6 +25,7 @@ export function ExplainBrief({snapshot}: {snapshot: ConceptBriefSnapshot}) {
   return <>
     <ViewHeading eyebrow="01 / The current evidence story" title="Start with what is known.">Read the current Brief through distinct evidence roles. These values come from the validated product; the future research question below is illustrative.</ViewHeading>
     <section className="fc-role-map" aria-label="Explore current Brief evidence roles"><div className="fc-role-map-nodes" role="group" aria-label="Evidence roles">{roles.map((item, i) => <button key={item.id} aria-pressed={role === item.id} aria-controls="fc-role-explanation" onClick={() => setRole(item.id)}><span className={`fc-role-index fc-role-index-${item.id}`}>0{i + 1}</span><span><strong>{item.title}</strong><small>{item.status}</small></span></button>)}</div><div id="fc-role-explanation" className="fc-role-explanation" aria-live="polite"><p>{active.explanation}</p><Link to={active.href}>{active.action} →</Link></div></section>
+    <DemoLiteratureNotice />
     <section className="fc-demo-analysis" aria-label="Example evidence-grounded explanation">
       <div className="fc-section-title"><h3>Example analyst narrative</h3><span className="fc-muted">Static explanatory template + current reviewed Brief data</span></div>
       <div className="fc-two-grid">
@@ -48,7 +49,6 @@ export function ExplainBrief({snapshot}: {snapshot: ConceptBriefSnapshot}) {
         </div>
       </div>
     </section>
-    <DemoLiteratureNotice />
     <section className="fc-real-lane" aria-label="Current validated national Brief">
       <div className="fc-section-title"><h3>National burden, in its own units</h3><RoleLabel kind="reviewed">Current reviewed Brief</RoleLabel></div>
       <p className="fc-muted">One finding per available domain in artifact order. Descriptive highlights, with no ranking across measures.</p>
