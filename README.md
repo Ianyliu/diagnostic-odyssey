@@ -11,6 +11,7 @@
 <p>
   <a href="#quick-start">Quick start</a> ·
   <a href="#the-workflow">The workflow</a> ·
+  <a href="#planning-intelligence-three-distinct-tools">Planning intelligence</a> ·
   <a href="#scientific-guardrails">Scientific guardrails</a> ·
   <a href="docs/architecture.md">Architecture</a>
 </p>
@@ -20,14 +21,23 @@
 ![Node.js 22+](https://img.shields.io/badge/Node.js-22%2B-1f2937?style=for-the-badge&logo=node.js&logoColor=white)
 ![React + TypeScript](https://img.shields.io/badge/React%20%2B%20TypeScript-0f766e?style=for-the-badge&logo=react&logoColor=white)
 ![R pipeline](https://img.shields.io/badge/analysis-R-276DC3?style=for-the-badge&logo=r&logoColor=white)
-![Status](https://img.shields.io/badge/status-working%20foundation-f59e0b?style=for-the-badge)
+![Operation](https://img.shields.io/badge/AI-no%20live%20inference-153552?style=for-the-badge)
 
 </div>
 
 <br>
 
 > [!IMPORTANT]
-> **Current status:** the working decision-workspace foundation runtime-loads a reviewed national 2024 MEPS Long COVID burden artifact and a reviewed **West Virginia state-level** HRSA + ACS implementation-context artifact. The 21 national `reviewed_released` estimates remain unchanged: local context never rescales or mutates national burden.
+> **Current evidence:** **21** reviewed national 2024 MEPS Long COVID estimates · **34** reviewed West Virginia state-level HRSA + ACS indicators · **2** descriptive Typical Ranges. These are separate evidence layers: local context never rescales national burden, and Typical Ranges are not intervention-effect estimates.
+
+![Diagnostic Odyssey: evidence roles remain distinct in a traceable planning workspace](docs/audit-2026-10-16/screenshots/after-overview-light.png)
+
+<details>
+<summary>See the workspace in dark mode</summary>
+
+![Diagnostic Odyssey in dark mode](docs/audit-2026-10-16/screenshots/after-overview-dark.png)
+
+</details>
 
 ## Why this exists
 
@@ -99,11 +109,39 @@ The product is designed to help a team move from **“how large is the problem?�
 
 The analyst must explicitly opt in before a current data request enters the Planning Brief. Sensitivity testing is assumption testing, not evidence-derived effect estimation.
 
+## Planning intelligence: three distinct tools
+
+The integrated experience from [#110](https://github.com/Ianyliu/diagnostic-odyssey/pull/110) and [#112](https://github.com/Ianyliu/diagnostic-odyssey/pull/112) preserves the same canonical Brief across all three tools.
+
+| Tool | Implemented behavior | Boundary |
+| --- | --- | --- |
+| **Planning Insights** | Deterministic summaries of the current Brief, readiness, gaps and traceable planning implications; an opt-in printed summary | No model inference, forecasts or causal estimates |
+| **Analyze with AI** | Six analysis goals; preview, copy or download a complete Markdown handoff with canonical JSON; changed choices require explicit regeneration | The user transfers it to their own AI tool. The app calls no provider and consumes no tokens |
+| **Future AI concept** | Four interactive demonstrations: explain a Brief, explore interventions, identify gaps and compare strategies | Illustrative, scientifically unadmitted content. Previewed capabilities are not implemented live research or inference |
+
+When the concept is available, visitors can use **Show future AI concept** on the Brief or **Hide future AI concept** inside it. Hiding it preserves analyst state. Demonstrations never admit evidence or automatically change data requests.
+
+### Build-time availability
+
+Both optional surfaces are available unless their flag is exactly `off`. The user-operated AI handoff remains available in every combination.
+
+| Build variable | Unset / `on` | `off` |
+| --- | --- | --- |
+| `VITE_PLANNING_INSIGHTS_PREVIEW` | Deterministic Insights and opt-in print summary | Insights hidden |
+| `VITE_FUTURE_AI_EXPERIENCE_DEMO` | Concept route and visitor visibility controls | Concept chunk excluded; route returns to Brief |
+
+```bash
+# Example: build only the core workflow and user-operated handoff
+VITE_PLANNING_INSIGHTS_PREVIEW=off VITE_FUTURE_AI_EXPERIENCE_DEMO=off npm run build
+```
+
+These public Vite flags are baked into the build; they are not secrets or live-AI switches. Building locally does not deploy anything. Hosting configuration and production release require separate review.
+
 ## Quick start
 
 ### Run locally
 
-**Requirement:** Node.js 22 or newer.
+**Runtime:** Node.js **22** is the tested development/CI baseline (`engines` permits newer versions). R and Python are not needed to view the app.
 
 ```bash
 npm ci
@@ -114,6 +152,14 @@ Open the local URL printed by Vite, usually [`http://localhost:5173`](http://loc
 
 ### Run the checks
 
+The full unit suite includes Python-backed JSON Schema agreement tests. Install Python 3 and activate a virtual environment so `python3` resolves to it:
+
+```bash
+python3 -m venv .venv
+. .venv/bin/activate
+python3 -m pip install jsonschema==4.26.0
+```
+
 ```bash
 npm run typecheck
 npm test
@@ -121,7 +167,7 @@ npm run lint
 npm run build
 ```
 
-These commands cover TypeScript packages, web integration tests, linting, and the production build.
+These commands cover TypeScript, the complete unit suite, ESLint and the production build. Schema subprocesses have a 15-second bound and report executable, timeout, exit and stderr diagnostics; a missing Python dependency is a failure, not a skipped test. Browser acceptance is separate: see [testing instructions](docs/testing.md) and the [audit verification matrix](docs/audit-2026-10-16/verification.md).
 
 ### Use the dev container
 
@@ -136,7 +182,14 @@ The container is a convenience, not a requirement. Raw research data remains loc
 
 ## Analytical pipeline
 
-The offline MEPS pipeline requires R and official AHRQ data. It writes a preliminary candidate artifact locally:
+The offline MEPS pipeline requires R, the `haven`, `jsonlite`, `survey` and `testthat` packages, and official AHRQ data. Synthetic tests need no microdata:
+
+```bash
+Rscript analysis/r/install_dependencies.R
+Rscript analysis/r/tests/run_tests.R
+```
+
+To generate a **preliminary** candidate locally:
 
 ```bash
 Rscript analysis/r/install_dependencies.R
@@ -166,7 +219,9 @@ The workflow generates a **preliminary** candidate and uploads aggregate review 
 - Planning Brief assembly, JSON companion export, and browser print / save-PDF path.
 - Export filtering that excludes illustrative and unreleased estimates from released findings.
 - Deterministic evidence admissibility gates and a Long COVID reference condition adapter.
-- Figma-derived design tokens, coarse responsive presentation, and GitHub Actions CI.
+- Coordinated opening/interaction motion, reduced-motion support, light/dark themes, keyboard navigation and responsive layouts.
+- Deterministic Planning Insights, user-operated AI handoff and visitor-controlled Future AI demonstrations.
+- GitHub Actions CI and production-browser regression suites.
 
 ## What is intentionally incomplete
 
@@ -176,10 +231,10 @@ The following boundaries are explicit rather than silently implied:
 - PLACES/CMS local-context ingestion.
 - Reviewed external literature ledger and source extraction workflow.
 - Evidence-backed bounded scenario parameters.
-- Rich provenance interactions and rich HTML/PDF/Markdown formatting.
+- Publication-grade, tagged accessible PDFs beyond browser print; richer provenance interaction.
 - ME/CFS analytical estimates.
-- Pixel-level Figma parity and full accessibility QA.
-- Optional grounded AI. The core product does not require AI.
+- Broader assistive-technology and cross-browser certification.
+- Embedded grounded AI, autonomous literature acquisition, and provider integrations. No live AI service is implemented or required.
 
 The checked-in artifact under `artifacts/examples/fixture-2026-09-v1/` is **illustrative development/test data only** and is deliberately barred from analytical export.
 
@@ -204,7 +259,7 @@ Read the full [scientific guardrails](docs/scientific-guardrails.md) before inte
 
 ## Visual QA
 
-The current route, viewport, theme, and reduced-motion matrix passed for all nine product surfaces across 1440px, 768px, and 390px viewports. See the [Gate 0 route / viewport / appearance matrix](artifacts/generated/gate0-20261011-b99d1c7/route-viewport-mode-matrix.md) for the full evidence set and screenshot index.
+See the [current audit and before/after gallery](docs/audit-2026-10-16/README.md) for exact revisions, commands, results and limitations. The earlier [Gate 0 matrix](artifacts/generated/gate0-20261011-b99d1c7/route-viewport-mode-matrix.md) is historical evidence for its recorded revision, not a claim about every later change.
 
 ## Repository map
 
@@ -217,6 +272,9 @@ packages/
   evidence-core/             reviewer/admissibility gates
   brief-core/                planning brief assembly + export filtering
   condition-adapters/        condition reuse boundary
+  acquisition-hints/         governed acquisition guidance
+  planning-guidance/         deterministic planning contracts
+  narrative-references/      reviewed-reference contracts and provenance
   ui/                        design tokens
 analysis/
   r/                         offline survey-analysis entry points
@@ -264,4 +322,4 @@ Do not commit raw public-use microdata, large intermediate files, or large gener
 
 ## AI boundary
 
-AI may later assist with reviewed evidence extraction, applicability flags, or language drafting. It may not calculate burden estimates, change scenario arithmetic, assign final release/admissibility status, or bypass deterministic export gates.
+There is **no embedded AI inference**, external provider request, API key or model-token consumption. The concept is an illustrative preview; the Markdown handoff is explicitly user-operated. Any future service must preserve deterministic arithmetic, human evidence admission and export eligibility gates. Literature demonstrations are not admitted reviewed evidence.
