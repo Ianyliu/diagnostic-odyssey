@@ -34,6 +34,10 @@ for filename in ["summary-off.pdf", "summary-on.pdf", "summary-all-context.pdf",
         else:
             assert "Planning insights summary" in text
             summary = text.split("Decision state", 1)[0]
+            assert "Reviewed record:" in summary, (filename, "Missing reviewed estimate identifiers")
+            assert "exact source locator" in summary, (filename, "Missing full-provenance handoff")
+            if filename == "summary-on.pdf":
+                assert len(pdf.pages) <= 8, (filename, "Basic opt-in summary exceeds one additional page", len(pdf.pages))
             assert "Universe:" in summary and "Denominator:" in summary
             for unaccepted_prompt in ["Verify available capacity", "Verify pathway timing", "Possible source owner"]:
                 assert unaccepted_prompt not in summary

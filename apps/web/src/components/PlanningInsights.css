@@ -113,7 +113,10 @@
   .insights-print-summary h3 { font-size: 10pt; margin: 5pt 0 3pt; break-after: avoid; }
   .insights-print-summary p { margin: 2pt 0; overflow-wrap: anywhere; }
   .insights-print-summary > section { border-top: 1px solid #b2b8b3; padding-top: 3pt; }
-  .print-insight-planning { break-inside: avoid; }
+  /* Let long opt-in summaries flow rather than relocating a whole section. */
+  .print-insight-planning { break-inside: auto; }
+  .print-insight-provenance-note { margin: 4pt 0 5pt; font-size: 7pt; color: #465660; }
+  .print-insight-finding { padding-bottom: 1pt; }
   .print-insight-finding { margin: 5pt 0; break-inside: avoid; }
   .print-insight-finding strong, .print-insight-finding span { display: block; overflow-wrap: anywhere; }
   .print-insight-finding span { font-size: 7pt; color: #465660; }

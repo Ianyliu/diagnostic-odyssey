@@ -32,10 +32,12 @@ export function PlanningInsightsPrintSummary({model}: {model: PlanningInsightsMo
       {model.national.highlights.length ? model.national.highlights.map(({estimate, source}) => <div className="print-insight-finding" key={estimate.estimate_id}>
         <strong>{estimate.label}: {formatEstimateValue(estimate)}</strong>
         <span>{estimate.unit} · {formatEstimateInterval(estimate)}</span>
-        <span>Universe: {estimate.universe} · Denominator: {estimate.denominator}</span>
-        <span>{estimate.estimate_id} · {source.source_ref} · {estimate.source_locator ?? source.locator}</span>
+        <span>Reviewed record: {estimate.estimate_id} · Source: {source.source_ref}</span>
       </div>) : <p>{model.national.explanation}</p>}
-      {model.national.highlights.length > 0 && <p>{model.national.explanation}</p>}
+      {model.national.highlights.length > 0 && <>
+        <p className="print-insight-provenance-note">Universe: population definitions, sampling and eligibility restrictions vary by estimate. Denominator: use the matching reviewed record IDs above to inspect the complete denominator and exact source locator in the validated national artifact and Evidence view. This is a compact synopsis; the reviewed Brief below remains authoritative.</p>
+        <p>{model.national.explanation}</p>
+      </>}
     </section>
     <section aria-labelledby="print-insight-local">
       <h3 id="print-insight-local">Selected local implementation context</h3>
