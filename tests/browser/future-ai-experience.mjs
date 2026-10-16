@@ -116,10 +116,14 @@ if (disabled) {
     await page.getByLabel("Research topic", {exact: true}).selectOption("coordination"); assert.equal(await page.locator(".fc-study").count(), 1);
     await page.getByRole("button", {name: "Transferability", exact: true}).click(); assert.match(await page.locator(".fc-lens-content").innerText(), /Geography & health system/);
     await page.getByRole("button", {name: "Sources & limits"}).click(); assert.match(await page.locator(".fc-lens-content").innerText(), /None admitted/);
-    await page.getByText("Open investigation questions", {exact: true}).click(); assert.match(await page.locator(".fc-study").innerText(), /digital access/);
+    await page.getByText("Questions for an independent reviewer", {exact: true}).click(); assert.match(await page.locator(".fc-study").innerText(), /digital access/);
     assert.match(await page.locator(".fc-study").innerText(), /Illustrative \/ not source-verified/);
-    assert.equal(await page.locator(".fc-study a").count(), 0);
+    assert.match(await page.locator(".fc-study").innerText(), /Source: not reviewed|None admitted|not independently admitted|not admitted/i);
+    assert.ok(await page.locator(".fc-study a[href^=\"https://doi.org/\"]").count() >= 2, "worked sample must have source DOIs");
+    assert.equal(await page.locator(".fc-study a[href*=\"?\"]").count(), 0, "no prompt or query data in source links");
     await page.evaluate(() => window.scrollTo(0, 0));
+    assert.match(await page.locator(".fc-demo-insight").innerText(), /rehabilitation trial|source-grounded|not directly|coordination/i);
+    assert.match(await page.locator(".fc-lens-content").innerText(), /post-hospital|hospital|England and Wales/i);
     await page.screenshot({path: `${output}/research-expanded.png`, fullPage: true});
   });
   await check("all map decisions change information needs; verification nodes update inspector", async () => {
@@ -127,6 +131,8 @@ if (disabled) {
     for (const [decision, text] of [["Assess implementation feasibility", "Staffed capacity"], ["Assess outreach feasibility", "Operational counts"], ["Understand recognition-to-referral timing", "Timestamped pathway"]]) {
       await page.getByRole("radio", {name: decision}).check(); assert.match(await page.locator(".fc-map-need").innerText(), new RegExp(text));
     }
+    assert.match(await page.locator(".fc-demo-analysis").innerText(), /Operational definition to verify/);
+    assert.match(await page.locator(".fc-demo-analysis").innerText(), /Example output if data become available/);
     await page.getByRole("button", {name: /Coverage & denominators/}).click(); assert.match(await page.locator("#fc-dependency-inspector").innerText(), /de-duplication/);
     await page.getByRole("button", {name: /Source & stewardship/}).click(); assert.match(await page.locator("#fc-dependency-inspector").innerText(), /privacy review/);
     await page.getByRole("link", {name: "Open real Data Requests"}).click(); assert.equal(new URL(page.url()).pathname, "/data-requests");
@@ -138,7 +144,9 @@ if (disabled) {
     assert.equal(await page.locator(".fc-strategy").count(), 2); assert.equal(await page.locator("thead th").count(), 3);
     assert.equal(await page.getByRole("checkbox", {name: "Care navigation", exact: true}).isDisabled(), true);
     await page.getByLabel("Comparison lens").selectOption("evidence"); assert.equal(await page.locator("tbody tr").count(), 3);
-    assert.match(await page.locator("tbody").innerText(), /Not established/); assert.match(await page.locator("tbody").innerText(), /Not evaluated/);
+    assert.match(await page.locator("tbody").innerText(), /No matched comparative estimate/); assert.match(await page.locator("tbody").innerText(), /Not evaluated for local Pilot/);
+    assert.match(await page.locator(".fc-demo-analysis").innerText(), /Not a winner/);
+    assert.equal(await page.locator(".fc-strategy .fc-demo-insight").count(), 2);
     await page.getByText("Inspect transferability questions", {exact: true}).first().click();
     assert.match(await page.locator(".fc-strategy").first().innerText(), /Geography & health system/);
     await page.getByLabel("Comparison lens").selectOption("implementation"); assert.equal(await page.locator("tbody tr").count(), 3);

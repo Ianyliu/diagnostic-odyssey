@@ -1,5 +1,7 @@
 # Future AI Experience Preview — product specification (documentation only)
 
+> **October 15, 2026 implementation update:** The historical specification below described deliberately empty publication fields before an external research example had been manually checked. The separate [worked literature illustration](literature-example-20261015.md) now populates a **strictly isolated static demo-only presentation layer** with exact public-paper DOI links and design/limitations, *without* entering the reviewed source registry, quantitative modeling, live retrieval, or approved recommendations. Historical statements below requiring all display cards to have no citations apply to the **original unadmitted JSON storyboard fixture**, which remains unchanged; they do not forbid the new labeled external-source example. All governance and no-provider/no-analyst-mutation restrictions still apply.
+
 **Status:** design/handoff only. **No implementation, live AI, source admission, model-provider egress, or release approval.**
 **Target:** optional **October 22, 2026** concept demonstration; keep the **October 15 Phase 2** submitted artifact unchanged.
 **Baseline for this specification:** `main@5cc772a198f86a92866bf14cb4ad545ff583200e`.
