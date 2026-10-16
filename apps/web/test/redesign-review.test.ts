@@ -31,7 +31,7 @@ test("overview keeps the workflow visible without promotional filler", () => {
   assert.doesNotMatch(overview, /overview-final-cta/);
   assert.match(css, /radial-gradient/);
   assert.match(css, /workspace-preview/);
-  assert.match(css, /\.overview-destinations\s*\{[\s\S]*background:\s*#f1ede4/);
+  assert.match(css, /\.overview-destinations\s*\{[^}]*background:\s*color-mix\(in srgb, var\(--do-assumption-bg\) 35%, var\(--do-canvas\)\)/);
   assert.doesNotMatch(css, /linear-gradient\(135deg, #153552, #102a3d 72%\)/);
   assert.match(css, /@media \(prefers-reduced-motion: reduce\)/);
 });
