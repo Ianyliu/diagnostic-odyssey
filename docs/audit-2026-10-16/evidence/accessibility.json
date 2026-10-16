@@ -1,0 +1,62 @@
+{
+  "browser": "154.0.8037.57",
+  "results": [
+    {
+      "name": "C-01 390px light reduce",
+      "status": "PASS"
+    },
+    {
+      "name": "C-01 390px light no-preference",
+      "status": "PASS"
+    },
+    {
+      "name": "C-01 390px dark reduce",
+      "status": "PASS"
+    },
+    {
+      "name": "C-01 390px dark no-preference",
+      "status": "PASS"
+    },
+    {
+      "name": "C-01 390px system-light reduce",
+      "status": "PASS"
+    },
+    {
+      "name": "C-01 390px system-light no-preference",
+      "status": "PASS"
+    },
+    {
+      "name": "C-01 390px system-dark reduce",
+      "status": "PASS"
+    },
+    {
+      "name": "C-01 390px system-dark no-preference",
+      "status": "PASS"
+    },
+    {
+      "name": "C-02 1440px light",
+      "status": "PASS"
+    },
+    {
+      "name": "C-02 1440px dark",
+      "status": "PASS"
+    },
+    {
+      "name": "C-02 768px light",
+      "status": "PASS"
+    },
+    {
+      "name": "C-02 768px dark",
+      "status": "PASS"
+    },
+    {
+      "name": "C-02 390px light",
+      "status": "PASS"
+    },
+    {
+      "name": "C-02 390px dark",
+      "status": "PASS"
+    }
+  ],
+  "errors": []
+}

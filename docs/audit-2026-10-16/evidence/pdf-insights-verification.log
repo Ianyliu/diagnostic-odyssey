@@ -1,0 +1,25 @@
+{
+  "passed": true,
+  "results": [
+    {
+      "file": "summary-off.pdf",
+      "pages": 7,
+      "minimum_footer_clearance_pt": 23.83918379460067
+    },
+    {
+      "file": "summary-on.pdf",
+      "pages": 8,
+      "minimum_footer_clearance_pt": 39.552419197206746
+    },
+    {
+      "file": "summary-all-context.pdf",
+      "pages": 24,
+      "minimum_footer_clearance_pt": 23.288204830932955
+    },
+    {
+      "file": "summary-extreme.pdf",
+      "pages": 8,
+      "minimum_footer_clearance_pt": 29.052419634706666
+    }
+  ]
+}

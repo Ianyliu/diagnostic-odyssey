@@ -1,0 +1,24 @@
+
+> diagnostic-odyssey@0.1.0 build
+> npm run build --workspace @diagnostic-odyssey/web
+
+
+> @diagnostic-odyssey/web@0.1.0 build
+> vite build
+
+vite v6.4.4 building for production...
+transforming...
+✓ 149 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                    1.64 kB │ gzip:   0.71 kB
+dist/assets/FutureAIExperiencePage-BD3O7tVr.css   20.66 kB │ gzip:   4.38 kB
+dist/assets/index-BSvvdTCe.css                   122.02 kB │ gzip:  21.15 kB
+dist/assets/FutureAIExperiencePage-H7YvBZwu.js    38.37 kB │ gzip:  10.88 kB
+dist/assets/index-COAcdfLF.js                    571.50 kB │ gzip: 137.88 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 12.11s

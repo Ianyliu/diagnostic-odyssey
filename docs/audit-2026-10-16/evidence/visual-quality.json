@@ -1,0 +1,180 @@
+{
+  "results": [
+    {
+      "width": 320,
+      "theme": "light",
+      "status": "PASS",
+      "geometry": [
+        {
+          "text": "100%",
+          "lines": 1,
+          "contained": true
+        },
+        {
+          "text": "6 mo",
+          "lines": 1,
+          "contained": true
+        },
+        {
+          "text": "$1,200,000",
+          "lines": 1,
+          "contained": true
+        }
+      ]
+    },
+    {
+      "width": 320,
+      "theme": "dark",
+      "status": "PASS",
+      "geometry": [
+        {
+          "text": "100%",
+          "lines": 1,
+          "contained": true
+        },
+        {
+          "text": "6 mo",
+          "lines": 1,
+          "contained": true
+        },
+        {
+          "text": "$1,200,000",
+          "lines": 1,
+          "contained": true
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "status": "PASS",
+      "geometry": [
+        {
+          "text": "100%",
+          "lines": 1,
+          "contained": true
+        },
+        {
+          "text": "6 mo",
+          "lines": 1,
+          "contained": true
+        },
+        {
+          "text": "$1,200,000",
+          "lines": 1,
+          "contained": true
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "status": "PASS",
+      "geometry": [
+        {
+          "text": "100%",
+          "lines": 1,
+          "contained": true
+        },
+        {
+          "text": "6 mo",
+          "lines": 1,
+          "contained": true
+        },
+        {
+          "text": "$1,200,000",
+          "lines": 1,
+          "contained": true
+        }
+      ]
+    },
+    {
+      "width": 768,
+      "theme": "light",
+      "status": "PASS",
+      "geometry": [
+        {
+          "text": "100%",
+          "lines": 1,
+          "contained": true
+        },
+        {
+          "text": "6 mo",
+          "lines": 1,
+          "contained": true
+        },
+        {
+          "text": "$1,200,000",
+          "lines": 1,
+          "contained": true
+        }
+      ]
+    },
+    {
+      "width": 768,
+      "theme": "dark",
+      "status": "PASS",
+      "geometry": [
+        {
+          "text": "100%",
+          "lines": 1,
+          "contained": true
+        },
+        {
+          "text": "6 mo",
+          "lines": 1,
+          "contained": true
+        },
+        {
+          "text": "$1,200,000",
+          "lines": 1,
+          "contained": true
+        }
+      ]
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "status": "PASS",
+      "geometry": [
+        {
+          "text": "100%",
+          "lines": 1,
+          "contained": true
+        },
+        {
+          "text": "6 mo",
+          "lines": 1,
+          "contained": true
+        },
+        {
+          "text": "$1,200,000",
+          "lines": 1,
+          "contained": true
+        }
+      ]
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "status": "PASS",
+      "geometry": [
+        {
+          "text": "100%",
+          "lines": 1,
+          "contained": true
+        },
+        {
+          "text": "6 mo",
+          "lines": 1,
+          "contained": true
+        },
+        {
+          "text": "$1,200,000",
+          "lines": 1,
+          "contained": true
+        }
+      ]
+    }
+  ]
+}

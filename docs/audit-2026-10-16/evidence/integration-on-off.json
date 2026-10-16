@@ -1,0 +1,30 @@
+{
+  "passed": true,
+  "build": {
+    "insightsEnabled": true,
+    "conceptEnabled": false
+  },
+  "results": [
+    {
+      "name": "all three controls coexist and optional routes remain gated",
+      "status": "PASS"
+    },
+    {
+      "name": "AI handoff, optional print, and navigation do not mutate canonical Brief",
+      "status": "PASS"
+    },
+    {
+      "name": "visitor can turn the illustrative concept off and back on without changing canonical Brief",
+      "status": "PASS"
+    },
+    {
+      "name": "fresh Brief: six complete AI goals match canonical export and downloaded Markdown",
+      "status": "PASS"
+    },
+    {
+      "name": "stale data request forces a current AI handoff snapshot; exploration preserves canonical state",
+      "status": "PASS"
+    }
+  ],
+  "failures": []
+}

@@ -1,0 +1,25 @@
+{
+  "build": "off",
+  "browser": "154.0.8037.57",
+  "axe": "4.11.1",
+  "matrix": [
+    {
+      "name": "disabled build redirects the concept route and exposes no entry points",
+      "status": "PASS",
+      "details": {
+        "fixtureChunks": 0,
+        "entryPoints": 0
+      }
+    },
+    {
+      "name": "no external requests, runtime retrieval, provider traffic or page errors",
+      "status": "PASS",
+      "details": {
+        "externalOrRuntimeRequests": 0,
+        "pageErrors": 0
+      }
+    }
+  ],
+  "network": [],
+  "pageErrors": []
+}
