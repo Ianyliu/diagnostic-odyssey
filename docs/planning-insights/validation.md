@@ -118,6 +118,39 @@ static hosting or uploaded to Cloudflare.
 - No main merge, static synchronization, Cloudflare configuration/deployment,
   external submission or October 15 artifact replacement was performed.
 
+## Addendum — opt-in print summary layout correction (2026-10-15)
+
+The validation record above describes the original nine-page opt-in layout from
+PR #105's standalone validation. PR #105's print correction (`b6e741b`,
+`fix(insights): compact opt-in print synopsis with governed source pointers`)
+replaced the verbose per-highlight universe/denominator/source-locator
+repetitions with record and source IDs plus a combined paragraph explaining
+where the complete population definitions, denominators and exact source
+locators can be inspected. The full validated source records and their native
+values/uncertainty are not altered.
+
+At integration head `c9fa2202` (draft PR #110, Planning Intelligence
+integration matrix run
+[38829591846](https://github.com/Ianyliu/diagnostic-odyssey/actions/runs/38829591846)),
+the Chromium PDF verifier reports:
+
+| Case | Pages | Min footer clearance |
+| --- | --- | --- |
+| summary off (default Brief) | 8 | 34.5 pt |
+| summary on (opt-in compact synopsis) | 8 | 29.3 pt |
+| all 34 reviewed context indicators selected | 24 | 22.8 pt |
+| extreme finite planning inputs | 9 | 29.3 pt |
+
+`example-summary.pdf` was regenerated from the verified `summary-on.pdf`
+(deterministic-only configuration; text-identical to the all-enabled build
+apart from the generation timestamp) and `pdf-verification.json` updated to the
+new verifier output. Page-image review confirmed the compact synopsis is
+legible and accurately sourced, page transitions and footer spacing are
+correct, and extremely large finite numbers and long provenance strings do not
+clip. Default (summary-off) print content remains the reviewed Brief; the
+opt-in summary adds the compact synopsis without altering the underlying
+detailed sections.
+
 ## Screenshots
 
 - [Before: desktop Planning Brief](screenshots/before-brief-desktop-light.png)

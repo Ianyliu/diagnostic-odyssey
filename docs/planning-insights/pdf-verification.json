@@ -3,23 +3,23 @@
   "results": [
     {
       "file": "summary-off.pdf",
-      "pages": 7,
-      "minimum_footer_clearance_pt": 24.70499867062506
+      "pages": 8,
+      "minimum_footer_clearance_pt": 34.50809160571464
     },
     {
       "file": "summary-on.pdf",
-      "pages": 9,
-      "minimum_footer_clearance_pt": 45.76771515565588
+      "pages": 8,
+      "minimum_footer_clearance_pt": 29.272396021590907
     },
     {
       "file": "summary-all-context.pdf",
       "pages": 24,
-      "minimum_footer_clearance_pt": 26.267715968156608
+      "minimum_footer_clearance_pt": 22.759415367541237
     },
     {
       "file": "summary-extreme.pdf",
       "pages": 9,
-      "minimum_footer_clearance_pt": 45.76771515565588
+      "minimum_footer_clearance_pt": 29.272396021590907
     }
   ]
 }
