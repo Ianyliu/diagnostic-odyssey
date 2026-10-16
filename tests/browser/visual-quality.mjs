@@ -1,4 +1,4 @@
-/* global process, document, innerWidth, console */
+/* global process, document, innerWidth, console, window, NodeFilter */
 import assert from "node:assert/strict";
 import {createRequire} from "node:module";
 import {mkdir, writeFile} from "node:fs/promises";
@@ -8,6 +8,41 @@ const base = process.env.QA_BASE_URL ?? "http://127.0.0.1:4175";
 const output = process.env.QA_OUTPUT ?? "/tmp/visual-quality";
 await mkdir(output, {recursive: true});
 const browser = await chromium.launch(process.env.QA_CHROME ? {executablePath: process.env.QA_CHROME} : {channel: "chrome"});
+
+// Screenshot-first overflow assertion: a failing width must leave usable
+// evidence, and the failure message names the route, viewport, measured
+// widths, and offending elements. The assertion itself is unchanged:
+// documentElement.scrollWidth must never exceed the viewport width.
+async function assertNoHorizontalOverflow(page, route, width, theme, shotPath) {
+  await page.screenshot({path: shotPath, fullPage: true});
+  const diagnosis = await page.evaluate(() => {
+    const viewportWidth = window.innerWidth;
+    const pageWidth = document.documentElement.scrollWidth;
+    const offenders = [];
+    if (pageWidth > viewportWidth) {
+      const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_ELEMENT);
+      let element = walker.nextNode();
+      while (element && offenders.length < 12) {
+        const rect = element.getBoundingClientRect();
+        if ((rect.width > 0 || rect.height > 0) && (rect.right > viewportWidth + 0.5 || rect.left < -0.5)) {
+          const classes = typeof element.className === "string" && element.className.trim()
+            ? `.${element.className.trim().split(/\s+/).slice(0, 3).join(".")}`
+            : "";
+          offenders.push(`${element.tagName.toLowerCase()}${element.id ? `#${element.id}` : ""}${classes}@right=${Math.round(rect.right)}`);
+        }
+        element = walker.nextNode();
+      }
+    }
+    return {viewportWidth, pageWidth, offenders};
+  });
+  assert.equal(
+    diagnosis.pageWidth > diagnosis.viewportWidth,
+    false,
+    `horizontal overflow on ${route} at ${width}px/${theme}: ` +
+      `innerWidth=${diagnosis.viewportWidth} scrollWidth=${diagnosis.pageWidth} ` +
+      `screenshot=${shotPath} offenders=${JSON.stringify(diagnosis.offenders)}`,
+  );
+}
 const results = [];
 for (const width of [320, 390, 768, 1440]) for (const theme of ["light", "dark"]) {
   const page = await browser.newPage({viewport: {width, height: 1000}, reducedMotion: "reduce", colorScheme: theme});
@@ -24,13 +59,11 @@ for (const width of [320, 390, 768, 1440]) for (const theme of ["light", "dark"]
     assert.ok(geometry.every(item => item.lines === 1 && item.contained), JSON.stringify(geometry));
     assert.ok(geometry.some(item => item.text === "$1,200,000"));
     assert.ok(geometry.some(item => item.text === "6 mo"));
-    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
-    await page.screenshot({path: `${output}/pilot-${width}-${theme}.png`, fullPage: true});
+    await assertNoHorizontalOverflow(page, "/pilot", width, theme, `${output}/pilot-${width}-${theme}.png`);
     for (const route of ["/", "/brief"]) {
       await page.goto(base + route);
       await page.waitForLoadState("networkidle");
-      assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false, route);
-      await page.screenshot({path: `${output}/${route === "/" ? "overview" : "brief"}-${width}-${theme}.png`, fullPage: true});
+      await assertNoHorizontalOverflow(page, route, width, theme, `${output}/${route === "/" ? "overview" : "brief"}-${width}-${theme}.png`);
     }
     if (width < 768) {
       const menu = page.getByRole("button", {name: "Menu", exact: true});
