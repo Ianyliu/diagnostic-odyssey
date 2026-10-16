@@ -10,6 +10,8 @@ import { pilotInputFields } from "../data/pilotInputDraft";
 import { formatAppliedAssumption } from "../pages/briefAssumptions";
 import type { ConceptBriefSnapshot } from "./conceptBrief";
 import { ConceptCard, RoleLabel, ViewHeading } from "./ConceptPrimitives";
+import { DemoLiteratureNotice, DemoSourceCitation } from "./DemoLiterature";
+import { getDemoPublication } from "./demoLiterature";
 
 export function ExplainBrief({snapshot}: {snapshot: ConceptBriefSnapshot}) {
   const {scenario, local} = snapshot;
@@ -23,6 +25,30 @@ export function ExplainBrief({snapshot}: {snapshot: ConceptBriefSnapshot}) {
   return <>
     <ViewHeading eyebrow="01 / The current evidence story" title="Start with what is known.">Read the current Brief through distinct evidence roles. These values come from the validated product; the future research question below is illustrative.</ViewHeading>
     <section className="fc-role-map" aria-label="Explore current Brief evidence roles"><div className="fc-role-map-nodes" role="group" aria-label="Evidence roles">{roles.map((item, i) => <button key={item.id} aria-pressed={role === item.id} aria-controls="fc-role-explanation" onClick={() => setRole(item.id)}><span className={`fc-role-index fc-role-index-${item.id}`}>0{i + 1}</span><span><strong>{item.title}</strong><small>{item.status}</small></span></button>)}</div><div id="fc-role-explanation" className="fc-role-explanation" aria-live="polite"><p>{active.explanation}</p><Link to={active.href}>{active.action} →</Link></div></section>
+    <section className="fc-demo-analysis" aria-label="Example evidence-grounded explanation">
+      <div className="fc-section-title"><h3>Example analyst narrative</h3><span className="fc-muted">Static explanatory template + current reviewed Brief data</span></div>
+      <div className="fc-two-grid">
+        <div className="fc-card">
+          <h4>What we can say now</h4>
+          <p>{snapshot.highlights.length > 0
+            ? `The current release contains ${snapshot.highlights.length} illustrative highlights from separate national burden domains. They describe their own populations and units; they do not measure diagnostic delay caused by Long COVID.`
+            : "The current Brief has no eligible national highlights available; no sample estimates are substituted."}</p>
+          <p>{local.status === "selected"
+            ? `The analyst selected ${local.records.length} reviewed implementation indicators. These provide context only and do not produce a local disease estimate.`
+            : "No current local indicator was explicitly selected. Do not infer local prevalence or a verified data shortfall."}</p>
+          <p>{scenario
+            ? "An applied Pilot scenario supplies assumption-based resource and capacity quantities, not a forecast of intervention benefit."
+            : "No valid Pilot scenario is applied. An example result must not fill this space."}</p>
+        </div>
+        <div className="fc-card">
+          <h4>What outside research might add</h4>
+          <p>A UK mixed-methods study describes challenges with referral access in disadvantaged groups, suggesting a useful measurement question: can we define and audit recognition-to-referral intervals in the intended system?</p>
+          <p className="fc-muted">The publication does not establish a local effect, delay estimate, or US Pilot savings.</p>
+          <DemoSourceCitation source={getDemoPublication("mir-2025")} compact />
+        </div>
+      </div>
+    </section>
+    <DemoLiteratureNotice />
     <section className="fc-real-lane" aria-label="Current validated national Brief">
       <div className="fc-section-title"><h3>National burden, in its own units</h3><RoleLabel kind="reviewed">Current reviewed Brief</RoleLabel></div>
       <p className="fc-muted">One finding per available domain in artifact order. Descriptive highlights, with no ranking across measures.</p>
@@ -53,6 +79,6 @@ export function ExplainBrief({snapshot}: {snapshot: ConceptBriefSnapshot}) {
       </section>
     </div>
     <details className="fc-boundaries"><summary>Keep the interpretation boundaries visible</summary><ul>{snapshot.warnings.map(warning => <li key={warning}>{warning}</li>)}</ul></details>
-    <ConceptCard title="What would be worth investigating next?" eyebrow="Example follow-up question" className="fc-next-question"><p>What independently reviewed intervention evaluations would be applicable to this planning context?</p><p className="fc-muted">A future approved synthesis engine could organize that investigation. No retrieval or AI generation has happened here.</p></ConceptCard>
+    <ConceptCard title="What would be worth investigating next?" eyebrow="Example follow-up question" className="fc-next-question"><p>What independently reviewed intervention evaluations would be applicable to this planning context?</p><p className="fc-muted">This worked example links a public publication without admitting it to the reviewed product. No live retrieval or model generation is running.</p></ConceptCard>
   </>;
 }
