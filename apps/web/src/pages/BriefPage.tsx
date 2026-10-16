@@ -1,8 +1,12 @@
 import { formatPlanningCurrency, formatPlanningNumber } from "../data/planningNumberFormatting.ts";
 import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import { buildPlanningBrief, serializeBriefJson } from "@diagnostic-odyssey/brief-core";
+import { buildPlanningBrief, serializeBriefJson, type PlanningBrief } from "@diagnostic-odyssey/brief-core";
 import { AcquisitionGuidanceCard } from "../components/AcquisitionGuidanceCard";
+import { ErrorBoundary } from "../components/ErrorBoundary";
+import { PlanningInsights } from "../components/PlanningInsights";
+import { buildPlanningInsights, type PlanningInsightsSources } from "../data/planningInsights";
+import { planningInsightsEnabled } from "../data/planningInsightsEnabled";
 import { AiHandoff } from "../components/AiHandoff";
 import {
   canDisplayDistributionSummary,
@@ -42,6 +46,11 @@ import { createBriefPrintDisclosureState, executeBriefPrint, watchBriefPrintMedi
 import "./BriefPage.css";
 
 const resultNumber = new Intl.NumberFormat("en-US");
+
+// Keep optional projection failures inside the same boundary as optional rendering.
+function BriefInsights({brief, sources}: {brief: PlanningBrief; sources: PlanningInsightsSources}) {
+  return <PlanningInsights model={buildPlanningInsights(brief, sources)} />;
+}
 
 function AccessibleEstimateInterval({estimate}: {estimate: Estimate}) {
   const interval = formatEstimateInterval(estimate);
@@ -169,6 +178,10 @@ export function BriefPage() {
       {brief.context.local_context_id && <span><b>Reviewed local-context artifact:</b> {brief.context.local_context_id}</span>}
       <span><b>Generated:</b> {brief.generated_at}</span>
     </div>
+
+    {planningInsightsEnabled && <ErrorBoundary fallback={<p className="insight-unavailable">Planning insights are unavailable. The reviewed Brief and exports remain available below.</p>}>
+      <BriefInsights brief={brief} sources={{national: bundle, local: localContext, localStatus: localContextStatus, availableDataRequests}} />
+    </ErrorBoundary>}
 
     <section className="brief-print-decision-state" aria-label="Decision state summary">
       <h2>Decision state</h2>

@@ -4,6 +4,7 @@ import { ContextBar } from "../components/ContextBar";
 import { DecisionStateRail } from "../components/DecisionStateRail";
 import { useArtifact } from "../data/ArtifactContext";
 import { OpeningProvenance } from "./OpeningProvenance";
+import { planningInsightsEnabled } from "../data/planningInsightsEnabled";
 import "./OverviewPage.css";
 
 const journey: ReadonlyArray<readonly [
@@ -65,6 +66,7 @@ export function OverviewPage() {
           <div className="overview-hero-actions" role="group" aria-label="Start exploring Diagnostic Odyssey">
             <Link className="button overview-primary-cta" to="/burden">Explore reviewed burden</Link>
             <Link className="button secondary overview-secondary-cta" to="/pilot">Open Pilot planner</Link>
+            {planningInsightsEnabled && <Link className="button secondary overview-secondary-cta" to="/brief#planning-insights">See planning insights</Link>}
           </div>
           <dl className="overview-proof" aria-label="Current workspace evidence">
             <div>

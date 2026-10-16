@@ -1,0 +1,49 @@
+{
+  "before": "/private/tmp/diagnostic-insights-qa/before/browser/qa-results.json",
+  "after": "/private/tmp/diagnostic-insights-qa/after/browser/qa-results.json",
+  "ignored": "Planning Brief top-level generated_at only",
+  "results": [
+    {
+      "key": "defaultBrief",
+      "status": "PASS",
+      "beforeSha256": "caf3025c68cb9447ea3dbe264425981f36e9bb1611ab840cdd15ed19d6ce023a",
+      "afterSha256": "caf3025c68cb9447ea3dbe264425981f36e9bb1611ab840cdd15ed19d6ce023a"
+    },
+    {
+      "key": "selectedBrief",
+      "status": "PASS",
+      "beforeSha256": "b01b8b85a4d8cae86037dc2df6940e133a8f98e09320422104a3d46391a25e1d",
+      "afterSha256": "b01b8b85a4d8cae86037dc2df6940e133a8f98e09320422104a3d46391a25e1d"
+    },
+    {
+      "key": "staleBrief",
+      "status": "PASS",
+      "beforeSha256": "bb7f58b9fc7351b153cf734826fcc6a14f54ae49352973a98e34ddb722583c4c",
+      "afterSha256": "bb7f58b9fc7351b153cf734826fcc6a14f54ae49352973a98e34ddb722583c4c"
+    },
+    {
+      "key": "refreshedBrief",
+      "status": "PASS",
+      "beforeSha256": "acc05757980e8976128186e78856690c450f3d4f49bcd10414bd93c780e1a85b",
+      "afterSha256": "acc05757980e8976128186e78856690c450f3d4f49bcd10414bd93c780e1a85b"
+    },
+    {
+      "key": "capacitySensitivity",
+      "status": "PASS",
+      "beforeSha256": "8d9b53bf7bf4f4229c6c889c80e97b2edeb9728c9ebc73e72db62253b84b79fe",
+      "afterSha256": "8d9b53bf7bf4f4229c6c889c80e97b2edeb9728c9ebc73e72db62253b84b79fe"
+    },
+    {
+      "key": "reachSensitivity",
+      "status": "PASS",
+      "beforeSha256": "04993f46f3712b7bd3da4c4669f41790db298ffd11c02e01ec0838ffbe93bf17",
+      "afterSha256": "04993f46f3712b7bd3da4c4669f41790db298ffd11c02e01ec0838ffbe93bf17"
+    },
+    {
+      "key": "windowSensitivity",
+      "status": "PASS",
+      "beforeSha256": "2b58c60850043134d697088b12a01b6ff5b6372848abd1ac201e0b27b1cb72ef",
+      "afterSha256": "2b58c60850043134d697088b12a01b6ff5b6372848abd1ac201e0b27b1cb72ef"
+    }
+  ]
+}
