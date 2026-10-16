@@ -1,4 +1,4 @@
-/* global process, window */
+/* global process, URL, console */
 import assert from "node:assert/strict";
 import {createRequire} from "node:module";
 import {mkdir, readFile, writeFile} from "node:fs/promises";
