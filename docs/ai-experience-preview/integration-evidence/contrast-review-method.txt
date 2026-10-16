@@ -1,0 +1,35 @@
+import assert from 'node:assert/strict';
+import {createRequire} from 'node:module';
+import {readFile,mkdir,writeFile} from 'node:fs/promises';
+import {contrast} from './contrast-helpers.mjs';
+const require=createRequire('/workspace/diagnostic-odyssey/work/browser-runner/package.json');
+const {chromium}=require('playwright');
+const data=JSON.parse(await readFile('work/integration/concept/accessibility.json','utf8'));
+const out='work/integration/contrast-review';await mkdir(out,{recursive:true});
+const browser=await chromium.launch({executablePath:'/usr/bin/chromium',headless:true,args:['--no-sandbox']});
+const records=[];const seen=new Set();
+for(const row of data){
+ const ctx=await browser.newContext({viewport:{width:row.width,height:1000},colorScheme:row.theme,reducedMotion:'reduce'});
+ const page=await ctx.newPage();await page.goto('http://127.0.0.1:4175/concept/future-ai');await page.getByRole('tab',{name:row.goal}).click();
+ for(const issue of row.incomplete)for(const node of issue.nodes){
+  const selector=node.target.join(' '),key=[row.width,row.theme,selector].join(':');if(seen.has(key))continue;seen.add(key);
+  const el=page.locator(selector);const style=await el.evaluate(e=>{const s=getComputedStyle(e);return {decorative:!!e.closest('[aria-hidden="true"]'),text:e.textContent,color:s.color,font:s.font,display:s.display}});
+  const rec={width:row.width,theme:row.theme,goal:row.goal,selector,reason:node.any?.map(x=>x.data?.messageKey),style};
+  if(style.decorative){rec.disposition='Decorative aria-hidden content; does not convey unique information';records.push(rec);continue;}
+  await el.scrollIntoViewIfNeeded();const original=await el.screenshot();
+  const before=await el.evaluate(e=>({style:e.getAttribute('style'),text:e.textContent,rect:e.getBoundingClientRect().toJSON()}));
+  await el.evaluate(e=>e.style.setProperty('color','transparent','important'));
+  const background=await el.screenshot();
+  await el.evaluate((e,s)=>s===null?e.removeAttribute('style'):e.setAttribute('style',s),before.style);
+  assert.equal(await el.textContent(),before.text);
+  const foreground=style.color.match(/[\d.]+/g).slice(0,3).map(Number);
+  const measurement=contrast(original,background,foreground);
+  rec.measurement=measurement;rec.disposition=measurement.minimum>=4.5?'PASS raster contrast ≥ 4.5:1':'FAIL raster contrast < 4.5:1';
+  rec.image=`node-${records.length}.png`;await writeFile(`${out}/${rec.image}`,original);await writeFile(`${out}/background-${records.length}.png`,background);records.push(rec);
+ }
+ await ctx.close();
+}
+await browser.close();
+await writeFile(`${out}/results.json`,JSON.stringify({method:'Gate 0 PNG foreground/background raster comparison; decorative aria-hidden content classified separately; horizontal cells scrolled into view',records},null,2));
+console.log('nodes',records.length,'measured',records.filter(r=>r.measurement).length,'minimum',Math.min(...records.filter(r=>r.measurement).map(r=>r.measurement.minimum)),'failures',records.filter(r=>r.disposition.startsWith('FAIL')).map(r=>({selector:r.selector,width:r.width,theme:r.theme,measurement:r.measurement})));
+if(records.some(r=>r.disposition.startsWith('FAIL')))process.exitCode=1;

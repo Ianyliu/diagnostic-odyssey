@@ -1,0 +1,2232 @@
+{
+  "browser": "154.0.8037.57",
+  "playwright": "1.62.1",
+  "axe": "4.11.1",
+  "matrix": [
+    {
+      "name": "11 direct routes: desktop light",
+      "status": "PASS",
+      "ms": 27188,
+      "details": [
+        {
+          "route": "/",
+          "heading": "Evidence into planning,\nwith boundaries intact.",
+          "overflow": {
+            "width": 1440,
+            "scroll": 1440
+          }
+        },
+        {
+          "route": "/burden",
+          "heading": "Burden overview",
+          "overflow": {
+            "width": 1440,
+            "scroll": 1440
+          }
+        },
+        {
+          "route": "/burden/medical",
+          "heading": "Economic / healthcare burden",
+          "overflow": {
+            "width": 1440,
+            "scroll": 1440
+          }
+        },
+        {
+          "route": "/burden/work",
+          "heading": "Work and function",
+          "overflow": {
+            "width": 1440,
+            "scroll": 1440
+          }
+        },
+        {
+          "route": "/burden/admin",
+          "heading": "Healthcare-work / administrative burden",
+          "overflow": {
+            "width": 1440,
+            "scroll": 1440
+          }
+        },
+        {
+          "route": "/burden/human",
+          "heading": "Mental-health / human burden",
+          "overflow": {
+            "width": 1440,
+            "scroll": 1440
+          }
+        },
+        {
+          "route": "/local-context",
+          "heading": "West Virginia statewide implementation constraints",
+          "overflow": {
+            "width": 1440,
+            "scroll": 1440
+          }
+        },
+        {
+          "route": "/pilot",
+          "heading": "Scope a feasible pilot",
+          "overflow": {
+            "width": 1440,
+            "scroll": 1440
+          }
+        },
+        {
+          "route": "/evidence",
+          "heading": "What this analysis supports",
+          "overflow": {
+            "width": 1440,
+            "scroll": 1440
+          }
+        },
+        {
+          "route": "/data-requests",
+          "heading": "Turn uncertainty into a concrete request",
+          "overflow": {
+            "width": 1440,
+            "scroll": 1440
+          }
+        },
+        {
+          "route": "/brief",
+          "heading": "Long COVID burden and pilot planning brief",
+          "overflow": {
+            "width": 1440,
+            "scroll": 1440
+          }
+        }
+      ]
+    },
+    {
+      "name": "11 direct routes: desktop dark",
+      "status": "PASS",
+      "ms": 30153,
+      "details": [
+        {
+          "route": "/",
+          "heading": "Evidence into planning,\nwith boundaries intact.",
+          "overflow": {
+            "width": 1440,
+            "scroll": 1440
+          }
+        },
+        {
+          "route": "/burden",
+          "heading": "Burden overview",
+          "overflow": {
+            "width": 1440,
+            "scroll": 1440
+          }
+        },
+        {
+          "route": "/burden/medical",
+          "heading": "Economic / healthcare burden",
+          "overflow": {
+            "width": 1440,
+            "scroll": 1440
+          }
+        },
+        {
+          "route": "/burden/work",
+          "heading": "Work and function",
+          "overflow": {
+            "width": 1440,
+            "scroll": 1440
+          }
+        },
+        {
+          "route": "/burden/admin",
+          "heading": "Healthcare-work / administrative burden",
+          "overflow": {
+            "width": 1440,
+            "scroll": 1440
+          }
+        },
+        {
+          "route": "/burden/human",
+          "heading": "Mental-health / human burden",
+          "overflow": {
+            "width": 1440,
+            "scroll": 1440
+          }
+        },
+        {
+          "route": "/local-context",
+          "heading": "West Virginia statewide implementation constraints",
+          "overflow": {
+            "width": 1440,
+            "scroll": 1440
+          }
+        },
+        {
+          "route": "/pilot",
+          "heading": "Scope a feasible pilot",
+          "overflow": {
+            "width": 1440,
+            "scroll": 1440
+          }
+        },
+        {
+          "route": "/evidence",
+          "heading": "What this analysis supports",
+          "overflow": {
+            "width": 1440,
+            "scroll": 1440
+          }
+        },
+        {
+          "route": "/data-requests",
+          "heading": "Turn uncertainty into a concrete request",
+          "overflow": {
+            "width": 1440,
+            "scroll": 1440
+          }
+        },
+        {
+          "route": "/brief",
+          "heading": "Long COVID burden and pilot planning brief",
+          "overflow": {
+            "width": 1440,
+            "scroll": 1440
+          }
+        }
+      ]
+    },
+    {
+      "name": "11 direct routes: tablet light",
+      "status": "PASS",
+      "ms": 24094,
+      "details": [
+        {
+          "route": "/",
+          "heading": "Evidence into planning,\nwith boundaries intact.",
+          "overflow": {
+            "width": 820,
+            "scroll": 820
+          }
+        },
+        {
+          "route": "/burden",
+          "heading": "Burden overview",
+          "overflow": {
+            "width": 820,
+            "scroll": 820
+          }
+        },
+        {
+          "route": "/burden/medical",
+          "heading": "Economic / healthcare burden",
+          "overflow": {
+            "width": 820,
+            "scroll": 820
+          }
+        },
+        {
+          "route": "/burden/work",
+          "heading": "Work and function",
+          "overflow": {
+            "width": 820,
+            "scroll": 820
+          }
+        },
+        {
+          "route": "/burden/admin",
+          "heading": "Healthcare-work / administrative burden",
+          "overflow": {
+            "width": 820,
+            "scroll": 820
+          }
+        },
+        {
+          "route": "/burden/human",
+          "heading": "Mental-health / human burden",
+          "overflow": {
+            "width": 820,
+            "scroll": 820
+          }
+        },
+        {
+          "route": "/local-context",
+          "heading": "West Virginia statewide implementation constraints",
+          "overflow": {
+            "width": 820,
+            "scroll": 820
+          }
+        },
+        {
+          "route": "/pilot",
+          "heading": "Scope a feasible pilot",
+          "overflow": {
+            "width": 820,
+            "scroll": 820
+          }
+        },
+        {
+          "route": "/evidence",
+          "heading": "What this analysis supports",
+          "overflow": {
+            "width": 820,
+            "scroll": 820
+          }
+        },
+        {
+          "route": "/data-requests",
+          "heading": "Turn uncertainty into a concrete request",
+          "overflow": {
+            "width": 820,
+            "scroll": 820
+          }
+        },
+        {
+          "route": "/brief",
+          "heading": "Long COVID burden and pilot planning brief",
+          "overflow": {
+            "width": 820,
+            "scroll": 820
+          }
+        }
+      ]
+    },
+    {
+      "name": "11 direct routes: tablet dark",
+      "status": "PASS",
+      "ms": 23339,
+      "details": [
+        {
+          "route": "/",
+          "heading": "Evidence into planning,\nwith boundaries intact.",
+          "overflow": {
+            "width": 820,
+            "scroll": 820
+          }
+        },
+        {
+          "route": "/burden",
+          "heading": "Burden overview",
+          "overflow": {
+            "width": 820,
+            "scroll": 820
+          }
+        },
+        {
+          "route": "/burden/medical",
+          "heading": "Economic / healthcare burden",
+          "overflow": {
+            "width": 820,
+            "scroll": 820
+          }
+        },
+        {
+          "route": "/burden/work",
+          "heading": "Work and function",
+          "overflow": {
+            "width": 820,
+            "scroll": 820
+          }
+        },
+        {
+          "route": "/burden/admin",
+          "heading": "Healthcare-work / administrative burden",
+          "overflow": {
+            "width": 820,
+            "scroll": 820
+          }
+        },
+        {
+          "route": "/burden/human",
+          "heading": "Mental-health / human burden",
+          "overflow": {
+            "width": 820,
+            "scroll": 820
+          }
+        },
+        {
+          "route": "/local-context",
+          "heading": "West Virginia statewide implementation constraints",
+          "overflow": {
+            "width": 820,
+            "scroll": 820
+          }
+        },
+        {
+          "route": "/pilot",
+          "heading": "Scope a feasible pilot",
+          "overflow": {
+            "width": 820,
+            "scroll": 820
+          }
+        },
+        {
+          "route": "/evidence",
+          "heading": "What this analysis supports",
+          "overflow": {
+            "width": 820,
+            "scroll": 820
+          }
+        },
+        {
+          "route": "/data-requests",
+          "heading": "Turn uncertainty into a concrete request",
+          "overflow": {
+            "width": 820,
+            "scroll": 820
+          }
+        },
+        {
+          "route": "/brief",
+          "heading": "Long COVID burden and pilot planning brief",
+          "overflow": {
+            "width": 820,
+            "scroll": 820
+          }
+        }
+      ]
+    },
+    {
+      "name": "11 direct routes: mobile light",
+      "status": "PASS",
+      "ms": 20293,
+      "details": [
+        {
+          "route": "/",
+          "heading": "Evidence into planning,\nwith boundaries intact.",
+          "overflow": {
+            "width": 360,
+            "scroll": 360
+          }
+        },
+        {
+          "route": "/burden",
+          "heading": "Burden overview",
+          "overflow": {
+            "width": 360,
+            "scroll": 360
+          }
+        },
+        {
+          "route": "/burden/medical",
+          "heading": "Economic / healthcare burden",
+          "overflow": {
+            "width": 360,
+            "scroll": 360
+          }
+        },
+        {
+          "route": "/burden/work",
+          "heading": "Work and function",
+          "overflow": {
+            "width": 360,
+            "scroll": 360
+          }
+        },
+        {
+          "route": "/burden/admin",
+          "heading": "Healthcare-work / administrative burden",
+          "overflow": {
+            "width": 360,
+            "scroll": 360
+          }
+        },
+        {
+          "route": "/burden/human",
+          "heading": "Mental-health / human burden",
+          "overflow": {
+            "width": 360,
+            "scroll": 360
+          }
+        },
+        {
+          "route": "/local-context",
+          "heading": "West Virginia statewide implementation constraints",
+          "overflow": {
+            "width": 360,
+            "scroll": 360
+          }
+        },
+        {
+          "route": "/pilot",
+          "heading": "Scope a feasible pilot",
+          "overflow": {
+            "width": 360,
+            "scroll": 360
+          }
+        },
+        {
+          "route": "/evidence",
+          "heading": "What this analysis supports",
+          "overflow": {
+            "width": 360,
+            "scroll": 360
+          }
+        },
+        {
+          "route": "/data-requests",
+          "heading": "Turn uncertainty into a concrete request",
+          "overflow": {
+            "width": 360,
+            "scroll": 360
+          }
+        },
+        {
+          "route": "/brief",
+          "heading": "Long COVID burden and pilot planning brief",
+          "overflow": {
+            "width": 360,
+            "scroll": 360
+          }
+        }
+      ]
+    },
+    {
+      "name": "11 direct routes: mobile dark",
+      "status": "PASS",
+      "ms": 16052,
+      "details": [
+        {
+          "route": "/",
+          "heading": "Evidence into planning,\nwith boundaries intact.",
+          "overflow": {
+            "width": 360,
+            "scroll": 360
+          }
+        },
+        {
+          "route": "/burden",
+          "heading": "Burden overview",
+          "overflow": {
+            "width": 360,
+            "scroll": 360
+          }
+        },
+        {
+          "route": "/burden/medical",
+          "heading": "Economic / healthcare burden",
+          "overflow": {
+            "width": 360,
+            "scroll": 360
+          }
+        },
+        {
+          "route": "/burden/work",
+          "heading": "Work and function",
+          "overflow": {
+            "width": 360,
+            "scroll": 360
+          }
+        },
+        {
+          "route": "/burden/admin",
+          "heading": "Healthcare-work / administrative burden",
+          "overflow": {
+            "width": 360,
+            "scroll": 360
+          }
+        },
+        {
+          "route": "/burden/human",
+          "heading": "Mental-health / human burden",
+          "overflow": {
+            "width": 360,
+            "scroll": 360
+          }
+        },
+        {
+          "route": "/local-context",
+          "heading": "West Virginia statewide implementation constraints",
+          "overflow": {
+            "width": 360,
+            "scroll": 360
+          }
+        },
+        {
+          "route": "/pilot",
+          "heading": "Scope a feasible pilot",
+          "overflow": {
+            "width": 360,
+            "scroll": 360
+          }
+        },
+        {
+          "route": "/evidence",
+          "heading": "What this analysis supports",
+          "overflow": {
+            "width": 360,
+            "scroll": 360
+          }
+        },
+        {
+          "route": "/data-requests",
+          "heading": "Turn uncertainty into a concrete request",
+          "overflow": {
+            "width": 360,
+            "scroll": 360
+          }
+        },
+        {
+          "route": "/brief",
+          "heading": "Long COVID burden and pilot planning brief",
+          "overflow": {
+            "width": 360,
+            "scroll": 360
+          }
+        }
+      ]
+    },
+    {
+      "name": "history, keyboard skip link, mobile menu and anchor focus",
+      "status": "PASS",
+      "ms": 4206,
+      "details": {
+        "focus": "solid"
+      }
+    },
+    {
+      "name": "full explicit selection workflow, sensitivities, actual JSON, stale requests, print restoration",
+      "status": "PASS",
+      "ms": 10403,
+      "details": {
+        "national": 21,
+        "local": 1,
+        "requests": 1,
+        "sensitivity": [
+          "1,5001,5001,500",
+          "2,2507502,250",
+          "3,00003,000",
+          "3,75003,000",
+          "4,50003,000"
+        ]
+      }
+    },
+    {
+      "name": "browser API fallback: missingMatchMedia",
+      "status": "PASS",
+      "ms": 3108
+    },
+    {
+      "name": "browser API fallback: incompleteMatchMedia",
+      "status": "PASS",
+      "ms": 3597
+    },
+    {
+      "name": "browser API fallback: throwingMatchMedia",
+      "status": "PASS",
+      "ms": 1850
+    },
+    {
+      "name": "browser API fallback: blockedStorage",
+      "status": "PASS",
+      "ms": 2576
+    },
+    {
+      "name": "appearance persistence and reduced motion opening",
+      "status": "PASS",
+      "ms": 2924
+    },
+    {
+      "name": "local context labels preserve native scores and exported uncertainty across responsive themes",
+      "status": "PASS",
+      "ms": 39935
+    },
+    {
+      "name": "browser theme color follows bootstrap, explicit preferences, system changes and other tabs",
+      "status": "PASS",
+      "ms": 13349
+    },
+    {
+      "name": "invalid numeric drafts preserve last applied scenario and JSON",
+      "status": "PASS",
+      "ms": 6581
+    },
+    {
+      "name": "extreme finite scenario layout and invalid sensitivity remain usable",
+      "status": "PASS",
+      "ms": 27558,
+      "details": {
+        "layouts": [
+          {
+            "route": "pilot",
+            "theme": "light",
+            "width": 1440,
+            "scroll": 1440
+          },
+          {
+            "route": "brief",
+            "theme": "light",
+            "width": 1440,
+            "scroll": 1440
+          },
+          {
+            "width": 1440,
+            "theme": "light",
+            "scientificToken": {
+              "text": "$1e+308",
+              "lines": 1,
+              "contained": true
+            },
+            "scientificLedgerTokens": [
+              {
+                "text": "$1e+308",
+                "lines": 1,
+                "contained": true
+              }
+            ],
+            "scientificBriefTokens": [
+              {
+                "text": "$1e+308",
+                "lines": 1,
+                "contained": true
+              },
+              {
+                "text": "$1e+308",
+                "lines": 1,
+                "contained": true
+              }
+            ],
+            "maxScientificToken": {
+              "text": "$1.7976931348623157e+308",
+              "lines": 1,
+              "contained": true
+            },
+            "maxLedgerTokens": [
+              {
+                "text": "$1.7976931348623157e+308",
+                "lines": 1,
+                "contained": true
+              }
+            ],
+            "maxBriefTokens": [
+              {
+                "text": "$1.7976931348623157e+308",
+                "lines": 1,
+                "contained": true
+              },
+              {
+                "text": "$1.7976931348623157e+308",
+                "lines": 1,
+                "contained": true
+              }
+            ],
+            "maxLayout": {
+              "width": 1440,
+              "scroll": 1440
+            },
+            "maxBriefLayout": {
+              "width": 1440,
+              "scroll": 1440
+            }
+          },
+          {
+            "width": 1440,
+            "theme": "light",
+            "maxReachedPilotTokens": [
+              {
+                "text": "1.7976931348623157e+308",
+                "lines": 1,
+                "contained": true
+              },
+              {
+                "text": "1.7976931348623157e+308",
+                "lines": 1,
+                "contained": true
+              }
+            ],
+            "maxReachedBriefTokens": [
+              {
+                "text": "1.7976931348623157e+308",
+                "lines": 1,
+                "contained": true
+              },
+              {
+                "text": "1.7976931348623157e+308",
+                "lines": 1,
+                "contained": true
+              },
+              {
+                "text": "1.7976931348623157e+308",
+                "lines": 1,
+                "contained": true
+              }
+            ],
+            "maxReachedPilotLayout": {
+              "width": 1440,
+              "scroll": 1440
+            },
+            "maxReachedBriefLayout": {
+              "width": 1440,
+              "scroll": 1440
+            }
+          },
+          {
+            "route": "pilot",
+            "theme": "dark",
+            "width": 1440,
+            "scroll": 1440
+          },
+          {
+            "route": "brief",
+            "theme": "dark",
+            "width": 1440,
+            "scroll": 1440
+          },
+          {
+            "width": 1440,
+            "theme": "dark",
+            "scientificToken": {
+              "text": "$1e+308",
+              "lines": 1,
+              "contained": true
+            },
+            "scientificLedgerTokens": [
+              {
+                "text": "$1e+308",
+                "lines": 1,
+                "contained": true
+              }
+            ],
+            "scientificBriefTokens": [
+              {
+                "text": "$1e+308",
+                "lines": 1,
+                "contained": true
+              },
+              {
+                "text": "$1e+308",
+                "lines": 1,
+                "contained": true
+              }
+            ],
+            "maxScientificToken": {
+              "text": "$1.7976931348623157e+308",
+              "lines": 1,
+              "contained": true
+            },
+            "maxLedgerTokens": [
+              {
+                "text": "$1.7976931348623157e+308",
+                "lines": 1,
+                "contained": true
+              }
+            ],
+            "maxBriefTokens": [
+              {
+                "text": "$1.7976931348623157e+308",
+                "lines": 1,
+                "contained": true
+              },
+              {
+                "text": "$1.7976931348623157e+308",
+                "lines": 1,
+                "contained": true
+              }
+            ],
+            "maxLayout": {
+              "width": 1440,
+              "scroll": 1440
+            },
+            "maxBriefLayout": {
+              "width": 1440,
+              "scroll": 1440
+            }
+          },
+          {
+            "width": 1440,
+            "theme": "dark",
+            "maxReachedPilotTokens": [
+              {
+                "text": "1.7976931348623157e+308",
+                "lines": 1,
+                "contained": true
+              },
+              {
+                "text": "1.7976931348623157e+308",
+                "lines": 1,
+                "contained": true
+              }
+            ],
+            "maxReachedBriefTokens": [
+              {
+                "text": "1.7976931348623157e+308",
+                "lines": 1,
+                "contained": true
+              },
+              {
+                "text": "1.7976931348623157e+308",
+                "lines": 1,
+                "contained": true
+              },
+              {
+                "text": "1.7976931348623157e+308",
+                "lines": 1,
+                "contained": true
+              }
+            ],
+            "maxReachedPilotLayout": {
+              "width": 1440,
+              "scroll": 1440
+            },
+            "maxReachedBriefLayout": {
+              "width": 1440,
+              "scroll": 1440
+            }
+          },
+          {
+            "route": "pilot",
+            "theme": "light",
+            "width": 820,
+            "scroll": 820
+          },
+          {
+            "route": "brief",
+            "theme": "light",
+            "width": 820,
+            "scroll": 820
+          },
+          {
+            "width": 820,
+            "theme": "light",
+            "scientificToken": {
+              "text": "$1e+308",
+              "lines": 1,
+              "contained": true
+            },
+            "scientificLedgerTokens": [
+              {
+                "text": "$1e+308",
+                "lines": 1,
+                "contained": true
+              }
+            ],
+            "scientificBriefTokens": [
+              {
+                "text": "$1e+308",
+                "lines": 1,
+                "contained": true
+              },
+              {
+                "text": "$1e+308",
+                "lines": 1,
+                "contained": true
+              }
+            ],
+            "maxScientificToken": {
+              "text": "$1.7976931348623157e+308",
+              "lines": 1,
+              "contained": true
+            },
+            "maxLedgerTokens": [
+              {
+                "text": "$1.7976931348623157e+308",
+                "lines": 1,
+                "contained": true
+              }
+            ],
+            "maxBriefTokens": [
+              {
+                "text": "$1.7976931348623157e+308",
+                "lines": 1,
+                "contained": true
+              },
+              {
+                "text": "$1.7976931348623157e+308",
+                "lines": 1,
+                "contained": true
+              }
+            ],
+            "maxLayout": {
+              "width": 820,
+              "scroll": 820
+            },
+            "maxBriefLayout": {
+              "width": 820,
+              "scroll": 820
+            }
+          },
+          {
+            "width": 820,
+            "theme": "light",
+            "maxReachedPilotTokens": [
+              {
+                "text": "1.7976931348623157e+308",
+                "lines": 1,
+                "contained": true
+              },
+              {
+                "text": "1.7976931348623157e+308",
+                "lines": 1,
+                "contained": true
+              }
+            ],
+            "maxReachedBriefTokens": [
+              {
+                "text": "1.7976931348623157e+308",
+                "lines": 1,
+                "contained": true
+              },
+              {
+                "text": "1.7976931348623157e+308",
+                "lines": 1,
+                "contained": true
+              },
+              {
+                "text": "1.7976931348623157e+308",
+                "lines": 1,
+                "contained": true
+              }
+            ],
+            "maxReachedPilotLayout": {
+              "width": 820,
+              "scroll": 820
+            },
+            "maxReachedBriefLayout": {
+              "width": 820,
+              "scroll": 820
+            }
+          },
+          {
+            "route": "pilot",
+            "theme": "dark",
+            "width": 820,
+            "scroll": 820
+          },
+          {
+            "route": "brief",
+            "theme": "dark",
+            "width": 820,
+            "scroll": 820
+          },
+          {
+            "width": 820,
+            "theme": "dark",
+            "scientificToken": {
+              "text": "$1e+308",
+              "lines": 1,
+              "contained": true
+            },
+            "scientificLedgerTokens": [
+              {
+                "text": "$1e+308",
+                "lines": 1,
+                "contained": true
+              }
+            ],
+            "scientificBriefTokens": [
+              {
+                "text": "$1e+308",
+                "lines": 1,
+                "contained": true
+              },
+              {
+                "text": "$1e+308",
+                "lines": 1,
+                "contained": true
+              }
+            ],
+            "maxScientificToken": {
+              "text": "$1.7976931348623157e+308",
+              "lines": 1,
+              "contained": true
+            },
+            "maxLedgerTokens": [
+              {
+                "text": "$1.7976931348623157e+308",
+                "lines": 1,
+                "contained": true
+              }
+            ],
+            "maxBriefTokens": [
+              {
+                "text": "$1.7976931348623157e+308",
+                "lines": 1,
+                "contained": true
+              },
+              {
+                "text": "$1.7976931348623157e+308",
+                "lines": 1,
+                "contained": true
+              }
+            ],
+            "maxLayout": {
+              "width": 820,
+              "scroll": 820
+            },
+            "maxBriefLayout": {
+              "width": 820,
+              "scroll": 820
+            }
+          },
+          {
+            "width": 820,
+            "theme": "dark",
+            "maxReachedPilotTokens": [
+              {
+                "text": "1.7976931348623157e+308",
+                "lines": 1,
+                "contained": true
+              },
+              {
+                "text": "1.7976931348623157e+308",
+                "lines": 1,
+                "contained": true
+              }
+            ],
+            "maxReachedBriefTokens": [
+              {
+                "text": "1.7976931348623157e+308",
+                "lines": 1,
+                "contained": true
+              },
+              {
+                "text": "1.7976931348623157e+308",
+                "lines": 1,
+                "contained": true
+              },
+              {
+                "text": "1.7976931348623157e+308",
+                "lines": 1,
+                "contained": true
+              }
+            ],
+            "maxReachedPilotLayout": {
+              "width": 820,
+              "scroll": 820
+            },
+            "maxReachedBriefLayout": {
+              "width": 820,
+              "scroll": 820
+            }
+          },
+          {
+            "route": "pilot",
+            "theme": "light",
+            "width": 360,
+            "scroll": 360
+          },
+          {
+            "route": "brief",
+            "theme": "light",
+            "width": 360,
+            "scroll": 360
+          },
+          {
+            "width": 360,
+            "theme": "light",
+            "scientificToken": {
+              "text": "$1e+308",
+              "lines": 1,
+              "contained": true
+            },
+            "scientificLedgerTokens": [
+              {
+                "text": "$1e+308",
+                "lines": 1,
+                "contained": true
+              }
+            ],
+            "scientificBriefTokens": [
+              {
+                "text": "$1e+308",
+                "lines": 1,
+                "contained": true
+              },
+              {
+                "text": "$1e+308",
+                "lines": 1,
+                "contained": true
+              }
+            ],
+            "maxScientificToken": {
+              "text": "$1.7976931348623157e+308",
+              "lines": 1,
+              "contained": true
+            },
+            "maxLedgerTokens": [
+              {
+                "text": "$1.7976931348623157e+308",
+                "lines": 1,
+                "contained": true
+              }
+            ],
+            "maxBriefTokens": [
+              {
+                "text": "$1.7976931348623157e+308",
+                "lines": 1,
+                "contained": true
+              },
+              {
+                "text": "$1.7976931348623157e+308",
+                "lines": 1,
+                "contained": true
+              }
+            ],
+            "maxLayout": {
+              "width": 360,
+              "scroll": 360
+            },
+            "maxBriefLayout": {
+              "width": 360,
+              "scroll": 360
+            }
+          },
+          {
+            "width": 360,
+            "theme": "light",
+            "maxReachedPilotTokens": [
+              {
+                "text": "1.7976931348623157e+308",
+                "lines": 1,
+                "contained": true
+              },
+              {
+                "text": "1.7976931348623157e+308",
+                "lines": 1,
+                "contained": true
+              }
+            ],
+            "maxReachedBriefTokens": [
+              {
+                "text": "1.7976931348623157e+308",
+                "lines": 1,
+                "contained": true
+              },
+              {
+                "text": "1.7976931348623157e+308",
+                "lines": 1,
+                "contained": true
+              },
+              {
+                "text": "1.7976931348623157e+308",
+                "lines": 1,
+                "contained": true
+              }
+            ],
+            "maxReachedPilotLayout": {
+              "width": 360,
+              "scroll": 360
+            },
+            "maxReachedBriefLayout": {
+              "width": 360,
+              "scroll": 360
+            }
+          },
+          {
+            "route": "pilot",
+            "theme": "dark",
+            "width": 360,
+            "scroll": 360
+          },
+          {
+            "route": "brief",
+            "theme": "dark",
+            "width": 360,
+            "scroll": 360
+          },
+          {
+            "width": 360,
+            "theme": "dark",
+            "scientificToken": {
+              "text": "$1e+308",
+              "lines": 1,
+              "contained": true
+            },
+            "scientificLedgerTokens": [
+              {
+                "text": "$1e+308",
+                "lines": 1,
+                "contained": true
+              }
+            ],
+            "scientificBriefTokens": [
+              {
+                "text": "$1e+308",
+                "lines": 1,
+                "contained": true
+              },
+              {
+                "text": "$1e+308",
+                "lines": 1,
+                "contained": true
+              }
+            ],
+            "maxScientificToken": {
+              "text": "$1.7976931348623157e+308",
+              "lines": 1,
+              "contained": true
+            },
+            "maxLedgerTokens": [
+              {
+                "text": "$1.7976931348623157e+308",
+                "lines": 1,
+                "contained": true
+              }
+            ],
+            "maxBriefTokens": [
+              {
+                "text": "$1.7976931348623157e+308",
+                "lines": 1,
+                "contained": true
+              },
+              {
+                "text": "$1.7976931348623157e+308",
+                "lines": 1,
+                "contained": true
+              }
+            ],
+            "maxLayout": {
+              "width": 360,
+              "scroll": 360
+            },
+            "maxBriefLayout": {
+              "width": 360,
+              "scroll": 360
+            }
+          },
+          {
+            "width": 360,
+            "theme": "dark",
+            "maxReachedPilotTokens": [
+              {
+                "text": "1.7976931348623157e+308",
+                "lines": 1,
+                "contained": true
+              },
+              {
+                "text": "1.7976931348623157e+308",
+                "lines": 1,
+                "contained": true
+              }
+            ],
+            "maxReachedBriefTokens": [
+              {
+                "text": "1.7976931348623157e+308",
+                "lines": 1,
+                "contained": true
+              },
+              {
+                "text": "1.7976931348623157e+308",
+                "lines": 1,
+                "contained": true
+              },
+              {
+                "text": "1.7976931348623157e+308",
+                "lines": 1,
+                "contained": true
+              }
+            ],
+            "maxReachedPilotLayout": {
+              "width": 360,
+              "scroll": 360
+            },
+            "maxReachedBriefLayout": {
+              "width": 360,
+              "scroll": 360
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "rendered WCAG accessibility: light",
+      "status": "PASS",
+      "ms": 14499,
+      "details": [
+        {
+          "route": "/",
+          "incomplete": [
+            {
+              "id": "color-contrast",
+              "count": 32
+            }
+          ]
+        },
+        {
+          "route": "/burden",
+          "incomplete": []
+        },
+        {
+          "route": "/burden/medical",
+          "incomplete": []
+        },
+        {
+          "route": "/burden/work",
+          "incomplete": []
+        },
+        {
+          "route": "/burden/admin",
+          "incomplete": []
+        },
+        {
+          "route": "/burden/human",
+          "incomplete": []
+        },
+        {
+          "route": "/local-context",
+          "incomplete": []
+        },
+        {
+          "route": "/pilot",
+          "incomplete": []
+        },
+        {
+          "route": "/evidence",
+          "incomplete": []
+        },
+        {
+          "route": "/data-requests",
+          "incomplete": []
+        },
+        {
+          "route": "/brief",
+          "incomplete": []
+        }
+      ]
+    },
+    {
+      "name": "rendered WCAG accessibility: dark",
+      "status": "PASS",
+      "ms": 8033,
+      "details": [
+        {
+          "route": "/",
+          "incomplete": [
+            {
+              "id": "color-contrast",
+              "count": 29
+            }
+          ]
+        },
+        {
+          "route": "/burden",
+          "incomplete": []
+        },
+        {
+          "route": "/burden/medical",
+          "incomplete": []
+        },
+        {
+          "route": "/burden/work",
+          "incomplete": []
+        },
+        {
+          "route": "/burden/admin",
+          "incomplete": []
+        },
+        {
+          "route": "/burden/human",
+          "incomplete": []
+        },
+        {
+          "route": "/local-context",
+          "incomplete": []
+        },
+        {
+          "route": "/pilot",
+          "incomplete": []
+        },
+        {
+          "route": "/evidence",
+          "incomplete": []
+        },
+        {
+          "route": "/data-requests",
+          "incomplete": []
+        },
+        {
+          "route": "/brief",
+          "incomplete": []
+        }
+      ]
+    },
+    {
+      "name": "rendered fail-closed artifact error: national",
+      "status": "PASS",
+      "ms": 1019
+    },
+    {
+      "name": "rendered fail-closed artifact error: local",
+      "status": "PASS",
+      "ms": 1459
+    },
+    {
+      "name": "initial loading DOM commit before synchronous artifact validation",
+      "status": "PASS",
+      "ms": 1028,
+      "details": {
+        "note": "Initial loading DOM committed; bundled artifacts validate synchronously, so no persistent loading paint is claimed."
+      }
+    },
+    {
+      "name": "opening animation settles, does not replay, and respects motion changes",
+      "status": "PASS",
+      "ms": 1091
+    },
+    {
+      "name": "media-query subscriptions clean up across Brief navigation",
+      "status": "PASS",
+      "ms": 1245
+    },
+    {
+      "name": "keyboard-only selections, scenario control, request opt-in and JSON export",
+      "status": "PASS",
+      "ms": 2285,
+      "details": {
+        "local": 1,
+        "requests": 1,
+        "capacity": 2500,
+        "national": 21
+      }
+    },
+    {
+      "name": "cold browser load measurements",
+      "status": "PASS",
+      "ms": 3358,
+      "details": [
+        {
+          "navigation": {
+            "name": "http://127.0.0.1:4197/pilot",
+            "entryType": "navigation",
+            "startTime": 0,
+            "duration": 195,
+            "navigationId": 9697,
+            "initiatorType": "navigation",
+            "deliveryType": "",
+            "nextHopProtocol": "http/1.1",
+            "renderBlockingStatus": "non-blocking",
+            "contentType": "text/html",
+            "contentEncoding": "gzip",
+            "workerStart": 0,
+            "workerRouterEvaluationStart": 0,
+            "workerCacheLookupStart": 0,
+            "workerMatchedSourceType": "",
+            "workerFinalSourceType": "",
+            "redirectStart": 0,
+            "redirectEnd": 0,
+            "fetchStart": 3.600000001490116,
+            "domainLookupStart": 3.600000001490116,
+            "domainLookupEnd": 3.600000001490116,
+            "connectStart": 3.600000001490116,
+            "secureConnectionStart": 0,
+            "connectEnd": 3.600000001490116,
+            "requestStart": 39,
+            "responseStart": 43.69999999925494,
+            "firstInterimResponseStart": 0,
+            "finalResponseHeadersStart": 43.69999999925494,
+            "responseEnd": 44.30000000074506,
+            "transferSize": 1015,
+            "encodedBodySize": 715,
+            "decodedBodySize": 1642,
+            "responseStatus": 200,
+            "serverTiming": [],
+            "unloadEventStart": 0,
+            "unloadEventEnd": 0,
+            "domInteractive": 78.69999999925494,
+            "domContentLoadedEventStart": 194.19999999925494,
+            "domContentLoadedEventEnd": 194.60000000149012,
+            "domComplete": 194.89999999850988,
+            "loadEventStart": 195,
+            "loadEventEnd": 195,
+            "type": "navigate",
+            "redirectCount": 0,
+            "activationStart": 0,
+            "criticalCHRestart": 0,
+            "notRestoredReasons": null,
+            "confidence": {
+              "randomizedTriggerRate": 0.4994798,
+              "value": "high"
+            }
+          },
+          "paint": [
+            {
+              "name": "first-paint",
+              "entryType": "paint",
+              "startTime": 168,
+              "duration": 0,
+              "navigationId": 9697,
+              "paintTime": 151.89999999850988,
+              "presentationTime": 168
+            },
+            {
+              "name": "first-contentful-paint",
+              "entryType": "paint",
+              "startTime": 300,
+              "duration": 0,
+              "navigationId": 9697,
+              "paintTime": 273.30000000074506,
+              "presentationTime": 300
+            }
+          ],
+          "resources": [
+            {
+              "name": "http://127.0.0.1:4197/assets/index-Cn4HYv92.js",
+              "entryType": "resource",
+              "startTime": 63.19999999925494,
+              "duration": 82.69999999925494,
+              "navigationId": 9697,
+              "initiatorType": "script",
+              "deliveryType": "",
+              "nextHopProtocol": "http/1.1",
+              "renderBlockingStatus": "non-blocking",
+              "contentType": "text/javascript",
+              "contentEncoding": "gzip",
+              "workerStart": 0,
+              "workerRouterEvaluationStart": 0,
+              "workerCacheLookupStart": 0,
+              "workerMatchedSourceType": "",
+              "workerFinalSourceType": "",
+              "redirectStart": 0,
+              "redirectEnd": 0,
+              "fetchStart": 63.19999999925494,
+              "domainLookupStart": 63.19999999925494,
+              "domainLookupEnd": 63.19999999925494,
+              "connectStart": 63.19999999925494,
+              "secureConnectionStart": 0,
+              "connectEnd": 63.19999999925494,
+              "requestStart": 85.60000000149012,
+              "responseStart": 91.80000000074506,
+              "firstInterimResponseStart": 0,
+              "finalResponseHeadersStart": 91.80000000074506,
+              "responseEnd": 145.89999999850988,
+              "transferSize": 122278,
+              "encodedBodySize": 121978,
+              "decodedBodySize": 514897,
+              "responseStatus": 200,
+              "serverTiming": []
+            },
+            {
+              "name": "http://127.0.0.1:4197/assets/index-BSgJotTd.css",
+              "entryType": "resource",
+              "startTime": 64,
+              "duration": 43,
+              "navigationId": 9697,
+              "initiatorType": "link",
+              "deliveryType": "",
+              "nextHopProtocol": "http/1.1",
+              "renderBlockingStatus": "blocking",
+              "contentType": "text/css",
+              "contentEncoding": "gzip",
+              "workerStart": 0,
+              "workerRouterEvaluationStart": 0,
+              "workerCacheLookupStart": 0,
+              "workerMatchedSourceType": "",
+              "workerFinalSourceType": "",
+              "redirectStart": 0,
+              "redirectEnd": 0,
+              "fetchStart": 64,
+              "domainLookupStart": 83.19999999925494,
+              "domainLookupEnd": 83.19999999925494,
+              "connectStart": 83.19999999925494,
+              "secureConnectionStart": 0,
+              "connectEnd": 85.5,
+              "requestStart": 86.5,
+              "responseStart": 97.5,
+              "firstInterimResponseStart": 0,
+              "finalResponseHeadersStart": 97.5,
+              "responseEnd": 107,
+              "transferSize": 17941,
+              "encodedBodySize": 17641,
+              "decodedBodySize": 101883,
+              "responseStatus": 200,
+              "serverTiming": []
+            }
+          ]
+        },
+        {
+          "navigation": {
+            "name": "http://127.0.0.1:4197/pilot",
+            "entryType": "navigation",
+            "startTime": 0,
+            "duration": 192.30000000074506,
+            "navigationId": 5050,
+            "initiatorType": "navigation",
+            "deliveryType": "",
+            "nextHopProtocol": "http/1.1",
+            "renderBlockingStatus": "non-blocking",
+            "contentType": "text/html",
+            "contentEncoding": "gzip",
+            "workerStart": 0,
+            "workerRouterEvaluationStart": 0,
+            "workerCacheLookupStart": 0,
+            "workerMatchedSourceType": "",
+            "workerFinalSourceType": "",
+            "redirectStart": 0,
+            "redirectEnd": 0,
+            "fetchStart": 0.8999999985098839,
+            "domainLookupStart": 0.8999999985098839,
+            "domainLookupEnd": 0.8999999985098839,
+            "connectStart": 0.8999999985098839,
+            "secureConnectionStart": 0,
+            "connectEnd": 0.8999999985098839,
+            "requestStart": 3.100000001490116,
+            "responseStart": 9.600000001490116,
+            "firstInterimResponseStart": 0,
+            "finalResponseHeadersStart": 9.600000001490116,
+            "responseEnd": 10.699999999254942,
+            "transferSize": 1015,
+            "encodedBodySize": 715,
+            "decodedBodySize": 1642,
+            "responseStatus": 200,
+            "serverTiming": [],
+            "unloadEventStart": 0,
+            "unloadEventEnd": 0,
+            "domInteractive": 54.69999999925494,
+            "domContentLoadedEventStart": 184.39999999850988,
+            "domContentLoadedEventEnd": 184.5,
+            "domComplete": 192.30000000074506,
+            "loadEventStart": 192.30000000074506,
+            "loadEventEnd": 192.30000000074506,
+            "type": "navigate",
+            "redirectCount": 0,
+            "activationStart": 0,
+            "criticalCHRestart": 0,
+            "notRestoredReasons": null,
+            "confidence": {
+              "randomizedTriggerRate": 0.4994798,
+              "value": "low"
+            }
+          },
+          "paint": [
+            {
+              "name": "first-paint",
+              "entryType": "paint",
+              "startTime": 92,
+              "duration": 0,
+              "navigationId": 5050,
+              "paintTime": 84.39999999850988,
+              "presentationTime": 92
+            },
+            {
+              "name": "first-contentful-paint",
+              "entryType": "paint",
+              "startTime": 320,
+              "duration": 0,
+              "navigationId": 5050,
+              "paintTime": 308.19999999925494,
+              "presentationTime": 320
+            }
+          ],
+          "resources": [
+            {
+              "name": "http://127.0.0.1:4197/assets/index-Cn4HYv92.js",
+              "entryType": "resource",
+              "startTime": 20.100000001490116,
+              "duration": 74,
+              "navigationId": 5050,
+              "initiatorType": "script",
+              "deliveryType": "",
+              "nextHopProtocol": "http/1.1",
+              "renderBlockingStatus": "non-blocking",
+              "contentType": "text/javascript",
+              "contentEncoding": "gzip",
+              "workerStart": 0,
+              "workerRouterEvaluationStart": 0,
+              "workerCacheLookupStart": 0,
+              "workerMatchedSourceType": "",
+              "workerFinalSourceType": "",
+              "redirectStart": 0,
+              "redirectEnd": 0,
+              "fetchStart": 20.100000001490116,
+              "domainLookupStart": 20.100000001490116,
+              "domainLookupEnd": 20.100000001490116,
+              "connectStart": 20.100000001490116,
+              "secureConnectionStart": 0,
+              "connectEnd": 20.100000001490116,
+              "requestStart": 63.19999999925494,
+              "responseStart": 73.89999999850988,
+              "firstInterimResponseStart": 0,
+              "finalResponseHeadersStart": 73.89999999850988,
+              "responseEnd": 94.10000000149012,
+              "transferSize": 122278,
+              "encodedBodySize": 121978,
+              "decodedBodySize": 514897,
+              "responseStatus": 200,
+              "serverTiming": []
+            },
+            {
+              "name": "http://127.0.0.1:4197/assets/index-BSgJotTd.css",
+              "entryType": "resource",
+              "startTime": 20.699999999254942,
+              "duration": 58.900000002235174,
+              "navigationId": 5050,
+              "initiatorType": "link",
+              "deliveryType": "",
+              "nextHopProtocol": "http/1.1",
+              "renderBlockingStatus": "blocking",
+              "contentType": "text/css",
+              "contentEncoding": "gzip",
+              "workerStart": 0,
+              "workerRouterEvaluationStart": 0,
+              "workerCacheLookupStart": 0,
+              "workerMatchedSourceType": "",
+              "workerFinalSourceType": "",
+              "redirectStart": 0,
+              "redirectEnd": 0,
+              "fetchStart": 20.699999999254942,
+              "domainLookupStart": 61.30000000074506,
+              "domainLookupEnd": 61.30000000074506,
+              "connectStart": 61.30000000074506,
+              "secureConnectionStart": 0,
+              "connectEnd": 63.30000000074506,
+              "requestStart": 63.30000000074506,
+              "responseStart": 78.69999999925494,
+              "firstInterimResponseStart": 0,
+              "finalResponseHeadersStart": 78.69999999925494,
+              "responseEnd": 79.60000000149012,
+              "transferSize": 17941,
+              "encodedBodySize": 17641,
+              "decodedBodySize": 101883,
+              "responseStatus": 200,
+              "serverTiming": []
+            }
+          ]
+        },
+        {
+          "navigation": {
+            "name": "http://127.0.0.1:4197/pilot",
+            "entryType": "navigation",
+            "startTime": 0,
+            "duration": 183.10000000149012,
+            "navigationId": 9086,
+            "initiatorType": "navigation",
+            "deliveryType": "",
+            "nextHopProtocol": "http/1.1",
+            "renderBlockingStatus": "non-blocking",
+            "contentType": "text/html",
+            "contentEncoding": "gzip",
+            "workerStart": 0,
+            "workerRouterEvaluationStart": 0,
+            "workerCacheLookupStart": 0,
+            "workerMatchedSourceType": "",
+            "workerFinalSourceType": "",
+            "redirectStart": 0,
+            "redirectEnd": 0,
+            "fetchStart": 0.8000000007450581,
+            "domainLookupStart": 0.8000000007450581,
+            "domainLookupEnd": 0.8000000007450581,
+            "connectStart": 0.8000000007450581,
+            "secureConnectionStart": 0,
+            "connectEnd": 0.8000000007450581,
+            "requestStart": 1.7000000029802322,
+            "responseStart": 7.5,
+            "firstInterimResponseStart": 0,
+            "finalResponseHeadersStart": 7.5,
+            "responseEnd": 7.900000002235174,
+            "transferSize": 1015,
+            "encodedBodySize": 715,
+            "decodedBodySize": 1642,
+            "responseStatus": 200,
+            "serverTiming": [],
+            "unloadEventStart": 0,
+            "unloadEventEnd": 0,
+            "domInteractive": 85.30000000074506,
+            "domContentLoadedEventStart": 182.70000000298023,
+            "domContentLoadedEventEnd": 182.80000000074506,
+            "domComplete": 183,
+            "loadEventStart": 183.10000000149012,
+            "loadEventEnd": 183.10000000149012,
+            "type": "navigate",
+            "redirectCount": 0,
+            "activationStart": 0,
+            "criticalCHRestart": 0,
+            "notRestoredReasons": null,
+            "confidence": {
+              "randomizedTriggerRate": 0.4994798,
+              "value": "high"
+            }
+          },
+          "paint": [
+            {
+              "name": "first-paint",
+              "entryType": "paint",
+              "startTime": 104,
+              "duration": 0,
+              "navigationId": 9086,
+              "paintTime": 99,
+              "presentationTime": 104
+            },
+            {
+              "name": "first-contentful-paint",
+              "entryType": "paint",
+              "startTime": 248,
+              "duration": 0,
+              "navigationId": 9086,
+              "paintTime": 238.20000000298023,
+              "presentationTime": 248
+            }
+          ],
+          "resources": [
+            {
+              "name": "http://127.0.0.1:4197/assets/index-Cn4HYv92.js",
+              "entryType": "resource",
+              "startTime": 25.900000002235174,
+              "duration": 68,
+              "navigationId": 9086,
+              "initiatorType": "script",
+              "deliveryType": "",
+              "nextHopProtocol": "http/1.1",
+              "renderBlockingStatus": "non-blocking",
+              "contentType": "text/javascript",
+              "contentEncoding": "gzip",
+              "workerStart": 0,
+              "workerRouterEvaluationStart": 0,
+              "workerCacheLookupStart": 0,
+              "workerMatchedSourceType": "",
+              "workerFinalSourceType": "",
+              "redirectStart": 0,
+              "redirectEnd": 0,
+              "fetchStart": 25.900000002235174,
+              "domainLookupStart": 25.900000002235174,
+              "domainLookupEnd": 25.900000002235174,
+              "connectStart": 25.900000002235174,
+              "secureConnectionStart": 0,
+              "connectEnd": 25.900000002235174,
+              "requestStart": 30,
+              "responseStart": 45.400000002235174,
+              "firstInterimResponseStart": 0,
+              "finalResponseHeadersStart": 45.400000002235174,
+              "responseEnd": 93.90000000223517,
+              "transferSize": 122278,
+              "encodedBodySize": 121978,
+              "decodedBodySize": 514897,
+              "responseStatus": 200,
+              "serverTiming": []
+            },
+            {
+              "name": "http://127.0.0.1:4197/assets/index-BSgJotTd.css",
+              "entryType": "resource",
+              "startTime": 26.200000002980232,
+              "duration": 23,
+              "navigationId": 9086,
+              "initiatorType": "link",
+              "deliveryType": "",
+              "nextHopProtocol": "http/1.1",
+              "renderBlockingStatus": "blocking",
+              "contentType": "text/css",
+              "contentEncoding": "gzip",
+              "workerStart": 0,
+              "workerRouterEvaluationStart": 0,
+              "workerCacheLookupStart": 0,
+              "workerMatchedSourceType": "",
+              "workerFinalSourceType": "",
+              "redirectStart": 0,
+              "redirectEnd": 0,
+              "fetchStart": 26.200000002980232,
+              "domainLookupStart": 29.800000000745058,
+              "domainLookupEnd": 29.800000000745058,
+              "connectStart": 29.800000000745058,
+              "secureConnectionStart": 0,
+              "connectEnd": 30.400000002235174,
+              "requestStart": 30.400000002235174,
+              "responseStart": 45.70000000298023,
+              "firstInterimResponseStart": 0,
+              "finalResponseHeadersStart": 45.70000000298023,
+              "responseEnd": 49.20000000298023,
+              "transferSize": 17941,
+              "encodedBodySize": 17641,
+              "decodedBodySize": 101883,
+              "responseStatus": 200,
+              "serverTiming": []
+            }
+          ]
+        },
+        {
+          "navigation": {
+            "name": "http://127.0.0.1:4197/pilot",
+            "entryType": "navigation",
+            "startTime": 0,
+            "duration": 180,
+            "navigationId": 2852,
+            "initiatorType": "navigation",
+            "deliveryType": "",
+            "nextHopProtocol": "http/1.1",
+            "renderBlockingStatus": "non-blocking",
+            "contentType": "text/html",
+            "contentEncoding": "gzip",
+            "workerStart": 0,
+            "workerRouterEvaluationStart": 0,
+            "workerCacheLookupStart": 0,
+            "workerMatchedSourceType": "",
+            "workerFinalSourceType": "",
+            "redirectStart": 0,
+            "redirectEnd": 0,
+            "fetchStart": 0.5999999977648258,
+            "domainLookupStart": 0.5999999977648258,
+            "domainLookupEnd": 0.5999999977648258,
+            "connectStart": 0.5999999977648258,
+            "secureConnectionStart": 0,
+            "connectEnd": 0.5999999977648258,
+            "requestStart": 3.199999999254942,
+            "responseStart": 7.399999998509884,
+            "firstInterimResponseStart": 0,
+            "finalResponseHeadersStart": 7.399999998509884,
+            "responseEnd": 7.799999997019768,
+            "transferSize": 1015,
+            "encodedBodySize": 715,
+            "decodedBodySize": 1642,
+            "responseStatus": 200,
+            "serverTiming": [],
+            "unloadEventStart": 0,
+            "unloadEventEnd": 0,
+            "domInteractive": 30.599999997764826,
+            "domContentLoadedEventStart": 179.29999999701977,
+            "domContentLoadedEventEnd": 179.39999999850988,
+            "domComplete": 180,
+            "loadEventStart": 180,
+            "loadEventEnd": 180,
+            "type": "navigate",
+            "redirectCount": 0,
+            "activationStart": 0,
+            "criticalCHRestart": 0,
+            "notRestoredReasons": null,
+            "confidence": {
+              "randomizedTriggerRate": 0.4994798,
+              "value": "high"
+            }
+          },
+          "paint": [
+            {
+              "name": "first-paint",
+              "entryType": "paint",
+              "startTime": 104,
+              "duration": 0,
+              "navigationId": 2852,
+              "paintTime": 99.89999999850988,
+              "presentationTime": 104
+            },
+            {
+              "name": "first-contentful-paint",
+              "entryType": "paint",
+              "startTime": 440,
+              "duration": 0,
+              "navigationId": 2852,
+              "paintTime": 402.5,
+              "presentationTime": 440
+            }
+          ],
+          "resources": [
+            {
+              "name": "http://127.0.0.1:4197/assets/index-Cn4HYv92.js",
+              "entryType": "resource",
+              "startTime": 18.5,
+              "duration": 80.39999999850988,
+              "navigationId": 2852,
+              "initiatorType": "script",
+              "deliveryType": "",
+              "nextHopProtocol": "http/1.1",
+              "renderBlockingStatus": "non-blocking",
+              "contentType": "text/javascript",
+              "contentEncoding": "gzip",
+              "workerStart": 0,
+              "workerRouterEvaluationStart": 0,
+              "workerCacheLookupStart": 0,
+              "workerMatchedSourceType": "",
+              "workerFinalSourceType": "",
+              "redirectStart": 0,
+              "redirectEnd": 0,
+              "fetchStart": 18.5,
+              "domainLookupStart": 18.5,
+              "domainLookupEnd": 18.5,
+              "connectStart": 18.5,
+              "secureConnectionStart": 0,
+              "connectEnd": 18.5,
+              "requestStart": 37.599999997764826,
+              "responseStart": 74.09999999776483,
+              "firstInterimResponseStart": 0,
+              "finalResponseHeadersStart": 74.09999999776483,
+              "responseEnd": 98.89999999850988,
+              "transferSize": 122278,
+              "encodedBodySize": 121978,
+              "decodedBodySize": 514897,
+              "responseStatus": 200,
+              "serverTiming": []
+            },
+            {
+              "name": "http://127.0.0.1:4197/assets/index-BSgJotTd.css",
+              "entryType": "resource",
+              "startTime": 18.799999997019768,
+              "duration": 62.80000000074506,
+              "navigationId": 2852,
+              "initiatorType": "link",
+              "deliveryType": "",
+              "nextHopProtocol": "http/1.1",
+              "renderBlockingStatus": "blocking",
+              "contentType": "text/css",
+              "contentEncoding": "gzip",
+              "workerStart": 0,
+              "workerRouterEvaluationStart": 0,
+              "workerCacheLookupStart": 0,
+              "workerMatchedSourceType": "",
+              "workerFinalSourceType": "",
+              "redirectStart": 0,
+              "redirectEnd": 0,
+              "fetchStart": 18.799999997019768,
+              "domainLookupStart": 37.399999998509884,
+              "domainLookupEnd": 37.399999998509884,
+              "connectStart": 37.399999998509884,
+              "secureConnectionStart": 0,
+              "connectEnd": 37.599999997764826,
+              "requestStart": 37.69999999925494,
+              "responseStart": 72.5,
+              "firstInterimResponseStart": 0,
+              "finalResponseHeadersStart": 72.5,
+              "responseEnd": 81.59999999776483,
+              "transferSize": 17941,
+              "encodedBodySize": 17641,
+              "decodedBodySize": 101883,
+              "responseStatus": 200,
+              "serverTiming": []
+            }
+          ]
+        },
+        {
+          "navigation": {
+            "name": "http://127.0.0.1:4197/pilot",
+            "entryType": "navigation",
+            "startTime": 0,
+            "duration": 159.90000000223517,
+            "navigationId": 1880,
+            "initiatorType": "navigation",
+            "deliveryType": "",
+            "nextHopProtocol": "http/1.1",
+            "renderBlockingStatus": "non-blocking",
+            "contentType": "text/html",
+            "contentEncoding": "gzip",
+            "workerStart": 0,
+            "workerRouterEvaluationStart": 0,
+            "workerCacheLookupStart": 0,
+            "workerMatchedSourceType": "",
+            "workerFinalSourceType": "",
+            "redirectStart": 0,
+            "redirectEnd": 0,
+            "fetchStart": 0.9000000022351742,
+            "domainLookupStart": 0.9000000022351742,
+            "domainLookupEnd": 0.9000000022351742,
+            "connectStart": 0.9000000022351742,
+            "secureConnectionStart": 0,
+            "connectEnd": 0.9000000022351742,
+            "requestStart": 4.200000002980232,
+            "responseStart": 9.800000000745058,
+            "firstInterimResponseStart": 0,
+            "finalResponseHeadersStart": 9.800000000745058,
+            "responseEnd": 10.5,
+            "transferSize": 1015,
+            "encodedBodySize": 715,
+            "decodedBodySize": 1642,
+            "responseStatus": 200,
+            "serverTiming": [],
+            "unloadEventStart": 0,
+            "unloadEventEnd": 0,
+            "domInteractive": 50.30000000074506,
+            "domContentLoadedEventStart": 159.70000000298023,
+            "domContentLoadedEventEnd": 159.80000000074506,
+            "domComplete": 159.90000000223517,
+            "loadEventStart": 159.90000000223517,
+            "loadEventEnd": 159.90000000223517,
+            "type": "navigate",
+            "redirectCount": 0,
+            "activationStart": 0,
+            "criticalCHRestart": 0,
+            "notRestoredReasons": null,
+            "confidence": {
+              "randomizedTriggerRate": 0.4994798,
+              "value": "high"
+            }
+          },
+          "paint": [
+            {
+              "name": "first-paint",
+              "entryType": "paint",
+              "startTime": 76,
+              "duration": 0,
+              "navigationId": 1880,
+              "paintTime": 67.30000000074506,
+              "presentationTime": 76
+            },
+            {
+              "name": "first-contentful-paint",
+              "entryType": "paint",
+              "startTime": 248,
+              "duration": 0,
+              "navigationId": 1880,
+              "paintTime": 210.20000000298023,
+              "presentationTime": 248
+            }
+          ],
+          "resources": [
+            {
+              "name": "http://127.0.0.1:4197/assets/index-Cn4HYv92.js",
+              "entryType": "resource",
+              "startTime": 19.5,
+              "duration": 77.80000000074506,
+              "navigationId": 1880,
+              "initiatorType": "script",
+              "deliveryType": "",
+              "nextHopProtocol": "http/1.1",
+              "renderBlockingStatus": "non-blocking",
+              "contentType": "text/javascript",
+              "contentEncoding": "gzip",
+              "workerStart": 0,
+              "workerRouterEvaluationStart": 0,
+              "workerCacheLookupStart": 0,
+              "workerMatchedSourceType": "",
+              "workerFinalSourceType": "",
+              "redirectStart": 0,
+              "redirectEnd": 0,
+              "fetchStart": 19.5,
+              "domainLookupStart": 19.5,
+              "domainLookupEnd": 19.5,
+              "connectStart": 19.5,
+              "secureConnectionStart": 0,
+              "connectEnd": 19.5,
+              "requestStart": 54.30000000074506,
+              "responseStart": 61.900000002235174,
+              "firstInterimResponseStart": 0,
+              "finalResponseHeadersStart": 61.900000002235174,
+              "responseEnd": 97.30000000074506,
+              "transferSize": 122278,
+              "encodedBodySize": 121978,
+              "decodedBodySize": 514897,
+              "responseStatus": 200,
+              "serverTiming": []
+            },
+            {
+              "name": "http://127.0.0.1:4197/assets/index-BSgJotTd.css",
+              "entryType": "resource",
+              "startTime": 19.600000001490116,
+              "duration": 43,
+              "navigationId": 1880,
+              "initiatorType": "link",
+              "deliveryType": "",
+              "nextHopProtocol": "http/1.1",
+              "renderBlockingStatus": "blocking",
+              "contentType": "text/css",
+              "contentEncoding": "gzip",
+              "workerStart": 0,
+              "workerRouterEvaluationStart": 0,
+              "workerCacheLookupStart": 0,
+              "workerMatchedSourceType": "",
+              "workerFinalSourceType": "",
+              "redirectStart": 0,
+              "redirectEnd": 0,
+              "fetchStart": 19.600000001490116,
+              "domainLookupStart": 53.100000001490116,
+              "domainLookupEnd": 53.100000001490116,
+              "connectStart": 53.100000001490116,
+              "secureConnectionStart": 0,
+              "connectEnd": 54.20000000298023,
+              "requestStart": 54.5,
+              "responseStart": 59.900000002235174,
+              "firstInterimResponseStart": 0,
+              "finalResponseHeadersStart": 59.900000002235174,
+              "responseEnd": 62.600000001490116,
+              "transferSize": 17941,
+              "encodedBodySize": 17641,
+              "decodedBodySize": 101883,
+              "responseStatus": 200,
+              "serverTiming": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -3,8 +3,12 @@ on:
   pull_request:
     paths:
       - "apps/web/src/data/aiHandoff*.ts"
-      - "apps/web/test/ai-handoff.test.ts"
+      - "apps/web/src/components/AiHandoff.*"
+      - "apps/web/src/pages/BriefPage.tsx"
+      - "apps/web/test/ai-handoff*.test.ts"
       - "apps/web/test/fixtures/ai-handoff-*.json"
+      - "tests/browser/ai-handoff*"
+      - "tests/browser/ai-handoff-fixture/**"
       - "docs/ai-handoff/**"
       - ".github/workflows/ai-handoff-core.yml"
 
@@ -48,6 +52,10 @@ jobs:
         run: |
           npm install --prefix /tmp/diagnostic-browser-runner --no-audit --no-fund --save-exact @playwright/test@1.64.0 axe-core@4.11.1
           node /tmp/diagnostic-browser-runner/node_modules/playwright/cli.js install chrome
+          if ! command -v pdftotext >/dev/null; then
+            sudo apt-get update
+            sudo apt-get install -y poppler-utils
+          fi
       - name: Run existing browser acceptance and accessibility suites
         env:
           PLAYWRIGHT_RUNNER: /tmp/diagnostic-browser-runner/package.json
@@ -62,6 +70,23 @@ jobs:
           curl --fail http://127.0.0.1:4186/ -o /dev/null
           QA_OUTPUT=/tmp/ai-handoff-acceptance node tests/browser/acceptance.mjs
           QA_OUTPUT=/tmp/ai-handoff-accessibility node tests/browser/gate0-accessibility.mjs
+      - name: Run AI handoff rendered regression suite
+        env:
+          PLAYWRIGHT_RUNNER: /tmp/diagnostic-browser-runner/package.json
+          QA_BASE_URL: http://127.0.0.1:4186
+          QA_AI_FIXTURE_URL: http://127.0.0.1:4197
+          QA_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          ./node_modules/.bin/vite --config tests/browser/ai-handoff-fixture/vite.config.mjs >/tmp/ai-handoff-fixture.log 2>&1 &
+          for n in $(seq 1 40); do
+            if curl --fail --silent http://127.0.0.1:4197/ >/dev/null; then break; fi
+            sleep 1
+          done
+          curl --fail http://127.0.0.1:4197/ -o /dev/null
+          QA_OUTPUT=/tmp/ai-handoff-browser node tests/browser/ai-handoff.mjs
+          pdftotext -layout /tmp/ai-handoff-browser/default-closed.pdf /tmp/ai-handoff-browser/default-closed.txt
+          pdftotext -layout /tmp/ai-handoff-browser/default-open.pdf /tmp/ai-handoff-browser/default-open.txt
+          cmp /tmp/ai-handoff-browser/default-closed.txt /tmp/ai-handoff-browser/default-open.txt
       - name: Retain exact-head browser evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -70,5 +95,7 @@ jobs:
           path: |
             /tmp/ai-handoff-acceptance/
             /tmp/ai-handoff-accessibility/
+            /tmp/ai-handoff-browser/
+            /tmp/ai-handoff-fixture.log
             /tmp/ai-handoff-preview.log
           if-no-files-found: warn

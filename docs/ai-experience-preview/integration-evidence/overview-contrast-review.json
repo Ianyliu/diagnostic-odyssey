@@ -1,0 +1,1227 @@
+{
+  "method": "Gate 0 PNG foreground/background raster comparison; decorative aria-hidden content classified separately; horizontal cells scrolled into view",
+  "records": [
+    {
+      "width": 1440,
+      "theme": "light",
+      "goal": "Overview",
+      "selector": "#overview-title",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Evidence into planning,with boundaries intact.",
+        "color": "rgb(24, 53, 75)",
+        "font": "",
+        "display": "block"
+      },
+      "measurement": {
+        "minimum": 11.661529856483384,
+        "textPixels": 17952
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-0.png"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "goal": "Overview",
+      "selector": "#overview-title > span",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "with boundaries intact.",
+        "color": "rgb(24, 53, 75)",
+        "font": "",
+        "display": "block"
+      },
+      "measurement": {
+        "minimum": 11.479408591112582,
+        "textPixels": 17509
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-1.png"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "goal": "Overview",
+      "selector": ".overview-lede",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Diagnostic Odyssey keeps reviewed national burden, local implementation context, and analyst assumptions visibly separate—then carries their provenance into one planning workflow.",
+        "color": "rgb(94, 106, 114)",
+        "font": "",
+        "display": "block"
+      },
+      "measurement": {
+        "minimum": 4.921075937427562,
+        "textPixels": 9595
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-2.png"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "goal": "Overview",
+      "selector": ".overview-secondary-cta",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Open Pilot planner",
+        "color": "rgb(15, 116, 118)",
+        "font": "",
+        "display": "flex"
+      },
+      "measurement": {
+        "minimum": 5.325787812806722,
+        "textPixels": 795
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-3.png"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "goal": "Overview",
+      "selector": ".overview-proof > div:nth-child(1) > dt",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "21",
+        "color": "rgb(21, 53, 82)",
+        "font": "",
+        "display": "block"
+      },
+      "measurement": {
+        "minimum": 11.130884507129563,
+        "textPixels": 214
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-4.png"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "goal": "Overview",
+      "selector": ".overview-proof > div:nth-child(1) > dd",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "reviewed national estimates",
+        "color": "rgb(94, 106, 114)",
+        "font": "",
+        "display": "block"
+      },
+      "measurement": {
+        "minimum": 4.775615176044341,
+        "textPixels": 681
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-5.png"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "goal": "Overview",
+      "selector": ".overview-proof > div:nth-child(2) > dt",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "34",
+        "color": "rgb(21, 53, 82)",
+        "font": "",
+        "display": "block"
+      },
+      "measurement": {
+        "minimum": 11.031877339442113,
+        "textPixels": 257
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-6.png"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "goal": "Overview",
+      "selector": ".overview-proof > div:nth-child(2) > dd",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "reviewed local-context indicators",
+        "color": "rgb(94, 106, 114)",
+        "font": "",
+        "display": "block"
+      },
+      "measurement": {
+        "minimum": 4.812383323087874,
+        "textPixels": 777
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-7.png"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "goal": "Overview",
+      "selector": ".preview-chrome > strong",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Decision workspace",
+        "color": "rgb(21, 53, 82)",
+        "font": "",
+        "display": "block"
+      },
+      "measurement": {
+        "minimum": 12.62031040682764,
+        "textPixels": 788
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-8.png"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "goal": "Overview",
+      "selector": ".preview-output-topline > span",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Planning brief",
+        "color": "rgb(15, 116, 118)",
+        "font": "",
+        "display": "block"
+      },
+      "measurement": {
+        "minimum": 5.5082936408800816,
+        "textPixels": 651
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-9.png"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "goal": "Overview",
+      "selector": ".preview-output > strong",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Traceable decision state",
+        "color": "rgb(21, 53, 82)",
+        "font": "",
+        "display": "block"
+      },
+      "measurement": {
+        "minimum": 12.444700951009606,
+        "textPixels": 3854
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-10.png"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "goal": "Overview",
+      "selector": ".preview-output > ul > li:nth-child(1)",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": " Evidence boundary retained",
+        "color": "rgb(94, 106, 114)",
+        "font": "",
+        "display": "flex"
+      },
+      "measurement": {
+        "minimum": 5.470801723636471,
+        "textPixels": 835
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-11.png"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "goal": "Overview",
+      "selector": ".preview-output > ul > li:nth-child(2)",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": " Assumptions labeled",
+        "color": "rgb(94, 106, 114)",
+        "font": "",
+        "display": "flex"
+      },
+      "measurement": {
+        "minimum": 5.467491373341807,
+        "textPixels": 661
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-12.png"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "goal": "Overview",
+      "selector": ".preview-output > ul > li:nth-child(3)",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": " Data gaps visible",
+        "color": "rgb(94, 106, 114)",
+        "font": "",
+        "display": "flex"
+      },
+      "measurement": {
+        "minimum": 5.467491373341807,
+        "textPixels": 542
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-13.png"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "goal": "Overview",
+      "selector": ".preview-footer > span:nth-child(1)",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Distinct inputs",
+        "color": "rgb(94, 106, 114)",
+        "font": "",
+        "display": "block"
+      },
+      "measurement": {
+        "minimum": 5.464198596211767,
+        "textPixels": 505
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-14.png"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "goal": "Overview",
+      "selector": ".preview-footer > i",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(15, 116, 118)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "goal": "Overview",
+      "selector": ".preview-footer > span:nth-child(3)",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "one auditable planning artifact",
+        "color": "rgb(94, 106, 114)",
+        "font": "",
+        "display": "block"
+      },
+      "measurement": {
+        "minimum": 5.464198596211767,
+        "textPixels": 1083
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-16.png"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "goal": "Overview",
+      "selector": "figcaption",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Conceptual workspace preview. The three lanes stay distinct all the way into the Planning brief; no data values are combined into a composite score.",
+        "color": "rgb(24, 53, 75)",
+        "font": "",
+        "display": "block"
+      },
+      "measurement": {
+        "minimum": 9.150470577630795,
+        "textPixels": 2829
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-17.png"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "goal": "Overview",
+      "selector": "article:nth-child(1) > p",
+      "reason": [
+        "pseudoContent"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "01 / REVIEWED EVIDENCE",
+        "color": "rgb(39, 107, 84)",
+        "font": "",
+        "display": "block"
+      },
+      "measurement": {
+        "minimum": 5.894964489686483,
+        "textPixels": 686
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-18.png"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "goal": "Overview",
+      "selector": ".context > p",
+      "reason": [
+        "pseudoContent"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "02 / LOCAL CONTEXT",
+        "color": "rgb(49, 94, 122)",
+        "font": "",
+        "display": "block"
+      },
+      "measurement": {
+        "minimum": 6.414176024571458,
+        "textPixels": 517
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-19.png"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "goal": "Overview",
+      "selector": ".assumption > p",
+      "reason": [
+        "pseudoContent"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "03 / ANALYST ASSUMPTIONS",
+        "color": "rgb(125, 63, 92)",
+        "font": "",
+        "display": "block"
+      },
+      "measurement": {
+        "minimum": 6.984254364768549,
+        "textPixels": 778
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-20.png"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "goal": "Overview",
+      "selector": ".reviewed.decision-state:nth-child(1) > a[href$=\"burden\"] > span[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": " →",
+        "color": "rgb(15, 116, 118)",
+        "font": "",
+        "display": "inline"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "goal": "Overview",
+      "selector": ".reviewed.decision-state:nth-child(2) > a[href$=\"local-context\"] > span[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": " →",
+        "color": "rgb(15, 116, 118)",
+        "font": "",
+        "display": "inline"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "goal": "Overview",
+      "selector": ".assumption.decision-state > a[href$=\"pilot\"] > span[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": " →",
+        "color": "rgb(15, 116, 118)",
+        "font": "",
+        "display": "inline"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "goal": "Overview",
+      "selector": ".unavailable > a[href$=\"evidence\"] > span[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": " →",
+        "color": "rgb(15, 116, 118)",
+        "font": "",
+        "display": "inline"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "goal": "Overview",
+      "selector": ".neutral > a[href$=\"brief\"] > span[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": " →",
+        "color": "rgb(15, 116, 118)",
+        "font": "",
+        "display": "inline"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "goal": "Overview",
+      "selector": ".journey-card[href$=\"burden\"] > .journey-arrow[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(255, 255, 255)",
+        "font": "",
+        "display": "grid"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "goal": "Overview",
+      "selector": ".journey-card[href$=\"local-context\"] > .journey-arrow[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(255, 255, 255)",
+        "font": "",
+        "display": "grid"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "goal": "Overview",
+      "selector": ".journey-card[href$=\"pilot\"] > .journey-arrow[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(255, 255, 255)",
+        "font": "",
+        "display": "grid"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "goal": "Overview",
+      "selector": ".journey-card[href$=\"evidence\"] > .journey-arrow[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(255, 255, 255)",
+        "font": "",
+        "display": "grid"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "goal": "Overview",
+      "selector": ".journey-card[href$=\"data-requests\"] > .journey-arrow[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(255, 255, 255)",
+        "font": "",
+        "display": "grid"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "goal": "Overview",
+      "selector": ".journey-card[href$=\"brief\"] > .journey-arrow[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(255, 255, 255)",
+        "font": "",
+        "display": "grid"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "goal": "Overview",
+      "selector": "#overview-title",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Evidence into planning,with boundaries intact.",
+        "color": "rgb(244, 245, 240)",
+        "font": "",
+        "display": "block"
+      },
+      "measurement": {
+        "minimum": 15.635805380100045,
+        "textPixels": 18010
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-32.png"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "goal": "Overview",
+      "selector": "#overview-title > span",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "with boundaries intact.",
+        "color": "rgb(244, 245, 240)",
+        "font": "",
+        "display": "block"
+      },
+      "measurement": {
+        "minimum": 15.776328863190141,
+        "textPixels": 17613
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-33.png"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "goal": "Overview",
+      "selector": ".overview-lede",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Diagnostic Odyssey keeps reviewed national burden, local implementation context, and analyst assumptions visibly separate—then carries their provenance into one planning workflow.",
+        "color": "rgb(193, 201, 205)",
+        "font": "",
+        "display": "block"
+      },
+      "measurement": {
+        "minimum": 10.277158248563564,
+        "textPixels": 9859
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-34.png"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "goal": "Overview",
+      "selector": ".overview-secondary-cta",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Open Pilot planner",
+        "color": "rgb(88, 195, 189)",
+        "font": "",
+        "display": "flex"
+      },
+      "measurement": {
+        "minimum": 8.203477466794316,
+        "textPixels": 780
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-35.png"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "goal": "Overview",
+      "selector": ".overview-proof > div:nth-child(1) > dt",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "21",
+        "color": "rgb(225, 232, 236)",
+        "font": "",
+        "display": "block"
+      },
+      "measurement": {
+        "minimum": 13.797085818034427,
+        "textPixels": 217
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-36.png"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "goal": "Overview",
+      "selector": ".overview-proof > div:nth-child(1) > dd",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "reviewed national estimates",
+        "color": "rgb(176, 186, 192)",
+        "font": "",
+        "display": "block"
+      },
+      "measurement": {
+        "minimum": 8.659031357469845,
+        "textPixels": 685
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-37.png"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "goal": "Overview",
+      "selector": ".overview-proof > div:nth-child(2) > dt",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "34",
+        "color": "rgb(225, 232, 236)",
+        "font": "",
+        "display": "block"
+      },
+      "measurement": {
+        "minimum": 14.227288710339069,
+        "textPixels": 260
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-38.png"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "goal": "Overview",
+      "selector": ".overview-proof > div:nth-child(2) > dd",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "reviewed local-context indicators",
+        "color": "rgb(176, 186, 192)",
+        "font": "",
+        "display": "block"
+      },
+      "measurement": {
+        "minimum": 8.985910065958135,
+        "textPixels": 784
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-39.png"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "goal": "Overview",
+      "selector": ".preview-output-topline > span",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Planning brief",
+        "color": "rgb(88, 195, 189)",
+        "font": "",
+        "display": "block"
+      },
+      "measurement": {
+        "minimum": 7.5987465917542325,
+        "textPixels": 632
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-40.png"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "goal": "Overview",
+      "selector": ".preview-output > strong",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Traceable decision state",
+        "color": "rgb(225, 232, 236)",
+        "font": "",
+        "display": "block"
+      },
+      "measurement": {
+        "minimum": 12.941153097939308,
+        "textPixels": 3890
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-41.png"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "goal": "Overview",
+      "selector": ".preview-output > ul > li:nth-child(1)",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": " Evidence boundary retained",
+        "color": "rgb(176, 186, 192)",
+        "font": "",
+        "display": "flex"
+      },
+      "measurement": {
+        "minimum": 8.300591305222124,
+        "textPixels": 839
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-42.png"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "goal": "Overview",
+      "selector": ".preview-output > ul > li:nth-child(2)",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": " Assumptions labeled",
+        "color": "rgb(176, 186, 192)",
+        "font": "",
+        "display": "flex"
+      },
+      "measurement": {
+        "minimum": 8.38566396927307,
+        "textPixels": 668
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-43.png"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "goal": "Overview",
+      "selector": ".preview-output > ul > li:nth-child(3)",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": " Data gaps visible",
+        "color": "rgb(176, 186, 192)",
+        "font": "",
+        "display": "flex"
+      },
+      "measurement": {
+        "minimum": 8.395030088631064,
+        "textPixels": 544
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-44.png"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "goal": "Overview",
+      "selector": ".preview-footer > i",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(88, 195, 189)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "goal": "Overview",
+      "selector": "figcaption",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Conceptual workspace preview. The three lanes stay distinct all the way into the Planning brief; no data values are combined into a composite score.",
+        "color": "rgb(242, 244, 241)",
+        "font": "",
+        "display": "block"
+      },
+      "measurement": {
+        "minimum": 16.799921806596096,
+        "textPixels": 2907
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-46.png"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "goal": "Overview",
+      "selector": "article:nth-child(1) > p",
+      "reason": [
+        "pseudoContent"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "01 / REVIEWED EVIDENCE",
+        "color": "rgb(141, 201, 165)",
+        "font": "",
+        "display": "block"
+      },
+      "measurement": {
+        "minimum": 8.262701719507115,
+        "textPixels": 683
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-47.png"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "goal": "Overview",
+      "selector": ".context > p",
+      "reason": [
+        "pseudoContent"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "02 / LOCAL CONTEXT",
+        "color": "rgb(140, 186, 216)",
+        "font": "",
+        "display": "block"
+      },
+      "measurement": {
+        "minimum": 7.725893626080207,
+        "textPixels": 516
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-48.png"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "goal": "Overview",
+      "selector": ".assumption > p",
+      "reason": [
+        "pseudoContent"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "03 / ANALYST ASSUMPTIONS",
+        "color": "rgb(231, 166, 192)",
+        "font": "",
+        "display": "block"
+      },
+      "measurement": {
+        "minimum": 7.821742797133612,
+        "textPixels": 781
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-49.png"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "goal": "Overview",
+      "selector": ".reviewed.decision-state:nth-child(1) > a[href$=\"burden\"] > span[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": " →",
+        "color": "rgb(88, 195, 189)",
+        "font": "",
+        "display": "inline"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "goal": "Overview",
+      "selector": ".reviewed.decision-state:nth-child(2) > a[href$=\"local-context\"] > span[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": " →",
+        "color": "rgb(88, 195, 189)",
+        "font": "",
+        "display": "inline"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "goal": "Overview",
+      "selector": ".assumption.decision-state > a[href$=\"pilot\"] > span[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": " →",
+        "color": "rgb(88, 195, 189)",
+        "font": "",
+        "display": "inline"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "goal": "Overview",
+      "selector": ".unavailable > a[href$=\"evidence\"] > span[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": " →",
+        "color": "rgb(88, 195, 189)",
+        "font": "",
+        "display": "inline"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "goal": "Overview",
+      "selector": ".neutral > a[href$=\"brief\"] > span[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": " →",
+        "color": "rgb(88, 195, 189)",
+        "font": "",
+        "display": "inline"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "goal": "Overview",
+      "selector": ".journey-card[href$=\"burden\"] > .journey-arrow[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(255, 255, 255)",
+        "font": "",
+        "display": "grid"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "goal": "Overview",
+      "selector": ".journey-card[href$=\"local-context\"] > .journey-arrow[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(255, 255, 255)",
+        "font": "",
+        "display": "grid"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "goal": "Overview",
+      "selector": ".journey-card[href$=\"pilot\"] > .journey-arrow[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(255, 255, 255)",
+        "font": "",
+        "display": "grid"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "goal": "Overview",
+      "selector": ".journey-card[href$=\"evidence\"] > .journey-arrow[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(255, 255, 255)",
+        "font": "",
+        "display": "grid"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "goal": "Overview",
+      "selector": ".journey-card[href$=\"data-requests\"] > .journey-arrow[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(255, 255, 255)",
+        "font": "",
+        "display": "grid"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "goal": "Overview",
+      "selector": ".journey-card[href$=\"brief\"] > .journey-arrow[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(255, 255, 255)",
+        "font": "",
+        "display": "grid"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    }
+  ]
+}

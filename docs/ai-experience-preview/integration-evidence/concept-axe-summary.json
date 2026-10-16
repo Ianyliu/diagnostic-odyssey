@@ -1,0 +1,290 @@
+[
+  {
+    "goal": "Explain my Brief",
+    "width": 1440,
+    "theme": "light",
+    "violations": 0,
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 9
+      }
+    ]
+  },
+  {
+    "goal": "Explore interventions",
+    "width": 1440,
+    "theme": "light",
+    "violations": 0,
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 11
+      }
+    ]
+  },
+  {
+    "goal": "Identify data gaps",
+    "width": 1440,
+    "theme": "light",
+    "violations": 0,
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 18
+      }
+    ]
+  },
+  {
+    "goal": "Compare strategies",
+    "width": 1440,
+    "theme": "light",
+    "violations": 0,
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 8
+      }
+    ]
+  },
+  {
+    "goal": "Explain my Brief",
+    "width": 1440,
+    "theme": "dark",
+    "violations": 0,
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 9
+      }
+    ]
+  },
+  {
+    "goal": "Explore interventions",
+    "width": 1440,
+    "theme": "dark",
+    "violations": 0,
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 11
+      }
+    ]
+  },
+  {
+    "goal": "Identify data gaps",
+    "width": 1440,
+    "theme": "dark",
+    "violations": 0,
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 18
+      }
+    ]
+  },
+  {
+    "goal": "Compare strategies",
+    "width": 1440,
+    "theme": "dark",
+    "violations": 0,
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 8
+      }
+    ]
+  },
+  {
+    "goal": "Explain my Brief",
+    "width": 768,
+    "theme": "light",
+    "violations": 0,
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 5
+      }
+    ]
+  },
+  {
+    "goal": "Explore interventions",
+    "width": 768,
+    "theme": "light",
+    "violations": 0,
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 7
+      }
+    ]
+  },
+  {
+    "goal": "Identify data gaps",
+    "width": 768,
+    "theme": "light",
+    "violations": 0,
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 14
+      }
+    ]
+  },
+  {
+    "goal": "Compare strategies",
+    "width": 768,
+    "theme": "light",
+    "violations": 0,
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 4
+      }
+    ]
+  },
+  {
+    "goal": "Explain my Brief",
+    "width": 768,
+    "theme": "dark",
+    "violations": 0,
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 5
+      }
+    ]
+  },
+  {
+    "goal": "Explore interventions",
+    "width": 768,
+    "theme": "dark",
+    "violations": 0,
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 7
+      }
+    ]
+  },
+  {
+    "goal": "Identify data gaps",
+    "width": 768,
+    "theme": "dark",
+    "violations": 0,
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 14
+      }
+    ]
+  },
+  {
+    "goal": "Compare strategies",
+    "width": 768,
+    "theme": "dark",
+    "violations": 0,
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 4
+      }
+    ]
+  },
+  {
+    "goal": "Explain my Brief",
+    "width": 390,
+    "theme": "light",
+    "violations": 0,
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 1
+      }
+    ]
+  },
+  {
+    "goal": "Explore interventions",
+    "width": 390,
+    "theme": "light",
+    "violations": 0,
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 3
+      }
+    ]
+  },
+  {
+    "goal": "Identify data gaps",
+    "width": 390,
+    "theme": "light",
+    "violations": 0,
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 7
+      }
+    ]
+  },
+  {
+    "goal": "Compare strategies",
+    "width": 390,
+    "theme": "light",
+    "violations": 0,
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 12
+      }
+    ]
+  },
+  {
+    "goal": "Explain my Brief",
+    "width": 390,
+    "theme": "dark",
+    "violations": 0,
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 1
+      }
+    ]
+  },
+  {
+    "goal": "Explore interventions",
+    "width": 390,
+    "theme": "dark",
+    "violations": 0,
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 3
+      }
+    ]
+  },
+  {
+    "goal": "Identify data gaps",
+    "width": 390,
+    "theme": "dark",
+    "violations": 0,
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 7
+      }
+    ]
+  },
+  {
+    "goal": "Compare strategies",
+    "width": 390,
+    "theme": "dark",
+    "violations": 0,
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 12
+      }
+    ]
+  }
+]

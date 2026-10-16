@@ -1,0 +1,17 @@
+[
+  {
+    "build": "main",
+    "pages": 7,
+    "normalized_sha256": "44093e419989ed221f540b9510a5b2a780be50338677558fdc23dd034c5a6e18"
+  },
+  {
+    "build": "default",
+    "pages": 7,
+    "normalized_sha256": "44093e419989ed221f540b9510a5b2a780be50338677558fdc23dd034c5a6e18"
+  },
+  {
+    "build": "on",
+    "pages": 7,
+    "normalized_sha256": "44093e419989ed221f540b9510a5b2a780be50338677558fdc23dd034c5a6e18"
+  }
+]

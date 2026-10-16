@@ -1,0 +1,2387 @@
+{
+  "method": "Gate 0 PNG foreground/background raster comparison; decorative aria-hidden content classified separately; horizontal cells scrolled into view",
+  "records": [
+    {
+      "width": 1440,
+      "theme": "light",
+      "goal": "Explain my Brief",
+      "selector": ".fc-orbit-center > span",
+      "reason": [
+        "bgOverlap"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "Evidencebefore inference",
+        "color": "rgb(39, 107, 84)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "goal": "Explain my Brief",
+      "selector": ".fc-orbit-a",
+      "reason": [
+        "bgOverlap"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "Brief",
+        "color": "rgb(94, 106, 114)",
+        "font": "",
+        "display": "flex"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "goal": "Explain my Brief",
+      "selector": ".fc-orbit-b",
+      "reason": [
+        "bgOverlap"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "Research",
+        "color": "rgb(94, 106, 114)",
+        "font": "",
+        "display": "flex"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "goal": "Explain my Brief",
+      "selector": ".fc-orbit-c",
+      "reason": [
+        "bgOverlap"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "Questions",
+        "color": "rgb(94, 106, 114)",
+        "font": "",
+        "display": "flex"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "goal": "Explain my Brief",
+      "selector": "#fc-tab-explain_brief > .fc-tab-arrow[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(94, 106, 114)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "goal": "Explain my Brief",
+      "selector": "#fc-tab-explore_interventions > .fc-tab-arrow[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(94, 106, 114)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "goal": "Explain my Brief",
+      "selector": "#fc-tab-identify_data_gaps > .fc-tab-arrow[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(94, 106, 114)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "goal": "Explain my Brief",
+      "selector": "#fc-tab-compare_strategies > .fc-tab-arrow[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(94, 106, 114)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "goal": "Explain my Brief",
+      "selector": ".fc-flow-symbol",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(94, 106, 114)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "goal": "Explore interventions",
+      "selector": "button[aria-controls=\"fc-pipeline-detail\"]:nth-child(1) > span[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(24, 53, 75)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "goal": "Explore interventions",
+      "selector": "button[aria-controls=\"fc-pipeline-detail\"]:nth-child(2) > span[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(24, 53, 75)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "goal": "Explore interventions",
+      "selector": "button[aria-controls=\"fc-pipeline-detail\"]:nth-child(3) > span[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(24, 53, 75)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "goal": "Identify data gaps",
+      "selector": ".fc-map > .fc-role-concept.fc-role",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Illustrative / not source-verified",
+        "color": "rgb(125, 63, 92)",
+        "font": "",
+        "display": "inline-flex"
+      },
+      "measurement": {
+        "minimum": 7.546038636319486,
+        "textPixels": 805
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-12.png"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "goal": "Identify data gaps",
+      "selector": ".fc-map-legend > span:nth-child(1)",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Decision",
+        "color": "rgb(94, 106, 114)",
+        "font": "",
+        "display": "block"
+      },
+      "measurement": {
+        "minimum": 5.464198596211767,
+        "textPixels": 164
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-13.png"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "goal": "Identify data gaps",
+      "selector": ".fc-map-legend > span:nth-child(2)",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Information need",
+        "color": "rgb(94, 106, 114)",
+        "font": "",
+        "display": "block"
+      },
+      "measurement": {
+        "minimum": 5.464198596211767,
+        "textPixels": 381
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-14.png"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "goal": "Identify data gaps",
+      "selector": ".fc-map-legend > span:nth-child(3)",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Verification dependencies",
+        "color": "rgb(94, 106, 114)",
+        "font": "",
+        "display": "block"
+      },
+      "measurement": {
+        "minimum": 5.464198596211767,
+        "textPixels": 528
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-15.png"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "goal": "Identify data gaps",
+      "selector": ".fc-map-link[aria-hidden=\"true\"]:nth-child(2)",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "requires →",
+        "color": "rgb(94, 106, 114)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "goal": "Identify data gaps",
+      "selector": ".fc-map-link[aria-hidden=\"true\"]:nth-child(4)",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "verify →",
+        "color": "rgb(94, 106, 114)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "goal": "Identify data gaps",
+      "selector": "button[aria-controls=\"fc-dependency-inspector\"]:nth-child(1) > span[aria-hidden=\"true\"]:nth-child(3)",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(24, 53, 75)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "goal": "Identify data gaps",
+      "selector": "button[aria-controls=\"fc-dependency-inspector\"]:nth-child(2) > span[aria-hidden=\"true\"]:nth-child(3)",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(24, 53, 75)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "goal": "Identify data gaps",
+      "selector": "button[aria-controls=\"fc-dependency-inspector\"]:nth-child(3) > span[aria-hidden=\"true\"]:nth-child(3)",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(24, 53, 75)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "goal": "Identify data gaps",
+      "selector": ".fc-map-caption",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Select a verification node to inspect its purpose. Lines indicate information dependencies only.",
+        "color": "rgb(94, 106, 114)",
+        "font": "",
+        "display": "block"
+      },
+      "measurement": {
+        "minimum": 5.464198596211767,
+        "textPixels": 1652
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-21.png"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "goal": "Explain my Brief",
+      "selector": ".fc-orbit-center > span",
+      "reason": [
+        "bgOverlap"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "Evidencebefore inference",
+        "color": "rgb(141, 201, 165)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "goal": "Explain my Brief",
+      "selector": ".fc-orbit-a",
+      "reason": [
+        "bgOverlap"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "Brief",
+        "color": "rgb(176, 186, 192)",
+        "font": "",
+        "display": "flex"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "goal": "Explain my Brief",
+      "selector": ".fc-orbit-b",
+      "reason": [
+        "bgOverlap"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "Research",
+        "color": "rgb(176, 186, 192)",
+        "font": "",
+        "display": "flex"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "goal": "Explain my Brief",
+      "selector": ".fc-orbit-c",
+      "reason": [
+        "bgOverlap"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "Questions",
+        "color": "rgb(176, 186, 192)",
+        "font": "",
+        "display": "flex"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "goal": "Explain my Brief",
+      "selector": "#fc-tab-explain_brief > .fc-tab-arrow[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(176, 186, 192)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "goal": "Explain my Brief",
+      "selector": "#fc-tab-explore_interventions > .fc-tab-arrow[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(176, 186, 192)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "goal": "Explain my Brief",
+      "selector": "#fc-tab-identify_data_gaps > .fc-tab-arrow[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(176, 186, 192)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "goal": "Explain my Brief",
+      "selector": "#fc-tab-compare_strategies > .fc-tab-arrow[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(176, 186, 192)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "goal": "Explain my Brief",
+      "selector": ".fc-flow-symbol",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(176, 186, 192)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "goal": "Explore interventions",
+      "selector": "button[aria-controls=\"fc-pipeline-detail\"]:nth-child(1) > span[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(242, 244, 241)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "goal": "Explore interventions",
+      "selector": "button[aria-controls=\"fc-pipeline-detail\"]:nth-child(2) > span[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(242, 244, 241)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "goal": "Explore interventions",
+      "selector": "button[aria-controls=\"fc-pipeline-detail\"]:nth-child(3) > span[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(242, 244, 241)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "goal": "Identify data gaps",
+      "selector": ".fc-map > .fc-role-concept.fc-role",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Illustrative / not source-verified",
+        "color": "rgb(231, 166, 192)",
+        "font": "",
+        "display": "inline-flex"
+      },
+      "measurement": {
+        "minimum": 8.645895593081294,
+        "textPixels": 820
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-34.png"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "goal": "Identify data gaps",
+      "selector": ".fc-map-legend > span:nth-child(1)",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Decision",
+        "color": "rgb(176, 186, 192)",
+        "font": "",
+        "display": "block"
+      },
+      "measurement": {
+        "minimum": 8.659997773227238,
+        "textPixels": 164
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-35.png"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "goal": "Identify data gaps",
+      "selector": ".fc-map-legend > span:nth-child(2)",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Information need",
+        "color": "rgb(176, 186, 192)",
+        "font": "",
+        "display": "block"
+      },
+      "measurement": {
+        "minimum": 8.659997773227238,
+        "textPixels": 382
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-36.png"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "goal": "Identify data gaps",
+      "selector": ".fc-map-legend > span:nth-child(3)",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Verification dependencies",
+        "color": "rgb(176, 186, 192)",
+        "font": "",
+        "display": "block"
+      },
+      "measurement": {
+        "minimum": 8.659997773227238,
+        "textPixels": 528
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-37.png"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "goal": "Identify data gaps",
+      "selector": ".fc-map-link[aria-hidden=\"true\"]:nth-child(2)",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "requires →",
+        "color": "rgb(176, 186, 192)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "goal": "Identify data gaps",
+      "selector": ".fc-map-link[aria-hidden=\"true\"]:nth-child(4)",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "verify →",
+        "color": "rgb(176, 186, 192)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "goal": "Identify data gaps",
+      "selector": "button[aria-controls=\"fc-dependency-inspector\"]:nth-child(1) > span[aria-hidden=\"true\"]:nth-child(3)",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(242, 244, 241)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "goal": "Identify data gaps",
+      "selector": "button[aria-controls=\"fc-dependency-inspector\"]:nth-child(2) > span[aria-hidden=\"true\"]:nth-child(3)",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(242, 244, 241)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "goal": "Identify data gaps",
+      "selector": "button[aria-controls=\"fc-dependency-inspector\"]:nth-child(3) > span[aria-hidden=\"true\"]:nth-child(3)",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(242, 244, 241)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "goal": "Identify data gaps",
+      "selector": ".fc-map-caption",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Select a verification node to inspect its purpose. Lines indicate information dependencies only.",
+        "color": "rgb(176, 186, 192)",
+        "font": "",
+        "display": "block"
+      },
+      "measurement": {
+        "minimum": 8.659997773227238,
+        "textPixels": 1659
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-43.png"
+    },
+    {
+      "width": 768,
+      "theme": "light",
+      "goal": "Explain my Brief",
+      "selector": "#fc-tab-explain_brief > .fc-tab-arrow[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(94, 106, 114)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 768,
+      "theme": "light",
+      "goal": "Explain my Brief",
+      "selector": "#fc-tab-explore_interventions > .fc-tab-arrow[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(94, 106, 114)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 768,
+      "theme": "light",
+      "goal": "Explain my Brief",
+      "selector": "#fc-tab-identify_data_gaps > .fc-tab-arrow[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(94, 106, 114)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 768,
+      "theme": "light",
+      "goal": "Explain my Brief",
+      "selector": "#fc-tab-compare_strategies > .fc-tab-arrow[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(94, 106, 114)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 768,
+      "theme": "light",
+      "goal": "Explain my Brief",
+      "selector": ".fc-flow-symbol",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(94, 106, 114)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 768,
+      "theme": "light",
+      "goal": "Explore interventions",
+      "selector": "button[aria-controls=\"fc-pipeline-detail\"]:nth-child(1) > span[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(24, 53, 75)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 768,
+      "theme": "light",
+      "goal": "Explore interventions",
+      "selector": "button[aria-controls=\"fc-pipeline-detail\"]:nth-child(2) > span[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(24, 53, 75)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 768,
+      "theme": "light",
+      "goal": "Explore interventions",
+      "selector": "button[aria-controls=\"fc-pipeline-detail\"]:nth-child(3) > span[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(24, 53, 75)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 768,
+      "theme": "light",
+      "goal": "Identify data gaps",
+      "selector": ".fc-map > .fc-role-concept.fc-role",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Illustrative / not source-verified",
+        "color": "rgb(125, 63, 92)",
+        "font": "",
+        "display": "inline-flex"
+      },
+      "measurement": {
+        "minimum": 7.546038636319486,
+        "textPixels": 614
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-52.png"
+    },
+    {
+      "width": 768,
+      "theme": "light",
+      "goal": "Identify data gaps",
+      "selector": ".fc-map-legend > span:nth-child(1)",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Decision",
+        "color": "rgb(94, 106, 114)",
+        "font": "",
+        "display": "block"
+      },
+      "measurement": {
+        "minimum": 5.464198596211767,
+        "textPixels": 164
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-53.png"
+    },
+    {
+      "width": 768,
+      "theme": "light",
+      "goal": "Identify data gaps",
+      "selector": ".fc-map-legend > span:nth-child(2)",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Information need",
+        "color": "rgb(94, 106, 114)",
+        "font": "",
+        "display": "block"
+      },
+      "measurement": {
+        "minimum": 5.464198596211767,
+        "textPixels": 381
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-54.png"
+    },
+    {
+      "width": 768,
+      "theme": "light",
+      "goal": "Identify data gaps",
+      "selector": ".fc-map-legend > span:nth-child(3)",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Verification dependencies",
+        "color": "rgb(94, 106, 114)",
+        "font": "",
+        "display": "block"
+      },
+      "measurement": {
+        "minimum": 5.464198596211767,
+        "textPixels": 528
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-55.png"
+    },
+    {
+      "width": 768,
+      "theme": "light",
+      "goal": "Identify data gaps",
+      "selector": ".fc-map-link[aria-hidden=\"true\"]:nth-child(2)",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "requires →",
+        "color": "rgb(94, 106, 114)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 768,
+      "theme": "light",
+      "goal": "Identify data gaps",
+      "selector": ".fc-map-link[aria-hidden=\"true\"]:nth-child(4)",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "verify →",
+        "color": "rgb(94, 106, 114)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 768,
+      "theme": "light",
+      "goal": "Identify data gaps",
+      "selector": "button[aria-controls=\"fc-dependency-inspector\"]:nth-child(1) > span[aria-hidden=\"true\"]:nth-child(3)",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(24, 53, 75)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 768,
+      "theme": "light",
+      "goal": "Identify data gaps",
+      "selector": "button[aria-controls=\"fc-dependency-inspector\"]:nth-child(2) > span[aria-hidden=\"true\"]:nth-child(3)",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(24, 53, 75)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 768,
+      "theme": "light",
+      "goal": "Identify data gaps",
+      "selector": "button[aria-controls=\"fc-dependency-inspector\"]:nth-child(3) > span[aria-hidden=\"true\"]:nth-child(3)",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(24, 53, 75)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 768,
+      "theme": "light",
+      "goal": "Identify data gaps",
+      "selector": ".fc-map-caption",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Select a verification node to inspect its purpose. Lines indicate information dependencies only.",
+        "color": "rgb(94, 106, 114)",
+        "font": "",
+        "display": "block"
+      },
+      "measurement": {
+        "minimum": 5.464198596211767,
+        "textPixels": 1652
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-61.png"
+    },
+    {
+      "width": 768,
+      "theme": "dark",
+      "goal": "Explain my Brief",
+      "selector": "#fc-tab-explain_brief > .fc-tab-arrow[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(176, 186, 192)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 768,
+      "theme": "dark",
+      "goal": "Explain my Brief",
+      "selector": "#fc-tab-explore_interventions > .fc-tab-arrow[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(176, 186, 192)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 768,
+      "theme": "dark",
+      "goal": "Explain my Brief",
+      "selector": "#fc-tab-identify_data_gaps > .fc-tab-arrow[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(176, 186, 192)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 768,
+      "theme": "dark",
+      "goal": "Explain my Brief",
+      "selector": "#fc-tab-compare_strategies > .fc-tab-arrow[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(176, 186, 192)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 768,
+      "theme": "dark",
+      "goal": "Explain my Brief",
+      "selector": ".fc-flow-symbol",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(176, 186, 192)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 768,
+      "theme": "dark",
+      "goal": "Explore interventions",
+      "selector": "button[aria-controls=\"fc-pipeline-detail\"]:nth-child(1) > span[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(242, 244, 241)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 768,
+      "theme": "dark",
+      "goal": "Explore interventions",
+      "selector": "button[aria-controls=\"fc-pipeline-detail\"]:nth-child(2) > span[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(242, 244, 241)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 768,
+      "theme": "dark",
+      "goal": "Explore interventions",
+      "selector": "button[aria-controls=\"fc-pipeline-detail\"]:nth-child(3) > span[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(242, 244, 241)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 768,
+      "theme": "dark",
+      "goal": "Identify data gaps",
+      "selector": ".fc-map > .fc-role-concept.fc-role",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Illustrative / not source-verified",
+        "color": "rgb(231, 166, 192)",
+        "font": "",
+        "display": "inline-flex"
+      },
+      "measurement": {
+        "minimum": 8.645895593081294,
+        "textPixels": 633
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-70.png"
+    },
+    {
+      "width": 768,
+      "theme": "dark",
+      "goal": "Identify data gaps",
+      "selector": ".fc-map-legend > span:nth-child(1)",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Decision",
+        "color": "rgb(176, 186, 192)",
+        "font": "",
+        "display": "block"
+      },
+      "measurement": {
+        "minimum": 8.659997773227238,
+        "textPixels": 164
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-71.png"
+    },
+    {
+      "width": 768,
+      "theme": "dark",
+      "goal": "Identify data gaps",
+      "selector": ".fc-map-legend > span:nth-child(2)",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Information need",
+        "color": "rgb(176, 186, 192)",
+        "font": "",
+        "display": "block"
+      },
+      "measurement": {
+        "minimum": 8.659997773227238,
+        "textPixels": 382
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-72.png"
+    },
+    {
+      "width": 768,
+      "theme": "dark",
+      "goal": "Identify data gaps",
+      "selector": ".fc-map-legend > span:nth-child(3)",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Verification dependencies",
+        "color": "rgb(176, 186, 192)",
+        "font": "",
+        "display": "block"
+      },
+      "measurement": {
+        "minimum": 8.659997773227238,
+        "textPixels": 528
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-73.png"
+    },
+    {
+      "width": 768,
+      "theme": "dark",
+      "goal": "Identify data gaps",
+      "selector": ".fc-map-link[aria-hidden=\"true\"]:nth-child(2)",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "requires →",
+        "color": "rgb(176, 186, 192)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 768,
+      "theme": "dark",
+      "goal": "Identify data gaps",
+      "selector": ".fc-map-link[aria-hidden=\"true\"]:nth-child(4)",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "verify →",
+        "color": "rgb(176, 186, 192)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 768,
+      "theme": "dark",
+      "goal": "Identify data gaps",
+      "selector": "button[aria-controls=\"fc-dependency-inspector\"]:nth-child(1) > span[aria-hidden=\"true\"]:nth-child(3)",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(242, 244, 241)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 768,
+      "theme": "dark",
+      "goal": "Identify data gaps",
+      "selector": "button[aria-controls=\"fc-dependency-inspector\"]:nth-child(2) > span[aria-hidden=\"true\"]:nth-child(3)",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(242, 244, 241)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 768,
+      "theme": "dark",
+      "goal": "Identify data gaps",
+      "selector": "button[aria-controls=\"fc-dependency-inspector\"]:nth-child(3) > span[aria-hidden=\"true\"]:nth-child(3)",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(242, 244, 241)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 768,
+      "theme": "dark",
+      "goal": "Identify data gaps",
+      "selector": ".fc-map-caption",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Select a verification node to inspect its purpose. Lines indicate information dependencies only.",
+        "color": "rgb(176, 186, 192)",
+        "font": "",
+        "display": "block"
+      },
+      "measurement": {
+        "minimum": 8.659997773227238,
+        "textPixels": 1659
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-79.png"
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "goal": "Explain my Brief",
+      "selector": ".fc-flow-symbol",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(94, 106, 114)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "goal": "Explore interventions",
+      "selector": "button[aria-controls=\"fc-pipeline-detail\"]:nth-child(1) > span[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(24, 53, 75)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "goal": "Explore interventions",
+      "selector": "button[aria-controls=\"fc-pipeline-detail\"]:nth-child(2) > span[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(24, 53, 75)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "goal": "Explore interventions",
+      "selector": "button[aria-controls=\"fc-pipeline-detail\"]:nth-child(3) > span[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(24, 53, 75)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "goal": "Identify data gaps",
+      "selector": ".fc-map > .fc-role-concept.fc-role",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Illustrative / not source-verified",
+        "color": "rgb(125, 63, 92)",
+        "font": "",
+        "display": "inline-flex"
+      },
+      "measurement": {
+        "minimum": 7.546038636319486,
+        "textPixels": 614
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-84.png"
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "goal": "Identify data gaps",
+      "selector": ".fc-map-link[aria-hidden=\"true\"]:nth-child(2)",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "requires →",
+        "color": "rgb(94, 106, 114)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "goal": "Identify data gaps",
+      "selector": ".fc-map-link[aria-hidden=\"true\"]:nth-child(4)",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "verify →",
+        "color": "rgb(94, 106, 114)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "goal": "Identify data gaps",
+      "selector": "button[aria-controls=\"fc-dependency-inspector\"]:nth-child(1) > span[aria-hidden=\"true\"]:nth-child(3)",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(24, 53, 75)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "goal": "Identify data gaps",
+      "selector": "button[aria-controls=\"fc-dependency-inspector\"]:nth-child(2) > span[aria-hidden=\"true\"]:nth-child(3)",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(24, 53, 75)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "goal": "Identify data gaps",
+      "selector": "button[aria-controls=\"fc-dependency-inspector\"]:nth-child(3) > span[aria-hidden=\"true\"]:nth-child(3)",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(24, 53, 75)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "goal": "Identify data gaps",
+      "selector": ".fc-map-caption",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Select a verification node to inspect its purpose. Lines indicate information dependencies only.",
+        "color": "rgb(94, 106, 114)",
+        "font": "",
+        "display": "block"
+      },
+      "measurement": {
+        "minimum": 5.464198596211767,
+        "textPixels": 1670
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-90.png"
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "goal": "Compare strategies",
+      "selector": "tr:nth-child(1) > td:nth-child(3)",
+      "reason": [
+        "elmPartiallyObscured"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Would education change recognition or referral behavior?",
+        "color": "rgb(24, 53, 75)",
+        "font": "",
+        "display": "table-cell"
+      },
+      "measurement": {
+        "minimum": 12.52217644301661,
+        "textPixels": 1452
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-91.png"
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "goal": "Compare strategies",
+      "selector": "tr:nth-child(1) > td:nth-child(4)",
+      "reason": [
+        "elmPartiallyObscured"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Would remote support address a documented access bottleneck?",
+        "color": "rgb(24, 53, 75)",
+        "font": "",
+        "display": "table-cell"
+      },
+      "measurement": {
+        "minimum": 12.52217644301661,
+        "textPixels": 1627
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-92.png"
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "goal": "Compare strategies",
+      "selector": "tr:nth-child(2) > td:nth-child(3)",
+      "reason": [
+        "elmPartiallyObscured"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "How would training uptake and sustainability be assessed?",
+        "color": "rgb(24, 53, 75)",
+        "font": "",
+        "display": "table-cell"
+      },
+      "measurement": {
+        "minimum": 12.52217644301661,
+        "textPixels": 1509
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-93.png"
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "goal": "Compare strategies",
+      "selector": "tr:nth-child(2) > td:nth-child(4)",
+      "reason": [
+        "elmPartiallyObscured"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "What digital-access and staffing dependencies apply?",
+        "color": "rgb(24, 53, 75)",
+        "font": "",
+        "display": "table-cell"
+      },
+      "measurement": {
+        "minimum": 12.52217644301661,
+        "textPixels": 1411
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-94.png"
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "goal": "Compare strategies",
+      "selector": "tr:nth-child(3) > td:nth-child(3)",
+      "reason": [
+        "elmPartiallyObscured"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Reviewed behavior/outcome evaluation",
+        "color": "rgb(24, 53, 75)",
+        "font": "",
+        "display": "table-cell"
+      },
+      "measurement": {
+        "minimum": 12.52217644301661,
+        "textPixels": 1007
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-95.png"
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "goal": "Compare strategies",
+      "selector": "tr:nth-child(3) > td:nth-child(4)",
+      "reason": [
+        "elmPartiallyObscured"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Reviewed feasibility/outcome evaluation",
+        "color": "rgb(24, 53, 75)",
+        "font": "",
+        "display": "table-cell"
+      },
+      "measurement": {
+        "minimum": 12.52217644301661,
+        "textPixels": 1059
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-96.png"
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "goal": "Compare strategies",
+      "selector": "tr:nth-child(4) > td:nth-child(3) > .fc-unknown",
+      "reason": [
+        "elmPartiallyObscured"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Not established",
+        "color": "rgb(94, 106, 114)",
+        "font": "",
+        "display": "inline-block"
+      },
+      "measurement": {
+        "minimum": 5.464198596211767,
+        "textPixels": 295
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-97.png"
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "goal": "Compare strategies",
+      "selector": "tr:nth-child(4) > td:nth-child(4) > .fc-unknown",
+      "reason": [
+        "elmPartiallyObscured"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Not established",
+        "color": "rgb(94, 106, 114)",
+        "font": "",
+        "display": "inline-block"
+      },
+      "measurement": {
+        "minimum": 5.464198596211767,
+        "textPixels": 295
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-98.png"
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "goal": "Compare strategies",
+      "selector": "tr:nth-child(5) > td:nth-child(3) > .fc-unknown",
+      "reason": [
+        "elmPartiallyObscured"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Not established",
+        "color": "rgb(94, 106, 114)",
+        "font": "",
+        "display": "inline-block"
+      },
+      "measurement": {
+        "minimum": 5.464198596211767,
+        "textPixels": 295
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-99.png"
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "goal": "Compare strategies",
+      "selector": "tr:nth-child(5) > td:nth-child(4) > .fc-unknown",
+      "reason": [
+        "elmPartiallyObscured"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Not established",
+        "color": "rgb(94, 106, 114)",
+        "font": "",
+        "display": "inline-block"
+      },
+      "measurement": {
+        "minimum": 5.464198596211767,
+        "textPixels": 295
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-100.png"
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "goal": "Compare strategies",
+      "selector": "tr:nth-child(6) > td:nth-child(3) > .fc-unknown",
+      "reason": [
+        "elmPartiallyObscured"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Not evaluated",
+        "color": "rgb(94, 106, 114)",
+        "font": "",
+        "display": "inline-block"
+      },
+      "measurement": {
+        "minimum": 5.464198596211767,
+        "textPixels": 267
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-101.png"
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "goal": "Compare strategies",
+      "selector": "tr:nth-child(6) > td:nth-child(4) > .fc-unknown",
+      "reason": [
+        "elmPartiallyObscured"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Not evaluated",
+        "color": "rgb(94, 106, 114)",
+        "font": "",
+        "display": "inline-block"
+      },
+      "measurement": {
+        "minimum": 5.464198596211767,
+        "textPixels": 267
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-102.png"
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "goal": "Explain my Brief",
+      "selector": ".fc-flow-symbol",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(176, 186, 192)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "goal": "Explore interventions",
+      "selector": "button[aria-controls=\"fc-pipeline-detail\"]:nth-child(1) > span[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(242, 244, 241)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "goal": "Explore interventions",
+      "selector": "button[aria-controls=\"fc-pipeline-detail\"]:nth-child(2) > span[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(242, 244, 241)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "goal": "Explore interventions",
+      "selector": "button[aria-controls=\"fc-pipeline-detail\"]:nth-child(3) > span[aria-hidden=\"true\"]",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(242, 244, 241)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "goal": "Identify data gaps",
+      "selector": ".fc-map > .fc-role-concept.fc-role",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Illustrative / not source-verified",
+        "color": "rgb(231, 166, 192)",
+        "font": "",
+        "display": "inline-flex"
+      },
+      "measurement": {
+        "minimum": 8.645895593081294,
+        "textPixels": 633
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-107.png"
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "goal": "Identify data gaps",
+      "selector": ".fc-map-link[aria-hidden=\"true\"]:nth-child(2)",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "requires →",
+        "color": "rgb(176, 186, 192)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "goal": "Identify data gaps",
+      "selector": ".fc-map-link[aria-hidden=\"true\"]:nth-child(4)",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "verify →",
+        "color": "rgb(176, 186, 192)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "goal": "Identify data gaps",
+      "selector": "button[aria-controls=\"fc-dependency-inspector\"]:nth-child(1) > span[aria-hidden=\"true\"]:nth-child(3)",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(242, 244, 241)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "goal": "Identify data gaps",
+      "selector": "button[aria-controls=\"fc-dependency-inspector\"]:nth-child(2) > span[aria-hidden=\"true\"]:nth-child(3)",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(242, 244, 241)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "goal": "Identify data gaps",
+      "selector": "button[aria-controls=\"fc-dependency-inspector\"]:nth-child(3) > span[aria-hidden=\"true\"]:nth-child(3)",
+      "reason": [
+        "nonBmp"
+      ],
+      "style": {
+        "decorative": true,
+        "text": "→",
+        "color": "rgb(242, 244, 241)",
+        "font": "",
+        "display": "block"
+      },
+      "disposition": "Decorative aria-hidden content; does not convey unique information"
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "goal": "Identify data gaps",
+      "selector": ".fc-map-caption",
+      "reason": [
+        "bgGradient"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Select a verification node to inspect its purpose. Lines indicate information dependencies only.",
+        "color": "rgb(176, 186, 192)",
+        "font": "",
+        "display": "block"
+      },
+      "measurement": {
+        "minimum": 8.659997773227238,
+        "textPixels": 1678
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-113.png"
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "goal": "Compare strategies",
+      "selector": "tr:nth-child(1) > td:nth-child(3)",
+      "reason": [
+        "elmPartiallyObscured"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Would education change recognition or referral behavior?",
+        "color": "rgb(242, 244, 241)",
+        "font": "",
+        "display": "table-cell"
+      },
+      "measurement": {
+        "minimum": 15.4662669873458,
+        "textPixels": 1487
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-114.png"
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "goal": "Compare strategies",
+      "selector": "tr:nth-child(1) > td:nth-child(4)",
+      "reason": [
+        "elmPartiallyObscured"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Would remote support address a documented access bottleneck?",
+        "color": "rgb(242, 244, 241)",
+        "font": "",
+        "display": "table-cell"
+      },
+      "measurement": {
+        "minimum": 15.4662669873458,
+        "textPixels": 1675
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-115.png"
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "goal": "Compare strategies",
+      "selector": "tr:nth-child(2) > td:nth-child(3)",
+      "reason": [
+        "elmPartiallyObscured"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "How would training uptake and sustainability be assessed?",
+        "color": "rgb(242, 244, 241)",
+        "font": "",
+        "display": "table-cell"
+      },
+      "measurement": {
+        "minimum": 15.4662669873458,
+        "textPixels": 1538
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-116.png"
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "goal": "Compare strategies",
+      "selector": "tr:nth-child(2) > td:nth-child(4)",
+      "reason": [
+        "elmPartiallyObscured"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "What digital-access and staffing dependencies apply?",
+        "color": "rgb(242, 244, 241)",
+        "font": "",
+        "display": "table-cell"
+      },
+      "measurement": {
+        "minimum": 15.4662669873458,
+        "textPixels": 1446
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-117.png"
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "goal": "Compare strategies",
+      "selector": "tr:nth-child(3) > td:nth-child(3)",
+      "reason": [
+        "elmPartiallyObscured"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Reviewed behavior/outcome evaluation",
+        "color": "rgb(242, 244, 241)",
+        "font": "",
+        "display": "table-cell"
+      },
+      "measurement": {
+        "minimum": 15.4662669873458,
+        "textPixels": 1033
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-118.png"
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "goal": "Compare strategies",
+      "selector": "tr:nth-child(3) > td:nth-child(4)",
+      "reason": [
+        "elmPartiallyObscured"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Reviewed feasibility/outcome evaluation",
+        "color": "rgb(242, 244, 241)",
+        "font": "",
+        "display": "table-cell"
+      },
+      "measurement": {
+        "minimum": 15.4662669873458,
+        "textPixels": 1089
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-119.png"
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "goal": "Compare strategies",
+      "selector": "tr:nth-child(4) > td:nth-child(3) > .fc-unknown",
+      "reason": [
+        "elmPartiallyObscured"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Not established",
+        "color": "rgb(176, 186, 192)",
+        "font": "",
+        "display": "inline-block"
+      },
+      "measurement": {
+        "minimum": 8.659997773227238,
+        "textPixels": 295
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-120.png"
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "goal": "Compare strategies",
+      "selector": "tr:nth-child(4) > td:nth-child(4) > .fc-unknown",
+      "reason": [
+        "elmPartiallyObscured"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Not established",
+        "color": "rgb(176, 186, 192)",
+        "font": "",
+        "display": "inline-block"
+      },
+      "measurement": {
+        "minimum": 8.659997773227238,
+        "textPixels": 295
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-121.png"
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "goal": "Compare strategies",
+      "selector": "tr:nth-child(5) > td:nth-child(3) > .fc-unknown",
+      "reason": [
+        "elmPartiallyObscured"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Not established",
+        "color": "rgb(176, 186, 192)",
+        "font": "",
+        "display": "inline-block"
+      },
+      "measurement": {
+        "minimum": 8.659997773227238,
+        "textPixels": 295
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-122.png"
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "goal": "Compare strategies",
+      "selector": "tr:nth-child(5) > td:nth-child(4) > .fc-unknown",
+      "reason": [
+        "elmPartiallyObscured"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Not established",
+        "color": "rgb(176, 186, 192)",
+        "font": "",
+        "display": "inline-block"
+      },
+      "measurement": {
+        "minimum": 8.659997773227238,
+        "textPixels": 295
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-123.png"
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "goal": "Compare strategies",
+      "selector": "tr:nth-child(6) > td:nth-child(3) > .fc-unknown",
+      "reason": [
+        "elmPartiallyObscured"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Not evaluated",
+        "color": "rgb(176, 186, 192)",
+        "font": "",
+        "display": "inline-block"
+      },
+      "measurement": {
+        "minimum": 8.659997773227238,
+        "textPixels": 267
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-124.png"
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "goal": "Compare strategies",
+      "selector": "tr:nth-child(6) > td:nth-child(4) > .fc-unknown",
+      "reason": [
+        "elmPartiallyObscured"
+      ],
+      "style": {
+        "decorative": false,
+        "text": "Not evaluated",
+        "color": "rgb(176, 186, 192)",
+        "font": "",
+        "display": "inline-block"
+      },
+      "measurement": {
+        "minimum": 8.659997773227238,
+        "textPixels": 267
+      },
+      "disposition": "PASS raster contrast ≥ 4.5:1",
+      "image": "node-125.png"
+    }
+  ]
+}

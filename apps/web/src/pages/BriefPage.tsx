@@ -1,8 +1,13 @@
 import { formatPlanningCurrency, formatPlanningNumber } from "../data/planningNumberFormatting.ts";
 import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import { buildPlanningBrief, serializeBriefJson } from "@diagnostic-odyssey/brief-core";
+import { buildPlanningBrief, serializeBriefJson, type PlanningBrief } from "@diagnostic-odyssey/brief-core";
 import { AcquisitionGuidanceCard } from "../components/AcquisitionGuidanceCard";
+import { ErrorBoundary } from "../components/ErrorBoundary";
+import { PlanningInsights } from "../components/PlanningInsights";
+import { buildPlanningInsights, type PlanningInsightsSources } from "../data/planningInsights";
+import { planningInsightsEnabled } from "../data/planningInsightsEnabled";
+import { AiHandoff } from "../components/AiHandoff";
 import {
   canDisplayDistributionSummary,
   type Estimate
@@ -42,6 +47,11 @@ import "./BriefPage.css";
 
 const resultNumber = new Intl.NumberFormat("en-US");
 
+// Keep optional projection failures inside the same boundary as optional rendering.
+function BriefInsights({brief, sources}: {brief: PlanningBrief; sources: PlanningInsightsSources}) {
+  return <PlanningInsights model={buildPlanningInsights(brief, sources)} />;
+}
+
 function AccessibleEstimateInterval({estimate}: {estimate: Estimate}) {
   const interval = formatEstimateInterval(estimate);
   const accessibleInterval = interval
@@ -54,17 +64,25 @@ function AccessibleEstimateInterval({estimate}: {estimate: Estimate}) {
   </>;
 }
 
-export function BriefPage() {
+interface FutureConceptControlProps {
+  conceptAvailable?: boolean;
+  showFutureConcept?: boolean;
+  onFutureConceptChange?: (enabled: boolean) => void;
+}
+export function BriefPage({conceptAvailable = false, showFutureConcept = false, onFutureConceptChange}: FutureConceptControlProps = {}) {
   const pageRef = useRef<HTMLElement>(null);
   const printDisclosureState = useRef<ReturnType<typeof createBriefPrintDisclosureState> | null>(null);
   const {
+    status,
     bundle,
     scenario,
     scenarioResult,
     localContext,
     localContextStatus,
     selectedLocalContext,
+    selectedLocalContextIds,
     pilotLocalContext,
+    pilotLocalContextId,
     availableDataRequests,
     briefDataRequestIds,
     selectedDataRequests
@@ -154,12 +172,25 @@ export function BriefPage() {
       <p>Deterministic synthesis of reviewed national burden, analyst-supplied planning assumptions, explicitly selected implementation context, evidence gaps, and interpretation guardrails.</p>
     </header>
 
+    {conceptAvailable && <div className="brief-concept-entry" role="group" aria-label="Future AI concept controls">
+      <label className="brief-concept-toggle">
+        <input type="checkbox" checked={showFutureConcept} onChange={event => onFutureConceptChange?.(event.target.checked)} />
+        Show future AI concept
+      </label>
+      {showFutureConcept && <Link className="button secondary" to="/concept/future-ai">Explore future AI concept →</Link>}
+      <small className="brief-concept-note">* Interactive concept only · No live AI or model API calls. You can hide or re-enable the preview here.</small>
+    </div>}
+
     <div className="print-provenance" role="group" aria-label="Planning Brief provenance">
       <strong>Brief provenance</strong>
       <span><b>National reviewed artifact:</b> {brief.artifact_version}</span>
       {brief.context.local_context_id && <span><b>Reviewed local-context artifact:</b> {brief.context.local_context_id}</span>}
       <span><b>Generated:</b> {brief.generated_at}</span>
     </div>
+
+    {planningInsightsEnabled && <ErrorBoundary fallback={<p className="insight-unavailable">Planning insights are unavailable. The reviewed Brief and exports remain available below.</p>}>
+      <BriefInsights brief={brief} sources={{national: bundle, local: localContext, localStatus: localContextStatus, availableDataRequests}} />
+    </ErrorBoundary>}
 
     <section className="brief-print-decision-state" aria-label="Decision state summary">
       <h2>Decision state</h2>
@@ -202,6 +233,10 @@ export function BriefPage() {
         </div>
         </div>
         <div className="brief-export-actions">
+          <AiHandoff brief={brief} sourceState={{status, localContextStatus,
+            localArtifactVersion: localContext?.manifest.artifact_version ?? null,
+            scenario, scenarioValid: !scenario || !!scenarioResult,
+            selectedLocalContextIds, pilotLocalContextId, briefDataRequestIds}} />
           <button className="button" onClick={exportJson}>Export JSON companion</button>
           <button className="button secondary" onClick={printBrief}>Print / save PDF</button>
         </div>

@@ -1,0 +1,67 @@
+{
+  "build": "on",
+  "browser": "154.0.8037.57",
+  "axe": "4.11.1",
+  "matrix": [
+    {
+      "name": "four substantive layouts across desktop/mobile and light/dark; screenshots and axe",
+      "status": "PASS",
+      "details": {
+        "screenshots": 24,
+        "axeEvaluations": 24
+      }
+    },
+    {
+      "name": "keyboard goal navigation has one tab stop and meaningful accessible states",
+      "status": "PASS"
+    },
+    {
+      "name": "research lenses, topic filter, provenance and investigation disclosures stay unverified",
+      "status": "PASS"
+    },
+    {
+      "name": "all map decisions change information needs; verification nodes update inspector",
+      "status": "PASS"
+    },
+    {
+      "name": "comparison changes selected columns and criteria without scores or effectiveness claims",
+      "status": "PASS"
+    },
+    {
+      "name": "nonempty analyst state and canonical export are identical after every concept action",
+      "status": "PASS",
+      "details": {
+        "selectedLocal": 1,
+        "selectedRequests": 1,
+        "exactCanonicalEquality": true
+      }
+    },
+    {
+      "name": "stale selected request warning parity, canonical exclusion and analyst-only dispositions",
+      "status": "PASS",
+      "details": {
+        "staleWarnings": [
+          "1 selected data request is stale for the current scenario and has been excluded from this Planning Brief until explicitly refreshed."
+        ],
+        "exactWarningParity": true,
+        "staleExcluded": true,
+        "requestBodyAndSelectionPreserved": true,
+        "explicitDeselectionRespected": true
+      }
+    },
+    {
+      "name": "320px reflow, reduced motion, progressive disclosure and concept print exclusion",
+      "status": "PASS"
+    },
+    {
+      "name": "no external requests, runtime retrieval, provider traffic or page errors",
+      "status": "PASS",
+      "details": {
+        "externalOrRuntimeRequests": 0,
+        "pageErrors": 0
+      }
+    }
+  ],
+  "network": [],
+  "pageErrors": []
+}
