@@ -850,5 +850,5 @@
 
 .overview-page .journey-card:hover strong,
 .overview-page .journey-card:focus-visible strong {
-  color: var(--journey-accent);
+  color: var(--do-selection-text);
 }
