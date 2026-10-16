@@ -38,8 +38,16 @@ async function canonical(page) {
 }
 await check("all three controls coexist and optional routes remain gated", async page => {
   assert.equal(await page.getByRole("button", {name:"Analyze with AI", exact:true}).count(), 1);
+  assert.match(await page.locator("#ai-handoff-launch-note").innerText(), /No live AI model or API calls/);
   assert.equal(await page.locator("#planning-insights-title").count() > 0, insightsEnabled);
+  if (insightsEnabled) {
+    assert.match(await page.locator("#planning-insights").innerText(), /no live AI inference/);
+  }
   assert.equal(await page.getByRole("link", {name:/Explore future AI concept/}).count() > 0, conceptEnabled);
+  assert.equal(await page.locator(".brief-concept-note").count() > 0, conceptEnabled);
+  if (conceptEnabled) {
+    assert.match(await page.locator(".brief-concept-note").innerText(), /No live AI or model API calls/);
+  }
   if (insightsEnabled) {
     assert.equal(await page.getByRole("checkbox", {name:/Include insights summary in printed Brief/}).count(), 1);
   } else {
@@ -52,6 +60,7 @@ await check("AI handoff, optional print, and navigation do not mutate canonical 
   await page.getByRole("button", {name:"Analyze with AI", exact:true}).click();
   const dialog = page.getByRole("dialog", {name:"Analyze with AI", exact:true});
   await dialog.waitFor();
+  assert.match(await dialog.locator("#ai-handoff-intro").innerText(), /does not invoke an AI provider or consume model API tokens/);
   await dialog.getByRole("button", {name:"Close Analyze with AI"}).click();
   if (insightsEnabled) {
     await page.getByRole("checkbox", {name:/Include insights summary in printed Brief/}).check();
@@ -63,6 +72,7 @@ await check("AI handoff, optional print, and navigation do not mutate canonical 
   if (conceptEnabled) {
     await page.getByRole("link", {name:/Explore future AI concept/}).click();
     await page.getByRole("tablist", {name:"Future experience goals"}).waitFor();
+    assert.match(await page.locator(".fc-banner").innerText(), /Demo only · No live AI/);
     for (const name of ["Explore interventions", "Identify data gaps", "Compare strategies", "Explain my Brief"]) {
       await page.getByRole("tab", {name:new RegExp(name)}).click();
       assert.equal(await page.getByRole("tab", {name:new RegExp(name)}).getAttribute("aria-selected"), "true");
