@@ -18,7 +18,7 @@ export const demoPublications = [
     doi: "10.1111/hex.70336",
     url: "https://doi.org/10.1111/hex.70336",
     design: "UK mixed-methods analysis of care pathways and inclusion",
-    setting: "Northwest London primary care and specialist access",
+    setting: "NW London primary-care records; England-wide long-COVID clinic survey and interviews",
     finding: "Interview and service evidence described referral and diagnosis barriers among disadvantaged groups. Linked clinical records were incomplete for a full equity analysis.",
     interpretation: "Supports formulating pathway-access and stratified measurement questions, not a causal effect of a navigation programme.",
     limitations: "Observational and context-specific; no randomized navigation-versus-usual-care effect or US cost estimate.",
