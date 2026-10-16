@@ -584,3 +584,40 @@
 /* Demo entry is illustrative; never suggest a live, billable model is available. */
 .planning-brief-page .brief-concept-note{display:block;margin:.25rem 0 1rem;color:var(--do-text-muted);font-size:.74rem;line-height:1.45}
 @media print{.planning-brief-page .brief-concept-note{display:none!important}}
+
+/* Session-local user preference, distinct from build-time exclusion of concept assets. */
+.planning-brief-page .brief-concept-entry {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .65rem 1rem;
+  padding: .7rem .9rem;
+  border: 1px solid var(--do-border);
+  border-radius: var(--do-radius-control);
+  background: var(--do-surface);
+}
+.planning-brief-page .brief-concept-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  cursor: pointer;
+  font-size: .85rem;
+  font-weight: 650;
+}
+.planning-brief-page .brief-concept-toggle input {
+  accent-color: var(--do-accent);
+  width: 1rem;
+  height: 1rem;
+}
+.planning-brief-page .brief-concept-toggle input:focus-visible {
+  outline: 3px solid var(--do-focus);
+  outline-offset: 3px;
+}
+.planning-brief-page .brief-concept-entry .button { min-height: 40px; }
+.planning-brief-page .brief-concept-entry .brief-concept-note {
+  flex-basis: 100%;
+  margin: 0;
+}
+@media print {
+  .planning-brief-page .brief-concept-entry { display: none !important; }
+}

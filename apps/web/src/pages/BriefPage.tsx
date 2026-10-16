@@ -64,7 +64,12 @@ function AccessibleEstimateInterval({estimate}: {estimate: Estimate}) {
   </>;
 }
 
-export function BriefPage() {
+interface FutureConceptControlProps {
+  conceptAvailable?: boolean;
+  showFutureConcept?: boolean;
+  onFutureConceptChange?: (enabled: boolean) => void;
+}
+export function BriefPage({conceptAvailable = false, showFutureConcept = false, onFutureConceptChange}: FutureConceptControlProps = {}) {
   const pageRef = useRef<HTMLElement>(null);
   const printDisclosureState = useRef<ReturnType<typeof createBriefPrintDisclosureState> | null>(null);
   const {
@@ -167,10 +172,13 @@ export function BriefPage() {
       <p>Deterministic synthesis of reviewed national burden, analyst-supplied planning assumptions, explicitly selected implementation context, evidence gaps, and interpretation guardrails.</p>
     </header>
 
-    {import.meta.env.VITE_FUTURE_AI_EXPERIENCE_DEMO === "on" && <div className="brief-concept-entry" style={{display: "contents"}}>
-      <style>{"@media print{.brief-concept-entry{display:none!important}}"}</style>
-      <Link className="button secondary" to="/concept/future-ai">Explore future AI concept →</Link>
-      <small className="brief-concept-note">* Interactive concept only · No live AI or model API calls.</small>
+    {conceptAvailable && <div className="brief-concept-entry" role="group" aria-label="Future AI concept controls">
+      <label className="brief-concept-toggle">
+        <input type="checkbox" checked={showFutureConcept} onChange={event => onFutureConceptChange?.(event.target.checked)} />
+        Show future AI concept
+      </label>
+      {showFutureConcept && <Link className="button secondary" to="/concept/future-ai">Explore future AI concept →</Link>}
+      <small className="brief-concept-note">* Interactive concept only · No live AI or model API calls. You can hide or re-enable the preview here.</small>
     </div>}
 
     <div className="print-provenance" role="group" aria-label="Planning Brief provenance">
