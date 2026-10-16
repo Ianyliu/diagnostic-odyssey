@@ -46,7 +46,7 @@ export function IntervalWhiskerPlot({
         return <div className="whisker-row" key={estimate.estimate_id}>
           <div className="whisker-label">
             <strong>{estimate.label.replace(/^Annualized\s+/i, "")}</strong>
-            <small>{oneDecimal.format(value)} h · 95% CI {oneDecimal.format(low)}–{oneDecimal.format(high)}</small>
+            <small><span className="numeric-unit">{oneDecimal.format(value)} h</span> · <span className="numeric-unit">95% CI {oneDecimal.format(low)}–{oneDecimal.format(high)}</span></small>
           </div>
           <div
             className="whisker-track"

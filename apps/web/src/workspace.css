@@ -408,6 +408,20 @@ footer {
   .context-meta { grid-template-columns: 1fr; }
 }
 
+/* Keep quantitative tokens readable while the surrounding layout can reflow. */
+.numeric-unit { display: inline-block; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.brief-export-status:empty { display: none; }
+.brief-export-status { margin: 0; line-height: 1.5; }
+
+@media screen {
+  summary { min-height: 44px; padding-block: 10px; cursor: pointer; }
+  summary:focus-visible, textarea:focus-visible { outline: 3px solid var(--do-focus); outline-offset: 3px; }
+  .insight-disclosure summary { min-height: 44px; padding-block: 10px; }
+  .menu-toggle { min-width: 64px; min-height: 44px; justify-content: center; }
+}
+
+@media print { .brief-export-status { display: none !important; } }
+
 .page-heading h1,
 .error-boundary-fallback h1 {
   color: var(--do-text);
