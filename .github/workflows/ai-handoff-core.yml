@@ -2,6 +2,8 @@ name: AI Handoff Exact Head
 on:
   pull_request:
     paths:
+      # Layout changes can break the shared extreme-value and PDF regressions.
+      - "apps/web/src/**/*.css"
       - "apps/web/src/data/aiHandoff*.ts"
       - "apps/web/src/components/AiHandoff.*"
       - "apps/web/src/pages/BriefPage.tsx"
