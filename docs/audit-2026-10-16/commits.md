@@ -118,3 +118,15 @@ docs: modernize the project guide with current features and local previews
 docs: replace the unavailable historical QA link with current evidence
 
 - `README.md`
+
+## PR #114 remote CI follow-up
+
+Owner commits through `df8bee384c38a2e30040a0f035d474dc09fe7249` remain ancestors, including main integration. The new atomic repair is `5c77bd34d9e4b37360d7743700d37fa3691c05d1`:
+
+- `apps/web/src/pages/PilotPage.css`
+- `apps/web/src/components/PilotDecisionVisuals.css`
+- `tests/browser/visual-quality.mjs`
+
+The companion documentation commit updates this inventory, the audit index and verification matrix, and adds `pr114-followup.md` with repository-local evidence/screenshots under their `pr114-followup/` subdirectories. Its exact SHA and file inventory are available in the PR commit list; no self-referential commit hash is embedded.
+
+The follow-up starts at `main@917b4712f33db1f9ded4016efc37e1213ca77a8d` after the owner merged #114. CI coverage commit `6dccabe` changes only `.github/workflows/ai-handoff-core.yml`, adding stylesheet paths to existing handoff verification triggers.
