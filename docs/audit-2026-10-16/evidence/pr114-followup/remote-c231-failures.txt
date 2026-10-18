@@ -1,0 +1,11 @@
+Job 117101492694
+2026-10-16T17:24:00.0638017Z     "name": "extreme finite scenario layout and invalid sensitivity remain usable",
+2026-10-16T17:24:00.0638912Z     "status": "FAIL",
+2026-10-16T17:24:00.0640718Z     "error": "AssertionError [ERR_ASSERTION]: Scientific token exceeds its row (MAX cost Pilot, 360px, light): {\"text\":\"$1.7976931348623157e+308\",\"lines\":1,\"contained\":false}"
+2026-10-16T17:24:00.0921341Z ##[error]Process completed with exit code 1.
+
+Job 117101490896
+2026-10-16T17:23:11.1712275Z     "name": "extreme finite scenario layout and invalid sensitivity remain usable",
+2026-10-16T17:23:11.1713026Z     "status": "FAIL",
+2026-10-16T17:23:11.1714204Z     "error": "AssertionError [ERR_ASSERTION]: Scientific token exceeds its row (MAX cost Pilot, 360px, light): {\"text\":\"$1.7976931348623157e+308\",\"lines\":1,\"contained\":false}"
+2026-10-16T17:23:11.1890015Z ##[error]Process completed with exit code 1.

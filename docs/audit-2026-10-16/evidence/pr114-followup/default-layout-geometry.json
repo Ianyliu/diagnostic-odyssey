@@ -1,0 +1,42 @@
+[
+  {
+    "version": "before",
+    "theme": "light",
+    "top": 3028.125,
+    "documentWidth": 344,
+    "viewport": 320,
+    "cardWidth": 288,
+    "grid": "307.156px",
+    "headingWidth": 307.15625
+  },
+  {
+    "version": "before",
+    "theme": "dark",
+    "top": 3028.125,
+    "documentWidth": 344,
+    "viewport": 320,
+    "cardWidth": 288,
+    "grid": "307.156px",
+    "headingWidth": 307.15625
+  },
+  {
+    "version": "after",
+    "theme": "light",
+    "top": 3028.125,
+    "documentWidth": 320,
+    "viewport": 320,
+    "cardWidth": 288,
+    "grid": "246px",
+    "headingWidth": 246
+  },
+  {
+    "version": "after",
+    "theme": "dark",
+    "top": 3028.125,
+    "documentWidth": 320,
+    "viewport": 320,
+    "cardWidth": 288,
+    "grid": "246px",
+    "headingWidth": 246
+  }
+]

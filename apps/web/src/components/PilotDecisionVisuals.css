@@ -6,6 +6,7 @@
 
 .decision-visual {
   display: grid;
+  container-type: inline-size;
   align-content: start;
   gap: 12px;
   min-width: 0;
@@ -60,7 +61,8 @@
 .visual-headline-scientific {
   flex-shrink: 0;
   white-space: nowrap;
-  font-size: 18px;
+  /* Size against this visual's column, including multi-column desktop cards. */
+  font-size: clamp(.875rem, 5cqi, 1.125rem);
 }
 
 .decision-visual .visual-note {

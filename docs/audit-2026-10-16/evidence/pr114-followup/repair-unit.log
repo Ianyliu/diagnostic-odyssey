@@ -1,0 +1,453 @@
+
+> diagnostic-odyssey@0.1.0 test
+> npm run test --workspaces --if-present
+
+
+> @diagnostic-odyssey/web@0.1.0 test
+> node --experimental-strip-types --test test/*.test.ts
+
+TAP version 13
+# Subtest: test/ai-handoff-session.test.ts
+ok 1 - test/ai-handoff-session.test.ts
+  ---
+  duration_ms: 143.146439
+  type: 'test'
+  ...
+# Subtest: test/ai-handoff-transfer.test.ts
+ok 2 - test/ai-handoff-transfer.test.ts
+  ---
+  duration_ms: 65.439342
+  type: 'test'
+  ...
+# Subtest: test/ai-handoff.test.ts
+ok 3 - test/ai-handoff.test.ts
+  ---
+  duration_ms: 313.633975
+  type: 'test'
+  ...
+# Subtest: test/brief-accessibility.test.ts
+ok 4 - test/brief-accessibility.test.ts
+  ---
+  duration_ms: 68.395479
+  type: 'test'
+  ...
+# Subtest: test/brief-print.test.ts
+ok 5 - test/brief-print.test.ts
+  ---
+  duration_ms: 134.834601
+  type: 'test'
+  ...
+# Subtest: test/browser-media.test.ts
+ok 6 - test/browser-media.test.ts
+  ---
+  duration_ms: 77.850884
+  type: 'test'
+  ...
+# Subtest: test/build-provenance.test.ts
+ok 7 - test/build-provenance.test.ts
+  ---
+  duration_ms: 71.804647
+  type: 'test'
+  ...
+# Subtest: test/concept-literature.test.ts
+ok 8 - test/concept-literature.test.ts
+  ---
+  duration_ms: 70.801561
+  type: 'test'
+  ...
+# Subtest: test/data-request-workflow.test.ts
+ok 9 - test/data-request-workflow.test.ts
+  ---
+  duration_ms: 135.627101
+  type: 'test'
+  ...
+# Subtest: test/decision-visuals.test.ts
+ok 10 - test/decision-visuals.test.ts
+  ---
+  duration_ms: 120.407157
+  type: 'test'
+  ...
+# Subtest: test/distribution-summary.test.ts
+ok 11 - test/distribution-summary.test.ts
+  ---
+  duration_ms: 116.422575
+  type: 'test'
+  ...
+# Subtest: test/fragment-navigation.test.ts
+ok 12 - test/fragment-navigation.test.ts
+  ---
+  duration_ms: 74.706168
+  type: 'test'
+  ...
+# Subtest: test/future-ai-experience.test.ts
+ok 13 - test/future-ai-experience.test.ts
+  ---
+  duration_ms: 140.037287
+  type: 'test'
+  ...
+# Subtest: test/issue24-pilot-context.test.ts
+ok 14 - test/issue24-pilot-context.test.ts
+  ---
+  duration_ms: 134.980505
+  type: 'test'
+  ...
+# Subtest: test/linked-condition-runtime.test.ts
+ok 15 - test/linked-condition-runtime.test.ts
+  ---
+  duration_ms: 134.184676
+  type: 'test'
+  ...
+# Subtest: test/linked-condition-ui-exclusions.test.ts
+ok 16 - test/linked-condition-ui-exclusions.test.ts
+  ---
+  duration_ms: 142.852489
+  type: 'test'
+  ...
+# Subtest: test/local-context-formatting.test.ts
+ok 17 - test/local-context-formatting.test.ts
+  ---
+  duration_ms: 70.469008
+  type: 'test'
+  ...
+# Subtest: test/local-context-review-fixes.test.ts
+ok 18 - test/local-context-review-fixes.test.ts
+  ---
+  duration_ms: 139.429578
+  type: 'test'
+  ...
+# Subtest: test/local-context-selection.test.ts
+ok 19 - test/local-context-selection.test.ts
+  ---
+  duration_ms: 140.352629
+  type: 'test'
+  ...
+# Subtest: test/metric-formatting.test.ts
+ok 20 - test/metric-formatting.test.ts
+  ---
+  duration_ms: 81.50236
+  type: 'test'
+  ...
+# Subtest: test/opening-motion.test.ts
+ok 21 - test/opening-motion.test.ts
+  ---
+  duration_ms: 71.093554
+  type: 'test'
+  ...
+# Subtest: test/pathway-boundary.test.ts
+ok 22 - test/pathway-boundary.test.ts
+  ---
+  duration_ms: 69.73829
+  type: 'test'
+  ...
+# Subtest: test/phase-a-hardening.test.ts
+ok 23 - test/phase-a-hardening.test.ts
+  ---
+  duration_ms: 72.973511
+  type: 'test'
+  ...
+# Subtest: test/pilot-decision-presentation.test.ts
+ok 24 - test/pilot-decision-presentation.test.ts
+  ---
+  duration_ms: 126.595943
+  type: 'test'
+  ...
+# Subtest: test/pilot-fragment-scroll.test.ts
+ok 25 - test/pilot-fragment-scroll.test.ts
+  ---
+  duration_ms: 66.409794
+  type: 'test'
+  ...
+# Subtest: test/pilot-input-draft.test.ts
+ok 26 - test/pilot-input-draft.test.ts
+  ---
+  duration_ms: 129.637874
+  type: 'test'
+  ...
+# Subtest: test/pilot-workspace-redesign.test.ts
+ok 27 - test/pilot-workspace-redesign.test.ts
+  ---
+  duration_ms: 92.515497
+  type: 'test'
+  ...
+# Subtest: test/plain-language-burden-brief.test.ts
+ok 28 - test/plain-language-burden-brief.test.ts
+  ---
+  duration_ms: 386.818058
+  type: 'test'
+  ...
+# Subtest: test/plain-language-orientation.test.ts
+ok 29 - test/plain-language-orientation.test.ts
+  ---
+  duration_ms: 125.739848
+  type: 'test'
+  ...
+# Subtest: test/planning-insights.test.ts
+ok 30 - test/planning-insights.test.ts
+  ---
+  duration_ms: 174.37004
+  type: 'test'
+  ...
+# Subtest: test/planning-number-formatting.test.ts
+ok 31 - test/planning-number-formatting.test.ts
+  ---
+  duration_ms: 149.762945
+  type: 'test'
+  ...
+# Subtest: test/redesign-review.test.ts
+ok 32 - test/redesign-review.test.ts
+  ---
+  duration_ms: 75.200354
+  type: 'test'
+  ...
+# Subtest: test/reviewed-meps-typical-range-promotion.test.ts
+ok 33 - test/reviewed-meps-typical-range-promotion.test.ts
+  ---
+  duration_ms: 127.871317
+  type: 'test'
+  ...
+# Subtest: test/runtime-integration.test.ts
+ok 34 - test/runtime-integration.test.ts
+  ---
+  duration_ms: 150.014197
+  type: 'test'
+  ...
+# Subtest: test/sensitivity-presentation.test.ts
+ok 35 - test/sensitivity-presentation.test.ts
+  ---
+  duration_ms: 93.811622
+  type: 'test'
+  ...
+# Subtest: test/theme.test.ts
+ok 36 - test/theme.test.ts
+  ---
+  duration_ms: 71.609318
+  type: 'test'
+  ...
+# Subtest: test/workspace-readiness.test.ts
+ok 37 - test/workspace-readiness.test.ts
+  ---
+  duration_ms: 72.75614
+  type: 'test'
+  ...
+1..37
+# tests 37
+# suites 0
+# pass 37
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 4449.923333
+
+> @diagnostic-odyssey/acquisition-hints@0.1.0 test
+> node --experimental-strip-types --test test/*.test.ts
+
+TAP version 13
+# Subtest: test/privacy-amendment.test.ts
+ok 1 - test/privacy-amendment.test.ts
+  ---
+  duration_ms: 205.359932
+  type: 'test'
+  ...
+# Subtest: test/resolver.test.ts
+ok 2 - test/resolver.test.ts
+  ---
+  duration_ms: 289.951057
+  type: 'test'
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 2
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 503.196577
+
+> @diagnostic-odyssey/brief-core@0.1.0 test
+> node --experimental-strip-types --test test/*.test.ts
+
+TAP version 13
+# Subtest: test/acquisition-export.test.ts
+ok 1 - test/acquisition-export.test.ts
+  ---
+  duration_ms: 205.876137
+  type: 'test'
+  ...
+# Subtest: test/brief-core.test.ts
+ok 2 - test/brief-core.test.ts
+  ---
+  duration_ms: 132.694478
+  type: 'test'
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 2
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 345.865024
+
+> @diagnostic-odyssey/contracts@0.1.0 test
+> node --experimental-strip-types --test test/*.test.ts
+
+TAP version 13
+# Subtest: test/acquisition-reference.test.ts
+ok 1 - test/acquisition-reference.test.ts
+  ---
+  duration_ms: 129.550348
+  type: 'test'
+  ...
+# Subtest: test/contracts.test.ts
+ok 2 - test/contracts.test.ts
+  ---
+  duration_ms: 129.516518
+  type: 'test'
+  ...
+# Subtest: test/linked-condition-candidate.test.ts
+ok 3 - test/linked-condition-candidate.test.ts
+  ---
+  duration_ms: 104.510889
+  type: 'test'
+  ...
+# Subtest: test/local-context.test.ts
+ok 4 - test/local-context.test.ts
+  ---
+  duration_ms: 122.407761
+  type: 'test'
+  ...
+# Subtest: test/reviewed-linked-condition-invariants.test.ts
+ok 5 - test/reviewed-linked-condition-invariants.test.ts
+  ---
+  duration_ms: 129.047062
+  type: 'test'
+  ...
+# Subtest: test/reviewed-linked-condition-policy.test.ts
+ok 6 - test/reviewed-linked-condition-policy.test.ts
+  ---
+  duration_ms: 119.685464
+  type: 'test'
+  ...
+# Subtest: test/reviewed-local-context.test.ts
+ok 7 - test/reviewed-local-context.test.ts
+  ---
+  duration_ms: 114.125923
+  type: 'test'
+  ...
+# Subtest: test/reviewed-meps-artifact.test.ts
+ok 8 - test/reviewed-meps-artifact.test.ts
+  ---
+  duration_ms: 121.882067
+  type: 'test'
+  ...
+1..8
+# tests 8
+# suites 0
+# pass 8
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 984.037664
+
+> @diagnostic-odyssey/evidence-core@0.1.0 test
+> node --experimental-strip-types --test test/*.test.ts
+
+TAP version 13
+# Subtest: test/evidence-core.test.ts
+ok 1 - test/evidence-core.test.ts
+  ---
+  duration_ms: 79.971001
+  type: 'test'
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 1
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 86.526001
+
+> @diagnostic-odyssey/narrative-references@0.1.0 test
+> node --experimental-strip-types --test test/*.test.ts
+
+TAP version 13
+# Subtest: test/candidate-phase-a-prb.test.ts
+ok 1 - test/candidate-phase-a-prb.test.ts
+  ---
+  duration_ms: 113.565411
+  type: 'test'
+  ...
+# Subtest: test/narrative-contract.test.ts
+ok 2 - test/narrative-contract.test.ts
+  ---
+  duration_ms: 95.826733
+  type: 'test'
+  ...
+# Subtest: test/python-runner.test.ts
+ok 3 - test/python-runner.test.ts
+  ---
+  duration_ms: 333.064739
+  type: 'test'
+  ...
+# Subtest: test/schema-agreement.test.ts
+ok 4 - test/schema-agreement.test.ts
+  ---
+  duration_ms: 280.195233
+  type: 'test'
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 4
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 836.929318
+
+> @diagnostic-odyssey/planning-guidance@0.1.0 test
+> python3 -m pip install --disable-pip-version-check --quiet jsonschema==4.26.0 && node --experimental-strip-types --test test/*.test.ts
+
+WARNING: The directory '/home/agent/.cache/pip' or its parent directory is not owned or is not writable by the current user. The cache has been disabled. Check the permissions and owner of that directory. If executing pip with sudo, you should use sudo's -H flag.
+TAP version 13
+# Subtest: test/contracts.test.ts
+ok 1 - test/contracts.test.ts
+  ---
+  duration_ms: 376.210704
+  type: 'test'
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 1
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 382.861749
+
+> @diagnostic-odyssey/scenario-engine@0.1.0 test
+> node --experimental-strip-types --test test/*.test.ts
+
+TAP version 13
+# Subtest: test/scenario-engine.test.ts
+ok 1 - test/scenario-engine.test.ts
+  ---
+  duration_ms: 122.396388
+  type: 'test'
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 1
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 128.84579

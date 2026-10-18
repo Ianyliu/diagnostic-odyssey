@@ -1,5 +1,7 @@
 # Verification matrix
 
+> **Historical local matrix:** the original remote head `24e8246` failed at 320px. Consult the [follow-up evidence and failure history](pr114-followup.md) and exact current PR checks for final acceptance.
+
 Application source: **`24da6f69321755fce8e4ad0d379ca3741abfbe87`**. Baseline: **`0ad2c55db55d23c1f1b35b5e57db89f5fc0ba886`**. The publication source tree is byte-identical to the tested local source tree (`6d64649524aa52a7ac547e7bb110122bf33a3cba`); only commit identity changed to a public no-reply address. Later documentation/evidence commits are listed in the [inventory](commits.md). Tests ran locally against production builds unless a fixture is explicitly named. Remote CI status belongs to the PR and must be reviewed separately.
 
 Environment: Node **22.23.3**, Python **3.12.14**, `jsonschema` **4.26.0**, R **4.5.0**, Playwright **1.64.0**, axe-core **4.11.1**, Chromium **154.0.8037.57** (Linux). Actual-PDF verification was repeated with CI's pinned `pdfplumber==0.11.7`. Browser dependencies are isolated outside the repository; production dependencies were not changed.
@@ -20,7 +22,7 @@ Environment: Node **22.23.3**, Python **3.12.14**, `jsonschema` **4.26.0**, R **
 | `node tests/browser/acceptance.mjs` | PASS · 26 groups | Eleven core routes × 1440/820/360px × light/dark, all-route axe checks, keyboard/history/anchors, drafts, extreme arithmetic, print and opening behavior. [Result + snapshots](evidence/acceptance.json). |
 | `node tests/browser/gate0-accessibility.mjs` | PASS · 14 groups | 390px explicit/system themes × reduced/full motion; disclosures, keyboard navigation, focus and measured caption contrast at 1440/768/390px. [Results](evidence/accessibility.json). |
 | `node tests/browser/workspace-continuity.mjs` | PASS · 2 groups | Unfinished input survives navigation; failed download recovers. [Results](evidence/workspace-continuity.json). |
-| `node tests/browser/visual-quality.mjs` | PASS · 8 rows | 320/390/768/1440px × light/dark; whole numeric tokens, no overflow, mobile menu Escape and focus restoration. [Results](evidence/visual-quality.json). |
+| `node tests/browser/visual-quality.mjs` | LOCAL PASS · 8 rows; REMOTE 320px FAIL | 320/390/768/1440px × light/dark; whole numeric tokens, no overflow, mobile menu Escape and focus restoration. [Results](evidence/visual-quality.json). |
 | `node tests/browser/motion.mjs` | PASS · 4 modes | Opening, keyboard interruption, reduced motion, query/deep-link bypass and session replay suppression. Observed opening layout shift: 0. [Results](evidence/motion.json). This is not a field Core Web Vitals measurement. |
 | `node tests/browser/ai-handoff.mjs` | PASS · 24 groups | Six-goal payload/full Markdown bytes, clipboard failures, hostile input, stale sources, missing/suppressed/illustrative inputs, dialogs, focus/keyboard and print. Zero external requests/page errors. [Results](evidence/ai-handoff.json). |
 | `node tests/browser/planning-insights.mjs` | PASS · 14 groups | Four widths × both themes, axe, stale states, extreme inputs, print opt-in and invariant JSON. [Results](evidence/planning-insights.json). |
