@@ -1,0 +1,2649 @@
+
+> diagnostic-odyssey@0.1.0 test
+> npm run test --workspaces --if-present
+
+
+> @diagnostic-odyssey/web@0.1.0 test
+> node --experimental-strip-types --test test/*.test.ts
+
+TAP version 13
+# Subtest: source identity ignores only the volatile composition timestamp and object key order
+ok 1 - source identity ignores only the volatile composition timestamp and object key order
+  ---
+  duration_ms: 36.122542
+  type: 'test'
+  ...
+# Subtest: scenario inputs, local selections, pilot context, request IDs and readiness invalidate an otherwise identical payload
+ok 2 - scenario inputs, local selections, pilot context, request IDs and readiness invalidate an otherwise identical payload
+  ---
+  duration_ms: 9.974459
+  type: 'test'
+  ...
+# Subtest: unavailable artifacts and invalid applied scenarios fail closed without throwing
+ok 3 - unavailable artifacts and invalid applied scenarios fail closed without throwing
+  ---
+  duration_ms: 1.8195
+  type: 'test'
+  ...
+# Subtest: suppressed, unreleased and illustrative constructed findings never become exportable previews
+ok 4 - suppressed, unreleased and illustrative constructed findings never become exportable previews
+  ---
+  duration_ms: 1.4705
+  type: 'test'
+  ...
+# Subtest: question limit counts trimmed Unicode code points without truncating astral characters
+ok 5 - question limit counts trimmed Unicode code points without truncating astral characters
+  ---
+  duration_ms: 0.110084
+  type: 'test'
+  ...
+# Subtest: clipboard preserves the full text and only succeeds after the browser promise resolves
+ok 6 - clipboard preserves the full text and only succeeds after the browser promise resolves
+  ---
+  duration_ms: 0.722208
+  type: 'test'
+  ...
+# Subtest: clipboard denied, missing and insecure contexts preserve a manual fallback without retrying
+ok 7 - clipboard denied, missing and insecure contexts preserve a manual fallback without retrying
+  ---
+  duration_ms: 0.110459
+  type: 'test'
+  ...
+# Subtest: download names use bounded safe provenance and goal tokens, never optional question content
+ok 8 - download names use bounded safe provenance and goal tokens, never optional question content
+  ---
+  duration_ms: 0.465375
+  type: 'test'
+  ...
+# Subtest: payload equals the entire canonical Brief with precision, uncertainty, provenance and warnings intact
+ok 9 - payload equals the entire canonical Brief with precision, uncertainty, provenance and warnings intact
+  ---
+  duration_ms: 64.700917
+  type: 'test'
+  ...
+# Subtest: snapshot is detached, deeply immutable and stable without reading a clock
+ok 10 - snapshot is detached, deeply immutable and stable without reading a clock
+  ---
+  duration_ms: 24.615292
+  type: 'test'
+  ...
+# Subtest: six goals change tasks, retain identical evidence and shared guardrails, and match the versioned template snapshot
+ok 11 - six goals change tasks, retain identical evidence and shared guardrails, and match the versioned template snapshot
+  ---
+  duration_ms: 45.505417
+  type: 'test'
+  ...
+# Subtest: prompt order and inclusion inventory describe the actual canonical payload
+ok 12 - prompt order and inclusion inventory describe the actual canonical payload
+  ---
+  duration_ms: 5.463625
+  type: 'test'
+  ...
+# Subtest: unsupported goals and scopes and overlong Unicode questions fail rather than truncating
+ok 13 - unsupported goals and scopes and overlong Unicode questions fail rather than truncating
+  ---
+  duration_ms: 1.839625
+  type: 'test'
+  ...
+# Subtest: hostile questions, source fields, fences, delimiters, HTML and Unicode stay valid untrusted JSON text
+ok 14 - hostile questions, source fields, fences, delimiters, HTML and Unicode stay valid untrusted JSON text
+  ---
+  duration_ms: 12.942875
+  type: 'test'
+  ...
+# Subtest: large complete payloads are retained with no transport caps or silent omission
+ok 15 - large complete payloads are retained with no transport caps or silent omission
+  ---
+  duration_ms: 26.753834
+  type: 'test'
+  ...
+# Subtest: canonical builder excludes unreleased, illustrative and unselected records; handoff adds none
+ok 16 - canonical builder excludes unreleased, illustrative and unselected records; handoff adds none
+  ---
+  duration_ms: 0.755375
+  type: 'test'
+  ...
+# Subtest: malicious constructed Brief records fail closed without leaking their forbidden content
+ok 17 - malicious constructed Brief records fail closed without leaking their forbidden content
+  ---
+  duration_ms: 9.791166
+  type: 'test'
+  ...
+# Subtest: non-finite values, invalid scenarios and inconsistent identities cannot become JSON null or claims
+ok 18 - non-finite values, invalid scenarios and inconsistent identities cannot become JSON null or claims
+  ---
+  duration_ms: 41.816
+  type: 'test'
+  ...
+# Subtest: absent domains and null uncertainty stay absent or null; zero and positive capacity gaps stay unchanged
+ok 19 - absent domains and null uncertainty stay absent or null; zero and positive capacity gaps stay unchanged
+  ---
+  duration_ms: 7.07075
+  type: 'test'
+  ...
+# Subtest: stale request bodies and untrusted acquisition companions are removed by the canonical codec with warnings retained
+ok 20 - stale request bodies and untrusted acquisition companions are removed by the canonical codec with warnings retained
+  ---
+  duration_ms: 7.615333
+  type: 'test'
+  ...
+# Subtest: display-approved evidence is not silently promoted to a bounded intervention effect
+ok 21 - display-approved evidence is not silently promoted to a bounded intervention effect
+  ---
+  duration_ms: 7.598084
+  type: 'test'
+  ...
+# Subtest: renderer rejects tampered envelope metadata, payload, invented supplements and warning loss
+ok 22 - renderer rejects tampered envelope metadata, payload, invented supplements and warning loss
+  ---
+  duration_ms: 13.241458
+  type: 'test'
+  ...
+# Subtest: Planning Brief keeps confidence-interval accessibility regex escapes
+ok 23 - Planning Brief keeps confidence-interval accessibility regex escapes
+  ---
+  duration_ms: 2.678833
+  type: 'test'
+  ...
+# Subtest: all eight applied Brief inputs retain precise assumption values
+ok 24 - all eight applied Brief inputs retain precise assumption values
+  ---
+  duration_ms: 0.937334
+  type: 'test'
+  ...
+# Subtest: printing opens closed disclosures and restores each screen choice after cancellation
+ok 25 - printing opens closed disclosures and restores each screen choice after cancellation
+  ---
+  duration_ms: 0.428541
+  type: 'test'
+  ...
+# Subtest: executeBriefPrint prepares disclosures and invokes print callback
+ok 26 - executeBriefPrint prepares disclosures and invokes print callback
+  ---
+  duration_ms: 0.148417
+  type: 'test'
+  ...
+# Subtest: print preparation and cancellation restore the original scroll position once
+ok 27 - print preparation and cancellation restore the original scroll position once
+  ---
+  duration_ms: 0.144041
+  type: 'test'
+  ...
+# Subtest: executeBriefPrint restores disclosures and rethrows if print callback throws
+ok 28 - executeBriefPrint restores disclosures and rethrows if print callback throws
+  ---
+  duration_ms: 0.275375
+  type: 'test'
+  ...
+# Subtest: executeBriefPrint gracefully handles null disclosure state
+ok 29 - executeBriefPrint gracefully handles null disclosure state
+  ---
+  duration_ms: 0.072042
+  type: 'test'
+  ...
+# Subtest: Planning Brief wires print events for browser and application print
+ok 30 - Planning Brief wires print events for browser and application print
+  ---
+  duration_ms: 0.295542
+  type: 'test'
+  ...
+# Subtest: applied Brief inputs and scenario outputs occupy separate document sections
+ok 31 - applied Brief inputs and scenario outputs occupy separate document sections
+  ---
+  duration_ms: 0.157917
+  type: 'test'
+  ...
+# Subtest: asynchronous print media preserves disclosure state until printing ends and detaches on cleanup
+ok 32 - asynchronous print media preserves disclosure state until printing ends and detaches on cleanup
+  ---
+  duration_ms: 0.383959
+  type: 'test'
+  ...
+# Subtest: unavailable print-media APIs retain native print event restoration and unmount cleanup
+ok 33 - unavailable print-media APIs retain native print event restoration and unmount cleanup
+  ---
+  duration_ms: 0.34075
+  type: 'test'
+  ...
+# Subtest: missing, throwing, and malformed media-query APIs use explicit fallback values
+ok 34 - missing, throwing, and malformed media-query APIs use explicit fallback values
+  ---
+  duration_ms: 1.563041
+  type: 'test'
+  ...
+# Subtest: system theme can be read without subscription APIs and remains manually overridable
+ok 35 - system theme can be read without subscription APIs and remains manually overridable
+  ---
+  duration_ms: 0.321042
+  type: 'test'
+  ...
+# Subtest: modern media subscriptions preserve callback identity, receiver, and cleanup
+ok 36 - modern media subscriptions preserve callback identity, receiver, and cleanup
+  ---
+  duration_ms: 0.312375
+  type: 'test'
+  ...
+# Subtest: legacy media subscriptions have matching cleanup and incomplete APIs never leak listeners
+ok 37 - legacy media subscriptions have matching cleanup and incomplete APIs never leak listeners
+  ---
+  duration_ms: 0.235125
+  type: 'test'
+  ...
+# Subtest: registration and cleanup failures cannot crash the application
+ok 38 - registration and cleanup failures cannot crash the application
+  ---
+  duration_ms: 0.207708
+  type: 'test'
+  ...
+# Subtest: source provenance links to the exact verified commit without inventing build time
+ok 39 - source provenance links to the exact verified commit without inventing build time
+  ---
+  duration_ms: 0.598833
+  type: 'test'
+  ...
+# Subtest: explicitly supplied build date is shown distinctly from source commit date
+ok 40 - explicitly supplied build date is shown distinctly from source commit date
+  ---
+  duration_ms: 0.104
+  type: 'test'
+  ...
+# Subtest: incomplete or untrusted build identities fail closed without a clickable link
+ok 41 - incomplete or untrusted build identities fail closed without a clickable link
+  ---
+  duration_ms: 5.072417
+  type: 'test'
+  ...
+# Subtest: invalid dates do not become provenance claims
+ok 42 - invalid dates do not become provenance claims
+  ---
+  duration_ms: 0.10675
+  type: 'test'
+  ...
+# Subtest: worked literature references are real, independently traceable sample metadata only
+ok 43 - worked literature references are real, independently traceable sample metadata only
+  ---
+  duration_ms: 1.887
+  type: 'test'
+  ...
+# Subtest: default concept study cards map every original research topic to specific sources without admitting effects
+ok 44 - default concept study cards map every original research topic to specific sources without admitting effects
+  ---
+  duration_ms: 0.431334
+  type: 'test'
+  ...
+# Subtest: no static demo publication is wired into authoritative analytical or export source modules
+ok 45 - no static demo publication is wired into authoritative analytical or export source modules
+  ---
+  duration_ms: 1.618208
+  type: 'test'
+  ...
+# Subtest: sensitivity data-request templates are deterministic and preserve pathway step and mechanism
+ok 46 - sensitivity data-request templates are deterministic and preserve pathway step and mechanism
+  ---
+  duration_ms: 38.015292
+  type: 'test'
+  ...
+# Subtest: analyst-created requests require explicit Planning Brief opt-in
+ok 47 - analyst-created requests require explicit Planning Brief opt-in
+  ---
+  duration_ms: 0.450833
+  type: 'test'
+  ...
+# Subtest: sensitivity requests become stale after relevant scenario values change and refresh to current
+ok 48 - sensitivity requests become stale after relevant scenario values change and refresh to current
+  ---
+  duration_ms: 1.084667
+  type: 'test'
+  ...
+# Subtest: planning-horizon changes make every sensitivity-derived request stale
+ok 49 - planning-horizon changes make every sensitivity-derived request stale
+  ---
+  duration_ms: 0.468875
+  type: 'test'
+  ...
+# Subtest: stale selected sensitivity requests are excluded from Brief/export until refreshed
+ok 50 - stale selected sensitivity requests are excluded from Brief/export until refreshed
+  ---
+  duration_ms: 0.792541
+  type: 'test'
+  ...
+# Subtest: mixed current and stale selected requests remain explicit in rendered and serialized Brief state
+ok 51 - mixed current and stale selected requests remain explicit in rendered and serialized Brief state
+  ---
+  duration_ms: 2.691333
+  type: 'test'
+  ...
+# Subtest: stale-selection warning helper does not duplicate an existing warning
+ok 52 - stale-selection warning helper does not duplicate an existing warning
+  ---
+  duration_ms: 0.178958
+  type: 'test'
+  ...
+# Subtest: capacity request rationale stays conditional when the tested capacity range is flat
+ok 53 - capacity request rationale stays conditional when the tested capacity range is flat
+  ---
+  duration_ms: 0.712208
+  type: 'test'
+  ...
+# Subtest: reach request freshness distinguishes exact assumptions that share the same rounded percent
+ok 54 - reach request freshness distinguishes exact assumptions that share the same rounded percent
+  ---
+  duration_ms: 0.712
+  type: 'test'
+  ...
+# Subtest: invalid scenarios fail closed for sensitivity-request currency and Brief eligibility
+ok 55 - invalid scenarios fail closed for sensitivity-request currency and Brief eligibility
+  ---
+  duration_ms: 0.799209
+  type: 'test'
+  ...
+# Subtest: DataRequestsPage blocks sensitivity-request refresh while scenario result is invalid
+ok 56 - DataRequestsPage blocks sensitivity-request refresh while scenario result is invalid
+  ---
+  duration_ms: 0.575334
+  type: 'test'
+  ...
+# Subtest: sensitivity request freshness becomes stale when target mechanism differs
+ok 57 - sensitivity request freshness becomes stale when target mechanism differs
+  ---
+  duration_ms: 0.220584
+  type: 'test'
+  ...
+# Subtest: Planning Brief and JSON preserve scenario and selected-request pathway trace
+ok 58 - Planning Brief and JSON preserve scenario and selected-request pathway trace
+  ---
+  duration_ms: 0.598667
+  type: 'test'
+  ...
+# Subtest: reach sensitivity is bounded and includes the current assumption
+ok 59 - reach sensitivity is bounded and includes the current assumption
+  ---
+  duration_ms: 2.237333
+  type: 'test'
+  ...
+# Subtest: capacity sensitivity uses a mechanical range around the current assumption
+ok 60 - capacity sensitivity uses a mechanical range around the current assumption
+  ---
+  duration_ms: 0.330667
+  type: 'test'
+  ...
+# Subtest: recognition-window sensitivity stays within baseline window
+ok 61 - recognition-window sensitivity stays within baseline window
+  ---
+  duration_ms: 0.440292
+  type: 'test'
+  ...
+# Subtest: capacity sensitivity keeps zero/current capacity when intended reach is positive
+ok 62 - capacity sensitivity keeps zero/current capacity when intended reach is positive
+  ---
+  duration_ms: 0.296666
+  type: 'test'
+  ...
+# Subtest: high-precision reach keeps the exact current value in values and evaluation
+ok 63 - high-precision reach keeps the exact current value in values and evaluation
+  ---
+  duration_ms: 0.594125
+  type: 'test'
+  ...
+# Subtest: near-zero reach preserves both exact current and zero boundary
+ok 64 - near-zero reach preserves both exact current and zero boundary
+  ---
+  duration_ms: 0.293583
+  type: 'test'
+  ...
+# Subtest: near-one reach preserves both exact current and one boundary
+ok 65 - near-one reach preserves both exact current and one boundary
+  ---
+  duration_ms: 0.76925
+  type: 'test'
+  ...
+# Subtest: invalid sensitivity calculations are explicit without suppressing or replacing bad points
+ok 66 - invalid sensitivity calculations are explicit without suppressing or replacing bad points
+  ---
+  duration_ms: 0.338875
+  type: 'test'
+  ...
+# Subtest: mechanical sensitivity range overflow rejects the range instead of clamping it
+ok 67 - mechanical sensitivity range overflow rejects the range instead of clamping it
+  ---
+  duration_ms: 0.459459
+  type: 'test'
+  ...
+# Subtest: Typical Range presentation is conditional and preserves native units
+ok 68 - Typical Range presentation is conditional and preserves native units
+  ---
+  duration_ms: 1.238334
+  type: 'test'
+  ...
+# Subtest: Planning Brief JSON preserves a released valid DistributionSummary with its parent only
+ok 69 - Planning Brief JSON preserves a released valid DistributionSummary with its parent only
+  ---
+  duration_ms: 0.828625
+  type: 'test'
+  ...
+# Subtest: Pilot source contains no empirical-range calibration indicator
+ok 70 - Pilot source contains no empirical-range calibration indicator
+  ---
+  duration_ms: 0.339458
+  type: 'test'
+  ...
+# Subtest: same-document fragment focuses its heading and scrolls the section
+ok 71 - same-document fragment focuses its heading and scrolls the section
+  ---
+  duration_ms: 0.819958
+  type: 'test'
+  ...
+# Subtest: scrollToFragment falls back to literal fragment when decodeURIComponent throws on malformed URI
+ok 72 - scrollToFragment falls back to literal fragment when decodeURIComponent throws on malformed URI
+  ---
+  duration_ms: 0.110583
+  type: 'test'
+  ...
+# Subtest: shell handles native same-page fragment clicks and history hash changes
+ok 73 - shell handles native same-page fragment clicks and history hash changes
+  ---
+  duration_ms: 0.779791
+  type: 'test'
+  ...
+# Subtest: fragments open nested disclosures before focusing or measuring the target
+ok 74 - fragments open nested disclosures before focusing or measuring the target
+  ---
+  duration_ms: 0.170625
+  type: 'test'
+  ...
+# Subtest: route restoration saves the last observed scroll before replacing route content
+ok 75 - route restoration saves the last observed scroll before replacing route content
+  ---
+  duration_ms: 0.324041
+  type: 'test'
+  ...
+# Subtest: concept projects three distinct source-identical released domains with provenance
+ok 76 - concept projects three distinct source-identical released domains with provenance
+  ---
+  duration_ms: 2.088875
+  type: 'test'
+  ...
+# Subtest: altered values, denominators, provenance or interpretation never become highlights
+ok 77 - altered values, denominators, provenance or interpretation never become highlights
+  ---
+  duration_ms: 2.890166
+  type: 'test'
+  ...
+# Subtest: unreleased, suppressed and unfamiliar findings are excluded without substitutes
+ok 78 - unreleased, suppressed and unfamiliar findings are excluded without substitutes
+  ---
+  duration_ms: 3.501875
+  type: 'test'
+  ...
+# Subtest: national artifact, context and source-manifest mismatches fail closed
+ok 79 - national artifact, context and source-manifest mismatches fail closed
+  ---
+  duration_ms: 2.150792
+  type: 'test'
+  ...
+# Subtest: empty Brief findings stay empty rather than loading fallback fixture numbers
+ok 80 - empty Brief findings stay empty rather than loading fallback fixture numbers
+  ---
+  duration_ms: 4.375834
+  type: 'test'
+  ...
+# Subtest: reviewed local context remains unselected until explicitly supplied by the Brief
+ok 81 - reviewed local context remains unselected until explicitly supplied by the Brief
+  ---
+  duration_ms: 0.69875
+  type: 'test'
+  ...
+# Subtest: altered or stale local selections are withheld; unavailable is distinct from unselected
+ok 82 - altered or stale local selections are withheld; unavailable is distinct from unselected
+  ---
+  duration_ms: 1.215833
+  type: 'test'
+  ...
+# Subtest: invalid or mismatched scenario/result pairs are withheld
+ok 83 - invalid or mismatched scenario/result pairs are withheld
+  ---
+  duration_ms: 5.468584
+  type: 'test'
+  ...
+# Subtest: projection never mutates source, analyst requests or canonical JSON and returns isolated copies
+ok 84 - projection never mutates source, analyst requests or canonical JSON and returns isolated copies
+  ---
+  duration_ms: 1.687833
+  type: 'test'
+  ...
+# Subtest: committed research fixtures have no publications, locations, quantitative claims or recommendations
+ok 85 - committed research fixtures have no publications, locations, quantitative claims or recommendations
+  ---
+  duration_ms: 0.951083
+  type: 'test'
+  ...
+# Subtest: concept presentation has no provider, prompt, storage, export or analyst mutation capability
+ok 86 - concept presentation has no provider, prompt, storage, export or analyst mutation capability
+  ---
+  duration_ms: 2.160709
+  type: 'test'
+  ...
+# Subtest: Brief and Pilot local-context selections remain independent
+ok 87 - Brief and Pilot local-context selections remain independent
+  ---
+  duration_ms: 2.19875
+  type: 'test'
+  ...
+# Subtest: Pilot selection replaces, clears, and fails closed across artifact versions
+ok 88 - Pilot selection replaces, clears, and fails closed across artifact versions
+  ---
+  duration_ms: 0.288167
+  type: 'test'
+  ...
+# Subtest: Pilot local-context operations cannot mutate Scenario fields
+ok 89 - Pilot local-context operations cannot mutate Scenario fields
+  ---
+  duration_ms: 0.151625
+  type: 'test'
+  ...
+# Subtest: Brief union adds Pilot-used context and deduplicates by indicator_id
+ok 90 - Brief union adds Pilot-used context and deduplicates by indicator_id
+  ---
+  duration_ms: 0.128875
+  type: 'test'
+  ...
+# Subtest: six-step decision trace source preserves current descriptive boundaries
+ok 91 - six-step decision trace source preserves current descriptive boundaries
+  ---
+  duration_ms: 0.298
+  type: 'test'
+  ...
+# Subtest: DecisionTrace and page sources preserve independent UI semantics
+ok 92 - DecisionTrace and page sources preserve independent UI semantics
+  ---
+  duration_ms: 1.533666
+  type: 'test'
+  ...
+# Subtest: specialized runtime selection loads only reviewed Candidate A
+ok 93 - specialized runtime selection loads only reviewed Candidate A
+  ---
+  duration_ms: 6.240709
+  type: 'test'
+  ...
+# Subtest: specialized loader invokes merged reviewed-package validation before selection
+ok 94 - specialized loader invokes merged reviewed-package validation before selection
+  ---
+  duration_ms: 1.72825
+  type: 'test'
+  ...
+# Subtest: active runtime pins reject artifact and policy version drift
+ok 95 - active runtime pins reject artifact and policy version drift
+  ---
+  duration_ms: 5.382875
+  type: 'test'
+  ...
+# Subtest: Candidate A admission and all non-A policy assignments fail closed on drift
+ok 96 - Candidate A admission and all non-A policy assignments fail closed on drift
+  ---
+  duration_ms: 4.901584
+  type: 'test'
+  ...
+# Subtest: Candidate A precision, reporting, validity, wording, and historical release flag fail closed
+ok 97 - Candidate A precision, reporting, validity, wording, and historical release flag fail closed
+  ---
+  duration_ms: 4.185459
+  type: 'test'
+  ...
+# Subtest: failure state creates no fallback numeric evidence
+ok 98 - failure state creates no fallback numeric evidence
+  ---
+  duration_ms: 7.150167
+  type: 'test'
+  ...
+# Subtest: Candidate A presentation uses the exact reviewed copy and intended rounding
+ok 99 - Candidate A presentation uses the exact reviewed copy and intended rounding
+  ---
+  duration_ms: 16.789917
+  type: 'test'
+  ...
+# Subtest: medical route composes Candidate A only as separate secondary evidence
+ok 100 - medical route composes Candidate A only as separate secondary evidence
+  ---
+  duration_ms: 1.543084
+  type: 'test'
+  ...
+# Subtest: active runtime view model contains no non-A candidate or generic Estimate semantics
+ok 101 - active runtime view model contains no non-A candidate or generic Estimate semantics
+  ---
+  duration_ms: 1.852084
+  type: 'test'
+  ...
+# Subtest: ordinary national ArtifactBundle and export semantics remain exactly separate
+ok 102 - ordinary national ArtifactBundle and export semantics remain exactly separate
+  ---
+  duration_ms: 0.492917
+  type: 'test'
+  ...
+# Subtest: Planning Brief remains 21 ordinary findings and excludes Candidate A
+ok 103 - Planning Brief remains 21 ordinary findings and excludes Candidate A
+  ---
+  duration_ms: 0.594291
+  type: 'test'
+  ...
+# Subtest: Overview, DecisionStateRail, Pilot, Evidence, and ArtifactProvider remain unaware of Candidate A
+ok 104 - Overview, DecisionStateRail, Pilot, Evidence, and ArtifactProvider remain unaware of Candidate A
+  ---
+  duration_ms: 0.35475
+  type: 'test'
+  ...
+# Subtest: specialized loader never uses historical candidate-manifest filenames as reviewed package index
+ok 105 - specialized loader never uses historical candidate-manifest filenames as reviewed package index
+  ---
+  duration_ms: 0.104125
+  type: 'test'
+  ...
+# Subtest: immutable reviewed linked-condition package remains byte-valid and runtime-inactive
+ok 106 - immutable reviewed linked-condition package remains byte-valid and runtime-inactive
+  ---
+  duration_ms: 3.319792
+  type: 'test'
+  ...
+# Subtest: local HPSA values retain native precision and explicitly name score points
+ok 107 - local HPSA values retain native precision and explicitly name score points
+  ---
+  duration_ms: 0.510334
+  type: 'test'
+  ...
+# Subtest: missing local scores remain missing and published percent margins keep their units
+ok 108 - missing local scores remain missing and published percent margins keep their units
+  ---
+  duration_ms: 0.069875
+  type: 'test'
+  ...
+# Subtest: uncertainty labels explain the known published margin without inventing unknown semantics
+ok 109 - uncertainty labels explain the known published margin without inventing unknown semantics
+  ---
+  duration_ms: 0.056209
+  type: 'test'
+  ...
+# Subtest: Brief local-context provenance is exact, selection-bound, and serializable
+ok 110 - Brief local-context provenance is exact, selection-bound, and serializable
+  ---
+  duration_ms: 13.980875
+  type: 'test'
+  ...
+# Subtest: stale artifact rotation cannot leave a local_context_id in the Brief context
+ok 111 - stale artifact rotation cannot leave a local_context_id in the Brief context
+  ---
+  duration_ms: 0.293959
+  type: 'test'
+  ...
+# Subtest: selection checkbox accessibility metadata is unique and uses the displayed title
+ok 112 - selection checkbox accessibility metadata is unique and uses the displayed title
+  ---
+  duration_ms: 0.525625
+  type: 'test'
+  ...
+# Subtest: selected local-context uncertainty is explicit for both ACS and HRSA
+ok 113 - selected local-context uncertainty is explicit for both ACS and HRSA
+  ---
+  duration_ms: 0.238459
+  type: 'test'
+  ...
+# Subtest: initial local-context selection is empty and loading reviewed WV context does not auto-select
+ok 114 - initial local-context selection is empty and loading reviewed WV context does not auto-select
+  ---
+  duration_ms: 0.727083
+  type: 'test'
+  ...
+# Subtest: reviewed loaded record can be selected, deselected, and cleared
+ok 115 - reviewed loaded record can be selected, deselected, and cleared
+  ---
+  duration_ms: 0.165709
+  type: 'test'
+  ...
+# Subtest: reviewed partial record can be selected and resolves with partial state
+ok 116 - reviewed partial record can be selected and resolves with partial state
+  ---
+  duration_ms: 0.276125
+  type: 'test'
+  ...
+# Subtest: unknown IDs and ineligible preliminary, empty, error, or suppressed records fail closed
+ok 117 - unknown IDs and ineligible preliminary, empty, error, or suppressed records fail closed
+  ---
+  duration_ms: 1.135375
+  type: 'test'
+  ...
+# Subtest: manipulated selection state cannot export unknown or ineligible records
+ok 118 - manipulated selection state cannot export unknown or ineligible records
+  ---
+  duration_ms: 0.491584
+  type: 'test'
+  ...
+# Subtest: local-context failure or artifact version rotation yields no stale selected records
+ok 119 - local-context failure or artifact version rotation yields no stale selected records
+  ---
+  duration_ms: 0.710333
+  type: 'test'
+  ...
+# Subtest: mini-visual labels preserve proportions rather than rounding to integers
+ok 120 - mini-visual labels preserve proportions rather than rounding to integers
+  ---
+  duration_ms: 0.670625
+  type: 'test'
+  ...
+# Subtest: mini-visual labels retain native currency, people, and small measurements
+ok 121 - mini-visual labels retain native currency, people, and small measurements
+  ---
+  duration_ms: 1.089542
+  type: 'test'
+  ...
+# Subtest: opening is confined to a normal first document entry at Overview
+ok 122 - opening is confined to a normal first document entry at Overview
+  ---
+  duration_ms: 1.104
+  type: 'test'
+  ...
+# Subtest: reduced motion or storage failure produces the static composition
+ok 123 - reduced motion or storage failure produces the static composition
+  ---
+  duration_ms: 0.21725
+  type: 'test'
+  ...
+# Subtest: sessionStorageOrNull handles missing window, accessible storage, and getter security errors
+ok 124 - sessionStorageOrNull handles missing window, accessible storage, and getter security errors
+  ---
+  duration_ms: 0.485375
+  type: 'test'
+  ...
+# Subtest: reducedMotionRequested handles state, unavailable APIs, and missing window without global leakage
+ok 125 - reducedMotionRequested handles state, unavailable APIs, and missing window without global leakage
+  ---
+  duration_ms: 0.41675
+  type: 'test'
+  ...
+# Subtest: opening uses session storage and remains decorative
+ok 126 - opening uses session storage and remains decorative
+  ---
+  duration_ms: 0.750208
+  type: 'test'
+  ...
+# Subtest: pathway boundary helper derives readable labels from authoritative Scenario ids
+ok 127 - pathway boundary helper derives readable labels from authoritative Scenario ids
+  ---
+  duration_ms: 0.820125
+  type: 'test'
+  ...
+# Subtest: pathway boundary helper has deterministic readable fallback for unknown ids
+ok 128 - pathway boundary helper has deterministic readable fallback for unknown ids
+  ---
+  duration_ms: 0.130542
+  type: 'test'
+  ...
+# Subtest: Pilot renders the committed Scenario boundary beside assumptions with descriptive follow-up links
+ok 129 - Pilot renders the committed Scenario boundary beside assumptions with descriptive follow-up links
+  ---
+  duration_ms: 0.396125
+  type: 'test'
+  ...
+# Subtest: Data Requests renders mechanism only when the request carries it
+ok 130 - Data Requests renders mechanism only when the request carries it
+  ---
+  duration_ms: 0.099084
+  type: 'test'
+  ...
+# Subtest: Planning Brief explicitly renders scenario and selected-request boundary trace
+ok 131 - Planning Brief explicitly renders scenario and selected-request boundary trace
+  ---
+  duration_ms: 0.153458
+  type: 'test'
+  ...
+# Subtest: AppShell exposes a working skip link and focusable main target
+ok 132 - AppShell exposes a working skip link and focusable main target
+  ---
+  duration_ms: 0.617458
+  type: 'test'
+  ...
+# Subtest: unexpected render failures use an accessible evidence-honest fallback
+ok 133 - unexpected render failures use an accessible evidence-honest fallback
+  ---
+  duration_ms: 0.272333
+  type: 'test'
+  ...
+# Subtest: Planning Brief print contract hides chrome but retains substantive content and provenance
+ok 134 - Planning Brief print contract hides chrome but retains substantive content and provenance
+  ---
+  duration_ms: 3.644
+  type: 'test'
+  ...
+# Subtest: JSON companion remains derived from the same gated brief object and artifact version
+ok 135 - JSON companion remains derived from the same gated brief object and artifact version
+  ---
+  duration_ms: 0.158792
+  type: 'test'
+  ...
+# Subtest: shell keeps navigation and context available at narrow widths without sticky overlap
+ok 136 - shell keeps navigation and context available at narrow widths without sticky overlap
+  ---
+  duration_ms: 8.310041
+  type: 'test'
+  ...
+# Subtest: focusable Brief burden tables expose a named scroll region and table caption
+ok 137 - focusable Brief burden tables expose a named scroll region and table caption
+  ---
+  duration_ms: 2.616125
+  type: 'test'
+  ...
+# Subtest: existing decision visual text/table alternatives remain present
+ok 138 - existing decision visual text/table alternatives remain present
+  ---
+  duration_ms: 0.191292
+  type: 'test'
+  ...
+# Subtest: zero reach with positive eligible population renders no-demand capacity coverage
+ok 139 - zero reach with positive eligible population renders no-demand capacity coverage
+  ---
+  duration_ms: 0.817833
+  type: 'test'
+  ...
+# Subtest: zero eligible population renders no-demand capacity coverage
+ok 140 - zero eligible population renders no-demand capacity coverage
+  ---
+  duration_ms: 0.100542
+  type: 'test'
+  ...
+# Subtest: positive intended reach retains ordinary numeric capacity coverage
+ok 141 - positive intended reach retains ordinary numeric capacity coverage
+  ---
+  duration_ms: 0.254458
+  type: 'test'
+  ...
+# Subtest: PilotDecisionVisuals renders the capacity presentation instead of a hard-coded zero-demand percentage
+ok 142 - PilotDecisionVisuals renders the capacity presentation instead of a hard-coded zero-demand percentage
+  ---
+  duration_ms: 0.064583
+  type: 'test'
+  ...
+# Subtest: recognition-window difference formatting hides floating-point artifacts
+ok 143 - recognition-window difference formatting hides floating-point artifacts
+  ---
+  duration_ms: 0.132333
+  type: 'test'
+  ...
+# Subtest: PilotDecisionVisuals uses the recognition-window display formatter
+ok 144 - PilotDecisionVisuals uses the recognition-window display formatter
+  ---
+  duration_ms: 0.048584
+  type: 'test'
+  ...
+# Subtest: Pilot fragment helper recognizes only the sensitivity target
+ok 145 - Pilot fragment helper recognizes only the sensitivity target
+  ---
+  duration_ms: 0.424917
+  type: 'test'
+  ...
+# Subtest: PilotPage explicitly scrolls the sensitivity fragment after scenario content is ready
+ok 146 - PilotPage explicitly scrolls the sensitivity fragment after scenario content is ready
+  ---
+  duration_ms: 0.112458
+  type: 'test'
+  ...
+# Subtest: blank draft is invalid and never becomes explicit zero
+ok 147 - blank draft is invalid and never becomes explicit zero
+  ---
+  duration_ms: 0.972666
+  type: 'test'
+  ...
+# Subtest: incomplete numeric edit states remain local drafts
+ok 148 - incomplete numeric edit states remain local drafts
+  ---
+  duration_ms: 0.103709
+  type: 'test'
+  ...
+# Subtest: explicit zero commits wherever the scenario contract permits zero
+ok 149 - explicit zero commits wherever the scenario contract permits zero
+  ---
+  duration_ms: 0.468292
+  type: 'test'
+  ...
+# Subtest: negative capacity and reach above 100 percent are rejected through contract validation
+ok 150 - negative capacity and reach above 100 percent are rejected through contract validation
+  ---
+  duration_ms: 0.170958
+  type: 'test'
+  ...
+# Subtest: reach preserves exact decimal intent without whole-percent rounding
+ok 151 - reach preserves exact decimal intent without whole-percent rounding
+  ---
+  duration_ms: 0.189917
+  type: 'test'
+  ...
+# Subtest: reach Scenario-to-draft conversion avoids binary floating-point garbage
+ok 152 - reach Scenario-to-draft conversion avoids binary floating-point garbage
+  ---
+  duration_ms: 0.111709
+  type: 'test'
+  ...
+# Subtest: reach Scenario-to-draft-to-Scenario round trip is strict
+ok 153 - reach Scenario-to-draft-to-Scenario round trip is strict
+  ---
+  duration_ms: 0.20425
+  type: 'test'
+  ...
+# Subtest: reach draft decimal shifting supports scientific notation without binary scaling
+ok 154 - reach draft decimal shifting supports scientific notation without binary scaling
+  ---
+  duration_ms: 0.06225
+  type: 'test'
+  ...
+# Subtest: cross-field recovery constructs the candidate from all current drafts
+ok 155 - cross-field recovery constructs the candidate from all current drafts
+  ---
+  duration_ms: 4.049208
+  type: 'test'
+  ...
+# Subtest: invalid draft evaluation never mutates the committed scenario object
+ok 156 - invalid draft evaluation never mutates the committed scenario object
+  ---
+  duration_ms: 3.102417
+  type: 'test'
+  ...
+# Subtest: large-number helpers are readable presentation without changing stored precision
+ok 157 - large-number helpers are readable presentation without changing stored precision
+  ---
+  duration_ms: 0.656042
+  type: 'test'
+  ...
+# Subtest: invalid drafts pause sensitivity and the Pilot Brief action while keeping last-valid results explicit
+ok 158 - invalid drafts pause sensitivity and the Pilot Brief action while keeping last-valid results explicit
+  ---
+  duration_ms: 0.12175
+  type: 'test'
+  ...
+# Subtest: Pilot numeric fields expose stable labels, invalid state, descriptions, and polite validation updates
+ok 159 - Pilot numeric fields expose stable labels, invalid state, descriptions, and polite validation updates
+  ---
+  duration_ms: 0.068792
+  type: 'test'
+  ...
+# Subtest: result live announcement is concise, applied-result based, and avoids forecast or savings wording
+ok 160 - result live announcement is concise, applied-result based, and avoids forecast or savings wording
+  ---
+  duration_ms: 0.16775
+  type: 'test'
+  ...
+# Subtest: exact sensitivity-current regressions remain intact for precise reach and zero capacity
+ok 161 - exact sensitivity-current regressions remain intact for precise reach and zero capacity
+  ---
+  duration_ms: 0.434583
+  type: 'test'
+  ...
+# Subtest: extreme exponents and overlong numbers are bounded and cannot silently become zero
+ok 162 - extreme exponents and overlong numbers are bounded and cannot silently become zero
+  ---
+  duration_ms: 0.541959
+  type: 'test'
+  ...
+# Subtest: percentage conversion rejects underflow but preserves exact zero and representable subnormals
+ok 163 - percentage conversion rejects underflow but preserves exact zero and representable subnormals
+  ---
+  duration_ms: 1.14475
+  type: 'test'
+  ...
+# Subtest: overflowing draft calculations retain the last applied scenario and offer corrective guidance
+ok 164 - overflowing draft calculations retain the last applied scenario and offer corrective guidance
+  ---
+  duration_ms: 1.331
+  type: 'test'
+  ...
+# Subtest: Pilot groups editable assumptions and keeps selected context outside the form
+ok 165 - Pilot groups editable assumptions and keeps selected context outside the form
+  ---
+  duration_ms: 0.587792
+  type: 'test'
+  ...
+# Subtest: Pilot results retain applied/draft boundary and all seven planning quantities
+ok 166 - Pilot results retain applied/draft boundary and all seven planning quantities
+  ---
+  duration_ms: 0.106291
+  type: 'test'
+  ...
+# Subtest: Pilot section navigation is selective and result visuals respond to their container
+ok 167 - Pilot section navigation is selective and result visuals respond to their container
+  ---
+  duration_ms: 0.240875
+  type: 'test'
+  ...
+# Subtest: sensitivity zero is an actual zero-width mark with a numeric table alternative
+ok 168 - sensitivity zero is an actual zero-width mark with a numeric table alternative
+  ---
+  duration_ms: 0.131375
+  type: 'test'
+  ...
+# Subtest: request creation retains a focusable control and offers a separate review link
+ok 169 - request creation retains a focusable control and offers a separate review link
+  ---
+  duration_ms: 4.314083
+  type: 'test'
+  ...
+# Subtest: reviewed Burden runtime remains 21 estimates in 13 / 4 / 4 full domain groups
+ok 170 - reviewed Burden runtime remains 21 estimates in 13 / 4 / 4 full domain groups
+  ---
+  duration_ms: 0.955625
+  type: 'test'
+  ...
+# Subtest: brief grouping preserves unmatched gated findings in an explicit fallback
+ok 171 - brief grouping preserves unmatched gated findings in an explicit fallback
+  ---
+  duration_ms: 0.19325
+  type: 'test'
+  ...
+# Subtest: Burden and Domain pages share plain-language measure presentation
+ok 172 - Burden and Domain pages share plain-language measure presentation
+  ---
+  duration_ms: 0.286417
+  type: 'test'
+  ...
+# Subtest: Planning Brief uses semantic grouped tables and promotes every warning
+ok 173 - Planning Brief uses semantic grouped tables and promotes every warning
+  ---
+  duration_ms: 0.254542
+  type: 'test'
+  ...
+# Subtest: new grouped Brief presentation remains print-safe without hiding critical boundaries
+ok 174 - new grouped Brief presentation remains print-safe without hiding critical boundaries
+  ---
+  duration_ms: 0.267834
+  type: 'test'
+  ...
+# Subtest: presentation labels cover every current DataState and ReleaseStatus without raw tokens
+ok 175 - presentation labels cover every current DataState and ReleaseStatus without raw tokens
+  ---
+  duration_ms: 0.788833
+  type: 'test'
+  ...
+# Subtest: Overview explains the evidence-to-planning workflow across four stages and supporting tools
+ok 176 - Overview explains the evidence-to-planning workflow across four stages and supporting tools
+  ---
+  duration_ms: 0.243834
+  type: 'test'
+  ...
+# Subtest: DecisionStateRail reuses the readable pathway formatter
+ok 177 - DecisionStateRail reuses the readable pathway formatter
+  ---
+  duration_ms: 0.134625
+  type: 'test'
+  ...
+# Subtest: Local Context humanizes statuses and preserves interpretation boundaries
+ok 178 - Local Context humanizes statuses and preserves interpretation boundaries
+  ---
+  duration_ms: 0.141417
+  type: 'test'
+  ...
+# Subtest: Pilot interpretation describes planning arithmetic without duplicating the pathway boundary
+ok 179 - Pilot interpretation describes planning arithmetic without duplicating the pathway boundary
+  ---
+  duration_ms: 0.172
+  type: 'test'
+  ...
+# Subtest: Evidence uses existing admissibility and current-scenario eligibility semantics
+ok 180 - Evidence uses existing admissibility and current-scenario eligibility semantics
+  ---
+  duration_ms: 0.168042
+  type: 'test'
+  ...
+# Subtest: insights are deterministic, detached, and leave canonical Brief and trusted sources unchanged
+ok 181 - insights are deterministic, detached, and leave canonical Brief and trusted sources unchanged
+  ---
+  duration_ms: 34.035167
+  type: 'test'
+  ...
+# Subtest: highlights use validated available domains with deterministic fallbacks, never magnitude ranking
+ok 182 - highlights use validated available domains with deterministic fallbacks, never magnitude ranking
+  ---
+  duration_ms: 5.380625
+  type: 'test'
+  ...
+# Subtest: Pilot changes copy current deterministic outputs and only modeled capacity gaps affect prompt ordering
+ok 183 - Pilot changes copy current deterministic outputs and only modeled capacity gaps affect prompt ordering
+  ---
+  duration_ms: 5.826958
+  type: 'test'
+  ...
+# Subtest: explicit local selections retain source, native uncertainty and compatibility; absence is not local burden
+ok 184 - explicit local selections retain source, native uncertainty and compatibility; absence is not local burden
+  ---
+  duration_ms: 2.531709
+  type: 'test'
+  ...
+# Subtest: unreleased, suppressed, illustrative, invalid, forged and mismatched findings cannot leak into highlights
+ok 185 - unreleased, suppressed, illustrative, invalid, forged and mismatched findings cannot leak into highlights
+  ---
+  duration_ms: 2.738083
+  type: 'test'
+  ...
+# Subtest: unreleased, suppressed, invalid and changed selected local records are withheld independently
+ok 186 - unreleased, suppressed, invalid and changed selected local records are withheld independently
+  ---
+  duration_ms: 1.874
+  type: 'test'
+  ...
+# Subtest: every highlighted number and citation is copied from its authoritative reviewed record
+ok 187 - every highlighted number and citation is copied from its authoritative reviewed record
+  ---
+  duration_ms: 0.673333
+  type: 'test'
+  ...
+# Subtest: invalid or mismatched scenario withholds planning and requests while retaining reviewed findings
+ok 188 - invalid or mismatched scenario withholds planning and requests while retaining reviewed findings
+  ---
+  duration_ms: 1.696417
+  type: 'test'
+  ...
+# Subtest: missing templates or unsupported scopes never manufacture requests or imply scientific insufficiency
+ok 189 - missing templates or unsupported scopes never manufacture requests or imply scientific insufficiency
+  ---
+  duration_ms: 2.607708
+  type: 'test'
+  ...
+# Subtest: existing current and stale request bindings survive inspection without selection, refresh or acceptance
+ok 190 - existing current and stale request bindings survive inspection without selection, refresh or acceptance
+  ---
+  duration_ms: 2.832791
+  type: 'test'
+  ...
+# Subtest: offline inference contract and candidate catalogs are never imported by the preview
+ok 191 - offline inference contract and candidate catalogs are never imported by the preview
+  ---
+  duration_ms: 0.491208
+  type: 'test'
+  ...
+# Subtest: ordinary planning numbers retain each caller's existing precision and grouping
+ok 192 - ordinary planning numbers retain each caller's existing precision and grouping
+  ---
+  duration_ms: 1.203208
+  type: 'test'
+  ...
+# Subtest: huge finite planning labels are bounded and round trip without lost significant digits
+ok 193 - huge finite planning labels are bounded and round trip without lost significant digits
+  ---
+  duration_ms: 0.163542
+  type: 'test'
+  ...
+# Subtest: non-finite planning values fail instead of becoming plausible numeric labels
+ok 194 - non-finite planning values fail instead of becoming plausible numeric labels
+  ---
+  duration_ms: 0.199
+  type: 'test'
+  ...
+# Subtest: valid huge finite scenario presentation leaves exact applied inputs and arithmetic intact
+ok 195 - valid huge finite scenario presentation leaves exact applied inputs and arithmetic intact
+  ---
+  duration_ms: 1.249542
+  type: 'test'
+  ...
+# Subtest: brand palette is navy and teal rather than a red primary theme
+ok 196 - brand palette is navy and teal rather than a red primary theme
+  ---
+  duration_ms: 2.086041
+  type: 'test'
+  ...
+# Subtest: overview keeps the workflow visible without promotional filler
+ok 197 - overview keeps the workflow visible without promotional filler
+  ---
+  duration_ms: 12.61525
+  type: 'test'
+  ...
+# Subtest: narrow Overview uses valid single-column evidence and workflow grids
+ok 198 - narrow Overview uses valid single-column evidence and workflow grids
+  ---
+  duration_ms: 0.284958
+  type: 'test'
+  ...
+# Subtest: overview visualization preserves separate evidence lanes through the planning output
+ok 199 - overview visualization preserves separate evidence lanes through the planning output
+  ---
+  duration_ms: 0.121584
+  type: 'test'
+  ...
+# Subtest: sensitivity rows share one grid and the current row does not escape the card
+ok 200 - sensitivity rows share one grid and the current row does not escape the card
+  ---
+  duration_ms: 0.2355
+  type: 'test'
+  ...
+# Subtest: all quantitative burden and local-context rows expose native-unit mini visuals
+ok 201 - all quantitative burden and local-context rows expose native-unit mini visuals
+  ---
+  duration_ms: 0.178042
+  type: 'test'
+  ...
+# Subtest: overview preview does not encode illustrative values as a chart
+ok 202 - overview preview does not encode illustrative values as a chart
+  ---
+  duration_ms: 0.226292
+  type: 'test'
+  ...
+# Subtest: Planning Brief print repeats product provenance and moves decision state out of the trailing sidebar
+ok 203 - Planning Brief print repeats product provenance and moves decision state out of the trailing sidebar
+  ---
+  duration_ms: 8.831583
+  type: 'test'
+  ...
+# Subtest: workflow cards use restrained semantic variety instead of one teal treatment
+ok 204 - workflow cards use restrained semantic variety instead of one teal treatment
+  ---
+  duration_ms: 1.541833
+  type: 'test'
+  ...
+# Subtest: dark overview keeps teal as emphasis instead of the dominant field color
+ok 205 - dark overview keeps teal as emphasis instead of the dominant field color
+  ---
+  duration_ms: 1.172833
+  type: 'test'
+  ...
+# Subtest: new durable reviewed MEPS bundle validates with exactly the two approved Typical Ranges
+ok 206 - new durable reviewed MEPS bundle validates with exactly the two approved Typical Ranges
+  ---
+  duration_ms: 10.459416
+  type: 'test'
+  ...
+# Subtest: all 21 pre-existing Estimate records are unchanged apart from release/version/distribution additions
+ok 207 - all 21 pre-existing Estimate records are unchanged apart from release/version/distribution additions
+  ---
+  duration_ms: 0.457458
+  type: 'test'
+  ...
+# Subtest: review manifest records explicit promotion and preserves approved candidate provenance
+ok 208 - review manifest records explicit promotion and preserves approved candidate provenance
+  ---
+  duration_ms: 0.102459
+  type: 'test'
+  ...
+# Subtest: new reviewed package checksums verify and preservation-required candidate files are byte-identical
+ok 209 - new reviewed package checksums verify and preservation-required candidate files are byte-identical
+  ---
+  duration_ms: 26.091916
+  type: 'test'
+  ...
+# Subtest: runtime activation preserves historical WV binding and does not calibrate Pilot
+ok 210 - runtime activation preserves historical WV binding and does not calibrate Pilot
+  ---
+  duration_ms: 0.517167
+  type: 'test'
+  ...
+# Subtest: runtime analytical source points only to the exact reviewed national artifact
+ok 211 - runtime analytical source points only to the exact reviewed national artifact
+  ---
+  duration_ms: 0.764709
+  type: 'test'
+  ...
+# Subtest: runtime local-context source points only to the exact reviewed WV artifact
+ok 212 - runtime local-context source points only to the exact reviewed WV artifact
+  ---
+  duration_ms: 0.453667
+  type: 'test'
+  ...
+# Subtest: reviewed WV loader validation fails closed on release or MEPS-binding mismatch
+ok 213 - reviewed WV loader validation fails closed on release or MEPS-binding mismatch
+  ---
+  duration_ms: 1.537542
+  type: 'test'
+  ...
+# Subtest: reviewed WV runtime layer contains exactly 34 reviewed state indicators
+ok 214 - reviewed WV runtime layer contains exactly 34 reviewed state indicators
+  ---
+  duration_ms: 0.093916
+  type: 'test'
+  ...
+# Subtest: reviewed national runtime bundle remains 21 estimates with no local-context mutation
+ok 215 - reviewed national runtime bundle remains 21 estimates with no local-context mutation
+  ---
+  duration_ms: 0.285625
+  type: 'test'
+  ...
+# Subtest: activated runtime exposes exactly the two reviewed Typical Ranges
+ok 216 - activated runtime exposes exactly the two reviewed Typical Ranges
+  ---
+  duration_ms: 2.133917
+  type: 'test'
+  ...
+# Subtest: WV context does not mutate Typical Range or Pilot planning assumptions
+ok 217 - WV context does not mutate Typical Range or Pilot planning assumptions
+  ---
+  duration_ms: 0.263041
+  type: 'test'
+  ...
+# Subtest: all durable reviewed artifact checksum manifests and payload bytes remain unchanged
+ok 218 - all durable reviewed artifact checksum manifests and payload bytes remain unchanged
+  ---
+  duration_ms: 65.482833
+  type: 'test'
+  ...
+# Subtest: reviewed point estimates and intervals share native unit formatting
+ok 219 - reviewed point estimates and intervals share native unit formatting
+  ---
+  duration_ms: 1.1705
+  type: 'test'
+  ...
+# Subtest: unavailable interval endpoints remain unavailable and never become zero
+ok 220 - unavailable interval endpoints remain unavailable and never become zero
+  ---
+  duration_ms: 0.416708
+  type: 'test'
+  ...
+# Subtest: release gate still excludes preliminary and illustrative estimates
+ok 221 - release gate still excludes preliminary and illustrative estimates
+  ---
+  duration_ms: 0.103084
+  type: 'test'
+  ...
+# Subtest: national proportion and local-context values format without mutating underlying values
+ok 222 - national proportion and local-context values format without mutating underlying values
+  ---
+  duration_ms: 0.125042
+  type: 'test'
+  ...
+# Subtest: planning defaults are explicit assumptions and are unchanged by local context
+ok 223 - planning defaults are explicit assumptions and are unchanged by local context
+  ---
+  duration_ms: 0.191417
+  type: 'test'
+  ...
+# Subtest: ArtifactContext exposes independent local-context state and failure handling
+ok 224 - ArtifactContext exposes independent local-context state and failure handling
+  ---
+  duration_ms: 0.125292
+  type: 'test'
+  ...
+# Subtest: reviewed burden UI has no development-fixture labels
+ok 225 - reviewed burden UI has no development-fixture labels
+  ---
+  duration_ms: 0.147542
+  type: 'test'
+  ...
+# Subtest: ContextBar keeps national evidence and WV implementation context visibly separate
+ok 226 - ContextBar keeps national evidence and WV implementation context visibly separate
+  ---
+  duration_ms: 0.09325
+  type: 'test'
+  ...
+# Subtest: LocalContextPage uses canonical fields and preserves score/source interpretation boundaries
+ok 227 - LocalContextPage uses canonical fields and preserves score/source interpretation boundaries
+  ---
+  duration_ms: 0.17
+  type: 'test'
+  ...
+# Subtest: planning brief includes only explicitly supplied release-eligible local context
+ok 228 - planning brief includes only explicitly supplied release-eligible local context
+  ---
+  duration_ms: 0.995875
+  type: 'test'
+  ...
+# Subtest: local-context selection UI supports reviewed records without changing Pilot assumptions
+ok 229 - local-context selection UI supports reviewed records without changing Pilot assumptions
+  ---
+  duration_ms: 0.237
+  type: 'test'
+  ...
+# Subtest: analytical scope remains truthful for loading, loaded and unavailable local context
+ok 230 - analytical scope remains truthful for loading, loaded and unavailable local context
+  ---
+  duration_ms: 0.059
+  type: 'test'
+  ...
+# Subtest: local-context failure state leaves national routes conceptually available
+ok 231 - local-context failure state leaves national routes conceptually available
+  ---
+  duration_ms: 0.131875
+  type: 'test'
+  ...
+# Subtest: primary routes retain explanatory rendered states rather than null-only secondary paths
+ok 232 - primary routes retain explanatory rendered states rather than null-only secondary paths
+  ---
+  duration_ms: 0.211125
+  type: 'test'
+  ...
+# Subtest: reach sensitivity labels preserve the exact evaluated planning fraction
+ok 233 - reach sensitivity labels preserve the exact evaluated planning fraction
+  ---
+  duration_ms: 0.742458
+  type: 'test'
+  ...
+# Subtest: non-reach sensitivity labels retain compact deterministic formatting
+ok 234 - non-reach sensitivity labels retain compact deterministic formatting
+  ---
+  duration_ms: 0.079334
+  type: 'test'
+  ...
+# Subtest: sensitivity bar widths stay finite, non-negative, and bounded
+ok 235 - sensitivity bar widths stay finite, non-negative, and bounded
+  ---
+  duration_ms: 0.357875
+  type: 'test'
+  ...
+# Subtest: SensitivityExplorer uses the tested width invariant for rendered CSS
+ok 236 - SensitivityExplorer uses the tested width invariant for rendered CSS
+  ---
+  duration_ms: 0.06225
+  type: 'test'
+  ...
+# Subtest: invalid sensitivity inputs cannot be formatted as ordinary result labels
+ok 237 - invalid sensitivity inputs cannot be formatted as ordinary result labels
+  ---
+  duration_ms: 2.31125
+  type: 'test'
+  ...
+# Subtest: theme preference accepts only explicit modes and System follows OS
+ok 238 - theme preference accepts only explicit modes and System follows OS
+  ---
+  duration_ms: 2.243958
+  type: 'test'
+  ...
+# Subtest: browser theme color uses the resolved appearance rather than the preference
+ok 239 - browser theme color uses the resolved appearance rather than the preference
+  ---
+  duration_ms: 0.075375
+  type: 'test'
+  ...
+# Subtest: unavailable storage cannot block theme selection
+ok 240 - unavailable storage cannot block theme selection
+  ---
+  duration_ms: 0.135042
+  type: 'test'
+  ...
+# Subtest: reviewed evidence means descriptive burden, with supporting routes mapped to their stage
+ok 241 - reviewed evidence means descriptive burden, with supporting routes mapped to their stage
+  ---
+  duration_ms: 1.077333
+  type: 'test'
+  ...
+# Subtest: burden status does not claim review when no finding passes the release gate
+ok 242 - burden status does not claim review when no finding passes the release gate
+  ---
+  duration_ms: 0.427542
+  type: 'test'
+  ...
+# Subtest: Brief evidence readiness keeps approval and scenario eligibility distinct
+ok 243 - Brief evidence readiness keeps approval and scenario eligibility distinct
+  ---
+  duration_ms: 0.132375
+  type: 'test'
+  ...
+1..243
+# tests 243
+# suites 0
+# pass 243
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 864.713375
+
+> @diagnostic-odyssey/acquisition-hints@0.1.0 test
+> node --experimental-strip-types --test test/*.test.ts
+
+TAP version 13
+# Subtest: amended subjects are exact UTF-8 byte preimages; frozen originals and retained sources remain intact
+ok 1 - amended subjects are exact UTF-8 byte preimages; frozen originals and retained sources remain intact
+  ---
+  duration_ms: 12.898042
+  type: 'test'
+  ...
+# Subtest: revised timing words are exact and capacity's frozen wording is unchanged
+ok 2 - revised timing words are exact and capacity's frozen wording is unchanged
+  ---
+  duration_ms: 0.417417
+  type: 'test'
+  ...
+# Subtest: amended mapping/policy cannot be silently paired with original preimages or forged review identities
+ok 3 - amended mapping/policy cannot be silently paired with original preimages or forged review identities
+  ---
+  duration_ms: 27.176583
+  type: 'test'
+  ...
+# Subtest: the effective guidance and export payload are aggregate-only, and individual-record injection fails closed
+ok 4 - the effective guidance and export payload are aggregate-only, and individual-record injection fails closed
+  ---
+  duration_ms: 7.971416
+  type: 'test'
+  ...
+# Subtest: stale amended policy, scenario and request fingerprints cannot reuse a previous synthetic attachment
+ok 5 - stale amended policy, scenario and request fingerprints cannot reuse a previous synthetic attachment
+  ---
+  duration_ms: 7.922209
+  type: 'test'
+  ...
+# Subtest: SHA-256 UTF-8 and padding match node crypto, including retained exact JSON preimages
+ok 6 - SHA-256 UTF-8 and padding match node crypto, including retained exact JSON preimages
+  ---
+  duration_ms: 40.041209
+  type: 'test'
+  ...
+# Subtest: all retained source bytes and frozen B dependencies match their actual SHA-256 preimages
+ok 7 - all retained source bytes and frozen B dependencies match their actual SHA-256 preimages
+  ---
+  duration_ms: 44.109208
+  type: 'test'
+  ...
+# Subtest: production has no admitted registry; both technically assessed candidates remain withheld
+ok 8 - production has no admitted registry; both technically assessed candidates remain withheld
+  ---
+  duration_ms: 12.105958
+  type: 'test'
+  ...
+# Subtest: synthetic admitted entries require explicit attachment, preserve exact wording and bind every field
+ok 9 - synthetic admitted entries require explicit attachment, preserve exact wording and bind every field
+  ---
+  duration_ms: 6.666083
+  type: 'test'
+  ...
+# Subtest: legacy projection preserves absent/null optional base fields and ordered needed fields
+ok 10 - legacy projection preserves absent/null optional base fields and ordered needed fields
+  ---
+  duration_ms: 0.28025
+  type: 'test'
+  ...
+# Subtest: invalid optional metadata and forged snapshots are withheld without repairing a bad base
+ok 11 - invalid optional metadata and forged snapshots are withheld without repairing a bad base
+  ---
+  duration_ms: 4.431
+  type: 'test'
+  ...
+# Subtest: unknown IDs, unsupported versions, extra nested fields and malformed digests fail closed
+ok 12 - unknown IDs, unsupported versions, extra nested fields and malformed digests fail closed
+  ---
+  duration_ms: 3.94875
+  type: 'test'
+  ...
+# Subtest: forged request bindings and changed scenario identities require explicit reattachment
+ok 13 - forged request bindings and changed scenario identities require explicit reattachment
+  ---
+  duration_ms: 4.28975
+  type: 'test'
+  ...
+# Subtest: scenario changes, unknown/missing/extra context and other pathways never gain applicability
+ok 14 - scenario changes, unknown/missing/extra context and other pathways never gain applicability
+  ---
+  duration_ms: 3.54075
+  type: 'test'
+  ...
+# Subtest: all base field mutations affect identity or applicability; fingerprints ignore optional snapshots
+ok 15 - all base field mutations affect identity or applicability; fingerprints ignore optional snapshots
+  ---
+  duration_ms: 34.149125
+  type: 'test'
+  ...
+# Subtest: registry/policy/review identity changes withhold previously resolved guidance
+ok 16 - registry/policy/review identity changes withhold previously resolved guidance
+  ---
+  duration_ms: 20.449416
+  type: 'test'
+  ...
+# Subtest: tampered dependencies, nonallowlisted registry, missing reviews and unapproved entries cannot resolve
+ok 17 - tampered dependencies, nonallowlisted registry, missing reviews and unapproved entries cannot resolve
+  ---
+  duration_ms: 53.966583
+  type: 'test'
+  ...
+# Subtest: a separately pinned release may admit only a reviewed subset
+ok 18 - a separately pinned release may admit only a reviewed subset
+  ---
+  duration_ms: 2.980208
+  type: 'test'
+  ...
+# Subtest: actual unsigned assessment and owner authorization are never release decisions
+ok 19 - actual unsigned assessment and owner authorization are never release decisions
+  ---
+  duration_ms: 11.553583
+  type: 'test'
+  ...
+1..19
+# tests 19
+# suites 0
+# pass 19
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 340.6435
+
+> @diagnostic-odyssey/brief-core@0.1.0 test
+> node --experimental-strip-types --test test/*.test.ts
+
+TAP version 13
+# Subtest: legacy direct-core construction and actual JSON preserve previous shape without guidance
+ok 1 - legacy direct-core construction and actual JSON preserve previous shape without guidance
+  ---
+  duration_ms: 13.078375
+  type: 'test'
+  ...
+# Subtest: constructor and serializer reconstruct exact canonical companion guidance for synthetic admitted requests
+ok 2 - constructor and serializer reconstruct exact canonical companion guidance for synthetic admitted requests
+  ---
+  duration_ms: 15.491666
+  type: 'test'
+  ...
+# Subtest: direct serializer drops a forged top-level companion with absent, mismatched or malformed references
+ok 3 - direct serializer drops a forged top-level companion with absent, mismatched or malformed references
+  ---
+  duration_ms: 3.80725
+  type: 'test'
+  ...
+# Subtest: default production constructors and serializers withhold even structurally valid synthetic references
+ok 4 - default production constructors and serializers withhold even structurally valid synthetic references
+  ---
+  duration_ms: 3.486542
+  type: 'test'
+  ...
+# Subtest: malformed hint metadata never rescues an invalid base request in construction or direct serialization
+ok 5 - malformed hint metadata never rescues an invalid base request in construction or direct serialization
+  ---
+  duration_ms: 0.555834
+  type: 'test'
+  ...
+# Subtest: changed canonical registry or policy invalidates a previously constructed export
+ok 6 - changed canonical registry or policy invalidates a previously constructed export
+  ---
+  duration_ms: 12.241417
+  type: 'test'
+  ...
+# Subtest: direct-core scenario staleness excludes requests and guidance; explicit refresh does not select anything
+ok 7 - direct-core scenario staleness excludes requests and guidance; explicit refresh does not select anything
+  ---
+  duration_ms: 3.28075
+  type: 'test'
+  ...
+# Subtest: mixed selected-current requests retain base-only reach and reviewed capacity; a wrong context withholds only guidance
+ok 8 - mixed selected-current requests retain base-only reach and reviewed capacity; a wrong context withholds only guidance
+  ---
+  duration_ms: 3.222583
+  type: 'test'
+  ...
+# Subtest: adopted aggregate-only candidate wording survives canonical Brief JSON; no individual record release
+ok 9 - adopted aggregate-only candidate wording survives canonical Brief JSON; no individual record release
+  ---
+  duration_ms: 4.425917
+  type: 'test'
+  ...
+# Subtest: brief excludes illustrative and unreleased estimates
+ok 10 - brief excludes illustrative and unreleased estimates
+  ---
+  duration_ms: 0.873375
+  type: 'test'
+  ...
+# Subtest: brief preserves release gating for preliminary and illustrative values
+ok 11 - brief preserves release gating for preliminary and illustrative values
+  ---
+  duration_ms: 0.1355
+  type: 'test'
+  ...
+# Subtest: brief requires reviewed release status as well as loaded or partial local-context state
+ok 12 - brief requires reviewed release status as well as loaded or partial local-context state
+  ---
+  duration_ms: 0.13875
+  type: 'test'
+  ...
+# Subtest: actual serialized Brief JSON preserves finite quantities, valid zeros, and scientific nullable fields
+ok 13 - actual serialized Brief JSON preserves finite quantities, valid zeros, and scientific nullable fields
+  ---
+  duration_ms: 0.838333
+  type: 'test'
+  ...
+# Subtest: Brief construction and export reject every non-finite scenario result instead of serializing null
+ok 14 - Brief construction and export reject every non-finite scenario result instead of serializing null
+  ---
+  duration_ms: 1.768625
+  type: 'test'
+  ...
+# Subtest: export revalidates finite scenario inputs and catches non-finite values elsewhere in the Brief
+ok 15 - export revalidates finite scenario inputs and catches non-finite values elsewhere in the Brief
+  ---
+  duration_ms: 0.696834
+  type: 'test'
+  ...
+# Subtest: generic Brief preserves all three scientific boundary warnings without unrelated conditional warnings
+ok 16 - generic Brief preserves all three scientific boundary warnings without unrelated conditional warnings
+  ---
+  duration_ms: 0.145667
+  type: 'test'
+  ...
+# Subtest: nested spending warning follows exported component metadata and is emitted once
+ok 17 - nested spending warning follows exported component metadata and is emitted once
+  ---
+  duration_ms: 0.068667
+  type: 'test'
+  ...
+# Subtest: k6_score exports the screening interpretation warning
+ok 18 - k6_score exports the screening interpretation warning
+  ---
+  duration_ms: 0.356625
+  type: 'test'
+  ...
+# Subtest: phq2_score exports the screening interpretation warning
+ok 19 - phq2_score exports the screening interpretation warning
+  ---
+  duration_ms: 0.299708
+  type: 'test'
+  ...
+# Subtest: K6_serious_distress exports the screening interpretation warning
+ok 20 - K6_serious_distress exports the screening interpretation warning
+  ---
+  duration_ms: 0.09175
+  type: 'test'
+  ...
+# Subtest: PHQ2_screen_positive exports the screening interpretation warning
+ok 21 - PHQ2_screen_positive exports the screening interpretation warning
+  ---
+  duration_ms: 0.034584
+  type: 'test'
+  ...
+# Subtest: ESAQ warning is specific to the exported ESAQ weight and emitted once
+ok 22 - ESAQ warning is specific to the exported ESAQ weight and emitted once
+  ---
+  duration_ms: 0.081208
+  type: 'test'
+  ...
+# Subtest: nonexportable findings do not activate spending, screening or ESAQ warnings
+ok 23 - nonexportable findings do not activate spending, screening or ESAQ warnings
+  ---
+  duration_ms: 0.059833
+  type: 'test'
+  ...
+1..23
+# tests 23
+# suites 0
+# pass 23
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 171.035333
+
+> @diagnostic-odyssey/contracts@0.1.0 test
+> node --experimental-strip-types --test test/*.test.ts
+
+TAP version 13
+# Subtest: legacy requests remain unchanged; a structurally valid optional reference is not scientific admission
+ok 1 - legacy requests remain unchanged; a structurally valid optional reference is not scientific admission
+  ---
+  duration_ms: 3.235209
+  type: 'test'
+  ...
+# Subtest: optional references reject missing/unknown fields, future versions and digest-shaped invalid metadata
+ok 2 - optional references reject missing/unknown fields, future versions and digest-shaped invalid metadata
+  ---
+  duration_ms: 0.78275
+  type: 'test'
+  ...
+# Subtest: immutable ArtifactBundle validation still rejects malformed optional references and invalid base fields
+ok 3 - immutable ArtifactBundle validation still rejects malformed optional references and invalid base fields
+  ---
+  duration_ms: 7.134625
+  type: 'test'
+  ...
+# Subtest: suppressed values cannot carry a numeric value
+ok 4 - suppressed values cannot carry a numeric value
+  ---
+  duration_ms: 0.839417
+  type: 'test'
+  ...
+# Subtest: scenario reach is a proportion
+ok 5 - scenario reach is a proportion
+  ---
+  duration_ms: 0.11775
+  type: 'test'
+  ...
+# Subtest: only reviewed analytical estimates are exportable
+ok 6 - only reviewed analytical estimates are exportable
+  ---
+  duration_ms: 0.083875
+  type: 'test'
+  ...
+# Subtest: numeric analytical artifacts require survey provenance
+ok 7 - numeric analytical artifacts require survey provenance
+  ---
+  duration_ms: 0.086416
+  type: 'test'
+  ...
+# Subtest: preliminary analytical estimate with provenance validates but is not exportable
+ok 8 - preliminary analytical estimate with provenance validates but is not exportable
+  ---
+  duration_ms: 0.399833
+  type: 'test'
+  ...
+# Subtest: artifact runtime validation requires bundle-level provenance
+ok 9 - artifact runtime validation requires bundle-level provenance
+  ---
+  duration_ms: 0.176583
+  type: 'test'
+  ...
+# Subtest: data request validation protects pathway and optional mechanism trace fields
+ok 10 - data request validation protects pathway and optional mechanism trace fields
+  ---
+  duration_ms: 0.190417
+  type: 'test'
+  ...
+# Subtest: artifact runtime validation rejects malformed loaded data-request trace fields
+ok 11 - artifact runtime validation rejects malformed loaded data-request trace fields
+  ---
+  duration_ms: 0.113041
+  type: 'test'
+  ...
+# Subtest: valid inherited DistributionSummary validates and is display eligible
+ok 12 - valid inherited DistributionSummary validates and is display eligible
+  ---
+  duration_ms: 0.480792
+  type: 'test'
+  ...
+# Subtest: DistributionSummary fails closed for nonfinite or unordered quantiles
+ok 13 - DistributionSummary fails closed for nonfinite or unordered quantiles
+  ---
+  duration_ms: 1.973125
+  type: 'test'
+  ...
+# Subtest: DistributionSummary requires matching survey provenance
+ok 14 - DistributionSummary requires matching survey provenance
+  ---
+  duration_ms: 0.378
+  type: 'test'
+  ...
+# Subtest: DistributionSummary requires the same valid response denominator as parent estimate
+ok 15 - DistributionSummary requires the same valid response denominator as parent estimate
+  ---
+  duration_ms: 0.272417
+  type: 'test'
+  ...
+# Subtest: legacy Estimate without DistributionSummary still validates
+ok 16 - legacy Estimate without DistributionSummary still validates
+  ---
+  duration_ms: 0.07125
+  type: 'test'
+  ...
+# Subtest: unreleased parent cannot expose DistributionSummary values
+ok 17 - unreleased parent cannot expose DistributionSummary values
+  ---
+  duration_ms: 0.146292
+  type: 'test'
+  ...
+# Subtest: valid schema-v2 exact six-record candidate package passes
+ok 18 - valid schema-v2 exact six-record candidate package passes
+  ---
+  duration_ms: 6.719916
+  type: 'test'
+  ...
+# Subtest: schema v2 rejects schema v1 and legacy reliability fields
+ok 19 - schema v2 rejects schema v1 and legacy reliability fields
+  ---
+  duration_ms: 1.266625
+  type: 'test'
+  ...
+# Subtest: independent TypeScript evaluator covers every governed status and reporting status
+ok 20 - independent TypeScript evaluator covers every governed status and reporting status
+  ---
+  duration_ms: 0.963542
+  type: 'test'
+  ...
+# Subtest: precision reason codes are governed, unique, deterministic, and independently recomputed
+ok 21 - precision reason codes are governed, unique, deterministic, and independently recomputed
+  ---
+  duration_ms: 4.322583
+  type: 'test'
+  ...
+# Subtest: serialized precision fields must exactly match independent TypeScript recomputation
+ok 22 - serialized precision fields must exactly match independent TypeScript recomputation
+  ---
+  duration_ms: 0.944708
+  type: 'test'
+  ...
+# Subtest: attempts to authorize product release or use wrong rule version are rejected
+ok 23 - attempts to authorize product release or use wrong rule version are rejected
+  ---
+  duration_ms: 0.715
+  type: 'test'
+  ...
+# Subtest: manifest and diagnostics require governed v2 precision metadata
+ok 24 - manifest and diagnostics require governed v2 precision metadata
+  ---
+  duration_ms: 0.437084
+  type: 'test'
+  ...
+# Subtest: reviewed six real-data-shaped decisions are frozen in TypeScript
+ok 25 - reviewed six real-data-shaped decisions are frozen in TypeScript
+  ---
+  duration_ms: 0.442875
+  type: 'test'
+  ...
+# Subtest: rejects six unique but wrong candidate IDs
+ok 26 - rejects six unique but wrong candidate IDs
+  ---
+  duration_ms: 0.529834
+  type: 'test'
+  ...
+# Subtest: rejects a duplicate governed candidate ID
+ok 27 - rejects a duplicate governed candidate ID
+  ---
+  duration_ms: 0.425083
+  type: 'test'
+  ...
+# Subtest: rejects unexpected candidate-file and candidate-record properties
+ok 28 - rejects unexpected candidate-file and candidate-record properties
+  ---
+  duration_ms: 2.440041
+  type: 'test'
+  ...
+# Subtest: rejects unexpected support and manifest properties
+ok 29 - rejects unexpected support and manifest properties
+  ---
+  duration_ms: 0.463583
+  type: 'test'
+  ...
+# Subtest: rejects incomplete, duplicate, or wrong source refs
+ok 30 - rejects incomplete, duplicate, or wrong source refs
+  ---
+  duration_ms: 0.464166
+  type: 'test'
+  ...
+# Subtest: rejects wrong units and support inconsistencies
+ok 31 - rejects wrong units and support inconsistencies
+  ---
+  duration_ms: 0.381584
+  type: 'test'
+  ...
+# Subtest: retains A/B/C event, denominator, and support reconciliation
+ok 32 - retains A/B/C event, denominator, and support reconciliation
+  ---
+  duration_ms: 0.413958
+  type: 'test'
+  ...
+# Subtest: retains provenance and forbidden-identifier protections
+ok 33 - retains provenance and forbidden-identifier protections
+  ---
+  duration_ms: 5.499792
+  type: 'test'
+  ...
+# Subtest: governed vocabularies are exact
+ok 34 - governed vocabularies are exact
+  ---
+  duration_ms: 0.053459
+  type: 'test'
+  ...
+# Subtest: ACS local-context records preserve the published 90% MOE semantics
+ok 35 - ACS local-context records preserve the published 90% MOE semantics
+  ---
+  duration_ms: 23.348916
+  type: 'test'
+  ...
+# Subtest: local-context artifact is independently validated and preliminary is not runtime-loadable
+ok 36 - local-context artifact is independently validated and preliminary is not runtime-loadable
+  ---
+  duration_ms: 1.159375
+  type: 'test'
+  ...
+# Subtest: reviewed-artifact load gate fails closed on invalid reviewed-looking objects
+ok 37 - reviewed-artifact load gate fails closed on invalid reviewed-looking objects
+  ---
+  duration_ms: 1.143375
+  type: 'test'
+  ...
+# Subtest: state records fail closed on county FIPS and national-burden mutation semantics
+ok 38 - state records fail closed on county FIPS and national-burden mutation semantics
+  ---
+  duration_ms: 0.15525
+  type: 'test'
+  ...
+# Subtest: ACS source provenance fails closed when deterministic hash metadata is absent
+ok 39 - ACS source provenance fails closed when deterministic hash metadata is absent
+  ---
+  duration_ms: 0.172792
+  type: 'test'
+  ...
+# Subtest: reviewed linked-condition package validates as a separate runtime-inactive family
+ok 40 - reviewed linked-condition package validates as a separate runtime-inactive family
+  ---
+  duration_ms: 6.6625
+  type: 'test'
+  ...
+# Subtest: candidate to reviewed promotion freezes exact six-record numerical and precision snapshot
+ok 41 - candidate to reviewed promotion freezes exact six-record numerical and precision snapshot
+  ---
+  duration_ms: 1.177667
+  type: 'test'
+  ...
+# Subtest: frozen precision states and reason codes remain exact
+ok 42 - frozen precision states and reason codes remain exact
+  ---
+  duration_ms: 0.30125
+  type: 'test'
+  ...
+# Subtest: Issue 20 reconciliation is immutable and fail-closed
+ok 43 - Issue 20 reconciliation is immutable and fail-closed
+  ---
+  duration_ms: 0.533042
+  type: 'test'
+  ...
+# Subtest: reviewed source provenance preserves all seven source identities and checksums
+ok 44 - reviewed source provenance preserves all seven source identities and checksums
+  ---
+  duration_ms: 0.321541
+  type: 'test'
+  ...
+# Subtest: reviewed package SHA256SUMS covers every immutable reviewed file
+ok 45 - reviewed package SHA256SUMS covers every immutable reviewed file
+  ---
+  duration_ms: 0.694125
+  type: 'test'
+  ...
+# Subtest: reviewed package carries no forbidden identifiers or arbitrary row-level objects
+ok 46 - reviewed package carries no forbidden identifiers or arbitrary row-level objects
+  ---
+  duration_ms: 0.524833
+  type: 'test'
+  ...
+# Subtest: Candidate A is absent from ordinary national burden ArtifactBundle
+ok 47 - Candidate A is absent from ordinary national burden ArtifactBundle
+  ---
+  duration_ms: 1.204958
+  type: 'test'
+  ...
+# Subtest: PR 1 does not wire reviewed linked-condition evidence into active runtime/UI
+ok 48 - PR 1 does not wire reviewed linked-condition evidence into active runtime/UI
+  ---
+  duration_ms: 7.463166
+  type: 'test'
+  ...
+# Subtest: fail-closed privacy validator rejects explicit forbidden identifiers and row arrays
+ok 49 - fail-closed privacy validator rejects explicit forbidden identifiers and row arrays
+  ---
+  duration_ms: 0.478916
+  type: 'test'
+  ...
+# Subtest: linked-condition product policy v1 is exact and runtime inactive
+ok 50 - linked-condition product policy v1 is exact and runtime inactive
+  ---
+  duration_ms: 4.224375
+  type: 'test'
+  ...
+# Subtest: product policy fails closed for unknown versions and runtime activation
+ok 51 - product policy fails closed for unknown versions and runtime activation
+  ---
+  duration_ms: 1.683875
+  type: 'test'
+  ...
+# Subtest: product policy rejects missing, duplicate, unknown, and incorrectly admitted candidates
+ok 52 - product policy rejects missing, duplicate, unknown, and incorrectly admitted candidates
+  ---
+  duration_ms: 3.41475
+  type: 'test'
+  ...
+# Subtest: Candidate A wording is a frozen product-policy invariant
+ok 53 - Candidate A wording is a frozen product-policy invariant
+  ---
+  duration_ms: 0.867666
+  type: 'test'
+  ...
+# Subtest: review manifest freezes product-policy admission separately from runtime selection
+ok 54 - review manifest freezes product-policy admission separately from runtime selection
+  ---
+  duration_ms: 0.861708
+  type: 'test'
+  ...
+# Subtest: promoted WV local-context artifact is valid and eligible for reviewed loading
+ok 55 - promoted WV local-context artifact is valid and eligible for reviewed loading
+  ---
+  duration_ms: 1.319584
+  type: 'test'
+  ...
+# Subtest: promoted WV local-context artifact preserves the approved release and geography invariants
+ok 56 - promoted WV local-context artifact preserves the approved release and geography invariants
+  ---
+  duration_ms: 0.404875
+  type: 'test'
+  ...
+# Subtest: promotion manifest is cryptographically bound to the reviewed payload and preserves promotion boundaries
+ok 57 - promotion manifest is cryptographically bound to the reviewed payload and preserves promotion boundaries
+  ---
+  duration_ms: 0.307666
+  type: 'test'
+  ...
+# Subtest: reviewed MEPS 2024 artifact validates and all 21 estimates are exportable
+ok 58 - reviewed MEPS 2024 artifact validates and all 21 estimates are exportable
+  ---
+  duration_ms: 12.074458
+  type: 'test'
+  ...
+1..58
+# tests 58
+# suites 0
+# pass 58
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 198.303042
+
+> @diagnostic-odyssey/evidence-core@0.1.0 test
+> node --experimental-strip-types --test test/*.test.ts
+
+TAP version 13
+# Subtest: reviewed step-specific evidence can drive a matching scenario parameter
+ok 1 - reviewed step-specific evidence can drive a matching scenario parameter
+  ---
+  duration_ms: 0.567375
+  type: 'test'
+  ...
+# Subtest: mismatched mechanism is blocked
+ok 2 - mismatched mechanism is blocked
+  ---
+  duration_ms: 0.061
+  type: 'test'
+  ...
+# Subtest: unapproved draft evidence cannot drive scenario parameters
+ok 3 - unapproved draft evidence cannot drive scenario parameters
+  ---
+  duration_ms: 0.304709
+  type: 'test'
+  ...
+# Subtest: unapproved needs_review evidence cannot drive scenario parameters
+ok 4 - unapproved needs_review evidence cannot drive scenario parameters
+  ---
+  duration_ms: 0.041958
+  type: 'test'
+  ...
+# Subtest: unapproved rejected evidence cannot drive scenario parameters
+ok 5 - unapproved rejected evidence cannot drive scenario parameters
+  ---
+  duration_ms: 0.047583
+  type: 'test'
+  ...
+# Subtest: limited_use evidence cannot drive quantitative scenario parameters
+ok 6 - limited_use evidence cannot drive quantitative scenario parameters
+  ---
+  duration_ms: 0.045208
+  type: 'test'
+  ...
+# Subtest: insufficient evidence cannot drive quantitative scenario parameters
+ok 7 - insufficient evidence cannot drive quantitative scenario parameters
+  ---
+  duration_ms: 0.033958
+  type: 'test'
+  ...
+# Subtest: missing or mismatched pathway step undefined is blocked
+ok 8 - missing or mismatched pathway step undefined is blocked
+  ---
+  duration_ms: 0.048625
+  type: 'test'
+  ...
+# Subtest: missing or mismatched pathway step null is blocked
+ok 9 - missing or mismatched pathway step null is blocked
+  ---
+  duration_ms: 0.216125
+  type: 'test'
+  ...
+# Subtest: missing or mismatched pathway step  is blocked
+ok 10 - missing or mismatched pathway step  is blocked
+  ---
+  duration_ms: 0.263667
+  type: 'test'
+  ...
+# Subtest: missing or mismatched pathway step different-step is blocked
+ok 11 - missing or mismatched pathway step different-step is blocked
+  ---
+  duration_ms: 0.120709
+  type: 'test'
+  ...
+# Subtest: missing or mismatched mechanism undefined is blocked
+ok 12 - missing or mismatched mechanism undefined is blocked
+  ---
+  duration_ms: 0.043667
+  type: 'test'
+  ...
+# Subtest: missing or mismatched mechanism null is blocked
+ok 13 - missing or mismatched mechanism null is blocked
+  ---
+  duration_ms: 0.025458
+  type: 'test'
+  ...
+# Subtest: missing or mismatched mechanism  is blocked
+ok 14 - missing or mismatched mechanism  is blocked
+  ---
+  duration_ms: 0.024667
+  type: 'test'
+  ...
+# Subtest: missing or mismatched mechanism telehealth is blocked
+ok 15 - missing or mismatched mechanism telehealth is blocked
+  ---
+  duration_ms: 0.37675
+  type: 'test'
+  ...
+# Subtest: supported reviewed evidence permits exact bounded step and mechanism use
+ok 16 - supported reviewed evidence permits exact bounded step and mechanism use
+  ---
+  duration_ms: 0.029875
+  type: 'test'
+  ...
+# Subtest: supported_with_bounds reviewed evidence permits exact bounded step and mechanism use
+ok 17 - supported_with_bounds reviewed evidence permits exact bounded step and mechanism use
+  ---
+  duration_ms: 0.020542
+  type: 'test'
+  ...
+# Subtest: all governed admissibility states have a human-readable claim label
+ok 18 - all governed admissibility states have a human-readable claim label
+  ---
+  duration_ms: 0.044417
+  type: 'test'
+  ...
+1..18
+# tests 18
+# suites 0
+# pass 18
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 69.6095
+
+> @diagnostic-odyssey/narrative-references@0.1.0 test
+> node --experimental-strip-types --test test/*.test.ts
+
+TAP version 13
+# Subtest: both frozen catalogs pass merged PR A structural and semantic validation
+ok 1 - both frozen catalogs pass merged PR A structural and semantic validation
+  ---
+  duration_ms: 2.780625
+  type: 'test'
+  ...
+# Subtest: exact candidate files match a deterministic non-self-referential SHA-256 manifest
+ok 2 - exact candidate files match a deterministic non-self-referential SHA-256 manifest
+  ---
+  duration_ms: 20.366375
+  type: 'test'
+  ...
+# Subtest: every frozen v2 record is a candidate with no reviewer, approved wording or effect
+ok 3 - every frozen v2 record is a candidate with no reviewer, approved wording or effect
+  ---
+  duration_ms: 0.201333
+  type: 'test'
+  ...
+# Subtest: v1 is not overwritten, and all six research entries are now background only
+ok 4 - v1 is not overwritten, and all six research entries are now background only
+  ---
+  duration_ms: 0.094292
+  type: 'test'
+  ...
+# Subtest: default deny: no approved context or target transfer and no planning eligibility
+ok 5 - default deny: no approved context or target transfer and no planning eligibility
+  ---
+  duration_ms: 0.200959
+  type: 'test'
+  ...
+# Subtest: CDC raw guidance and rights preimages absent; must never pretend to have a source digest
+ok 6 - CDC raw guidance and rights preimages absent; must never pretend to have a source digest
+  ---
+  duration_ms: 0.121375
+  type: 'test'
+  ...
+# Subtest: source-to-claim matrix and retained external PDF digests agree without creating browser assets
+ok 7 - source-to-claim matrix and retained external PDF digests agree without creating browser assets
+  ---
+  duration_ms: 0.315167
+  type: 'test'
+  ...
+# Subtest: negative: numeric outcomes, scenario bindings and release fields fail closed
+ok 8 - negative: numeric outcomes, scenario bindings and release fields fail closed
+  ---
+  duration_ms: 2.245125
+  type: 'test'
+  ...
+# Subtest: negative: policy linkage and recommendation overrides fail independent candidate constraints
+ok 9 - negative: policy linkage and recommendation overrides fail independent candidate constraints
+  ---
+  duration_ms: 0.701791
+  type: 'test'
+  ...
+# Subtest: synthetic candidate passes without claiming review or release
+ok 10 - synthetic candidate passes without claiming review or release
+  ---
+  duration_ms: 4.595667
+  type: 'test'
+  ...
+# Subtest: every layer is a closed object; added effect/ROI/scenario fields are rejected
+ok 11 - every layer is a closed object; added effect/ROI/scenario fields are rejected
+  ---
+  duration_ms: 1.8555
+  type: 'test'
+  ...
+# Subtest: both narrative-only structural invariants are required to remain false
+ok 12 - both narrative-only structural invariants are required to remain false
+  ---
+  duration_ms: 0.326916
+  type: 'test'
+  ...
+# Subtest: missing, malformed or incorrectly typed source provenance and applicability fail closed
+ok 13 - missing, malformed or incorrectly typed source provenance and applicability fail closed
+  ---
+  duration_ms: 0.488875
+  type: 'test'
+  ...
+# Subtest: a claim cannot be approved without reviewer approval
+ok 14 - a claim cannot be approved without reviewer approval
+  ---
+  duration_ms: 0.202459
+  type: 'test'
+  ...
+# Subtest: release needs explicit review, source byte digest and immutable review manifest
+ok 15 - release needs explicit review, source byte digest and immutable review manifest
+  ---
+  duration_ms: 0.246541
+  type: 'test'
+  ...
+# Subtest: candidate manifest never contains released records or review manifest digest
+ok 16 - candidate manifest never contains released records or review manifest digest
+  ---
+  duration_ms: 0.180583
+  type: 'test'
+  ...
+# Subtest: catalog release cannot be empty, mixed or contain duplicate claim IDs
+ok 17 - catalog release cannot be empty, mixed or contain duplicate claim IDs
+  ---
+  duration_ms: 0.177042
+  type: 'test'
+  ...
+# Subtest: rejected claim cannot be presented as approved or released
+ok 18 - rejected claim cannot be presented as approved or released
+  ---
+  duration_ms: 0.648458
+  type: 'test'
+  ...
+# Subtest: JSON Schema is closed on every object and structurally prohibits numeric effects
+ok 19 - JSON Schema is closed on every object and structurally prohibits numeric effects
+  ---
+  duration_ms: 7.632875
+  type: 'test'
+  ...
+# Subtest: package is not an import into existing quantitative evidence, brief, web or scenario code
+ok 20 - package is not an import into existing quantitative evidence, brief, web or scenario code
+  ---
+  duration_ms: 0.324291
+  type: 'test'
+  ...
+# Subtest: review and release combinations distinguish completed review from approval
+ok 21 - review and release combinations distinguish completed review from approval
+  ---
+  duration_ms: 0.351667
+  type: 'test'
+  ...
+# Subtest: recorded revision feedback and rejection bind source bytes without approved wording
+ok 22 - recorded revision feedback and rejection bind source bytes without approved wording
+  ---
+  duration_ms: 0.305958
+  type: 'test'
+  ...
+# Subtest: approved but unpromoted records require complete approval provenance and limits
+ok 23 - approved but unpromoted records require complete approval provenance and limits
+  ---
+  duration_ms: 0.216291
+  type: 'test'
+  ...
+# Subtest: draft, feedback, approval and promotion snapshots preserve distinct structural gates
+ok 24 - draft, feedback, approval and promotion snapshots preserve distinct structural gates
+  ---
+  duration_ms: 0.17925
+  type: 'test'
+  ...
+# Subtest: applicability policy digest is mandatory on release and forbidden on candidates
+ok 25 - applicability policy digest is mandatory on release and forbidden on candidates
+  ---
+  duration_ms: 0.120541
+  type: 'test'
+  ...
+# (node:14495) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///private/tmp/odyssey-guided/final-clean/scripts/testing/run-python-json.ts is not specified and it doesn't parse as CommonJS.
+# Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+# To eliminate this warning, add "type": "module" to /private/tmp/odyssey-guided/final-clean/package.json.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: Python runner preserves large Unicode fixtures and fails on timeout, missing dependency and malformed output
+ok 26 - Python runner preserves large Unicode fixtures and fails on timeout, missing dependency and malformed output
+  ---
+  duration_ms: 388.109542
+  type: 'test'
+  ...
+# (node:14496) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///private/tmp/odyssey-guided/final-clean/scripts/testing/run-python-json.ts is not specified and it doesn't parse as CommonJS.
+# Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+# To eliminate this warning, add "type": "module" to /private/tmp/odyssey-guided/final-clean/package.json.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: committed synthetic cases execute against *actual* Draft 2020-12 schema and runtime
+ok 27 - committed synthetic cases execute against *actual* Draft 2020-12 schema and runtime
+  ---
+  duration_ms: 601.5935
+  type: 'test'
+  ...
+1..27
+# tests 27
+# suites 0
+# pass 27
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 693.2705
+
+> @diagnostic-odyssey/planning-guidance@0.1.0 test
+> python3 -m pip install --disable-pip-version-check --quiet jsonschema==4.26.0 && node --experimental-strip-types --test test/*.test.ts
+
+WARNING: The directory '/Users/ianliu/Library/Caches/pip' or its parent directory is not owned or is not writable by the current user. The cache has been disabled. Check the permissions and owner of that directory. If executing pip with sudo, you should use sudo's -H flag.
+TAP version 13
+# (node:15164) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///private/tmp/odyssey-guided/final-clean/scripts/testing/run-python-json.ts is not specified and it doesn't parse as CommonJS.
+# Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+# To eliminate this warning, add "type": "module" to /private/tmp/odyssey-guided/final-clean/package.json.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: request proposal ID v2 canonical golden vectors are injective across nullable and sentinel-like IDs
+ok 1 - request proposal ID v2 canonical golden vectors are injective across nullable and sentinel-like IDs
+  ---
+  duration_ms: 0.976458
+  type: 'test'
+  ...
+# Subtest: same validated snapshot/generation distinguishes missing, none, and null released hints
+ok 2 - same validated snapshot/generation distinguishes missing, none, and null released hints
+  ---
+  duration_ms: 5.283
+  type: 'test'
+  ...
+# Subtest: zero-admission case still fails closed for all explicit hints including sentinel-like IDs
+ok 3 - zero-admission case still fails closed for all explicit hints including sentinel-like IDs
+  ---
+  duration_ms: 1.03175
+  type: 'test'
+  ...
+# Subtest: zero-admission and zero-hint input yields insufficient intervention section and valid unhinted request
+ok 4 - zero-admission and zero-hint input yields insufficient intervention section and valid unhinted request
+  ---
+  duration_ms: 0.759541
+  type: 'test'
+  ...
+# Subtest: unavailable never pretends to generate
+ok 5 - unavailable never pretends to generate
+  ---
+  duration_ms: 0.327834
+  type: 'test'
+  ...
+# Subtest: versioned reproducible SHA-256 golden vectors: ordinary snapshot, mixed-case punctuation
+ok 6 - versioned reproducible SHA-256 golden vectors: ordinary snapshot, mixed-case punctuation
+  ---
+  duration_ms: 0.387959
+  type: 'test'
+  ...
+# Subtest: canonicalization excludes timestamps, sorts set-like arrays, rejects nonfinite numbers
+ok 7 - canonicalization excludes timestamps, sorts set-like arrays, rejects nonfinite numbers
+  ---
+  duration_ms: 0.971208
+  type: 'test'
+  ...
+# Subtest: unknown fields, nonfinite, malformed, IDs, versions, collisions fail closed
+ok 8 - unknown fields, nonfinite, malformed, IDs, versions, collisions fail closed
+  ---
+  duration_ms: 0.526417
+  type: 'test'
+  ...
+# Subtest: stale snapshots and forged numbers and disposition fail closed
+ok 9 - stale snapshots and forged numbers and disposition fail closed
+  ---
+  duration_ms: 1.040417
+  type: 'test'
+  ...
+# Subtest: forged catalog and hint registry fail without separately verified authority
+ok 10 - forged catalog and hint registry fail without separately verified authority
+  ---
+  duration_ms: 0.397042
+  type: 'test'
+  ...
+# Subtest: input validation is read-only and no scientific/analyst mutation occurs
+ok 11 - input validation is read-only and no scientific/analyst mutation occurs
+  ---
+  duration_ms: 0.361916
+  type: 'test'
+  ...
+# Subtest: section states follow trusted evidence when a model omits all findings and drafts
+ok 12 - section states follow trusted evidence when a model omits all findings and drafts
+  ---
+  duration_ms: 1.154375
+  type: 'test'
+  ...
+# Subtest: eligible reviewed narrative evidence remains available without model option selection
+ok 13 - eligible reviewed narrative evidence remains available without model option selection
+  ---
+  duration_ms: 0.810875
+  type: 'test'
+  ...
+# Subtest: zero reviewed findings/templates and no narrative release give independent insufficient sections
+ok 14 - zero reviewed findings/templates and no narrative release give independent insufficient sections
+  ---
+  duration_ms: 0.526833
+  type: 'test'
+  ...
+# Subtest: inference unavailable is not a generated success despite independently available inputs
+ok 15 - inference unavailable is not a generated success despite independently available inputs
+  ---
+  duration_ms: 0.473709
+  type: 'test'
+  ...
+# Subtest: mandatory warnings survive empty model selections and output suppression fails
+ok 16 - mandatory warnings survive empty model selections and output suppression fails
+  ---
+  duration_ms: 0.502541
+  type: 'test'
+  ...
+# Subtest: background-only citation is never an intervention grant; policy/context must match verified authority
+ok 17 - background-only citation is never an intervention grant; policy/context must match verified authority
+  ---
+  duration_ms: 1.163041
+  type: 'test'
+  ...
+# Subtest: release/scenario content digests bind fingerprints and fail malformed
+ok 18 - release/scenario content digests bind fingerprints and fail malformed
+  ---
+  duration_ms: 0.277708
+  type: 'test'
+  ...
+# Subtest: canonical sort is locale independent for uppercase punctuation and lowercase IDs
+ok 19 - canonical sort is locale independent for uppercase punctuation and lowercase IDs
+  ---
+  duration_ms: 0.178625
+  type: 'test'
+  ...
+# Subtest: all four Draft 2020-12 schemas execute and agree on structural positive/negative fixtures
+ok 20 - all four Draft 2020-12 schemas execute and agree on structural positive/negative fixtures
+  ---
+  duration_ms: 751.682042
+  type: 'test'
+  ...
+1..20
+# tests 20
+# suites 0
+# pass 20
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 860.778208
+
+> @diagnostic-odyssey/scenario-engine@0.1.0 test
+> node --experimental-strip-types --test test/*.test.ts
+
+TAP version 13
+# Subtest: golden scenario calculates reach, exposure, and resources
+ok 1 - golden scenario calculates reach, exposure, and resources
+  ---
+  duration_ms: 1.004417
+  type: 'test'
+  ...
+# Subtest: capacity constrains reached participants and creates an explicit gap
+ok 2 - capacity constrains reached participants and creates an explicit gap
+  ---
+  duration_ms: 0.090292
+  type: 'test'
+  ...
+# Subtest: horizon caps unresolved-recognition exposure
+ok 3 - horizon caps unresolved-recognition exposure
+  ---
+  duration_ms: 0.118542
+  type: 'test'
+  ...
+# Subtest: invalid alternative window fails instead of silently producing negative exposure difference
+ok 4 - invalid alternative window fails instead of silently producing negative exposure difference
+  ---
+  duration_ms: 0.2045
+  type: 'test'
+  ...
+# Subtest: bounded effects cannot leak across pathway steps or mechanisms
+ok 5 - bounded effects cannot leak across pathway steps or mechanisms
+  ---
+  duration_ms: 0.118375
+  type: 'test'
+  ...
+# Subtest: one-way sensitivity changes exactly the requested input
+ok 6 - one-way sensitivity changes exactly the requested input
+  ---
+  duration_ms: 0.119334
+  type: 'test'
+  ...
+# Subtest: finite inputs whose resource calculations overflow fail explicitly
+ok 7 - finite inputs whose resource calculations overflow fail explicitly
+  ---
+  duration_ms: 0.2465
+  type: 'test'
+  ...
+# Subtest: finite recognition-window inputs cannot produce infinite or NaN exposure
+ok 8 - finite recognition-window inputs cannot produce infinite or NaN exposure
+  ---
+  duration_ms: 0.08975
+  type: 'test'
+  ...
+# Subtest: finite boundary calculations and explicit zero quantities remain valid
+ok 9 - finite boundary calculations and explicit zero quantities remain valid
+  ---
+  duration_ms: 0.295125
+  type: 'test'
+  ...
+# Subtest: sensitivity rejects an invalid applied scenario even with no comparison points
+ok 10 - sensitivity rejects an invalid applied scenario even with no comparison points
+  ---
+  duration_ms: 0.328833
+  type: 'test'
+  ...
+# Subtest: sensitivity rejects overflowing neighbors instead of returning partial or invalid outputs
+ok 11 - sensitivity rejects overflowing neighbors instead of returning partial or invalid outputs
+  ---
+  duration_ms: 0.172584
+  type: 'test'
+  ...
+# Subtest: bounded-effect attachment rejects non-finite numeric values
+ok 12 - bounded-effect attachment rejects non-finite numeric values
+  ---
+  duration_ms: 0.064833
+  type: 'test'
+  ...
+1..12
+# tests 12
+# suites 0
+# pass 12
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 94.157958

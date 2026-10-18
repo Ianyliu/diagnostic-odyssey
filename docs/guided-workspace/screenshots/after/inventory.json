@@ -1,0 +1,226 @@
+[
+  {
+    "file": "overview-390-light.png",
+    "viewport": "overview-390-light-viewport.png",
+    "route": "/",
+    "width": 390,
+    "theme": "light",
+    "height": 2358
+  },
+  {
+    "file": "evidence-390-light.png",
+    "viewport": "evidence-390-light-viewport.png",
+    "route": "/burden",
+    "width": 390,
+    "theme": "light",
+    "height": 7071
+  },
+  {
+    "file": "context-390-light.png",
+    "viewport": "context-390-light-viewport.png",
+    "route": "/local-context",
+    "width": 390,
+    "theme": "light",
+    "height": 3262
+  },
+  {
+    "file": "pilot-390-light.png",
+    "viewport": "pilot-390-light-viewport.png",
+    "route": "/pilot",
+    "width": 390,
+    "theme": "light",
+    "height": 5875
+  },
+  {
+    "file": "requests-390-light.png",
+    "viewport": "requests-390-light-viewport.png",
+    "route": "/data-requests",
+    "width": 390,
+    "theme": "light",
+    "height": 1015
+  },
+  {
+    "file": "brief-390-light.png",
+    "viewport": "brief-390-light-viewport.png",
+    "route": "/brief",
+    "width": 390,
+    "theme": "light",
+    "height": 3904
+  },
+  {
+    "file": "requests-selected-390-light.png",
+    "viewport": "requests-selected-390-light-viewport.png",
+    "route": "/data-requests",
+    "width": 390,
+    "theme": "light",
+    "height": 1268
+  },
+  {
+    "file": "overview-390-dark.png",
+    "viewport": "overview-390-dark-viewport.png",
+    "route": "/",
+    "width": 390,
+    "theme": "dark",
+    "height": 2358
+  },
+  {
+    "file": "evidence-390-dark.png",
+    "viewport": "evidence-390-dark-viewport.png",
+    "route": "/burden",
+    "width": 390,
+    "theme": "dark",
+    "height": 7071
+  },
+  {
+    "file": "context-390-dark.png",
+    "viewport": "context-390-dark-viewport.png",
+    "route": "/local-context",
+    "width": 390,
+    "theme": "dark",
+    "height": 3262
+  },
+  {
+    "file": "pilot-390-dark.png",
+    "viewport": "pilot-390-dark-viewport.png",
+    "route": "/pilot",
+    "width": 390,
+    "theme": "dark",
+    "height": 5875
+  },
+  {
+    "file": "requests-390-dark.png",
+    "viewport": "requests-390-dark-viewport.png",
+    "route": "/data-requests",
+    "width": 390,
+    "theme": "dark",
+    "height": 1015
+  },
+  {
+    "file": "brief-390-dark.png",
+    "viewport": "brief-390-dark-viewport.png",
+    "route": "/brief",
+    "width": 390,
+    "theme": "dark",
+    "height": 3904
+  },
+  {
+    "file": "requests-selected-390-dark.png",
+    "viewport": "requests-selected-390-dark-viewport.png",
+    "route": "/data-requests",
+    "width": 390,
+    "theme": "dark",
+    "height": 1268
+  },
+  {
+    "file": "overview-1440-light.png",
+    "viewport": "overview-1440-light-viewport.png",
+    "route": "/",
+    "width": 1440,
+    "theme": "light",
+    "height": 1292
+  },
+  {
+    "file": "evidence-1440-light.png",
+    "viewport": "evidence-1440-light-viewport.png",
+    "route": "/burden",
+    "width": 1440,
+    "theme": "light",
+    "height": 5752
+  },
+  {
+    "file": "context-1440-light.png",
+    "viewport": "context-1440-light-viewport.png",
+    "route": "/local-context",
+    "width": 1440,
+    "theme": "light",
+    "height": 2164
+  },
+  {
+    "file": "pilot-1440-light.png",
+    "viewport": "pilot-1440-light-viewport.png",
+    "route": "/pilot",
+    "width": 1440,
+    "theme": "light",
+    "height": 2806
+  },
+  {
+    "file": "requests-1440-light.png",
+    "viewport": "requests-1440-light-viewport.png",
+    "route": "/data-requests",
+    "width": 1440,
+    "theme": "light",
+    "height": 900
+  },
+  {
+    "file": "brief-1440-light.png",
+    "viewport": "brief-1440-light-viewport.png",
+    "route": "/brief",
+    "width": 1440,
+    "theme": "light",
+    "height": 2200
+  },
+  {
+    "file": "requests-selected-1440-light.png",
+    "viewport": "requests-selected-1440-light-viewport.png",
+    "route": "/data-requests",
+    "width": 1440,
+    "theme": "light",
+    "height": 900
+  },
+  {
+    "file": "overview-1440-dark.png",
+    "viewport": "overview-1440-dark-viewport.png",
+    "route": "/",
+    "width": 1440,
+    "theme": "dark",
+    "height": 1292
+  },
+  {
+    "file": "evidence-1440-dark.png",
+    "viewport": "evidence-1440-dark-viewport.png",
+    "route": "/burden",
+    "width": 1440,
+    "theme": "dark",
+    "height": 5752
+  },
+  {
+    "file": "context-1440-dark.png",
+    "viewport": "context-1440-dark-viewport.png",
+    "route": "/local-context",
+    "width": 1440,
+    "theme": "dark",
+    "height": 2164
+  },
+  {
+    "file": "pilot-1440-dark.png",
+    "viewport": "pilot-1440-dark-viewport.png",
+    "route": "/pilot",
+    "width": 1440,
+    "theme": "dark",
+    "height": 2806
+  },
+  {
+    "file": "requests-1440-dark.png",
+    "viewport": "requests-1440-dark-viewport.png",
+    "route": "/data-requests",
+    "width": 1440,
+    "theme": "dark",
+    "height": 900
+  },
+  {
+    "file": "brief-1440-dark.png",
+    "viewport": "brief-1440-dark-viewport.png",
+    "route": "/brief",
+    "width": 1440,
+    "theme": "dark",
+    "height": 2200
+  },
+  {
+    "file": "requests-selected-1440-dark.png",
+    "viewport": "requests-selected-1440-dark-viewport.png",
+    "route": "/data-requests",
+    "width": 1440,
+    "theme": "dark",
+    "height": 900
+  }
+]

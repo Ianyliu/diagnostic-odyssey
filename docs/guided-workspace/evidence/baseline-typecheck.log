@@ -1,0 +1,116 @@
+
+> diagnostic-odyssey@0.1.0 typecheck
+> npm run typecheck --workspaces --if-present
+
+
+> @diagnostic-odyssey/web@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+src/concept/CompareStrategies.tsx(4,73): error TS1149: File name '/Users/ianliu/code/diagnostic-odyssey/apps/web/src/concept/demoLiterature.ts' differs from already included file name '/Users/ianliu/code/diagnostic-odyssey/apps/web/src/concept/DemoLiterature.ts' only in casing.
+  The file is in the program because:
+    Imported via "./DemoLiterature" from file '/Users/ianliu/code/diagnostic-odyssey/apps/web/src/concept/ExplainBrief.tsx'
+    Imported via "./demoLiterature" from file '/Users/ianliu/code/diagnostic-odyssey/apps/web/src/concept/ExplainBrief.tsx'
+    Imported via "./DemoLiterature" from file '/Users/ianliu/code/diagnostic-odyssey/apps/web/src/concept/ExploreInterventions.tsx'
+    Imported via "./demoLiterature" from file '/Users/ianliu/code/diagnostic-odyssey/apps/web/src/concept/ExploreInterventions.tsx'
+    Imported via "./demoLiterature" from file '/Users/ianliu/code/diagnostic-odyssey/apps/web/src/concept/IdentifyDataGaps.tsx'
+    Imported via "./DemoLiterature" from file '/Users/ianliu/code/diagnostic-odyssey/apps/web/src/concept/IdentifyDataGaps.tsx'
+    Imported via "./demoLiterature" from file '/Users/ianliu/code/diagnostic-odyssey/apps/web/src/concept/CompareStrategies.tsx'
+    Imported via "./DemoLiterature" from file '/Users/ianliu/code/diagnostic-odyssey/apps/web/src/concept/CompareStrategies.tsx'
+    Matched by include pattern 'src' in 'tsconfig.json'
+src/concept/CompareStrategies.tsx(5,10): error TS2724: '"./demoLiterature"' has no exported member named 'DemoLiteratureNotice'. Did you mean 'DEMO_LITERATURE_NOTICE'?
+src/concept/CompareStrategies.tsx(5,32): error TS2305: Module '"./demoLiterature"' has no exported member 'DemoSourceCitation'.
+src/concept/ExplainBrief.tsx(13,10): error TS2724: '"./DemoLiterature"' has no exported member named 'DemoLiteratureNotice'. Did you mean 'DEMO_LITERATURE_NOTICE'?
+src/concept/ExplainBrief.tsx(13,32): error TS2305: Module '"./DemoLiterature"' has no exported member 'DemoSourceCitation'.
+src/concept/ExplainBrief.tsx(13,58): error TS1261: Already included file name '/Users/ianliu/code/diagnostic-odyssey/apps/web/src/concept/DemoLiterature.ts' differs from file name '/Users/ianliu/code/diagnostic-odyssey/apps/web/src/concept/demoLiterature.ts' only in casing.
+  The file is in the program because:
+    Imported via "./DemoLiterature" from file '/Users/ianliu/code/diagnostic-odyssey/apps/web/src/concept/ExplainBrief.tsx'
+    Imported via "./demoLiterature" from file '/Users/ianliu/code/diagnostic-odyssey/apps/web/src/concept/ExplainBrief.tsx'
+    Imported via "./DemoLiterature" from file '/Users/ianliu/code/diagnostic-odyssey/apps/web/src/concept/ExploreInterventions.tsx'
+    Imported via "./demoLiterature" from file '/Users/ianliu/code/diagnostic-odyssey/apps/web/src/concept/ExploreInterventions.tsx'
+    Imported via "./demoLiterature" from file '/Users/ianliu/code/diagnostic-odyssey/apps/web/src/concept/IdentifyDataGaps.tsx'
+    Imported via "./DemoLiterature" from file '/Users/ianliu/code/diagnostic-odyssey/apps/web/src/concept/IdentifyDataGaps.tsx'
+    Imported via "./demoLiterature" from file '/Users/ianliu/code/diagnostic-odyssey/apps/web/src/concept/CompareStrategies.tsx'
+    Imported via "./DemoLiterature" from file '/Users/ianliu/code/diagnostic-odyssey/apps/web/src/concept/CompareStrategies.tsx'
+    Matched by include pattern 'src' in 'tsconfig.json'
+src/concept/ExplainBrief.tsx(14,36): error TS1149: File name '/Users/ianliu/code/diagnostic-odyssey/apps/web/src/concept/demoLiterature.ts' differs from already included file name '/Users/ianliu/code/diagnostic-odyssey/apps/web/src/concept/DemoLiterature.ts' only in casing.
+  The file is in the program because:
+    Imported via "./DemoLiterature" from file '/Users/ianliu/code/diagnostic-odyssey/apps/web/src/concept/ExplainBrief.tsx'
+    Imported via "./demoLiterature" from file '/Users/ianliu/code/diagnostic-odyssey/apps/web/src/concept/ExplainBrief.tsx'
+    Imported via "./DemoLiterature" from file '/Users/ianliu/code/diagnostic-odyssey/apps/web/src/concept/ExploreInterventions.tsx'
+    Imported via "./demoLiterature" from file '/Users/ianliu/code/diagnostic-odyssey/apps/web/src/concept/ExploreInterventions.tsx'
+    Imported via "./demoLiterature" from file '/Users/ianliu/code/diagnostic-odyssey/apps/web/src/concept/IdentifyDataGaps.tsx'
+    Imported via "./DemoLiterature" from file '/Users/ianliu/code/diagnostic-odyssey/apps/web/src/concept/IdentifyDataGaps.tsx'
+    Imported via "./demoLiterature" from file '/Users/ianliu/code/diagnostic-odyssey/apps/web/src/concept/CompareStrategies.tsx'
+    Imported via "./DemoLiterature" from file '/Users/ianliu/code/diagnostic-odyssey/apps/web/src/concept/CompareStrategies.tsx'
+    Matched by include pattern 'src' in 'tsconfig.json'
+src/concept/ExploreInterventions.tsx(4,10): error TS2305: Module '"./DemoLiterature"' has no exported member 'DemoBibliography'.
+src/concept/ExploreInterventions.tsx(4,28): error TS2724: '"./DemoLiterature"' has no exported member named 'DemoLiteratureNotice'. Did you mean 'DEMO_LITERATURE_NOTICE'?
+src/concept/ExploreInterventions.tsx(4,50): error TS2305: Module '"./DemoLiterature"' has no exported member 'DemoSourceCitation'.
+src/concept/ExploreInterventions.tsx(4,70): error TS2305: Module '"./DemoLiterature"' has no exported member 'DemoSourceList'.
+src/concept/ExploreInterventions.tsx(5,73): error TS1149: File name '/Users/ianliu/code/diagnostic-odyssey/apps/web/src/concept/demoLiterature.ts' differs from already included file name '/Users/ianliu/code/diagnostic-odyssey/apps/web/src/concept/DemoLiterature.ts' only in casing.
+  The file is in the program because:
+    Imported via "./DemoLiterature" from file '/Users/ianliu/code/diagnostic-odyssey/apps/web/src/concept/ExplainBrief.tsx'
+    Imported via "./demoLiterature" from file '/Users/ianliu/code/diagnostic-odyssey/apps/web/src/concept/ExplainBrief.tsx'
+    Imported via "./DemoLiterature" from file '/Users/ianliu/code/diagnostic-odyssey/apps/web/src/concept/ExploreInterventions.tsx'
+    Imported via "./demoLiterature" from file '/Users/ianliu/code/diagnostic-odyssey/apps/web/src/concept/ExploreInterventions.tsx'
+    Imported via "./demoLiterature" from file '/Users/ianliu/code/diagnostic-odyssey/apps/web/src/concept/IdentifyDataGaps.tsx'
+    Imported via "./DemoLiterature" from file '/Users/ianliu/code/diagnostic-odyssey/apps/web/src/concept/IdentifyDataGaps.tsx'
+    Imported via "./demoLiterature" from file '/Users/ianliu/code/diagnostic-odyssey/apps/web/src/concept/CompareStrategies.tsx'
+    Imported via "./DemoLiterature" from file '/Users/ianliu/code/diagnostic-odyssey/apps/web/src/concept/CompareStrategies.tsx'
+    Matched by include pattern 'src' in 'tsconfig.json'
+src/concept/IdentifyDataGaps.tsx(4,58): error TS1149: File name '/Users/ianliu/code/diagnostic-odyssey/apps/web/src/concept/demoLiterature.ts' differs from already included file name '/Users/ianliu/code/diagnostic-odyssey/apps/web/src/concept/DemoLiterature.ts' only in casing.
+  The file is in the program because:
+    Imported via "./DemoLiterature" from file '/Users/ianliu/code/diagnostic-odyssey/apps/web/src/concept/ExplainBrief.tsx'
+    Imported via "./demoLiterature" from file '/Users/ianliu/code/diagnostic-odyssey/apps/web/src/concept/ExplainBrief.tsx'
+    Imported via "./DemoLiterature" from file '/Users/ianliu/code/diagnostic-odyssey/apps/web/src/concept/ExploreInterventions.tsx'
+    Imported via "./demoLiterature" from file '/Users/ianliu/code/diagnostic-odyssey/apps/web/src/concept/ExploreInterventions.tsx'
+    Imported via "./demoLiterature" from file '/Users/ianliu/code/diagnostic-odyssey/apps/web/src/concept/IdentifyDataGaps.tsx'
+    Imported via "./DemoLiterature" from file '/Users/ianliu/code/diagnostic-odyssey/apps/web/src/concept/IdentifyDataGaps.tsx'
+    Imported via "./demoLiterature" from file '/Users/ianliu/code/diagnostic-odyssey/apps/web/src/concept/CompareStrategies.tsx'
+    Imported via "./DemoLiterature" from file '/Users/ianliu/code/diagnostic-odyssey/apps/web/src/concept/CompareStrategies.tsx'
+    Matched by include pattern 'src' in 'tsconfig.json'
+src/concept/IdentifyDataGaps.tsx(5,10): error TS2724: '"./demoLiterature"' has no exported member named 'DemoLiteratureNotice'. Did you mean 'DEMO_LITERATURE_NOTICE'?
+src/concept/IdentifyDataGaps.tsx(5,32): error TS2305: Module '"./demoLiterature"' has no exported member 'DemoSourceCitation'.
+npm error Lifecycle script `typecheck` failed with error:
+npm error code 2
+npm error path /Users/ianliu/code/diagnostic-odyssey/apps/web
+npm error workspace @diagnostic-odyssey/web@0.1.0
+npm error location /Users/ianliu/code/diagnostic-odyssey/apps/web
+npm error command failed
+npm error command sh -c tsc -p tsconfig.json --noEmit
+
+
+> @diagnostic-odyssey/acquisition-hints@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @diagnostic-odyssey/brief-core@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @diagnostic-odyssey/condition-adapters@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @diagnostic-odyssey/contracts@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @diagnostic-odyssey/evidence-core@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @diagnostic-odyssey/narrative-references@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @diagnostic-odyssey/planning-guidance@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @diagnostic-odyssey/scenario-engine@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @diagnostic-odyssey/ui@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit

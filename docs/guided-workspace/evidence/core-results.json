@@ -1,0 +1,22 @@
+[
+  {
+    "task": "typecheck",
+    "exit": 0,
+    "seconds": 8.6
+  },
+  {
+    "task": "lint",
+    "exit": 0,
+    "seconds": 2.6
+  },
+  {
+    "task": "test",
+    "exit": 0,
+    "seconds": 6.3
+  },
+  {
+    "task": "build",
+    "exit": 0,
+    "seconds": 6.5
+  }
+]

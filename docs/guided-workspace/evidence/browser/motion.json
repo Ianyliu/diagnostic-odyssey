@@ -1,0 +1,28 @@
+{
+  "results": [
+    {
+      "mode": "normal",
+      "status": "PASS",
+      "openingLayoutShift": 0,
+      "layoutShift": 0
+    },
+    {
+      "mode": "keyboard",
+      "status": "PASS",
+      "openingLayoutShift": 0,
+      "layoutShift": 0
+    },
+    {
+      "mode": "reduced",
+      "status": "PASS",
+      "openingLayoutShift": 0,
+      "layoutShift": 0
+    },
+    {
+      "mode": "deep-link",
+      "status": "PASS",
+      "openingLayoutShift": 0,
+      "layoutShift": 0
+    }
+  ]
+}

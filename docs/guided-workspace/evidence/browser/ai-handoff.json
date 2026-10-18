@@ -1,0 +1,103 @@
+{
+  "browser": "155.0.8059.84",
+  "results": [
+    {
+      "name": "six goals, current Brief scope, canonical parity, full clipboard and Markdown bytes",
+      "status": "PASS"
+    },
+    {
+      "name": "Unicode question boundary, hostile text is inert, and edits latch stale even when reverted",
+      "status": "PASS"
+    },
+    {
+      "name": "actual Brief composition detects scenario, local, pilot and included request changes but ignores timestamp-only recomposition",
+      "status": "PASS"
+    },
+    {
+      "name": "fail closed: missing, restore requires regeneration",
+      "status": "PASS"
+    },
+    {
+      "name": "fail closed: unavailable, restore requires regeneration",
+      "status": "PASS"
+    },
+    {
+      "name": "fail closed: local-unavailable, restore requires regeneration",
+      "status": "PASS"
+    },
+    {
+      "name": "fail closed: invalid, restore requires regeneration",
+      "status": "PASS"
+    },
+    {
+      "name": "fail closed: suppressed, restore requires regeneration",
+      "status": "PASS"
+    },
+    {
+      "name": "fail closed: preliminary, restore requires regeneration",
+      "status": "PASS"
+    },
+    {
+      "name": "fail closed: illustrative_only, restore requires regeneration",
+      "status": "PASS"
+    },
+    {
+      "name": "hostile source fields stay inert and filtered raw records never enter the preview",
+      "status": "PASS"
+    },
+    {
+      "name": "clipboard denied: no false success and full manual selection",
+      "status": "PASS"
+    },
+    {
+      "name": "clipboard unsupported: no false success and full manual selection",
+      "status": "PASS"
+    },
+    {
+      "name": "clipboard insecure: no false success and full manual selection",
+      "status": "PASS"
+    },
+    {
+      "name": "pending clipboard resolution, source drift and close/reopen cannot report stale success",
+      "status": "PASS"
+    },
+    {
+      "name": "native Chromium clipboard writes the complete prompt",
+      "status": "PASS"
+    },
+    {
+      "name": "Blob failure remains usable and reports fallback",
+      "status": "PASS"
+    },
+    {
+      "name": "accessible responsive dialog 390px light",
+      "status": "PASS"
+    },
+    {
+      "name": "accessible responsive dialog 390px dark",
+      "status": "PASS"
+    },
+    {
+      "name": "accessible responsive dialog 768px light",
+      "status": "PASS"
+    },
+    {
+      "name": "accessible responsive dialog 768px dark",
+      "status": "PASS"
+    },
+    {
+      "name": "accessible responsive dialog 1440px light",
+      "status": "PASS"
+    },
+    {
+      "name": "accessible responsive dialog 1440px dark",
+      "status": "PASS"
+    },
+    {
+      "name": "open dialog is excluded from print and does not change default Brief PDF text",
+      "status": "PASS"
+    }
+  ],
+  "errors": [],
+  "externalRequests": []
+}

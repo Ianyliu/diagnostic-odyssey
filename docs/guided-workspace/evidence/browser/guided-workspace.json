@@ -1,0 +1,685 @@
+{
+  "results": [
+    {
+      "name": "default guided layouts 320 light",
+      "status": "PASS",
+      "details": [
+        {
+          "route": "/",
+          "navigation": {
+            "x": 0,
+            "y": 835,
+            "width": 320,
+            "height": 65
+          },
+          "height": 2546
+        },
+        {
+          "route": "/burden",
+          "navigation": {
+            "x": 0,
+            "y": 835,
+            "width": 320,
+            "height": 65
+          },
+          "height": 7406
+        },
+        {
+          "route": "/local-context",
+          "navigation": {
+            "x": 0,
+            "y": 835,
+            "width": 320,
+            "height": 65
+          },
+          "height": 3544
+        },
+        {
+          "route": "/pilot",
+          "navigation": {
+            "x": 0,
+            "y": 835,
+            "width": 320,
+            "height": 65
+          },
+          "height": 6292
+        },
+        {
+          "route": "/data-requests",
+          "navigation": {
+            "x": 0,
+            "y": 835,
+            "width": 320,
+            "height": 65
+          },
+          "height": 1015
+        },
+        {
+          "route": "/brief",
+          "navigation": {
+            "x": 0,
+            "y": 835,
+            "width": 320,
+            "height": 65
+          },
+          "height": 4329
+        }
+      ]
+    },
+    {
+      "name": "default guided layouts 320 dark",
+      "status": "PASS",
+      "details": [
+        {
+          "route": "/",
+          "navigation": {
+            "x": 0,
+            "y": 835,
+            "width": 320,
+            "height": 65
+          },
+          "height": 2546
+        },
+        {
+          "route": "/burden",
+          "navigation": {
+            "x": 0,
+            "y": 835,
+            "width": 320,
+            "height": 65
+          },
+          "height": 7406
+        },
+        {
+          "route": "/local-context",
+          "navigation": {
+            "x": 0,
+            "y": 835,
+            "width": 320,
+            "height": 65
+          },
+          "height": 3544
+        },
+        {
+          "route": "/pilot",
+          "navigation": {
+            "x": 0,
+            "y": 835,
+            "width": 320,
+            "height": 65
+          },
+          "height": 6292
+        },
+        {
+          "route": "/data-requests",
+          "navigation": {
+            "x": 0,
+            "y": 835,
+            "width": 320,
+            "height": 65
+          },
+          "height": 1015
+        },
+        {
+          "route": "/brief",
+          "navigation": {
+            "x": 0,
+            "y": 835,
+            "width": 320,
+            "height": 65
+          },
+          "height": 4329
+        }
+      ]
+    },
+    {
+      "name": "default guided layouts 390 light",
+      "status": "PASS",
+      "details": [
+        {
+          "route": "/",
+          "navigation": {
+            "x": 0,
+            "y": 835,
+            "width": 390,
+            "height": 65
+          },
+          "height": 2358
+        },
+        {
+          "route": "/burden",
+          "navigation": {
+            "x": 0,
+            "y": 835,
+            "width": 390,
+            "height": 65
+          },
+          "height": 7071
+        },
+        {
+          "route": "/local-context",
+          "navigation": {
+            "x": 0,
+            "y": 835,
+            "width": 390,
+            "height": 65
+          },
+          "height": 3262
+        },
+        {
+          "route": "/pilot",
+          "navigation": {
+            "x": 0,
+            "y": 835,
+            "width": 390,
+            "height": 65
+          },
+          "height": 5875
+        },
+        {
+          "route": "/data-requests",
+          "navigation": {
+            "x": 0,
+            "y": 835,
+            "width": 390,
+            "height": 65
+          },
+          "height": 1015
+        },
+        {
+          "route": "/brief",
+          "navigation": {
+            "x": 0,
+            "y": 835,
+            "width": 390,
+            "height": 65
+          },
+          "height": 3904
+        }
+      ]
+    },
+    {
+      "name": "default guided layouts 390 dark",
+      "status": "PASS",
+      "details": [
+        {
+          "route": "/",
+          "navigation": {
+            "x": 0,
+            "y": 835,
+            "width": 390,
+            "height": 65
+          },
+          "height": 2358
+        },
+        {
+          "route": "/burden",
+          "navigation": {
+            "x": 0,
+            "y": 835,
+            "width": 390,
+            "height": 65
+          },
+          "height": 7071
+        },
+        {
+          "route": "/local-context",
+          "navigation": {
+            "x": 0,
+            "y": 835,
+            "width": 390,
+            "height": 65
+          },
+          "height": 3262
+        },
+        {
+          "route": "/pilot",
+          "navigation": {
+            "x": 0,
+            "y": 835,
+            "width": 390,
+            "height": 65
+          },
+          "height": 5875
+        },
+        {
+          "route": "/data-requests",
+          "navigation": {
+            "x": 0,
+            "y": 835,
+            "width": 390,
+            "height": 65
+          },
+          "height": 1015
+        },
+        {
+          "route": "/brief",
+          "navigation": {
+            "x": 0,
+            "y": 835,
+            "width": 390,
+            "height": 65
+          },
+          "height": 3904
+        }
+      ]
+    },
+    {
+      "name": "default guided layouts 768 light",
+      "status": "PASS",
+      "details": [
+        {
+          "route": "/",
+          "navigation": {
+            "x": 0,
+            "y": 835,
+            "width": 768,
+            "height": 65
+          },
+          "height": 1772
+        },
+        {
+          "route": "/burden",
+          "navigation": {
+            "x": 0,
+            "y": 835,
+            "width": 768,
+            "height": 65
+          },
+          "height": 7111
+        },
+        {
+          "route": "/local-context",
+          "navigation": {
+            "x": 0,
+            "y": 835,
+            "width": 768,
+            "height": 65
+          },
+          "height": 2532
+        },
+        {
+          "route": "/pilot",
+          "navigation": {
+            "x": 0,
+            "y": 835,
+            "width": 768,
+            "height": 65
+          },
+          "height": 4301
+        },
+        {
+          "route": "/data-requests",
+          "navigation": {
+            "x": 0,
+            "y": 835,
+            "width": 768,
+            "height": 65
+          },
+          "height": 942
+        },
+        {
+          "route": "/brief",
+          "navigation": {
+            "x": 0,
+            "y": 835,
+            "width": 768,
+            "height": 65
+          },
+          "height": 2607
+        }
+      ]
+    },
+    {
+      "name": "default guided layouts 768 dark",
+      "status": "PASS",
+      "details": [
+        {
+          "route": "/",
+          "navigation": {
+            "x": 0,
+            "y": 835,
+            "width": 768,
+            "height": 65
+          },
+          "height": 1772
+        },
+        {
+          "route": "/burden",
+          "navigation": {
+            "x": 0,
+            "y": 835,
+            "width": 768,
+            "height": 65
+          },
+          "height": 7111
+        },
+        {
+          "route": "/local-context",
+          "navigation": {
+            "x": 0,
+            "y": 835,
+            "width": 768,
+            "height": 65
+          },
+          "height": 2532
+        },
+        {
+          "route": "/pilot",
+          "navigation": {
+            "x": 0,
+            "y": 835,
+            "width": 768,
+            "height": 65
+          },
+          "height": 4301
+        },
+        {
+          "route": "/data-requests",
+          "navigation": {
+            "x": 0,
+            "y": 835,
+            "width": 768,
+            "height": 65
+          },
+          "height": 942
+        },
+        {
+          "route": "/brief",
+          "navigation": {
+            "x": 0,
+            "y": 835,
+            "width": 768,
+            "height": 65
+          },
+          "height": 2607
+        }
+      ]
+    },
+    {
+      "name": "default guided layouts 1024 light",
+      "status": "PASS",
+      "details": [
+        {
+          "route": "/",
+          "navigation": {
+            "x": 265,
+            "y": 12,
+            "width": 652.453125,
+            "height": 44
+          },
+          "height": 1270
+        },
+        {
+          "route": "/burden",
+          "navigation": {
+            "x": 265,
+            "y": 12,
+            "width": 652.453125,
+            "height": 44
+          },
+          "height": 6106
+        },
+        {
+          "route": "/local-context",
+          "navigation": {
+            "x": 265,
+            "y": 12,
+            "width": 652.453125,
+            "height": 44
+          },
+          "height": 2334
+        },
+        {
+          "route": "/pilot",
+          "navigation": {
+            "x": 265,
+            "y": 12,
+            "width": 652.453125,
+            "height": 44
+          },
+          "height": 3982
+        },
+        {
+          "route": "/data-requests",
+          "navigation": {
+            "x": 265,
+            "y": 12,
+            "width": 652.453125,
+            "height": 44
+          },
+          "height": 900
+        },
+        {
+          "route": "/brief",
+          "navigation": {
+            "x": 265,
+            "y": 12,
+            "width": 652.453125,
+            "height": 44
+          },
+          "height": 2204
+        }
+      ]
+    },
+    {
+      "name": "default guided layouts 1024 dark",
+      "status": "PASS",
+      "details": [
+        {
+          "route": "/",
+          "navigation": {
+            "x": 265,
+            "y": 12,
+            "width": 652.453125,
+            "height": 44
+          },
+          "height": 1270
+        },
+        {
+          "route": "/burden",
+          "navigation": {
+            "x": 265,
+            "y": 12,
+            "width": 652.453125,
+            "height": 44
+          },
+          "height": 6106
+        },
+        {
+          "route": "/local-context",
+          "navigation": {
+            "x": 265,
+            "y": 12,
+            "width": 652.453125,
+            "height": 44
+          },
+          "height": 2334
+        },
+        {
+          "route": "/pilot",
+          "navigation": {
+            "x": 265,
+            "y": 12,
+            "width": 652.453125,
+            "height": 44
+          },
+          "height": 3982
+        },
+        {
+          "route": "/data-requests",
+          "navigation": {
+            "x": 265,
+            "y": 12,
+            "width": 652.453125,
+            "height": 44
+          },
+          "height": 900
+        },
+        {
+          "route": "/brief",
+          "navigation": {
+            "x": 265,
+            "y": 12,
+            "width": 652.453125,
+            "height": 44
+          },
+          "height": 2204
+        }
+      ]
+    },
+    {
+      "name": "default guided layouts 1440 light",
+      "status": "PASS",
+      "details": [
+        {
+          "route": "/",
+          "navigation": {
+            "x": 265,
+            "y": 12,
+            "width": 1068.453125,
+            "height": 44
+          },
+          "height": 1292
+        },
+        {
+          "route": "/burden",
+          "navigation": {
+            "x": 265,
+            "y": 12,
+            "width": 1068.453125,
+            "height": 44
+          },
+          "height": 5752
+        },
+        {
+          "route": "/local-context",
+          "navigation": {
+            "x": 265,
+            "y": 12,
+            "width": 1068.453125,
+            "height": 44
+          },
+          "height": 2164
+        },
+        {
+          "route": "/pilot",
+          "navigation": {
+            "x": 265,
+            "y": 12,
+            "width": 1068.453125,
+            "height": 44
+          },
+          "height": 2806
+        },
+        {
+          "route": "/data-requests",
+          "navigation": {
+            "x": 265,
+            "y": 12,
+            "width": 1068.453125,
+            "height": 44
+          },
+          "height": 900
+        },
+        {
+          "route": "/brief",
+          "navigation": {
+            "x": 265,
+            "y": 12,
+            "width": 1068.453125,
+            "height": 44
+          },
+          "height": 2200
+        }
+      ]
+    },
+    {
+      "name": "default guided layouts 1440 dark",
+      "status": "PASS",
+      "details": [
+        {
+          "route": "/",
+          "navigation": {
+            "x": 265,
+            "y": 12,
+            "width": 1068.453125,
+            "height": 44
+          },
+          "height": 1292
+        },
+        {
+          "route": "/burden",
+          "navigation": {
+            "x": 265,
+            "y": 12,
+            "width": 1068.453125,
+            "height": 44
+          },
+          "height": 5752
+        },
+        {
+          "route": "/local-context",
+          "navigation": {
+            "x": 265,
+            "y": 12,
+            "width": 1068.453125,
+            "height": 44
+          },
+          "height": 2164
+        },
+        {
+          "route": "/pilot",
+          "navigation": {
+            "x": 265,
+            "y": 12,
+            "width": 1068.453125,
+            "height": 44
+          },
+          "height": 2806
+        },
+        {
+          "route": "/data-requests",
+          "navigation": {
+            "x": 265,
+            "y": 12,
+            "width": 1068.453125,
+            "height": 44
+          },
+          "height": 900
+        },
+        {
+          "route": "/brief",
+          "navigation": {
+            "x": 265,
+            "y": 12,
+            "width": 1068.453125,
+            "height": 44
+          },
+          "height": 2200
+        }
+      ]
+    },
+    {
+      "name": "visible selections, collapsed category state and unchanged Pilot inputs",
+      "status": "PASS"
+    },
+    {
+      "name": "collapsed report links, print completeness, exact restoration and AI dialog",
+      "status": "PASS"
+    },
+    {
+      "name": "text enlargement and keyboard-height simulation keep controls reachable",
+      "status": "PASS"
+    },
+    {
+      "name": "200% text enlargement across all widths and themes",
+      "status": "PASS"
+    },
+    {
+      "name": "extreme headline values retain every digit at 320px",
+      "status": "PASS"
+    }
+  ],
+  "errors": []
+}

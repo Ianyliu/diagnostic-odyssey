@@ -1,0 +1,95 @@
+{
+  "source_sha": "a236354fb99b463d2af339893778da7c8c8137b2",
+  "groups": 146,
+  "passing": 146,
+  "suites": [
+    {
+      "suite": "guided-workspace",
+      "exit": 0,
+      "seconds": 15.4,
+      "groups": 15,
+      "passing": 15,
+      "report": "browser/guided-workspace.json"
+    },
+    {
+      "suite": "acceptance",
+      "exit": 0,
+      "seconds": 66.4,
+      "groups": 26,
+      "passing": 26,
+      "report": "browser/acceptance.json"
+    },
+    {
+      "suite": "gate0-accessibility",
+      "exit": 0,
+      "seconds": 24.2,
+      "groups": 14,
+      "passing": 14,
+      "report": "browser/gate0-accessibility.json"
+    },
+    {
+      "suite": "workspace-continuity",
+      "exit": 0,
+      "seconds": 2.3,
+      "groups": 2,
+      "passing": 2,
+      "report": "browser/workspace-continuity.json"
+    },
+    {
+      "suite": "visual-quality",
+      "exit": 0,
+      "seconds": 47.0,
+      "groups": 20,
+      "passing": 20,
+      "report": "browser/visual-quality.json"
+    },
+    {
+      "suite": "motion",
+      "exit": 0,
+      "seconds": 4.5,
+      "groups": 4,
+      "passing": 4,
+      "report": "browser/motion.json"
+    },
+    {
+      "suite": "ai-handoff",
+      "exit": 0,
+      "seconds": 16.3,
+      "groups": 24,
+      "passing": 24,
+      "report": "browser/ai-handoff.json"
+    },
+    {
+      "suite": "future-ai-experience",
+      "exit": 0,
+      "seconds": 18.0,
+      "groups": 10,
+      "passing": 10,
+      "report": "browser/future-ai-experience.json"
+    },
+    {
+      "suite": "planning-insights",
+      "exit": 0,
+      "seconds": 22.5,
+      "groups": 14,
+      "passing": 14,
+      "report": "browser/planning-insights.json"
+    },
+    {
+      "suite": "planning-intelligence-integration",
+      "exit": 0,
+      "seconds": 6.4,
+      "groups": 5,
+      "passing": 5,
+      "report": "browser/planning-intelligence-integration.json"
+    },
+    {
+      "suite": "acquisition-hints",
+      "exit": 0,
+      "seconds": 22.4,
+      "groups": 12,
+      "passing": 12,
+      "report": "browser/acquisition-hints.json"
+    }
+  ]
+}
