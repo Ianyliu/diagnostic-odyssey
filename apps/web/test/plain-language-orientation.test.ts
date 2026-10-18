@@ -107,7 +107,7 @@ test("Pilot interpretation describes planning arithmetic without duplicating the
   assert.match(source, /Draft not applied/);
   assert.match(source, /last valid planning assumptions/);
   assert.match(source, /Sensitivity analysis paused/);
-  assert.match(source, /disabled>Preview Planning Brief<\/button>/);
+  assert.match(source, /disabled>Review planning brief<\/button>/);
 });
 
 test("Evidence uses existing admissibility and current-scenario eligibility semantics", () => {

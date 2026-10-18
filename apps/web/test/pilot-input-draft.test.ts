@@ -196,7 +196,7 @@ test("invalid drafts pause sensitivity and the Pilot Brief action while keeping 
     pilotSource,
     /invalidDraft \? <section id="sensitivity"[\s\S]*?: <SensitivityExplorer/
   );
-  assert.match(pilotSource, /disabled>Preview Planning Brief<\/button>/);
+  assert.match(pilotSource, /disabled>Review planning brief<\/button>/);
 });
 
 test("Pilot numeric fields expose stable labels, invalid state, descriptions, and polite validation updates", () => {
