@@ -9,6 +9,9 @@ on:
       - "tests/browser/workspace-continuity.mjs"
       - "tests/browser/visual-quality.mjs"
       - "tests/browser/motion.mjs"
+      - "tests/browser/guided-workspace.mjs"
+      - "tests/browser/workspace-helpers.mjs"
+      - "tests/browser/verify-guided-pdf.py"
       - ".github/workflows/workspace-interactions.yml"
   workflow_dispatch:
 
@@ -42,9 +45,13 @@ jobs:
             if curl --silent --fail "$QA_BASE_URL" >/dev/null; then break; fi
             sleep 1
           done
-          for suite in workspace-continuity visual-quality motion; do
+          for suite in workspace-continuity visual-quality motion guided-workspace; do
             QA_OUTPUT="/tmp/workspace-regressions/$suite" node "tests/browser/$suite.mjs"
           done
+      - name: Verify complete PDF from a collapsed brief
+        run: |
+          python3 -m pip install --disable-pip-version-check pdfplumber==0.11.7
+          python3 tests/browser/verify-guided-pdf.py /tmp/workspace-regressions/guided-workspace
       - name: Upload regression evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
