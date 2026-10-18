@@ -1,4 +1,4 @@
-/* global process, document, window, Event, console */
+/* global process, document, window, Event, requestAnimationFrame, console */
 import assert from "node:assert/strict";
 import {createRequire} from "node:module";
 import {mkdir, writeFile} from "node:fs/promises";
@@ -124,6 +124,15 @@ await check("text enlargement and keyboard-height simulation keep controls reach
   const nav = await page.getByRole("navigation", {name: "Primary navigation"}).boundingBox();
   assert.ok(box.y >= 0 && box.y + box.height <= nav.y, "focused input clears bottom navigation");
   await overflow(page);
+});
+await check("200% text enlargement across all widths and themes", async () => {
+  for (const width of [320, 390, 768, 1024, 1440]) for (const theme of ["light", "dark"]) {
+    const page = await pageAt("/pilot", width, theme);
+    await page.addStyleTag({content: "html {font-size: 200% !important;}"});
+    await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+    await overflow(page);
+    await page.close();
+  }
 });
 await check("extreme headline values retain every digit at 320px", async () => {
   for (const theme of ["light", "dark"]) {

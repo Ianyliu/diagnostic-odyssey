@@ -1,3 +1,6 @@
+.pilot-page { overflow-wrap: anywhere; }
+.pilot-page > * { min-width: 0; }
+
 .pilot-page .heading-row {
   grid-template-columns: minmax(0, 1fr) minmax(220px, 300px);
   align-items: start;
@@ -353,7 +356,7 @@
 .pilot-page .result-card > h2 { font-size: 1.35rem; }
 @media (max-width: 640px) {
  .pilot-headlines { grid-template-columns: minmax(0, 1fr); gap: 10px; }
- .pilot-headlines dd { font-size: 1.5rem; }
+ .pilot-headlines dd { font-size: clamp(1rem, 8cqi, 1.5rem); }
  .pilot-group-values strong { font-size: clamp(.75rem, 4.8cqi, .82rem); }
  .sensitivity-preview li { grid-template-columns: minmax(0, 1fr) auto; }
  .preview-gap-track { grid-column: 1 / -1; grid-row: auto; }
