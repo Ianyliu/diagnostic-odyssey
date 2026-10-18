@@ -13,7 +13,7 @@
   min-height: 0;
   overflow: hidden;
   margin-inline: calc((min(1376px, 100vw - 48px) - 100vw) / 2);
-  padding: clamp(48px, 6vw, 86px) max(24px, calc((100vw - 1320px) / 2));
+  padding: clamp(30px, 4vw, 54px) max(24px, calc((100vw - 1320px) / 2));
   border-bottom: 1px solid var(--do-border);
   background:
     radial-gradient(circle at 82% 18%, color-mix(in srgb, var(--do-brand-teal) 6%, transparent) 0, transparent 32%),
@@ -84,7 +84,7 @@
   margin: 0;
   color: var(--do-text);
   font-family: var(--do-font-display);
-  font-size: clamp(2.8rem, 4.6vw, 4.6rem);
+  font-size: clamp(2.6rem, 4vw, 3.8rem);
   font-weight: 790;
   letter-spacing: -.055em;
   line-height: 1.04;
@@ -851,4 +851,58 @@
 .overview-page .journey-card:hover strong,
 .overview-page .journey-card:focus-visible strong {
   color: var(--do-selection-text);
+}
+
+/* Compact editorial opening; the existing reveal controller and roles remain. */
+.overview-page { gap: 32px; }
+.overview-hero-actions { align-items: center; gap: 12px 22px; }
+.overview-secondary-cta { display: inline-flex; align-items: center; min-height: 44px; color: var(--do-accent); font-weight: 650; text-underline-offset: 4px; }
+.overview-proof { margin-top: 24px; padding-block: 12px; }
+.overview-tertiary-cta { flex-basis: auto; }
+.overview-destinations { margin-inline: 0; padding: 12px 0 28px; border: 0; background: transparent; }
+.overview-section-heading h2 { font-size: clamp(1.5rem, 2.4vw, 2rem); }
+.overview-page .journey-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; }
+.overview-page .journey-card { min-height: 0; border: 0; border-top: 2px solid var(--do-border); border-radius: 0; background: transparent; padding: 22px 20px 12px 0; box-shadow: none; }
+.overview-page .journey-card:hover, .overview-page .journey-card:focus-visible { transform: none; box-shadow: none; border-color: var(--do-accent); }
+.overview-page .journey-card strong { font-size: .92rem; }
+.overview-page .journey-card small { grid-column: 1 / -1; }
+.overview-page .journey-arrow { background: transparent; color: var(--do-accent); width: 18px; }
+.overview-workflow-note { font-size: .85rem; line-height: 1.7; color: var(--do-text-muted); }
+.overview-workflow-note a { color: var(--do-selection-text); text-underline-offset: 4px; }
+@media (min-width: 880px) and (max-width: 1100px) {
+ .overview-hero { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px; }
+ .preview-body { grid-template-columns: 1fr; }
+ .preview-output { display: none; }
+}
+@media (max-width: 879px) {
+ .overview-hero { grid-template-columns: 1fr; padding-block: 28px; gap: 24px; }
+ .overview-hero h1 { font-size: clamp(2.35rem, 7vw, 3.5rem); max-width: 20ch; }
+ .overview-kicker { margin-bottom: 16px; }
+ .overview-lede { margin-top: 18px; font-size: 1rem; }
+ .overview-hero-actions { margin-top: 20px; }
+ .overview-provenance { width: 100%; }
+ .preview-body { min-height: 0; grid-template-columns: 1fr; }
+ .preview-lanes { gap: 0; padding: 4px 14px; }
+ .opening-lane { padding: 10px 8px; border: 0; border-radius: 0; box-shadow: none; background: transparent; }
+ .opening-lane + .opening-lane { border-top: 1px solid var(--do-border); }
+ .opening-lane::after, .lane-rule, .preview-output, .preview-footer { display: none; }
+ .opening-lane small { font-size: .69rem; }
+ .workspace-preview { box-shadow: none; transform: none; }
+ .preview-chrome { min-height: 40px; }
+ .overview-page .journey-grid { grid-template-columns: 1fr 1fr; }
+ .overview-provenance figcaption { text-align: left; }
+}
+@media (max-width: 540px) {
+ .overview-page .journey-grid { grid-template-columns: minmax(0, 1fr); }
+ .overview-page .journey-card { grid-template-columns: auto 1fr auto; gap: 4px 12px; padding: 16px 0; }
+ .overview-page .journey-card small { grid-column: 2 / -1; }
+ .overview-hero-actions .button { width: auto; }
+}
+
+.overview-secondary-cta { background: transparent !important; backdrop-filter: none; }
+@media (max-width: 540px) {
+ .overview-hero h1 { font-size: 2.35rem; }
+ .overview-hero-actions { gap: 4px 16px; }
+ .overview-tertiary-cta { font-size: .82rem; }
+ .overview-proof { margin-top: 16px; }
 }

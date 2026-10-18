@@ -24,9 +24,9 @@ test("overview keeps the workflow visible without promotional filler", () => {
   assert.match(overview, /Evidence into planning/);
   assert.match(overview, /boundaries intact/);
   assert.match(overview, /overview-proof/);
-  assert.match(overview, /overview-role-grid/);
+  assert.match(overview, /<OpeningProvenance playing=\{opening\}/);
   assert.match(overview, /journey-grid/);
-  assert.match(overview, /<DecisionStateRail \/>/);
+  assert.doesNotMatch(overview, /<DecisionStateRail/);
   assert.doesNotMatch(overview, /overview-launch-pill/);
   assert.doesNotMatch(overview, /overview-final-cta/);
   assert.match(css, /radial-gradient/);
