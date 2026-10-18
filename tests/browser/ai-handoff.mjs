@@ -1,3 +1,4 @@
+import {prepareWorkspace} from "./workspace-helpers.mjs";
 /* global process, console, window, document, navigator, localStorage, sessionStorage, CustomEvent, getComputedStyle, URL */
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";
@@ -62,6 +63,7 @@ function envelope(text) {
   return JSON.parse(match[1]);
 }
 async function exportJson(p) {
+  await prepareWorkspace(p);
   const pending = p.waitForEvent("download");
   await p.getByRole("button", {name: "Export JSON companion"}).click();
   return JSON.parse(await readFile(await (await pending).path(), "utf8"));

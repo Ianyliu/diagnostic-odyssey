@@ -1,3 +1,4 @@
+import {prepareWorkspace, navigateWorkspace} from "./workspace-helpers.mjs";
 /* global process, console, document, window, innerWidth, getComputedStyle, URL */
 import assert from "node:assert/strict";
 import {mkdir, readFile, writeFile, readdir} from "node:fs/promises";
@@ -25,16 +26,13 @@ async function check(name, body) {
   console.log(matrix.at(-1).status, name);
 }
 async function ready(page, path = "/concept/future-ai") {
-  await page.goto(base + path); await page.locator("main h1").waitFor();
+  await page.goto(base + path); await page.locator("main h1").waitFor(); await prepareWorkspace(page);
   if (!disabled && path === "/concept/future-ai") await page.locator(".fc-finding").first().waitFor();
 }
 async function goal(page, name) { await page.getByRole("tab", {name, exact: false}).click(); }
-async function nav(page, name) {
-  const menu = page.getByRole("navigation", {name: "Primary navigation"});
-  if (!await menu.isVisible()) await page.getByRole("button", {name: "Menu", exact: true}).click();
-  await menu.getByRole("link", {name, exact: true}).click();
-}
+async function nav(page, name) { await navigateWorkspace(page, name); }
 async function exportBrief(page, name) {
+  await prepareWorkspace(page);
   const pending = page.waitForEvent("download");
   await page.getByRole("button", {name: "Export JSON companion"}).click();
   const download = await pending; const path = `${output}/${name}.json`; await download.saveAs(path);

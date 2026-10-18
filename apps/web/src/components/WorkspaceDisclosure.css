@@ -1,0 +1,12 @@
+.workspace-disclosure { min-width: 0; border-block-start: 1px solid var(--do-border); }
+.workspace-disclosure > summary { padding: 16px 4px; color: var(--do-text); cursor: pointer; }
+.workspace-disclosure > summary::marker { color: var(--do-accent); }
+.disclosure-title { font-weight: 720; }
+.disclosure-summary { display: block; margin: 4px 0 0 19px; color: var(--do-text-muted); font-size: .82rem; font-weight: 450; line-height: 1.6; }
+.disclosure-content { min-width: 0; padding-block: 4px 20px; }
+.workspace-disclosure[open] > summary { padding-bottom: 12px; }
+@media print {
+  .workspace-disclosure { border: 0; }
+  .workspace-disclosure > summary { display: none; }
+  .workspace-disclosure > .disclosure-content { display: block !important; padding: 0; }
+}

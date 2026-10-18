@@ -1,3 +1,4 @@
+import {prepareWorkspace, navigateWorkspace} from "./workspace-helpers.mjs";
 /* global process, console, document, innerWidth, window, getComputedStyle, Event */
 import assert from "node:assert/strict";
 import {createRequire} from "node:module";
@@ -16,15 +17,8 @@ async function check(name,body) {
   for(const context of browser.contexts()) await context.close();
   await writeFile(`${output}/results.json`,JSON.stringify({browser:browser.version(),results,events},null,2));
 }
-async function ready(page,path="/data-requests") {await page.goto(base+path);await page.locator("main h1").waitFor();}
-async function navigate(page,name) {
-  const nav=page.getByRole("navigation",{name:"Primary navigation"});
-  if(!await nav.isVisible()) await page.getByRole("button",{name:"Menu",exact:true}).click();
-  await nav.getByRole("link",{name,exact:true}).click();
-  const titles={"Pilot planner":"Scope a feasible pilot","Data requests":"Turn uncertainty into a concrete request","Planning brief":"Long COVID burden and pilot planning brief"};
-  await page.getByRole("heading",{name:titles[name],exact:true}).waitFor();
-  await page.waitForFunction(()=>document.querySelector('.menu-toggle')?.getAttribute('aria-expanded')!=="true");
-}
+async function ready(page,path="/data-requests") {await page.goto(base+path);await page.locator("main h1").waitFor();await prepareWorkspace(page);}
+async function navigate(page,name) { await navigateWorkspace(page,name); }
 async function download(page,name,button="Export JSON companion") {
   const pending=page.waitForEvent("download");await page.getByRole("button",{name:button,exact:true}).click();
   await (await pending).saveAs(`${output}/${name}.json`);return JSON.parse(await readFile(`${output}/${name}.json`,"utf8"));

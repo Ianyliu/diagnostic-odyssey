@@ -69,6 +69,18 @@ test("shell handles native same-page fragment clicks and history hash changes", 
   assert.match(shell, /scrollToFragment\(hash\)/);
 });
 
+test("fragments open nested disclosures before focusing or measuring the target", () => {
+  const outer = {tagName: "DETAILS", open: false, parentElement: null};
+  const inner = {tagName: "DETAILS", open: false, parentElement: outer};
+  const target = {
+    tagName: "H2", parentElement: inner, matches: () => true,
+    hasAttribute: () => true,
+    focus() { assert.ok(outer.open && inner.open); },
+    scrollIntoView() { assert.ok(outer.open && inner.open); }
+  } as unknown as HTMLElement;
+  assert.equal(scrollToFragment("#nested", () => target), true);
+});
+
 test("route restoration saves the last observed scroll before replacing route content", () => {
   const shell = readFileSync(fileURLToPath(new URL("../src/components/AppShell.tsx", import.meta.url)), "utf8");
   assert.match(shell, /useLayoutEffect\(\(\) => \{[\s\S]*?addEventListener\("scroll", recordScroll/);

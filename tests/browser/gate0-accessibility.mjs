@@ -111,7 +111,7 @@ for (const mode of ["light", "dark", "system-light", "system-dark"]) for (const 
     assert.deepEqual(scan.violations, []);
     assert.ok(measurements.viewport.scrollWidth <= measurements.viewport.clientWidth, "Expanded source details must not overflow the document");
     const menu = p.getByRole("button", { name: "Menu", exact: true }); await menu.focus(); await p.keyboard.press("Enter");
-    const overview = p.getByRole("navigation", { name: "Primary navigation" }).getByRole("link", { name: "Overview", exact: true });
+    const overview = p.getByRole("navigation", { name: "Supporting navigation" }).getByRole("link", { name: "Overview", exact: true });
     await overview.focus(); await p.keyboard.press("Enter"); await p.waitForURL(`${base}/`);
     await p.waitForFunction(() => document.activeElement === document.querySelector("main h1"));
   });

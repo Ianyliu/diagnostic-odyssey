@@ -1,3 +1,4 @@
+import {prepareWorkspace, navigateWorkspace} from "./workspace-helpers.mjs";
 /* global process, console, document, window */
 import assert from "node:assert/strict";
 import { mkdir, writeFile, readFile } from "node:fs/promises";
@@ -27,15 +28,12 @@ async function session(width = 1440, theme = "light", reducedMotion = "reduce") 
     if (new URL(request.url()).origin !== new URL(base).origin) externalRequests.push(request.url());
   });
   await page.goto(`${base}/brief`);
-  await page.locator("#planning-insights-title").waitFor();
+  await page.locator("#planning-insights-title").waitFor(); await prepareWorkspace(page);
   return {context, page};
 }
-async function navigate(page, name) {
-  const nav = page.getByRole("navigation", {name: "Primary navigation"});
-  if (!await nav.isVisible()) await page.getByRole("button", {name: "Menu", exact: true}).click();
-  await nav.getByRole("link", {name, exact: true}).click();
-}
+async function navigate(page, name) { await navigateWorkspace(page, name); }
 async function exportJson(page, name) {
+  await prepareWorkspace(page);
   const pending = page.waitForEvent("download");
   await page.getByRole("button", {name: "Export JSON companion"}).click();
   const download = await pending;
@@ -81,7 +79,7 @@ for (const width of [1440, 768, 390, 360]) for (const theme of ["light", "dark"]
 await run("current state, local selection, requests and canonical JSON isolation", async () => {
   const {page} = await session();
   const before = await exportJson(page, "before-inspection");
-  for (const disclosure of await page.locator("#planning-insights summary").all()) await disclosure.click();
+  for (const disclosure of await page.locator("#planning-insights details:not(.workspace-disclosure) > summary").all()) await disclosure.click();
   const after = await exportJson(page, "after-inspection");
   delete before.generated_at; delete after.generated_at;
   assert.deepEqual(after, before);

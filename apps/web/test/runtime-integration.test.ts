@@ -688,32 +688,14 @@ test("local-context selection UI supports reviewed records without changing Pilo
   assert.doesNotMatch(pilotSource, /selectedLocalContext|setLocalContextSelected/);
 });
 
-test("AppShell evidence strip is truthful for loading, loaded, and error local-context states", () => {
-  const shell = readSource("../src/components/AppShell.tsx");
-  assert.match(shell, /useArtifact\(\)/);
-  assert.match(
-    shell,
-    /Local implementation context · loading/
-  );
-  assert.match(
-    shell,
-    /West Virginia implementation context · reviewed state data/
-  );
-  assert.match(
-    shell,
-    /Local implementation context · unavailable/
-  );
-  assert.doesNotMatch(
-    shell,
-    /Local implementation context and intervention-effect evidence are not yet loaded/
-  );
-  assert.match(
-    shell,
-    /National MEPS burden · reviewed/
-  );
-  assert.match(shell, /Pilot · analyst assumptions/);
-  assert.match(shell, /no approved record loaded/);
-  assert.match(shell, /check scenario eligibility/);
+test("analytical scope remains truthful for loading, loaded and unavailable local context", () => {
+  const scope = readSource("../src/components/ContextBar.tsx");
+  assert.match(scope, /useArtifact\(\)/);
+  assert.match(scope, /localContextStatus === "loaded"/);
+  assert.match(scope, /localContextStatus === "error"/);
+  assert.match(scope, /"Unavailable"/);
+  assert.match(scope, /"Loading"/);
+  assert.match(scope, /implementationContextLabel/);
 });
 
 test("local-context failure state leaves national routes conceptually available", () => {

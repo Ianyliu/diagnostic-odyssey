@@ -1,3 +1,4 @@
+import {prepareWorkspace, navigateWorkspace} from "./workspace-helpers.mjs";
 /* global process, window, URL, console */
 import assert from "node:assert/strict";
 import {createRequire} from "node:module";
@@ -17,17 +18,18 @@ async function check(name, body) {
 }
 await check("Incomplete Pilot draft survives navigation; canonical export retains the last valid input", async page => {
   await page.goto(base + "/pilot");
+  await page.locator("main h1").waitFor(); await prepareWorkspace(page);
   const capacity = page.locator("#pilot-capacity");
   await capacity.fill("2400");
   await capacity.fill("2e");
-  await page.getByRole("navigation", {name: "Primary navigation"}).getByRole("link", {name: "Planning brief"}).click();
+  await navigateWorkspace(page, "Planning brief");
   const downloadPromise = page.waitForEvent("download");
   await page.getByRole("button", {name: /Export.*JSON/i}).click();
   const download = await downloadPromise;
   let bytes = "";
   for await (const chunk of await download.createReadStream()) bytes += chunk;
   assert.equal(JSON.parse(bytes).scenario.input.capacity, 2400);
-  await page.getByRole("navigation", {name: "Primary navigation"}).getByRole("link", {name: "Pilot planner"}).click();
+  await navigateWorkspace(page, "Pilot planner");
   assert.equal(await capacity.inputValue(), "2e");
   assert.equal(await capacity.getAttribute("aria-invalid"), "true");
   await capacity.fill("1800");
@@ -36,6 +38,7 @@ await check("Incomplete Pilot draft survives navigation; canonical export retain
 await check("JSON download failure is announced, recoverable, and preserves the Brief", async page => {
   const errors = []; page.on("pageerror", error => errors.push(String(error)));
   await page.goto(base + "/brief");
+  await page.locator("main h1").waitFor(); await prepareWorkspace(page);
   await page.evaluate(() => {window.originalCreateObjectURL = URL.createObjectURL; URL.createObjectURL = () => {throw new Error("Synthetic browser download failure");};});
   await page.getByRole("button", {name: /Export.*JSON/i}).click();
   await page.getByRole("status").filter({hasText: "JSON download could not start"}).waitFor();
