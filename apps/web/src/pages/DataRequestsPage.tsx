@@ -1,6 +1,7 @@
 import "./DataRequestsPage.css";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { WorkspaceDisclosure } from "../components/WorkspaceDisclosure";
 import { ContextBar } from "../components/ContextBar";
 import { useArtifact } from "../data/ArtifactContext";
 import { acquisitionResolver } from "@diagnostic-odyssey/acquisition-hints";
@@ -73,6 +74,8 @@ export function DataRequestsPage() {
               </span>
             </div>
           </header>
+          <p className="request-owner"><strong>Likely owner:</strong> {request.likely_source_owner}</p>
+          <WorkspaceDisclosure id={`request-details-${request.request_id}`} title="Request details & collection guidance">
           <dl className="data-request-details">
             <div><dt>Pathway step</dt><dd>{formatPathwayStepLabel(request.pathway_step)}</dd></div>
             {request.target_mechanism && <div><dt>Target mechanism</dt><dd>{formatMechanismLabel(request.target_mechanism)}</dd></div>}
@@ -90,6 +93,18 @@ export function DataRequestsPage() {
             removeAcquisitionHint(request.request_id);
             setAnnouncement("Acquisition guidance removed. Brief selection is unchanged.");
           }}>Remove acquisition guidance</button>}
+            {isAnalystRequest && <button
+              className="text-button"
+              type="button"
+              onClick={() => {
+                removeAnalystDataRequest(request.request_id);
+                setAnnouncement("Session request removed.");
+                requestAnimationFrame(() =>
+                  (document.getElementById("request-summary") ?? document.getElementById("data-requests-heading"))?.focus()
+                );
+              }}
+            >Remove session request</button>}
+          </WorkspaceDisclosure>
           <div className="data-request-actions">
             <label className="brief-selection">
               <input
@@ -128,17 +143,6 @@ export function DataRequestsPage() {
             {stale && sensitivityField && scenario && !scenarioResult && <span className="data-request-refresh-blocked">
               Fix the Pilot planner inputs before refreshing this request.
             </span>}
-            {isAnalystRequest && <button
-              className="text-button"
-              type="button"
-              onClick={() => {
-                removeAnalystDataRequest(request.request_id);
-                setAnnouncement("Session request removed.");
-                requestAnimationFrame(() =>
-                  (document.getElementById("request-summary") ?? document.getElementById("data-requests-heading"))?.focus()
-                );
-              }}
-            >Remove session request</button>}
             </div>
           </div>
         </article>;
