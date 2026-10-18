@@ -6,20 +6,32 @@ export interface PrintDisclosure {
 }
 
 export function createBriefPrintDisclosureState(
-  getDisclosures: () => readonly PrintDisclosure[]
+  getDisclosures: () => readonly PrintDisclosure[],
+  viewport?: Pick<Window, "scrollX" | "scrollY" | "scrollTo"> & Partial<Pick<Window, "matchMedia">>
 ) {
   let original: ReadonlyArray<readonly [PrintDisclosure, boolean]> | null = null;
+  let originalScroll: readonly [number, number] | null = null;
 
   return {
     prepare() {
       if (original !== null) return;
+      if (viewport) originalScroll = [viewport.scrollX, viewport.scrollY];
       original = getDisclosures().map(disclosure => [disclosure, disclosure.open] as const);
       for (const [disclosure] of original) disclosure.open = true;
+      // Chromium can omit a repeated fixed footer when print begins mid-scroll.
+      viewport?.scrollTo(0, 0);
     },
     restore() {
-      if (original === null) return;
-      for (const [disclosure, wasOpen] of original) disclosure.open = wasOpen;
-      original = null;
+      if (original !== null) {
+        for (const [disclosure, wasOpen] of original) disclosure.open = wasOpen;
+        original = null;
+      }
+      // afterprint may precede the browser leaving print media. Restore the
+      // screen position only after that layout returns, retaining the snapshot.
+      if (originalScroll && !readMediaQueryMatches(getBrowserMediaQuery("print", viewport))) {
+        viewport?.scrollTo(...originalScroll);
+        originalScroll = null;
+      }
     }
   };
 }

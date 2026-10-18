@@ -13,6 +13,7 @@ import {
   type Estimate
 } from "@diagnostic-odyssey/contracts";
 import { getEvidenceParameterReadiness, getNationalBurdenReadiness } from "../data/workspaceReadiness";
+import { WorkspaceDisclosure } from "../components/WorkspaceDisclosure";
 import { ContextBar } from "../components/ContextBar";
 import { DecisionTrace } from "../components/DecisionTrace";
 import { DistributionSummaryText } from "../components/DistributionSummaryText";
@@ -121,7 +122,7 @@ export function BriefPage({conceptAvailable = false, showFutureConcept = false, 
     const page = pageRef.current;
     if (!page) return;
     const state = createBriefPrintDisclosureState(
-      () => Array.from(page.querySelectorAll<HTMLDetailsElement>("details"))
+      () => Array.from(page.querySelectorAll<HTMLDetailsElement>("details")), window
     );
     printDisclosureState.current = state;
     window.addEventListener("beforeprint", state.prepare);
@@ -188,9 +189,16 @@ export function BriefPage({conceptAvailable = false, showFutureConcept = false, 
     <header className="page-heading">
       <p className="eyebrow">PLANNING BRIEF</p>
       <h1>Long COVID burden and pilot planning brief</h1>
-      <p>Deterministic synthesis of reviewed national burden, analyst-supplied planning assumptions, explicitly selected implementation context, evidence gaps, and interpretation guardrails.</p>
+      <p>Reviewed national evidence, selected local context and explicit pilot assumptions, with their limits and next data needs.</p>
     </header>
 
+    <div className="brief-intelligence-actions">
+      <div className="brief-handoff-entry">
+          <AiHandoff brief={brief} sourceState={{status, localContextStatus,
+            localArtifactVersion: localContext?.manifest.artifact_version ?? null,
+            scenario, scenarioValid: !scenario || !!scenarioResult,
+            selectedLocalContextIds, pilotLocalContextId, briefDataRequestIds}} />
+      </div>
     {conceptAvailable && <div className="brief-concept-entry" role="group" aria-label="Future AI concept controls">
       <label className="brief-concept-toggle">
         <input type="checkbox" checked={showFutureConcept} onChange={event => onFutureConceptChange?.(event.target.checked)} />
@@ -200,6 +208,13 @@ export function BriefPage({conceptAvailable = false, showFutureConcept = false, 
       <small className="brief-concept-note">* Interactive concept only · No live AI or model API calls. You can hide or re-enable the preview here.</small>
     </div>}
 
+    </div>
+    <div className="brief-export-actions brief-primary-actions">
+      <button className="button" onClick={printBrief}>Print / save PDF</button>
+      <WorkspaceDisclosure id="brief-export-options" title="Export options"><BriefJsonExport brief={brief} /></WorkspaceDisclosure>
+      <Link className="text-button" to="/data-requests">Review data needs</Link>
+      <Link className="text-button" to="/evidence">Intervention evidence &amp; limits</Link>
+    </div>
     <div className="print-provenance" role="group" aria-label="Planning Brief provenance">
       <strong>Brief provenance</strong>
       <span><b>National reviewed artifact:</b> {brief.artifact_version}</span>
@@ -220,6 +235,7 @@ export function BriefPage({conceptAvailable = false, showFutureConcept = false, 
       <div><strong>Data requests</strong><span>{selectedDataRequests.length > 0 ? `${selectedDataRequests.length} selected` : "None selected"}</span></div>
     </section>
 
+    <WorkspaceDisclosure id="brief-full-report" title="Read full brief" summary="All reviewed findings, assumptions, context, evidence limits and data requests. The complete report is always included when printing.">
     <div className="brief-grid">
       <aside className="brief-aside" aria-label="Planning Brief contents and actions">
         <nav className="brief-contents" aria-label="Planning Brief contents">
@@ -251,14 +267,7 @@ export function BriefPage({conceptAvailable = false, showFutureConcept = false, 
           </span>
         </div>
         </div>
-        <div className="brief-export-actions">
-          <AiHandoff brief={brief} sourceState={{status, localContextStatus,
-            localArtifactVersion: localContext?.manifest.artifact_version ?? null,
-            scenario, scenarioValid: !scenario || !!scenarioResult,
-            selectedLocalContextIds, pilotLocalContextId, briefDataRequestIds}} />
-          <BriefJsonExport brief={brief} />
-          <button className="button secondary" onClick={printBrief}>Print / save PDF</button>
-        </div>
+
       </aside>
       <article className="brief-content" aria-label="Planning Brief document">
         <section id="brief-interpretation-boundaries" className="interpretation-boundaries">
@@ -442,6 +451,7 @@ export function BriefPage({conceptAvailable = false, showFutureConcept = false, 
 
 
     </div>
+    </WorkspaceDisclosure>
     <div className="brief-print-footer" aria-hidden="true">
       <span>Diagnostic Odyssey</span>
       <span>{brief.artifact_version}</span>

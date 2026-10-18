@@ -621,3 +621,26 @@
 @media print {
   .planning-brief-page .brief-concept-entry { display: none !important; }
 }
+
+/* First-class deterministic summary, distinct AI entry points, and a complete mounted report. */
+.brief-intelligence-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; border-block: 1px solid var(--do-border); padding-block: 16px; }
+.brief-handoff-entry { min-width: 0; display: grid; align-content: start; gap: 8px; }
+.brief-handoff-entry p { margin: 0; font-size: .8rem; }
+.planning-brief-page .brief-concept-entry { padding: 0; border: 0; background: transparent; }
+.planning-brief-page .brief-primary-actions { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 12px 24px; }
+.brief-primary-actions > .workspace-disclosure { border: 0; }
+.brief-primary-actions > .workspace-disclosure > summary { padding: 10px 0; font-size: .85rem; }
+.brief-primary-actions .disclosure-content { padding-bottom: 0; }
+.brief-primary-actions .text-button { font-size: .82rem; }
+.planning-brief-page #brief-full-report > summary { padding-block: 22px; }
+#brief-full-report > summary .disclosure-title { font-size: 1.35rem; }
+@media (max-width: 640px) {
+ .brief-intelligence-actions { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+ .brief-handoff-entry { padding-bottom: 14px; border-bottom: 1px solid var(--do-border); }
+}
+@media print {
+ .brief-intelligence-actions, .planning-brief-page .brief-primary-actions { display: none !important; }
+ #brief-full-report, #brief-full-report > .disclosure-content { display: block !important; }
+ #brief-full-report::details-content { content-visibility: visible !important; display: block !important; }
+ #brief-full-report > summary { display: none !important; }
+}

@@ -73,6 +73,22 @@ test("executeBriefPrint prepares disclosures and invokes print callback", () => 
   assert.deepEqual(disclosures.map(d => d.open), [false, true]);
 });
 
+test("print preparation and cancellation restore the original scroll position once", () => {
+  const viewport = {scrollX: 0, scrollY: 420, scrollTo(x?: number | ScrollToOptions, y?: number) {
+    viewport.scrollX = typeof x === "number" ? x : x?.left ?? 0;
+    viewport.scrollY = typeof x === "number" ? y ?? 0 : x?.top ?? 0;
+  }};
+  const state = createBriefPrintDisclosureState(() => [{open: false}], viewport);
+  state.prepare();
+  assert.equal(viewport.scrollY, 0);
+  state.prepare();
+  state.restore();
+  assert.equal(viewport.scrollY, 420);
+  viewport.scrollY = 600;
+  state.restore();
+  assert.equal(viewport.scrollY, 600);
+});
+
 test("executeBriefPrint restores disclosures and rethrows if print callback throws", () => {
   const disclosures = [{ open: false }, { open: true }, { open: false }];
   const state = createBriefPrintDisclosureState(() => disclosures);

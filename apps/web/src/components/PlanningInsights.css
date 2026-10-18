@@ -127,3 +127,20 @@
   .insights-print-summary ul { margin: 4pt 0; padding-left: 12pt; }
   .insights-print-summary li { margin: 2pt 0; break-inside: avoid; }
 }
+
+/* The existing projection supplies this editorial summary; no parallel summary model. */
+@media screen {
+ .planning-insights .insight-card { border: 0; border-top: 2px solid var(--do-border); border-radius: 0; padding: 16px 0; background: transparent; }
+ .planning-insights .insight-national { border-color: var(--do-reviewed-border); }
+ .planning-insights .insight-scenario { border-color: var(--do-assumption-border); }
+ .planning-insights .insight-local { border-color: var(--do-selection-border); }
+ .planning-insights .insight-next { border-color: var(--do-warning-border); }
+ .insight-summary-grid { column-gap: 28px; row-gap: 4px; }
+ .insight-card h3 { margin-block: 10px 14px; font-size: 1rem; }
+ .insight-finding { border: 0; padding-top: 0; }
+ .insight-boundaries { border-left: 0; }
+ .insight-readiness { padding-block: 16px; border-top: 1px solid var(--do-border); font-size: .85rem; }
+ .insight-readiness p { margin: 6px 0; max-width: 90ch; color: var(--do-text-muted); }
+ .planning-insights .investigation-card { border-radius: 0; background: transparent; border-inline: 0; border-bottom: 0; padding-inline: 0; }
+ .planning-insights .insights-print-choice { min-height: 44px; align-items: center; }
+}

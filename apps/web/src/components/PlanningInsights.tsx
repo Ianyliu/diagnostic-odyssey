@@ -10,6 +10,7 @@ import { PLANNING_DEFAULTS_LABEL } from "../data/planningScenarioDefaults";
 import { pilotInputFields } from "../data/pilotInputDraft";
 import { formatAppliedAssumption } from "../pages/briefAssumptions";
 import { DistributionSummaryText } from "./DistributionSummaryText";
+import { WorkspaceDisclosure } from "./WorkspaceDisclosure";
 import { PlanningInsightsPrintSummary } from "./PlanningInsightsPrintSummary";
 import "./PlanningInsights.css";
 
@@ -192,9 +193,18 @@ export function PlanningInsights({model}: {model: PlanningInsightsModelV1}) {
           <details className="insight-disclosure"><summary>Inspect all Brief warnings</summary><ul>{model.warnings.map(warning => <li key={warning}>{warning}</li>)}</ul></details>
         </section>
       </div>
-      <EvidenceRoles model={model} />
-      <InterventionEvidenceGap explanation={model.interventions.explanation} />
-      <Investigations model={model} />
+      <div className="insight-readiness">
+        <strong>Intervention evidence readiness</strong>
+        <p>{model.interventions.explanation}</p>
+        <Link className="text-button" to="/evidence">Review intervention evidence &amp; limits →</Link>
+      </div>
+      <WorkspaceDisclosure id="insight-provenance-details" title="Evidence roles & provenance">
+        <EvidenceRoles model={model} />
+        <InterventionEvidenceGap explanation={model.interventions.explanation} />
+      </WorkspaceDisclosure>
+      <WorkspaceDisclosure id="insight-investigation-details" title="Explore data gaps & next actions" summary={`${model.investigations.prompts.length} operational investigation prompts · creating a request and including it in the Brief remain separate choices.`}>
+        <Investigations model={model} />
+      </WorkspaceDisclosure>
     </div>
   </section>{includePrintSummary && <PlanningInsightsPrintSummary model={model} />}</>;
 }
