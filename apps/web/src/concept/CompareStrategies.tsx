@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { strategyOptions } from "./storyboard";
 import { demoTopicExamples, getDemoPublication, type DemoTopicId } from "./demoLiterature";
-import { DemoLiteratureNotice, DemoSourceCitation } from "./DemoLiterature";
+import { DemoLiteratureNotice, DemoSourceCitation } from "./DemoLiteratureComponents";
 import { ConceptCard, QuestionList, TransferabilityQuestions, ViewHeading } from "./ConceptPrimitives";
 
 const criteria = [

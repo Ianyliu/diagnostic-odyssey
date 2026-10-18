@@ -61,7 +61,7 @@ test("no static demo publication is wired into authoritative analytical or expor
     catch { continue; }
     assert.doesNotMatch(content, /demoLiterature|DemoLiterature|demoTopicExamples|demoPublications/, path);
   }
-  for (const file of ["demoLiterature.ts", "DemoLiterature.tsx"]) {
+  for (const file of ["demoLiterature.ts", "DemoLiteratureComponents.tsx"]) {
     const source = readFileSync(new URL(`../src/concept/${file}`, import.meta.url), "utf8");
     assert.doesNotMatch(source, /\b(fetch\s*\(|XMLHttpRequest|WebSocket|sendBeacon|localStorage|sessionStorage|setScenario\s*\(|upsertAnalystDataRequest\s*\()/);
   }
