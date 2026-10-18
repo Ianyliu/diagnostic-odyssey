@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import type { LocalContextRecord } from "@diagnostic-odyssey/contracts";
+import { WorkspaceDisclosure } from "../components/WorkspaceDisclosure";
 import { ContextBar } from "../components/ContextBar";
 import { HpsaRuralComposition } from "../components/HpsaRuralComposition";
 import { InterpretationGuide } from "../components/InterpretationGuide";
@@ -214,6 +215,11 @@ export function LocalContextPage() {
     source.source_ref === "acs-2024-5year-profile"
   );
 
+  const categorySummary = (records: LocalContextRecord[]) => {
+    const count = records.filter(record => selectedLocalContextIds.includes(record.indicator_id)).length;
+    const pilot = records.find(record => record.indicator_id === pilotLocalContextId);
+    return `${records.length} reviewed indicators · ${count} selected for Brief${pilot ? ` · Pilot: ${pilot.label}` : ""}`;
+  };
   const selectedCount = selectedLocalContextIds.length;
   const activePilotRecord = indicators.find(record => record.indicator_id === pilotLocalContextId);
 
@@ -236,7 +242,7 @@ export function LocalContextPage() {
         </ol>
       </nav>
       <div className="ledger-main">
-    <InterpretationGuide
+    <details className="technical-disclosure"><summary>How to use local context</summary><InterpretationGuide
       id="local-context-interpretation"
       headingLevel={2}
       whatThisShows="Statewide implementation and access context from reviewed Health Resources and Services Administration (HRSA) and U.S. Census Bureau sources."
@@ -244,7 +250,10 @@ export function LocalContextPage() {
       whatItDoesNotShow="West Virginia Long COVID prevalence, burden, cost, causal effect, savings, ROI, or a composite access-severity score."
       whatToDoNext="Choose independently whether a reviewed record should be included in the Planning Brief, used as the one active Pilot planning context, both, or neither."
     />
+    </details>
     <div className="guardrail compact">
+      <strong>Statewide implementation context, separate from national burden.</strong>
+      <p>These indicators describe access and implementation conditions, not West Virginia Long COVID prevalence, disease costs, or intervention effects.</p>
       <strong>Missing does not mean zero.</strong>
       <p>Missing designation/data does not mean no shortage or zero implementation constraint. "Include in Planning Brief" and "Use in Pilot planning" are separate analyst choices. Neither changes national burden or Pilot planner numeric assumptions.</p>
     </div>
@@ -274,6 +283,7 @@ export function LocalContextPage() {
       <p>These sources have different time bases and should not be interpreted as one common observation year. Record disclosures below retain observation dates, universe, uncertainty, allowed and prohibited interpretation, and limitations.</p>
     </details>
 
+    <WorkspaceDisclosure id="local-primary-care-category" title="Primary care shortages" summary={categorySummary([primaryCount, primaryScore, ...primaryBreakdowns])} defaultOpen className="evidence-category">
     <article className="card ledger-panel ledger-source-group" id="local-primary-care">
       <h2>A. Primary Care Health Professional Shortage Area (HPSA) context</h2>
       <p className="subtle">{primaryCount.source_agency} · {primaryCount.source_release_vintage}</p>
@@ -309,8 +319,9 @@ export function LocalContextPage() {
           onPilotClear={clearPilotLocalContext}
         />
       </details>
-    </article>
+    </article></WorkspaceDisclosure>
 
+    <WorkspaceDisclosure id="local-mental-health-category" title="Mental health shortages" summary={categorySummary([mentalCount, mentalScore, ...mentalBreakdowns])} className="evidence-category">
     <article className="card ledger-panel ledger-source-group" id="local-mental-health">
       <h2>B. Mental Health HPSA context</h2>
       <p className="subtle">{mentalCount.source_agency} · {mentalCount.source_release_vintage}</p>
@@ -346,8 +357,9 @@ export function LocalContextPage() {
           onPilotClear={clearPilotLocalContext}
         />
       </details>
-    </article>
+    </article></WorkspaceDisclosure>
 
+    <WorkspaceDisclosure id="local-acs-category" title="Transportation, coverage & access" summary={categorySummary(acsRecords)} className="evidence-category">
     <article className="card ledger-panel ledger-source-group" id="local-acs">
       <h2>C. American Community Survey (ACS) implementation/access context</h2>
       <p className="subtle">U.S. Census Bureau · 2020–2024 ACS 5-year estimates / 2024 release. Native 90% margins of error are preserved.</p>
@@ -363,8 +375,9 @@ export function LocalContextPage() {
         <p className="subtle">{record.source_agency} · {record.source_release_vintage} · {record.confidence_level === null ? "Confidence level not published" : `${(record.confidence_level * 100).toFixed(0)}% confidence level`}</p>
         <IndicatorDisclosure record={record} />
       </div>)}
-    </article>
+    </article></WorkspaceDisclosure>
       </div>
     </div>
+    <div className="workflow-next"><Link className="button" to="/pilot">Continue to Pilot planner</Link><Link to="/brief">Review selected context in Brief</Link></div>
   </section>;
 }

@@ -258,3 +258,20 @@
   .local-ledger-page .ledger-row-selected { outline: 1px solid Highlight; }
   .local-ledger-page .ledger-row-pilot { box-shadow: inset 3px 0 Highlight; }
 }
+
+/* Category summaries carry orientation and selection state without repeated cards. */
+.evidence-category > summary { padding: 20px 4px; }
+.evidence-category > summary .disclosure-title { font-size: 1.14rem; }
+.evidence-category .ledger-panel { padding: 8px 0 0; border: 0; box-shadow: none; background: transparent; }
+.evidence-category .ledger-panel > h2, .evidence-category .burden-domain-header h2 { font-size: 1rem; }
+.ledger-selection-summary { border: 0; border-left: 3px solid var(--do-selection-text); border-radius: 0; }
+.workflow-next { display: flex; align-items: center; flex-wrap: wrap; gap: 16px 24px; padding-block: 16px; border-top: 1px solid var(--do-border); }
+.workflow-next > a:not(.button) { min-height: 44px; display: inline-flex; align-items: center; font-size: .9rem; color: var(--do-selection-text); text-underline-offset: 4px; }
+.ledger-indicator-row .selection-control { min-height: 44px; }
+.ledger-indicator-row .pilot-context-action { margin-top: 0; }
+@media (max-width: 767px) {
+ .ledger-section-nav { display: none; }
+ .ledger-layout { display: block; }
+ .ledger-indicator-row .selection-control { font-size: .85rem; }
+ .ledger-indicator-row .pilot-context-action .text-button { min-height: 44px; padding-block: 10px; }
+}

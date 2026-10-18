@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { canExportEstimate } from "@diagnostic-odyssey/contracts";
 import { BurdenMeasureList } from "../components/BurdenMeasureList";
+import { WorkspaceDisclosure } from "../components/WorkspaceDisclosure";
 import { ContextBar } from "../components/ContextBar";
 import { IntervalWhiskerPlot } from "../components/IntervalWhiskerPlot";
 import { useArtifact } from "../data/ArtifactContext";
@@ -54,13 +55,15 @@ export function BurdenPage() {
         )}</ol>
       </nav>
       <div className="burden-domain-stack">
-        {bundle.burden_domains.map(domain => {
+        {bundle.burden_domains.map((domain, index) => {
         const reviewed = domain.measures.length > 0 && domain.measures.every(canExportEstimate);
         const administrativeHourMeasures = domain.domain_id === "healthcare-work-admin"
           ? domain.measures.filter(estimate => estimate.unit === "hours/person/year")
           : [];
 
-        return <article className="card domain-card ledger-panel" id={`burden-${domain.domain_id}`} key={domain.domain_id}>
+        return <WorkspaceDisclosure key={domain.domain_id} id={`burden-group-${domain.domain_id}`} title={domain.label}
+          summary={`${domain.measures.length} measures · ${reviewed ? "Reviewed national evidence" : "Not release-eligible"}`}
+          defaultOpen={index === 0} className="evidence-category"><article className="card domain-card ledger-panel" id={`burden-${domain.domain_id}`} key={domain.domain_id}>
           <div className="card-title-row burden-domain-header">
             <div>
               <h2>{domain.label}</h2>
@@ -85,7 +88,7 @@ export function BurdenPage() {
             <summary>Domain interpretation boundaries</summary>
             <p>{domain.limitations.join(" ")}</p>
           </details>}
-        </article>;
+        </article></WorkspaceDisclosure>;
         })}
       </div>
     </div>
@@ -94,6 +97,6 @@ export function BurdenPage() {
       <strong>Native units stay separate.</strong>
       <p>Administrative time, spending, screening measures, utilization, and access experience are not added into one opaque score. Out-of-pocket spending remains nested within total spending, and K6/PHQ-2 remain screening/distress measures rather than diagnoses.</p>
     </div>
-    <Link className="button" to="/pilot">Continue to Pilot planner</Link>
+    <div className="workflow-next"><Link className="button" to="/local-context">Continue to Local context</Link><Link to="/evidence">Intervention evidence &amp; limits</Link></div>
   </section>;
 }
