@@ -23,6 +23,7 @@ function SourceControls() {
       if (kind === "scenario") state.setScenario({...state.scenario!, capacity: state.scenario!.capacity + 1});
       if (kind === "timestamp") state.setScenario({...state.scenario!});
       if (kind === "invalid-scenario") state.setScenario({...state.scenario!, capacity: -1});
+      if (kind === "local-clear") state.clearSelectedLocalContext();
       if (kind === "local") state.setLocalContextSelected(state.localContext!.indicators[0]!.indicator_id, true);
       if (kind === "pilot-local") state.setPilotLocalContext(state.localContext!.indicators[1]!.indicator_id);
       if (kind === "request-create") state.upsertAnalystDataRequest(createSensitivityDataRequest(state.scenario!, "capacity"));
