@@ -140,7 +140,7 @@ if (disabled) {
     const page = await (await context()).newPage(); await ready(page); await goal(page, goals[3]);
     await page.getByRole("checkbox", {name: "Remote care coordination", exact: true}).uncheck();
     assert.equal(await page.locator(".fc-strategy").count(), 2); assert.equal(await page.locator("thead th").count(), 3);
-    assert.equal(await page.getByRole("checkbox", {name: "Care navigation", exact: true}).isDisabled(), true);
+    assert.equal(await page.getByRole("checkbox", {name: "Care navigation", exact: true}).isDisabled(), false);
     await page.getByLabel("Comparison lens").selectOption("evidence"); assert.equal(await page.locator("tbody tr").count(), 3);
     assert.match(await page.locator("tbody").innerText(), /No matched comparative estimate/); assert.match(await page.locator("tbody").innerText(), /Not evaluated for local Pilot/);
     assert.match(await page.locator(".fc-demo-analysis").innerText(), /Not a winner/);
@@ -151,9 +151,15 @@ if (disabled) {
     assert.equal(await page.getByRole("rowheader", {name: "Comparative effectiveness"}).count(), 0);
     await page.evaluate(() => window.scrollTo(0, 0));
     await page.screenshot({path: `${output}/comparison-two-options.png`, fullPage: true});
+    await page.getByRole("button", {name: "Select none", exact: true}).click();
+    assert.equal(await page.locator(".fc-strategy").count(), 0);
+    assert.match(await page.locator(".fc-muted[role='status']").innerText(), /Select at least two approaches/);
+    await page.getByRole("button", {name: "Select all", exact: true}).click();
+    assert.equal(await page.locator(".fc-strategy").count(), 3);
   });
   await check("nonempty analyst state and canonical export are identical after every concept action", async () => {
     const page = await (await context({acceptDownloads: true})).newPage(); await ready(page, "/local-context");
+    await page.getByRole("button", {name: "Select none", exact: true}).first().click();
     await page.getByRole("checkbox").filter({visible: true}).first().check();
     await nav(page, "Pilot planner"); await page.getByLabel("Test assumption").selectOption("capacity");
     await page.getByRole("button", {name: "Add to data requests", exact: true}).click();

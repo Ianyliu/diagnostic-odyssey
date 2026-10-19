@@ -158,6 +158,7 @@ await check("fresh Brief: six complete AI goals match canonical export and downl
 
 await check("stale data request forces a current AI handoff snapshot; exploration preserves canonical state", async page => {
   await nav(page, "Local context");
+  await page.getByRole("button", {name: "Select none", exact: true}).first().click();
   await page.locator('input[id^="select-local-context-"]').first().check();
   await nav(page, "Pilot planner");
   await page.locator("#pilot-capacity").fill("5000");

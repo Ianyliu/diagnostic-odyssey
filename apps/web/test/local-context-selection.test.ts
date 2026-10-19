@@ -113,7 +113,7 @@ test("unknown IDs and ineligible preliminary, empty, error, or suppressed record
     record.state = variant.state;
 
     const selection = updateLocalContextSelection(
-      createLocalContextSelectionForArtifact(artifact),
+      clearLocalContextSelection(artifact),
       artifact,
       record.indicator_id,
       true

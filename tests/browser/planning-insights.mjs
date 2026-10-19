@@ -47,7 +47,7 @@ for (const width of [1440, 768, 390, 360]) for (const theme of ["light", "dark"]
     assert.match(await preview.innerText(), /Deterministic planning preview — no live AI inference/);
     assert.equal(await preview.locator(".insight-finding").count(), 3);
     assert.equal(await preview.locator(".investigation-card").count(), 3);
-    assert.match(await preview.innerText(), /Available, not selected/);
+    assert.match(await preview.innerText(), /34 selected indicators/);
     await preview.screenshot({path: `${output}/insights-${width}-${theme}.png`});
     await page.screenshot({path: `${output}/brief-${width}-${theme}.png`, fullPage: true});
     const summary = preview.locator(".insight-finding summary").first();
@@ -95,6 +95,7 @@ await run("current state, local selection, requests and canonical JSON isolation
   assert.match(await page.locator(".insight-next").innerText(), /Choose an assumption to verify/);
   assert.match(await page.locator(".insight-next").innerText(), /does not establish which investigation should come first/);
   await navigate(page, "Local context");
+  await page.getByRole("button", {name: "Select none", exact: true}).first().click();
   await page.locator('input[id^="select-local-context-"]').first().check();
   await navigate(page, "Planning brief");
   assert.match(await page.locator(".insight-local").innerText(), /1 selected indicator/);
@@ -106,7 +107,8 @@ await run("current state, local selection, requests and canonical JSON isolation
   assert.match(await prompt.innerText(), /Request exists/);
   await prompt.getByRole("link", {name: /Review existing request/}).click();
   const request = page.locator(".data-request-sheet");
-  assert.equal(await request.getByRole("checkbox").isChecked(), false);
+  assert.equal(await request.getByRole("checkbox").isChecked(), true);
+  await request.getByRole("checkbox").uncheck();
   await request.getByRole("checkbox").check();
   await navigate(page, "Pilot planner");
   await page.locator("#pilot-capacity").fill("1000");

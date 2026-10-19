@@ -64,6 +64,8 @@ await check("visible selections, collapsed category state and unchanged Pilot in
   const page = await pageAt("/local-context");
   const category = page.locator("#local-primary-care-category");
   const row = category.locator(".ledger-indicator-row").first();
+  assert.equal(await row.getByRole("checkbox").isChecked(), true, "reviewed indicator starts checked");
+  await page.getByRole("button", {name: "Select none", exact: true}).first().click();
   await row.getByRole("checkbox").check();
   await row.getByRole("button", {name: /Use .* in Pilot planning/}).click();
   await category.locator(":scope > summary").click();

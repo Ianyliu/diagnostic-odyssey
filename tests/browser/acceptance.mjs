@@ -235,6 +235,11 @@ await check(
     const page = await context.newPage();
     page.setDefaultTimeout(5000);
     await ready(page, "/brief");
+    const defaults = await exportBrief(page, "all-context-default");
+    assert.equal(defaults.local_context.length, 34, "eligible reviewed context is preselected");
+    await navigate(page, "Local context");
+    await page.getByRole("button", {name: "Select none", exact: true}).first().click();
+    await navigate(page, "Planning brief");
     const baseline = await exportBrief(page, "default-brief");
     snapshots.defaultBrief = baseline;
     assert.equal(baseline.burden_findings.length, 21);
@@ -309,7 +314,8 @@ await check(
       .locator(".data-request-sheet")
       .filter({ hasText: "SESSION PLANNING REQUEST" });
     assert.equal(await request.count(), 1);
-    assert.equal(await request.getByRole("checkbox").isChecked(), false);
+    assert.equal(await request.getByRole("checkbox").isChecked(), true, "new request starts selected");
+    await request.getByRole("checkbox").uncheck();
     await request.getByRole("checkbox").check();
     await navigate(page, "Planning brief");
     const selected = await exportBrief(page, "selected-brief");

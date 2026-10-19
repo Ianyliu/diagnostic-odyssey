@@ -34,12 +34,13 @@ for(const width of [1440,820,360]) for(const theme of ["light","dark"]) {
     assert.equal(await page.locator(".data-request-sheet").count(),0);
     await navigate(page,"Pilot planner");await page.locator("#sensitivity").getByRole("button",{name:"Add to data requests",exact:true}).click();
     await navigate(page,"Data requests");const request=page.locator(".data-request-sheet");
-    assert.equal(await request.count(),1);assert.equal(await request.getByRole("checkbox").isChecked(),false);
+    assert.equal(await request.count(),1);assert.equal(await request.getByRole("checkbox").isChecked(),true);
     await request.getByText("Acquisition guidance awaiting admission.",{exact:true}).waitFor();
     assert.equal(await request.getByRole("button",{name:/Attach reviewed acquisition/}).count(),0);
     assert.equal(await page.locator(".acquisition-guidance").count(),0);
     assert.ok(await overflow(page));await page.screenshot({path:`${output}/requests-pending-${width}-${theme}.png`,fullPage:true});
     const question=await request.locator("h2").innerText();const checkbox=request.getByRole("checkbox",{name:`${question} Include in Planning Brief`,exact:true});assert.equal(await checkbox.count(),1);
+    await checkbox.uncheck();assert.equal(await checkbox.isChecked(),false);
     await checkbox.focus();await page.keyboard.press("Space");assert.equal(await checkbox.isChecked(),true);
     await navigate(page,"Planning brief");let brief=await download(page,`selected-${width}-${theme}`);
     assert.equal(brief.data_requests.length,1);assert.equal(brief.acquisition_guidance,undefined);assert.equal(brief.data_requests[0].acquisition_hint,undefined);assert.equal(brief.burden_findings.length,21);
