@@ -10,6 +10,7 @@ import {
   clearLocalContextSelection,
   createEmptyLocalContextSelection,
   createLocalContextSelectionForArtifact,
+  isSelectableLocalContextRecord,
   resolveSelectedLocalContext,
   updateLocalContextSelection
 } from "../src/data/localContextSelection.ts";
@@ -28,19 +29,21 @@ const reviewedArtifact: LocalContextArtifact = rawArtifact;
 const firstLoaded = reviewedArtifact.indicators.find(record => record.state === "loaded");
 assert.ok(firstLoaded);
 
-test("initial local-context selection is empty and loading reviewed WV context does not auto-select", () => {
+test("eligible reviewed WV context starts selected, but unresolved loading stays empty", () => {
   const initial = createEmptyLocalContextSelection();
   assert.deepEqual(initial, {artifactVersion: null, indicatorIds: []});
   assert.deepEqual(resolveSelectedLocalContext(initial, "loading", null), []);
 
   const loaded = createLocalContextSelectionForArtifact(reviewedArtifact);
   assert.equal(loaded.artifactVersion, reviewedArtifact.manifest.artifact_version);
-  assert.deepEqual(loaded.indicatorIds, []);
-  assert.deepEqual(resolveSelectedLocalContext(loaded, "loaded", reviewedArtifact), []);
+  const eligible = reviewedArtifact.indicators.filter(isSelectableLocalContextRecord);
+  assert.deepEqual(loaded.indicatorIds, eligible.map(record => record.indicator_id));
+  assert.deepEqual(resolveSelectedLocalContext(loaded, "loaded", reviewedArtifact), eligible);
+  assert.deepEqual(resolveSelectedLocalContext(loaded, "loading", reviewedArtifact), []);
 });
 
 test("reviewed loaded record can be selected, deselected, and cleared", () => {
-  let selection = createLocalContextSelectionForArtifact(reviewedArtifact);
+  let selection = clearLocalContextSelection(reviewedArtifact);
   selection = updateLocalContextSelection(
     selection,
     reviewedArtifact,
@@ -83,7 +86,7 @@ test("reviewed partial record can be selected and resolves with partial state", 
   record.state = "partial";
 
   const selection = updateLocalContextSelection(
-    createLocalContextSelectionForArtifact(artifact),
+    clearLocalContextSelection(artifact),
     artifact,
     record.indicator_id,
     true
@@ -121,7 +124,7 @@ test("unknown IDs and ineligible preliminary, empty, error, or suppressed record
   }
 
   const unknownSelection = updateLocalContextSelection(
-    createLocalContextSelectionForArtifact(reviewedArtifact),
+    clearLocalContextSelection(reviewedArtifact),
     reviewedArtifact,
     "wv.unknown.indicator",
     true
@@ -156,7 +159,7 @@ test("manipulated selection state cannot export unknown or ineligible records", 
 
 test("local-context failure or artifact version rotation yields no stale selected records", () => {
   const selected = updateLocalContextSelection(
-    createLocalContextSelectionForArtifact(reviewedArtifact),
+    clearLocalContextSelection(reviewedArtifact),
     reviewedArtifact,
     firstLoaded.indicator_id,
     true
