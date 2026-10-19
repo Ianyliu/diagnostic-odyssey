@@ -389,8 +389,8 @@
   }
 
   .planning-brief-page .brief-content > section + section {
-    margin-top: 10pt;
-    padding-top: 9pt;
+    margin-top: 7pt;
+    padding-top: 5pt;
   }
 
   .planning-brief-page .brief-content h2 {
@@ -513,8 +513,10 @@
     margin-top: 12pt;
   }
 
+  /* Keep table headers and rows intact, but allow a short domain to
+     continue on an existing sheet rather than strand an almost-empty page. */
   .planning-brief-page .brief-burden-group-short {
-    break-inside: avoid;
+    break-inside: auto;
   }
 
   .planning-brief-page .brief-burden-group-heading,
@@ -580,6 +582,21 @@
   .planning-brief-page .brief-applied-assumptions > div,
   .planning-brief-page .brief-output-list > div {
     break-inside: avoid;
+  }
+
+  /* A negative evidence/request status should not consume an entire card
+     or force an otherwise empty final print sheet. */
+  .planning-brief-page #brief-intervention-evidence .empty-state,
+  .planning-brief-page #brief-data-requests .empty-state {
+    border: 0;
+    background: #fff;
+    padding: 2pt 0;
+    margin: 0;
+    break-inside: avoid;
+  }
+  .planning-brief-page #brief-intervention-evidence .empty-state p,
+  .planning-brief-page #brief-data-requests .empty-state p {
+    margin: 3pt 0;
   }
 
   .planning-brief-page .brief-scenario-trace > div,
