@@ -345,6 +345,13 @@
   }
 }
 
+/* The complete local selection always stays in canonical JSON and on screen. */
+.planning-brief-page .brief-local-context-executive { display: none; }
+.planning-brief-page .brief-appendix-control { display: inline-flex; flex-wrap: wrap; align-items: center; gap: .45rem; max-width: 25rem; font-size: .82rem; }
+.planning-brief-page .brief-appendix-control small { flex-basis: 100%; color: var(--do-text-muted); line-height: 1.35; }
+.planning-brief-page .brief-appendix-control input { width: 1rem; height: 1rem; accent-color: var(--do-accent); }
+.planning-brief-page .brief-context-appendix-heading { font-size: 1rem; margin: .5rem 0; }
+
 @media print {
   .planning-brief-page {
     color: var(--do-text);
@@ -453,8 +460,29 @@
   /* Keep each reviewed local record together instead of splitting it across
      the repeated print footer; long collections can still span pages. */
   .planning-brief-page .brief-local-context {
-    break-inside: avoid-page;
+    break-inside: auto;
+    overflow-wrap: anywhere;
   }
+
+  .planning-brief-page .brief-local-context .card-title-row {
+    break-after: avoid-page;
+  }
+
+  .planning-brief-page .brief-local-context-executive {
+    display: block;
+    margin: 5pt 0 8pt;
+    font-size: 8.5pt;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+  }
+
+  .planning-brief-page .brief-local-context-executive p { margin: 4pt 0; }
+  .planning-brief-page .brief-local-context-executive ul { padding-left: 16pt; margin: 5pt 0; }
+  .planning-brief-page .brief-local-context-executive li { margin: 2pt 0; break-inside: avoid; }
+  .planning-brief-page .brief-local-context-list { display: none !important; }
+  .planning-brief-page.brief-include-context-appendix .brief-local-context-list { display: block !important; }
+  .planning-brief-page .brief-context-appendix-heading { break-after: avoid-page; }
+  .planning-brief-page .brief-appendix-control { display: none !important; }
 
   /* Keep each decision and its explanation together while the ledger can span pages. */
   .planning-brief-page .decision-trace ol {
@@ -539,14 +567,14 @@
   }
 
   .planning-brief-page #brief-pilot-assumptions {
-    break-inside: avoid;
+    break-inside: auto;
   }
 
   .planning-brief-page .brief-applied-assumptions,
   .planning-brief-page .brief-output-list {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     background: #ffffff;
-    break-inside: avoid;
+    break-inside: auto;
   }
 
   .planning-brief-page .brief-applied-assumptions > div,
