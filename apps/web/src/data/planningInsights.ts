@@ -40,7 +40,7 @@ export interface InvestigationPrompt {
 export interface PlanningInsightsModelV1 {
   version: "presentation.v1";
   artifactVersion: string;
-  national: InsightSection & { findingsCount: number; highlights: InsightFinding[] };
+  national: InsightSection & { findingsCount: number; highlights: InsightFinding[]; context: {population: InsightFinding | null; allCauseSpending: InsightFinding | null} };
   local: InsightSection & { artifactVersion: string | null; records: LocalContextRecord[] };
   scenario: InsightSection & { applied: PlanningBrief["scenario"] };
   interventions: { availability: "unavailable"; explanation: string };
@@ -76,7 +76,7 @@ function nationalSection(brief: PlanningBrief, source: ArtifactBundle): Planning
   if (source.manifest.artifact_version !== REVIEWED_MEPS_ARTIFACT_VERSION ||
       brief.artifact_version !== source.manifest.artifact_version ||
       !sameValue({...brief.context, local_context_id: null}, source.context)) {
-    return {availability: "withheld", explanation: "National source identity does not match this Brief. Open the reviewed burden source to resolve it.", findingsCount: 0, highlights: []};
+    return {availability: "withheld", explanation: "National source identity does not match this Brief. Open the reviewed burden source to resolve it.", findingsCount: 0, highlights: [], context: {population: null, allCauseSpending: null}};
   }
   const sourceById = new Map(source.burden_domains.flatMap(domain => domain.measures).map(record => [record.estimate_id, record]));
   const sourceRefs = new Map(source.sources.map(record => [record.source_ref, record]));
@@ -88,11 +88,24 @@ function nationalSection(brief: PlanningBrief, source: ArtifactBundle): Planning
       record.artifact_version === brief.artifact_version &&
       sameValue(record, sourceById.get(record.estimate_id)) && sourceRefs.has(record.source_ref);
   });
+  // Named headline records may enter the projection only after the same exact-identity,
+  // release and provenance checks as every other eligible Brief finding.
+  const eligibleById = new Map(eligible.map(record => [record.estimate_id, record]));
+  const pickHeadline = (estimateId: string): InsightFinding | null => {
+    const estimate = eligibleById.get(estimateId);
+    const citation = estimate && sourceRefs.get(estimate.source_ref);
+    return estimate && citation ? {domainId: "national-context", domainLabel: "National descriptive context", estimate: structuredClone(estimate), source: structuredClone(citation)} : null;
+  };
+  const context = {
+    population: pickHeadline("meps24-current-long-covid-population"),
+    allCauseSpending: pickHeadline("meps24-gross-all-cause-spending-total")
+  };
   // One representative per available domain, in the existing artifact's order.
   // Prefer an approved distribution, then a non-nested measure, then any eligible
   // finding. Never rank magnitudes across heterogeneous units or require an ID.
   const highlights = groupBriefBurdenFindings(source.burden_domains, eligible).slice(0, 3).flatMap(group => {
-    const estimate = group.findings.find(canDisplayDistributionSummary) ??
+    const estimate = group.findings.find(record => record.estimate_id === "meps24-k6-serious-distress") ??
+      group.findings.find(canDisplayDistributionSummary) ??
       group.findings.find(record => !record.component_of_measure_id) ?? group.findings[0];
     const citation = estimate && sourceRefs.get(estimate.source_ref);
     return estimate && citation ? [{domainId: group.group_id, domainLabel: group.label, estimate: structuredClone(estimate), source: structuredClone(citation)}] : [];
@@ -103,7 +116,7 @@ function nationalSection(brief: PlanningBrief, source: ArtifactBundle): Planning
     explanation: eligible.length
       ? `One finding per available domain; descriptive highlights, not a ranking of burden.${withheld ? " Some findings were withheld because their release or source identity could not be verified." : ""}`
       : "No validated released finding can be summarized for this Brief. Missing or withheld evidence is not zero burden.",
-    findingsCount: eligible.length, highlights
+    findingsCount: eligible.length, highlights, context
   };
 }
 
