@@ -448,6 +448,8 @@ await check("local context labels preserve native scores and exported uncertaint
     const page = await context.newPage();
     page.setDefaultTimeout(5000);
     await ready(page, "/local-context");
+    // Explicit three-record export: default selection intentionally includes all 34.
+    await page.getByRole("button", {name: "Select none", exact: true}).first().click();
     for (const id of ids) {
       const checkbox = page.locator(`#select-local-context-${id.replace(/[^a-zA-Z0-9_-]/g, "-")}`);
       const row = page.locator(".ledger-indicator-row").filter({has: checkbox});
@@ -925,6 +927,10 @@ await check(
     const page = await context.newPage();
     page.setDefaultTimeout(5000);
     await ready(page, "/local-context");
+    // Keep this journey keyboard-only while clearing the new all-selected default.
+    const clearLocal = page.getByRole("button", {name: "Select none", exact: true}).first();
+    await tabTo(page, clearLocal);
+    await page.keyboard.press("Enter");
     const selection = page
       .getByRole("checkbox")
       .filter({ visible: true })
@@ -980,7 +986,9 @@ await check(
       .filter({ hasText: "SESSION PLANNING REQUEST" })
       .getByRole("checkbox");
     await tabTo(page, request);
-    assert.equal(await request.isChecked(), false);
+    assert.equal(await request.isChecked(), true, "new request is selected by default");
+    await page.keyboard.press("Space");
+    assert.equal(await request.isChecked(), false, "keyboard can deselect the request");
     await page.keyboard.press("Space");
     assert.equal(await request.isChecked(), true);
     await tabTo(
