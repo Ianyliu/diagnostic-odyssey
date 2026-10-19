@@ -26,7 +26,7 @@ export function BurdenPage() {
       <header className="page-heading">
         <p className="eyebrow">BURDEN</p>
         <h1>Burden overview</h1>
-        <p>Reviewed national MEPS evidence makes economic, healthcare-work, and human burden visible without turning descriptive burden into attributable cost.</p>
+        <p>Reviewed national MEPS evidence shows all-cause spending alongside time spent navigating care and measures of psychological distress. These distinct domains are not added together or presented as attributable Long COVID cost.</p>
       </header>
       <div className="caution">
         <strong>Gross burden is not attributable burden.</strong>
@@ -47,6 +47,19 @@ export function BurdenPage() {
       </details>
     </div>
 
+    <div className="burden-domain-spotlight" role="group" aria-label="Beyond economic burden">
+      <div>
+        <strong>Time and administrative work</strong>
+        <p>Visits, bills, paperwork and prior-approval experience are visible in their own measures—not converted into dollars.</p>
+        <Link to="/burden/admin">Explore administrative burden →</Link>
+      </div>
+      <div>
+        <strong>Psychological and human burden</strong>
+        <p>K6 distress and PHQ-2 screening are reported with survey uncertainty; screening is not a diagnosis.</p>
+        <Link to="/burden/human">Explore psychological burden →</Link>
+      </div>
+    </div>
+
     <div className="ledger-layout">
       <nav className="ledger-section-nav" aria-label="Burden sections">
         <p className="ledger-index-heading">On this page</p>
@@ -63,10 +76,10 @@ export function BurdenPage() {
 
         return <WorkspaceDisclosure key={domain.domain_id} id={`burden-group-${domain.domain_id}`} title={domain.label}
           summary={`${domain.measures.length} measures · ${reviewed ? "Reviewed national evidence" : "Not release-eligible"}`}
-          defaultOpen={index === 0} className="evidence-category"><article className="card domain-card ledger-panel" id={`burden-${domain.domain_id}`} key={domain.domain_id}>
+          defaultOpen={index !== 0} className="evidence-category"><article className="card domain-card ledger-panel" id={`burden-${domain.domain_id}`} key={domain.domain_id}>
           <div className="card-title-row burden-domain-header">
             <div>
-              <h2>{domain.label}</h2>
+              <p className="burden-panel-kicker">Reviewed measures</p>
               <p className="subtle">
                 {formatDataStateLabel(domain.availability_state)} · {domain.measures.length} {domain.measures.length === 1 ? "measure" : "measures"}
               </p>

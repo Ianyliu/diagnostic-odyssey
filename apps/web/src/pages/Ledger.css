@@ -275,3 +275,13 @@
  .ledger-indicator-row .selection-control { font-size: .85rem; }
  .ledger-indicator-row .pilot-context-action .text-button { min-height: 44px; padding-block: 10px; }
 }
+
+/* Workstream A: give administrative and psychological burden equal editorial visibility. */
+.burden-domain-spotlight { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.burden-domain-spotlight > div { padding: clamp(16px, 2vw, 20px); border: 1px solid var(--do-border); border-left: 3px solid var(--do-reviewed-text); border-radius: 8px; background: var(--do-surface); min-width: 0; }
+.burden-domain-spotlight strong { color: var(--do-text); font-size: 1rem; }
+.burden-domain-spotlight p { margin: 8px 0; color: var(--do-text-muted); line-height: 1.55; font-size: .85rem; }
+.burden-domain-spotlight a { display: inline-flex; align-items: center; min-height: 44px; color: var(--do-selection-text); font-size: .85rem; font-weight: 650; text-underline-offset: 4px; }
+.burden-panel-kicker { margin: 0 0 3px; color: var(--do-text-muted); font-size: .75rem; font-weight: 750; letter-spacing: .07em; text-transform: uppercase; }
+@media (max-width: 650px) { .burden-domain-spotlight { grid-template-columns: minmax(0, 1fr); } }
+@media print { .burden-domain-spotlight > div { break-inside: avoid; } }

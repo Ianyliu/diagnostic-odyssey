@@ -38,7 +38,7 @@ export function DomainPage({
     {domain ? <article className="card domain-card ledger-panel">
       <div className="card-title-row burden-domain-header">
         <div>
-          <h2>{domain.label}</h2>
+          <h2>Reviewed measures</h2>
           <p className="subtle">
             {formatDataStateLabel(domain.availability_state)} · {domain.measures.length} {domain.measures.length === 1 ? "measure" : "measures"}
           </p>
