@@ -237,7 +237,7 @@ export function BriefPage({conceptAvailable = false, showFutureConcept = false, 
       <div><strong>Data requests</strong><span>{selectedDataRequests.length > 0 ? `${selectedDataRequests.length} selected` : "None selected"}</span></div>
     </section>
 
-    <WorkspaceDisclosure id="brief-full-report" title="Read full brief" summary="All reviewed findings, assumptions, context, evidence limits and data requests. The complete report is always included when printing.">
+    <WorkspaceDisclosure id="brief-full-report" title="Read full brief" summary="All reviewed findings, assumptions, context, evidence limits and data requests remain available on screen. Printed local details are optional; canonical JSON remains complete.">
     <div className="brief-grid">
       <aside className="brief-aside" aria-label="Planning Brief contents and actions">
         <nav className="brief-contents" aria-label="Planning Brief contents">
