@@ -106,9 +106,15 @@
   .insight-finding h4 { margin-bottom: .35rem; }
   .insight-boundaries { gap: .6rem; }
 }
+/* Verified national headline belongs to the Brief summary, not to JSON. */
+.insight-national-context { border: 1px solid var(--do-reviewed-border); border-radius: var(--do-radius-control); padding: .9rem 1.1rem; margin-bottom: 1rem; background: var(--do-surface); overflow-wrap: anywhere; }
+.insight-national-context p { margin: .4rem 0 0; line-height: 1.5; }
+.insight-national-context strong { font-variant-numeric: tabular-nums; }
+.insight-national-print-headline { display: none; }
 @media print {
+  .planning-brief-page .insight-national-print-headline { display: block; font-size: 9pt; line-height: 1.4; margin: 5pt 0 9pt; break-inside: avoid-page; overflow-wrap: anywhere; }
   .planning-insights, .intervention-gap { display: none !important; }
-  .planning-brief-page .insights-print-summary { display: block; break-after: page; color: #18354b; background: #fff; font-size: 8pt; line-height: 1.35; }
+  .planning-brief-page .insights-print-summary { display: block; break-after: auto; color: #18354b; background: #fff; font-size: 8pt; line-height: 1.35; }
   .insights-print-summary h2 { font-size: 15pt; margin: 0 0 6pt; }
   .insights-print-summary h3 { font-size: 10pt; margin: 5pt 0 3pt; break-after: avoid; }
   .insights-print-summary p { margin: 2pt 0; overflow-wrap: anywhere; }
