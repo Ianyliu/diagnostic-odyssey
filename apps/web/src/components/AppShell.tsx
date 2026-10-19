@@ -79,6 +79,9 @@ export function AppShell() {
     setMenuOpen(false);
     const frame = requestAnimationFrame(() => {
       if (navigationType === "POP" && savedScroll.has(location.key)) {
+        // A different history entry may have closed the destination's disclosure.
+        // Reveal and focus it before restoring this entry's saved position.
+        scrollToFragment(location.hash);
         window.scrollTo(0, savedScroll.get(location.key) ?? 0);
       } else if (scrollToFragment(location.hash)) {
         // Anchor focus and scrolling were handled together.

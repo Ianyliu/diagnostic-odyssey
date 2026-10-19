@@ -112,6 +112,60 @@ await check("collapsed report links, print completeness, exact restoration and A
   await page.waitForFunction(() => document.activeElement?.textContent === "Decision trace");
   assert.equal(await page.locator("#pilot-decision-details").evaluate(e => e.open), true);
 });
+for (const width of [390, 1440]) await check(`cross-route history reveals fragments and preserves ordinary scroll ${width}`, async () => {
+  const page = await pageAt("/brief", width);
+  const navigate = async name => {
+    await page.getByRole("navigation", {name: "Primary navigation"}).getByRole("link", {name, exact: true}).click();
+    await page.locator("main h1").waitFor();
+  };
+  const settleScroll = () => page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+  const expectBurdenFocus = () => page.waitForFunction(() => document.activeElement?.textContent === "Reviewed national burden findings", null, {timeout: 6000});
+  await page.getByRole("link", {name: "Inspect all 21 findings →", exact: true}).click();
+  await expectBurdenFocus();
+  await settleScroll();
+  const fragmentScroll = await page.evaluate(() => window.scrollY);
+  await navigate("Pilot planner");
+  await navigate("Planning brief");
+  await page.locator("#brief-full-report > summary").click();
+  assert.equal(await page.locator("#brief-full-report").evaluate(e => e.open), false);
+  await navigate("Pilot planner");
+  await page.goBack();
+  await page.waitForURL(base + "/brief");
+  await page.goBack();
+  await page.waitForURL(base + "/pilot");
+  await page.goBack();
+  await page.waitForURL(base + "/brief#brief-national-burden");
+  await expectBurdenFocus();
+  assert.equal(await page.locator("#brief-full-report").evaluate(e => e.open), true);
+  assert.ok(await page.locator("#brief-national-burden h2").isVisible());
+  await page.waitForFunction(y => Math.abs(window.scrollY - y) <= 1, fragmentScroll);
+
+  // Forward to an ordinary entry, then verify its saved position on return.
+  await page.goForward();
+  await page.waitForURL(base + "/pilot");
+  await settleScroll();
+  await page.evaluate(() => window.scrollTo(0, 300));
+  await settleScroll();
+  const ordinaryScroll = await page.evaluate(() => window.scrollY);
+  await page.goForward();
+  await page.waitForURL(base + "/brief");
+  await page.goBack();
+  await page.waitForURL(base + "/pilot");
+  await page.waitForFunction(y => Math.abs(window.scrollY - y) <= 1, ordinaryScroll);
+
+  // A real cross-route link must also regain fragment focus on Forward.
+  await page.goto(base + "/");
+  await page.getByRole("link", {name: "See planning insights", exact: true}).click();
+  await page.waitForFunction(() => document.activeElement?.id === "planning-insights-title");
+  await settleScroll();
+  const insightsScroll = await page.evaluate(() => window.scrollY);
+  await page.goBack();
+  await page.waitForURL(base + "/");
+  await page.goForward();
+  await page.waitForURL(base + "/brief#planning-insights");
+  await page.waitForFunction(() => document.activeElement?.id === "planning-insights-title");
+  await page.waitForFunction(y => Math.abs(window.scrollY - y) <= 1, insightsScroll);
+});
 await check("text enlargement and keyboard-height simulation keep controls reachable", async () => {
   const page = await pageAt("/pilot", 390);
   await page.addStyleTag({content: "html {font-size: 200% !important;}"});
