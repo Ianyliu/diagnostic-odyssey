@@ -5,6 +5,7 @@ This checks the actual PDFs created by Chromium, not just print-media CSS.
 """
 import json
 import logging
+import re
 import sys
 from pathlib import Path
 
@@ -34,8 +35,9 @@ def verify(filename: str, *, screenshot: str):
     with pdfplumber.open(directory / filename) as pdf:
         assert pdf.pages, (filename, "empty PDF")
         text = "\n".join(page.extract_text() or "" for page in pdf.pages)
+        flat = re.sub(r"\\s+", " ", text)
         for phrase in required_summary:
-            assert phrase in text, (filename, "missing executive element", phrase)
+            assert phrase in flat, (filename, "missing executive element", phrase, flat[:2500])
         assert "Analyze with AI" not in text and "Explore future AI concept" not in text, filename
         assert "Planning insights summary" not in text, (filename, "optional Insights must remain off")
         metrics = []
@@ -55,19 +57,19 @@ def verify(filename: str, *, screenshot: str):
 none, none_text = verify("collapsed-report.pdf", screenshot="none-selected-page-1.png")
 default, default_text = verify("all-context-report.pdf", screenshot="default-34-page-1.png")
 expanded, expanded_text = verify("all-context-expanded.pdf", screenshot="expanded-34-page-1.png")
-assert "0 reviewed records included" in none_text, "None-selected context not disclosed"
-assert "34 reviewed records included" in default_text, "All-reviewed default not disclosed"
-assert "34 reviewed records included" in expanded_text
+assert "0 reviewed records included" in re.sub(r"\\s+", " ", none_text), "None-selected context not disclosed"
+assert "34 reviewed records included" in re.sub(r"\\s+", " ", default_text), "All-reviewed default not disclosed"
+assert "34 reviewed records included" in re.sub(r"\\s+", " ", expanded_text)
 for section in required_appendix:
-    assert section not in none_text, ("None-selected summary must omit full appendix", section)
-    assert section not in default_text, ("Default summary must omit full appendix", section)
-    assert section in expanded_text, ("Expanded appendix missing", section)
+    assert section not in re.sub(r"\\s+", " ", none_text), ("None-selected summary must omit full appendix", section)
+    assert section not in re.sub(r"\\s+", " ", default_text), ("Default summary must omit full appendix", section)
+    assert section in re.sub(r"\\s+", " ", expanded_text), ("Expanded appendix missing", section)
 assert 1 <= default["pages"] <= 4, ("Default print unexpectedly long", default)
 assert 1 <= none["pages"] <= 4, ("No-context print unexpectedly long", none)
 assert expanded["pages"] > default["pages"], ("Appendix did not increase page count", default, expanded)
-assert "meps24-current-long-covid-population" in default_text
-assert "meps24-gross-all-cause-spending-total" in default_text
-assert "meps24-k6-serious-distress" in default_text
+assert "meps24-current-long-covid-population" in re.sub(r"\\s+", "", default_text)
+assert "meps24-gross-all-cause-spending-total" in re.sub(r"\\s+", "", default_text)
+assert "meps24-k6-serious-distress" in re.sub(r"\\s+", "", default_text)
 assert "meps24-k6-score-mean" not in default_text, "Mean K6 should not lead executive summary"
 result = {
     "passed": True, "summary_required": required_summary,
