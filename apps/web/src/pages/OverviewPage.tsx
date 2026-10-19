@@ -38,7 +38,7 @@ export function OverviewPage() {
             <span>with boundaries intact.</span>
           </h1>
           <p className="overview-lede">
-            Diagnostic Odyssey keeps reviewed national burden, local implementation context, and analyst assumptions visibly separate—then carries their provenance into one planning workflow.
+            Diagnostic Odyssey supports Long COVID planning by keeping reviewed national burden, local implementation context, and analyst assumptions visibly separate—then carrying their provenance into one workflow.
           </p>
           <div className="overview-hero-actions" role="group" aria-label="Start exploring Diagnostic Odyssey">
             <Link className="button overview-primary-cta" to="/burden">Explore reviewed burden</Link>
