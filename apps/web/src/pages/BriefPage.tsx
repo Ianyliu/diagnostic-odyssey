@@ -23,6 +23,7 @@ import {
   formatEstimateValue
 } from "../data/formatEstimateValue";
 import { mergeBriefLocalContext } from "../data/briefLocalContext";
+import { selectBriefLocalContextPreview } from "../data/briefLocalContextPreview";
 import { formatLocalContextValue } from "../data/formatLocalContextValue";
 import {
   deriveBriefContextWithSelectedLocalContext
@@ -101,6 +102,7 @@ interface FutureConceptControlProps {
 }
 export function BriefPage({conceptAvailable = false, showFutureConcept = false, onFutureConceptChange}: FutureConceptControlProps = {}) {
   const pageRef = useRef<HTMLElement>(null);
+  const [includeContextAppendixInPrint, setIncludeContextAppendixInPrint] = useState(false);
   const printDisclosureState = useRef<ReturnType<typeof createBriefPrintDisclosureState> | null>(null);
   const {
     status,
@@ -164,6 +166,7 @@ export function BriefPage({conceptAvailable = false, showFutureConcept = false, 
     baseBrief,
     staleSelectedDataRequestCount
   );
+  const localContextPreview = selectBriefLocalContextPreview(brief.local_context);
   const burdenReadiness = getNationalBurdenReadiness(brief.burden_findings.length);
   const evidenceReadiness = getEvidenceParameterReadiness(
     bundle.evidence,
@@ -184,7 +187,7 @@ export function BriefPage({conceptAvailable = false, showFutureConcept = false, 
     executeBriefPrint(printDisclosureState.current);
   };
 
-  return <section className="page page-stack planning-brief-page" ref={pageRef}>
+  return <section className={`page page-stack planning-brief-page${includeContextAppendixInPrint ? " brief-include-context-appendix" : ""}`} ref={pageRef}>
     <ContextBar />
     <header className="page-heading">
       <p className="eyebrow">PLANNING BRIEF</p>
@@ -211,6 +214,7 @@ export function BriefPage({conceptAvailable = false, showFutureConcept = false, 
     </div>
     <div className="brief-export-actions brief-primary-actions">
       <button className="button" onClick={printBrief}>Print / save PDF</button>
+      <label className="brief-appendix-control"><input type="checkbox" checked={includeContextAppendixInPrint} onChange={event => setIncludeContextAppendixInPrint(event.target.checked)} /> Include detailed local-context records in print <small>Off by default for a concise Brief. All included records remain in the JSON companion and readable on screen.</small></label>
       <WorkspaceDisclosure id="brief-export-options" title="Export options"><BriefJsonExport brief={brief} /></WorkspaceDisclosure>
       <Link className="text-button" to="/data-requests">Review data needs</Link>
       <Link className="text-button" to="/evidence">Intervention evidence &amp; limits</Link>
@@ -370,8 +374,16 @@ export function BriefPage({conceptAvailable = false, showFutureConcept = false, 
 
         <section id="brief-local-context">
           <h2>Local implementation context</h2>
+          {brief.local_context.length > 0 && <div className="brief-local-context-executive" aria-label="Local context print synopsis">
+            <p><strong>{brief.local_context.length} reviewed context record{brief.local_context.length === 1 ? "" : "s"} included in this Brief.</strong> These West Virginia indicators inform implementation planning; they do not estimate state Long COVID prevalence, modify national burden, or prove savings.</p>
+            <p>HPSA figures describe shortage-area designations, not people; ACS figures describe statewide Census survey measures. An active Pilot-used record may be included separately from checkbox choices.</p>
+            <ul>{localContextPreview.map(record => <li key={record.indicator_id}><strong>{record.label}:</strong> {formatLocalContextValue(record)} <span>({record.indicator_id}; {record.source_ref})</span></li>)}</ul>
+            {brief.local_context.length > localContextPreview.length && <p>Showing {localContextPreview.length} illustrative entries from the actual included selection, not a ranking or aggregate. The canonical JSON companion contains all {brief.local_context.length} complete records, source locators, released interpretations and limitations. Enable the detailed print option to include their full text in the PDF.</p>}
+            <p><strong>Reviewed local artifact:</strong> {brief.context.local_context_id}</p>
+          </div>}
           {brief.local_context.length > 0
             ? <div className="brief-local-context-list">
+                <h3 className="brief-context-appendix-heading">Detailed included context records</h3>
                 <p className="subtle">
                   <strong>Reviewed local-context artifact:</strong> {brief.context.local_context_id}
                 </p>
@@ -427,7 +439,7 @@ export function BriefPage({conceptAvailable = false, showFutureConcept = false, 
           <h2>What to collect next</h2>
           {brief.data_requests.length > 0
             ? <>
-                <p className="subtle">Selected requests are included by default only while current; deselect unwanted requests before export.</p>
+                <p className="subtle">New analyst requests start included; only requests current for the applied scenario export. Deselect any request before export.</p>
                 <ul>{brief.data_requests.map(request => <li key={request.request_id}>
                   <strong>{request.target_question}</strong> — {request.fields_needed.join(", ")}
                   <small className="brief-request-trace">
