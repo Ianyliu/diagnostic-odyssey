@@ -1,0 +1,79 @@
+{
+  "schema_version": "0.1.0-candidate",
+  "status": "preliminary_methods_review_only",
+  "source_ref": "meps-hc256-2024",
+  "baseline_parent_commit": "dac9b64526e4df1a93357d1a3776774cae4b1512",
+  "primary": {
+    "exposure": "do_current_long_covid",
+    "exposure_anchor": "Round 3/1 interview, 2024 for Panel 28 and Panel 29",
+    "outcome": "TOTEXP24",
+    "weight": "PERWT24F",
+    "strata": "VARSTR",
+    "psu": "VARPSU",
+    "covariates": [
+      "AGE31X",
+      "SEX",
+      "REGION31",
+      "PANEL"
+    ],
+    "comparator": "known and classifiable non-current, including past Long COVID",
+    "excluded": "unresolved current status, unresolved Long COVID history, routing conflicts, invalid age, nonpositive person weight"
+  },
+  "sensitivity": {
+    "restricted_comparator": "known no Long COVID history",
+    "interview_insurance": "INS31X",
+    "annual_insurance_for_descriptive_validation_only": "INSCOV24"
+  },
+  "codes": {
+    "SEX": [
+      1,
+      2
+    ],
+    "REGION31": [
+      -1,
+      1,
+      2,
+      3,
+      4
+    ],
+    "PANEL": [
+      28,
+      29
+    ],
+    "INS31X": [
+      -1,
+      1,
+      2
+    ],
+    "INSCOV24": [
+      1,
+      2,
+      3
+    ]
+  },
+  "source_locators": {
+    "SEX": "https://meps.ahrq.gov/mepsweb/data_stats/download_data_files_codebook.jsp?PUFId=H256&varName=SEX",
+    "REGION31": "https://meps.ahrq.gov/mepsweb/data_stats/download_data_files_codebook.jsp?PUFId=H256&varName=REGION31",
+    "INS31X": "https://meps.ahrq.gov/mepsweb/data_stats/download_data_files_codebook.jsp?PUFId=H256&varName=INS31X",
+    "INSCOV24": "https://meps.ahrq.gov/mepsweb/data_stats/download_data_files_codebook.jsp?PUFId=H256&varName=INSCOV24",
+    "TOTEXP24": "https://meps.ahrq.gov/mepsweb/data_stats/download_data_files_codebook.jsp?PUFId=H256&varName=TOTEXP24"
+  },
+  "uncertainty": {
+    "unadjusted": "joint survey::svyby covariance; difference c=(-1,+1)",
+    "adjusted": "full-person-design bootstrap with both models refit each replicate",
+    "replicates": 400,
+    "seed": 20261019,
+    "interval": "t based, df from full PERSON design"
+  },
+  "precision_screen": {
+    "min_group_valid_n": 100,
+    "min_group_positive_n": 30,
+    "max_mean_rse": 0.3
+  },
+  "release": {
+    "automatic_release": false,
+    "independent_methods_review": "pending",
+    "ordinary_bundle_promotion": false,
+    "reproduce_release21": false
+  }
+}
