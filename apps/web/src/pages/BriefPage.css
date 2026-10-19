@@ -793,6 +793,11 @@
   .planning-brief-page[data-print-details="summary"] #brief-full-report { display: none !important; }
   /* Preserve the fixed provenance footer required by existing print contracts;
      the compact mode omits only the redundant decision-state block. */
+  /* Keep a safety gap beneath dense appendix pages without changing the
+     one-page summary or shortening any canonical content. */
+  .planning-brief-page[data-print-details="expanded"] .brief-print-footer {
+    bottom: -4pt;
+  }
   .planning-brief-page[data-print-details="expanded"] .brief-executive-summary {
     break-after: auto;
   }
