@@ -26,7 +26,7 @@ async function pageAt(path, width = 390, theme = "light") {
 async function overflow(page) {
   assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1), `overflow at ${page.url()}`);
 }
-for (const width of [320, 390, 768, 1024, 1440]) for (const theme of ["light", "dark"]) {
+for (const width of [320, 360, 390, 768, 1024, 1440]) for (const theme of ["light", "dark"]) {
   await check(`default guided layouts ${width} ${theme}`, async () => {
     const page = await pageAt("/", width, theme);
     const layouts = [];
@@ -241,7 +241,7 @@ await check("text enlargement and keyboard-height simulation keep controls reach
   await overflow(page);
 });
 await check("200% text enlargement across all widths and themes", async () => {
-  for (const width of [320, 390, 768, 1024, 1440]) for (const theme of ["light", "dark"]) {
+  for (const width of [320, 360, 390, 768, 1024, 1440]) for (const theme of ["light", "dark"]) {
     const page = await pageAt("/pilot", width, theme);
     await page.addStyleTag({content: "html {font-size: 200% !important;}"});
     await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
