@@ -53,9 +53,16 @@ def verify(filename: str, *, screenshot: str):
             assert len(visible) == len(chars), (filename, number, "vertical clipping")
             outside = [ch for ch in chars if ch["x0"] < -1 or ch["x1"] > page.width + 1]
             assert not outside, (filename, number, "horizontal clipping", outside[:4])
-            # Body text should remain readable; the 6.8pt footer is permitted.
+            # Body text remains readable, and each print sheet has precisely
+            # one source-revision footer with clearance from the main body.
             assert min(ch["size"] for ch in chars) >= 6.5, (filename, number, "illegibly small type")
-            metrics.append({"page": number, "characters": len(chars)})
+            footer = [word for word in page.extract_words() if word["text"] == "Diagnostic" and word["top"] > page.height - 80]
+            assert len(footer) == 1, (filename, number, "missing/repeated provenance footer")
+            body = [ch for ch in chars if abs(ch["size"] - 6.8) > .1]
+            assert body, (filename, number, "missing substantive content")
+            clearance = footer[0]["top"] - max(ch["bottom"] for ch in body)
+            assert clearance >= 4, (filename, number, "body-to-footer collision", clearance)
+            metrics.append({"page": number, "characters": len(chars), "footer_clearance_pt": round(clearance, 2)})
         pdf.pages[0].to_image(resolution=125).save(str(directory / screenshot), format="PNG")
         return {"pages": len(pdf.pages), "pages_checked": metrics, "first_page_image": screenshot}, text
 
