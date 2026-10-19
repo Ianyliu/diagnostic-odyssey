@@ -763,11 +763,8 @@
     display: none !important;
   }
   .planning-brief-page[data-print-details="summary"] #brief-full-report { display: none !important; }
-  /* The header already prints artifact and generation provenance. Suppress the
-     duplicate fixed footer in compact mode; it otherwise orphans page two. */
-  .planning-brief-page[data-print-details="summary"] .brief-print-footer {
-    display: none !important;
-  }
+  /* Preserve the fixed provenance footer required by existing print contracts;
+     the compact mode omits only the redundant decision-state block. */
   .planning-brief-page[data-print-details="expanded"] .brief-executive-summary {
     break-after: auto;
   }
