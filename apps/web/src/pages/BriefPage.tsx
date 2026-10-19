@@ -410,7 +410,7 @@ export function BriefPage({conceptAvailable = false, showFutureConcept = false, 
                 </strong>
                 <p>
                   {localContextAvailable
-                    ? "Review the available state evidence on the Local Context page. A record enters this Brief only through an explicit Include-in-Brief selection or an explicit Use-in-Pilot selection."
+                    ? "Review the available state evidence on the Local Context page. Eligible reviewed records are selected for this Brief by default, and an explicit Use-in-Pilot selection remains separate."
                     : "National MEPS burden remains unchanged; no local prevalence or state-specific Long COVID burden is inferred."}
                 </p>
               </div>}
@@ -427,7 +427,7 @@ export function BriefPage({conceptAvailable = false, showFutureConcept = false, 
           <h2>What to collect next</h2>
           {brief.data_requests.length > 0
             ? <>
-                <p className="subtle">Only requests explicitly selected by the analyst are included.</p>
+                <p className="subtle">Selected requests are included by default only while current; deselect unwanted requests before export.</p>
                 <ul>{brief.data_requests.map(request => <li key={request.request_id}>
                   <strong>{request.target_question}</strong> — {request.fields_needed.join(", ")}
                   <small className="brief-request-trace">
@@ -443,7 +443,7 @@ export function BriefPage({conceptAvailable = false, showFutureConcept = false, 
                     ? "Data requests are available, but none has been selected for this brief."
                     : "No data request has been created or loaded."}
                 </strong>
-                <p>Data requests are planning artifacts, not observed evidence. Add or select them explicitly before export.</p>
+                <p>Data requests are planning artifacts, not observed evidence. New requests start selected; review or deselect them before export.</p>
                 <Link className="button secondary" to="/data-requests">Review data requests</Link>
               </div>}
         </section>

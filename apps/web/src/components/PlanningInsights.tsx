@@ -118,7 +118,7 @@ function Investigations({model}: {model: PlanningInsightsModelV1}) {
         <Link className="text-button" to={prompt.href}>{prompt.actionLabel} →</Link>
       </article>)}
     </div> : <div className="insight-unavailable"><strong>No eligible request template</strong><Link to="/data-requests">Review Data Requests</Link></div>}
-    <p className="insight-caption">Viewing a prompt creates nothing. Create or refresh a request explicitly in the existing workflow, then select “Include in Planning Brief” separately.</p>
+    <p className="insight-caption">Viewing a prompt creates nothing. Create or refresh a request explicitly in the existing workflow, then review its default “Include in Planning Brief” selection before exporting.</p>
   </section>;
 }
 
