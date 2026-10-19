@@ -149,7 +149,7 @@ export function AppShell() {
       </main></DisclosureProvider>
       <footer>
         <span>Diagnostic Odyssey</span>
-        <span>No PHI · no state-specific Long COVID cost · no causal ROI claim</span>
+        <span>Reviewed public evidence with traceable sources · local context and analyst assumptions remain distinct</span>
         <small className="source-revision" aria-label="Application source revision">{buildIdentity.url ? <a href={buildIdentity.url} target="_blank" rel="noopener noreferrer">{buildIdentity.label}</a> : buildIdentity.label}</small>
       </footer>
     </div>
