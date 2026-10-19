@@ -906,3 +906,23 @@
  .overview-tertiary-cta { font-size: .82rem; }
  .overview-proof { margin-top: 16px; }
 }
+
+/* Workstream A: reviewed source headlines are presentation-only and retain native units. */
+.overview-headlines { display: grid; gap: 18px; min-width: 0; }
+.overview-headlines .overview-section-heading { max-width: 78ch; }
+.overview-headline-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.overview-headline-card { display: flex; flex-direction: column; min-width: 0; padding: clamp(16px, 2vw, 24px); border: 1px solid var(--do-border); border-top: 3px solid var(--do-reviewed-text); border-radius: 10px; background: var(--do-surface); overflow-wrap: anywhere; }
+.overview-headline-domain { margin: 0 0 10px; color: var(--do-reviewed-text); font-size: .75rem; font-weight: 750; letter-spacing: .05em; text-transform: uppercase; }
+.overview-headline-card h3 { margin: 0 0 14px; color: var(--do-text); font-size: clamp(.95rem, 1.35vw, 1.12rem); line-height: 1.4; }
+.overview-headline-value { display: block; color: var(--do-text); font-size: clamp(1.6rem, 2.8vw, 2.4rem); line-height: 1.15; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.overview-headline-ci { margin: 8px 0 14px; color: var(--do-text); font-size: .9rem; font-variant-numeric: tabular-nums; }
+.overview-headline-boundary { margin: 0 0 16px; color: var(--do-text-muted); font-size: .83rem; line-height: 1.55; }
+.overview-headline-source { margin-top: auto; border-top: 1px solid var(--do-border); font-size: .78rem; color: var(--do-text-muted); }
+.overview-headline-source summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; color: var(--do-selection-text); font-weight: 650; }
+.overview-headline-source p { margin: 4px 0 10px; line-height: 1.5; }
+.overview-headline-note { margin: 0; max-width: 98ch; font-size: .86rem; line-height: 1.65; color: var(--do-text-muted); }
+.overview-headline-note strong { color: var(--do-text); }
+.overview-headline-note a { color: var(--do-selection-text); }
+@media (max-width: 900px) { .overview-headline-grid { grid-template-columns: minmax(0, 1fr); } }
+@media (min-width: 540px) and (max-width: 900px) { .overview-headline-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media print { .overview-headline-card { break-inside: avoid; } }

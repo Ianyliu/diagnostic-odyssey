@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { canExportEstimate } from "@diagnostic-odyssey/contracts";
 import { useArtifact } from "../data/ArtifactContext";
+import { formatEstimateInterval, formatEstimateValue } from "../data/formatEstimateValue";
 import { OpeningProvenance, useOpeningMotion } from "./OpeningProvenance";
 import { planningInsightsEnabled } from "../data/planningInsightsEnabled";
 import "./OverviewPage.css";
@@ -17,6 +18,13 @@ const journey: ReadonlyArray<readonly [
   ["4", "Create a planning brief", "Export reviewed evidence, selected context, assumptions, boundaries, and remaining gaps.", "/brief"]
 ];
 
+/** A representative measure from each reviewed domain, never a derived composite. */
+const headlineMeasures = [
+  {measureId: "gross-all-cause-spending-total", title: "All-cause annual medical spending", domain: "Economic / healthcare", interpretation: "Descriptive spending, not attributable Long COVID or diagnostic-delay cost."},
+  {measureId: "medical-bills-insurance-time", title: "Annual time managing bills and insurance", domain: "Administrative work", interpretation: "Hours per respondent per year; not monetized or added to spending."},
+  {measureId: "k6-serious-distress", title: "Serious psychological distress screening", domain: "Human burden", interpretation: "K6 screening threshold, not a clinical diagnosis."}
+] as const;
+
 export function OverviewPage() {
   const opening = useOpeningMotion();
   const {bundle, localContext, localContextStatus} = useArtifact();
@@ -26,6 +34,9 @@ export function OverviewPage() {
   const localIndicatorCount = localContextStatus === "loaded"
     ? localContext?.indicators.length ?? 0
     : null;
+
+  const reviewedMeasures = bundle?.burden_domains.flatMap(domain => domain.measures)
+    .filter(canExportEstimate) ?? [];
 
   return (
     <section className={"page page-stack overview-page" + (opening ? " is-opening" : "")}>
@@ -38,7 +49,7 @@ export function OverviewPage() {
             <span>with boundaries intact.</span>
           </h1>
           <p className="overview-lede">
-            Diagnostic Odyssey supports Long COVID planning by keeping reviewed national burden, local implementation context, and analyst assumptions visibly separate—then carrying their provenance into one workflow.
+            For public-health and Medicaid planners, rural-health teams, and advocates, Diagnostic Odyssey supports Long COVID planning by keeping reviewed national burden, local implementation context, and analyst assumptions visibly separate—then carrying their provenance into one workflow.
           </p>
           <div className="overview-hero-actions" role="group" aria-label="Start exploring Diagnostic Odyssey">
             <Link className="button overview-primary-cta" to="/burden">Explore reviewed burden</Link>
@@ -58,6 +69,33 @@ export function OverviewPage() {
           <p className="overview-source-note">Grounded in <strong>MEPS</strong>, <strong>HRSA</strong> and <strong>ACS</strong> · source boundaries stay visible.</p>
         </div>
         <OpeningProvenance playing={opening} />
+      </section>
+
+      <section className="overview-headlines" aria-labelledby="overview-headlines-title">
+        <div className="overview-section-heading">
+          <p className="visual-kicker">REVIEWED NATIONAL MEPS · 2024</p>
+          <h2 id="overview-headlines-title">Three dimensions of burden. No composite score.</h2>
+          <p>These are separate descriptive estimates from the reviewed national artifact, each with its own population and 95% survey confidence interval.</p>
+        </div>
+        <div className="overview-headline-grid">
+          {headlineMeasures.map(({measureId, title, domain, interpretation}) => {
+            const estimate = reviewedMeasures.find(item => item.measure_id === measureId);
+            if (!estimate) return null;
+            return <article className="overview-headline-card" key={measureId}>
+              <p className="overview-headline-domain">{domain}</p>
+              <h3>{title}</h3>
+              <strong className="overview-headline-value">{formatEstimateValue(estimate)}</strong>
+              <p className="overview-headline-ci">{formatEstimateInterval(estimate)}</p>
+              <p className="overview-headline-boundary">{interpretation}</p>
+              <details className="overview-headline-source">
+                <summary>Population and source</summary>
+                <p>{estimate.universe}</p>
+                <p>{estimate.source_ref} · {estimate.interval_type}</p>
+              </details>
+            </article>;
+          })}
+        </div>
+        <p className="overview-headline-note"><strong>Evidence roles:</strong> MEPS describes national burden; HRSA and ACS describe local implementation context, not local Long COVID prevalence; analyst inputs define pilot scenarios. None are silently blended. <Link to="/burden">Review all {reviewedCount} national measures →</Link></p>
       </section>
 
       <nav className="overview-destinations" aria-label="Workspace navigation">
