@@ -1,5 +1,5 @@
 import { formatPlanningCurrency, formatPlanningNumber } from "../data/planningNumberFormatting.ts";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { buildPlanningBrief, serializeBriefJson, type PlanningBrief } from "@diagnostic-odyssey/brief-core";
 import { AcquisitionGuidanceCard } from "../components/AcquisitionGuidanceCard";
@@ -139,33 +139,31 @@ export function BriefPage({conceptAvailable = false, showFutureConcept = false, 
     };
   }, [bundle]);
 
-  if (!bundle) return null;
+  // Hold the canonical export steady when changing screen disclosures or print options.
+  // Only actual source, selection, scenario or request changes recompose this Brief.
+  const brief = useMemo(() => {
+    if (!bundle) return null;
+    const estimates = bundle.burden_domains.flatMap(domain => domain.measures);
+    const briefLocalContext = mergeBriefLocalContext(selectedLocalContext, pilotLocalContext);
+    const briefContext = deriveBriefContextWithSelectedLocalContext(
+      bundle.context, localContextStatus, localContext, briefLocalContext
+    );
+    const staleSelectedDataRequestCount =
+      Math.max(0, briefDataRequestIds.length - selectedDataRequests.length);
+    const baseBrief = buildPlanningBrief({
+      context: briefContext,
+      estimates,
+      localContext: briefLocalContext,
+      scenario: scenario && scenarioResult ? {input:scenario,result:scenarioResult} : null,
+      evidence: bundle.evidence,
+      dataRequests: selectedDataRequests
+    });
+    return withStaleSelectedDataRequestWarning(baseBrief, staleSelectedDataRequestCount);
+  }, [bundle, selectedLocalContext, pilotLocalContext, localContextStatus, localContext,
+    briefDataRequestIds, selectedDataRequests, scenario, scenarioResult]);
 
-  const estimates = bundle.burden_domains.flatMap(domain => domain.measures);
-  const briefLocalContext = mergeBriefLocalContext(
-    selectedLocalContext,
-    pilotLocalContext
-  );
-  const briefContext = deriveBriefContextWithSelectedLocalContext(
-    bundle.context,
-    localContextStatus,
-    localContext,
-    briefLocalContext
-  );
-  const staleSelectedDataRequestCount =
-    Math.max(0, briefDataRequestIds.length - selectedDataRequests.length);
-  const baseBrief = buildPlanningBrief({
-    context: briefContext,
-    estimates,
-    localContext: briefLocalContext,
-    scenario: scenario && scenarioResult ? {input:scenario,result:scenarioResult} : null,
-    evidence: bundle.evidence,
-    dataRequests: selectedDataRequests
-  });
-  const brief = withStaleSelectedDataRequestWarning(
-    baseBrief,
-    staleSelectedDataRequestCount
-  );
+  if (!bundle || !brief) return null;
+
   const localContextPreview = selectBriefLocalContextPreview(brief.local_context);
   const burdenReadiness = getNationalBurdenReadiness(brief.burden_findings.length);
   const evidenceReadiness = getEvidenceParameterReadiness(
