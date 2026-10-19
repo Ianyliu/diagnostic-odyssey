@@ -60,6 +60,43 @@ for (const width of [320, 390, 768, 1024, 1440]) for (const theme of ["light", "
     return layouts;
   });
 }
+await check("bulk local selections default to all, respect individual overrides and remain separate from Pilot", async () => {
+  const page = await pageAt("/local-context");
+  const inputs = page.locator('input[id^="select-local-context-"]');
+  assert.equal(await inputs.count(), 34);
+  assert.equal(await inputs.evaluateAll(elements => elements.filter(input => input.checked).length), 34);
+  assert.match(await page.locator("#local-selection-summary").innerText(), /34 indicators selected/);
+  assert.match(await page.locator("#local-selection-summary").innerText(), /start selected by default/);
+  await page.getByRole("button", {name: "Select none", exact: true}).first().click();
+  assert.equal(await inputs.evaluateAll(elements => elements.filter(input => input.checked).length), 0);
+  const category = page.locator("#local-primary-care-category");
+  await category.getByRole("button", {name: "Select all", exact: true}).click();
+  const selectedInCategory = await category.locator('input[type="checkbox"]:checked').count();
+  assert.ok(selectedInCategory >= 2, "category bulk action selects eligible records");
+  await category.getByRole("button", {name: "Select none", exact: true}).click();
+  assert.equal(await category.locator('input[type="checkbox"]:checked').count(), 0);
+  await page.getByRole("button", {name: "Select all", exact: true}).first().click();
+  assert.equal(await inputs.evaluateAll(elements => elements.filter(input => input.checked).length), 34);
+  assert.match(await page.getByRole("status").first().innerText(), /No Pilot context selected/);
+});
+await check("multiple data requests default selected and support reversible bulk choices", async () => {
+  const page = await pageAt("/pilot");
+  const sensitivity = page.locator("#sensitivity");
+  await page.getByLabel("Test assumption").selectOption("capacity");
+  await sensitivity.getByRole("button", {name: "Add to data requests", exact: true}).click();
+  await page.getByLabel("Test assumption").selectOption("reach");
+  await sensitivity.getByRole("button", {name: "Add to data requests", exact: true}).click();
+  await sensitivity.getByRole("link", {name: "Review data request", exact: true}).click();
+  const checks = page.locator(".data-request-sheet input[type='checkbox']");
+  assert.equal(await checks.count(), 2);
+  assert.equal(await checks.evaluateAll(elements => elements.filter(input => input.checked).length), 2);
+  await page.getByRole("button", {name: "Select none", exact: true}).click();
+  assert.equal(await checks.evaluateAll(elements => elements.filter(input => input.checked).length), 0);
+  await page.getByRole("button", {name: "Select all", exact: true}).click();
+  assert.equal(await checks.evaluateAll(elements => elements.filter(input => input.checked).length), 2);
+  await checks.first().uncheck();
+  assert.equal(await checks.evaluateAll(elements => elements.filter(input => input.checked).length), 1);
+});
 await check("visible selections, collapsed category state and unchanged Pilot inputs", async () => {
   const page = await pageAt("/local-context");
   const category = page.locator("#local-primary-care-category");
