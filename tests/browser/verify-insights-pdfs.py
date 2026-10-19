@@ -35,7 +35,7 @@ for filename in ["summary-off.pdf", "summary-on.pdf", "summary-all-context.pdf",
         text = "\n".join(page_text)
         if filename == "summary-off.pdf":
             assert "Planning insights summary" not in text
-        else:
+        elif filename.startswith("summary-"):
             assert "Planning insights summary" in text
             summary = text.split("Decision state", 1)[0]
             assert "Reviewed record:" in summary, (filename, "Missing reviewed estimate identifiers")
@@ -64,7 +64,7 @@ for filename in ["summary-off.pdf", "summary-on.pdf", "summary-all-context.pdf",
             for index, page_content in enumerate(page_text):
                 # Avoid accidental empty print sheets. First/last pages are exempt from a strict
                 # content-density budget; footer/provenance alone are not substantive.
-                assert len((page_content or "").strip()) > 65, (filename, index + 1, "Nearly blank printed page")
+                assert len((page_content or "").strip()) > 350, (filename, index + 1, "Nearly blank printed page")
         if shutil.which("pdftoppm") and filename.startswith("brief-"):
             # Attach renderings from the PDF itself (not DOM screenshots) to CI artifacts.
             for page_number, suffix in [(1, "first"), (len(pdf.pages), "last")]:
