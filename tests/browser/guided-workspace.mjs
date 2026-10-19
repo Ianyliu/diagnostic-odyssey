@@ -137,7 +137,7 @@ await check("collapsed report links, print completeness, exact restoration and A
   await page.evaluate(() => { window.print = () => window.dispatchEvent(new Event("beforeprint")); });
   await page.getByRole("button", {name: "Print / save PDF", exact: true}).evaluate(button => button.click());
   await page.emulateMedia({media: "print"});
-  assert.ok(await page.locator(".brief-print-footer").isVisible());
+  assert.equal(await page.locator(".brief-print-footer").isVisible(), false, "Footer is rendered in the real PDF page margin, not a fixed-position overlay");
   await page.pdf({path: `${output}/collapsed-report.pdf`, format: "A4", printBackground: true});
   await page.emulateMedia({media: "screen"});
   await page.evaluate(() => window.dispatchEvent(new Event("afterprint")));
@@ -156,7 +156,7 @@ await check("collapsed report links, print completeness, exact restoration and A
   await page.waitForFunction(() => document.activeElement?.textContent === "Decision trace");
   assert.equal(await page.locator("#pilot-decision-details").evaluate(e => e.open), true);
 });
-await check("all-reviewed default prints a complete longer PDF", async () => {
+await check("all-reviewed default prints a concise PDF with 34 canonical selections", async () => {
   const page = await pageAt("/local-context");
   const inputs = page.locator('input[id^="select-local-context-"]');
   assert.equal(await inputs.count(), 34);
@@ -166,7 +166,7 @@ await check("all-reviewed default prints a complete longer PDF", async () => {
   await page.evaluate(() => { window.print = () => window.dispatchEvent(new Event("beforeprint")); });
   await page.getByRole("button", {name: "Print / save PDF", exact: true}).evaluate(button => button.click());
   await page.emulateMedia({media: "print"});
-  assert.ok(await page.locator(".brief-print-footer").isVisible());
+  assert.equal(await page.locator(".brief-print-footer").isVisible(), false, "Footer is rendered in the real PDF page margin, not a fixed-position overlay");
   await page.pdf({path: `${output}/all-context-report.pdf`, format: "A4", printBackground: true});
   await page.emulateMedia({media: "screen"});
   await page.evaluate(() => window.dispatchEvent(new Event("afterprint")));
