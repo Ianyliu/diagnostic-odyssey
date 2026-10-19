@@ -757,6 +757,11 @@
   .planning-brief-page .brief-executive-roles h3 { font-size: 9pt; }
   .planning-brief-page .brief-executive-roles p { font-size: 7.7pt; line-height: 1.35; overflow-wrap: anywhere; }
   .planning-brief-page .brief-executive-boundary { font-size: 7.8pt; }
+  /* Executive summary already contains the five decision-state facts. Avoid
+     printing the duplicate block on an otherwise empty trailing page. */
+  .planning-brief-page[data-print-details="summary"] .brief-print-decision-state {
+    display: none !important;
+  }
   .planning-brief-page[data-print-details="summary"] #brief-full-report { display: none !important; }
   .planning-brief-page[data-print-details="summary"] .brief-print-footer {
     position: static;
