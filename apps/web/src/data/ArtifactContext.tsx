@@ -41,6 +41,8 @@ interface ArtifactState {
   selectedLocalContextIds: string[];
   selectedLocalContext: LocalContextRecord[];
   setLocalContextSelected: (indicatorId: string, selected: boolean) => void;
+  setLocalContextGroupSelected: (indicatorIds: string[], selected: boolean) => void;
+  selectAllLocalContext: () => void;
   clearSelectedLocalContext: () => void;
   pilotLocalContextId: string | null;
   pilotLocalContext: LocalContextRecord | null;
@@ -152,6 +154,19 @@ export function ArtifactProvider({children}: {children: ReactNode}) {
     );
   };
 
+  const setLocalContextGroupSelected = (indicatorIds: string[], selected: boolean) => {
+    if (localContextStatus !== "loaded" || !localContext) return;
+    setLocalContextSelection(current => indicatorIds.reduce(
+      (selection, indicatorId) => updateLocalContextSelection(selection, localContext, indicatorId, selected),
+      current
+    ));
+  };
+
+  const selectAllLocalContext = () => {
+    if (localContextStatus !== "loaded" || !localContext) return;
+    setLocalContextSelection(createLocalContextSelectionForArtifact(localContext));
+  };
+
   const clearSelectedLocalContext = () => {
     setLocalContextSelection(clearLocalContextSelection(localContext));
   };
@@ -240,6 +255,8 @@ export function ArtifactProvider({children}: {children: ReactNode}) {
         selectedLocalContextIds,
         selectedLocalContext,
         setLocalContextSelected,
+        setLocalContextGroupSelected,
+        selectAllLocalContext,
         clearSelectedLocalContext,
         pilotLocalContextId,
         pilotLocalContext,

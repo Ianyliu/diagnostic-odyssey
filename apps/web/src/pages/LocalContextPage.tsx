@@ -99,6 +99,22 @@ function SelectableIndicatorRow({
   </div>;
 }
 
+function CategorySelectionActions({records, selectedIds, onGroupChange, label}: {
+  records: LocalContextRecord[];
+  selectedIds: string[];
+  onGroupChange: (indicatorIds: string[], selected: boolean) => void;
+  label: string;
+}) {
+  const eligible = records.filter(isSelectableLocalContextRecord);
+  if (eligible.length < 2) return null;
+  const ids = eligible.map(record => record.indicator_id);
+  const count = ids.filter(id => selectedIds.includes(id)).length;
+  return <div className="selection-actions" role="group" aria-label={`${label} selection controls`}>
+    <button className="text-button" type="button" disabled={count === ids.length} onClick={() => onGroupChange(ids, true)}>Select all</button>
+    <button className="text-button" type="button" disabled={count === 0} onClick={() => onGroupChange(ids, false)}>Select none</button>
+  </div>;
+}
+
 function BreakdownList({
   records,
   selectedIds,
@@ -137,6 +153,8 @@ export function LocalContextPage() {
     localContextError,
     selectedLocalContextIds,
     setLocalContextSelected,
+    setLocalContextGroupSelected,
+    selectAllLocalContext,
     clearSelectedLocalContext,
     pilotLocalContextId,
     setPilotLocalContext,
@@ -248,7 +266,7 @@ export function LocalContextPage() {
       whatThisShows="Statewide implementation and access context from reviewed Health Resources and Services Administration (HRSA) and U.S. Census Bureau sources."
       whyItMatters="These indicators can identify operational constraints that may matter when planning implementation."
       whatItDoesNotShow="West Virginia Long COVID prevalence, burden, cost, causal effect, savings, ROI, or a composite access-severity score."
-      whatToDoNext="Choose independently whether a reviewed record should be included in the Planning Brief, used as the one active Pilot planning context, both, or neither."
+      whatToDoNext="Eligible reviewed indicators start included in the Planning Brief for convenience. Use Select all, Select none, or individual checkboxes to customize. The separate Use in Pilot choice remains individual."
     />
     </details>
     <div className="guardrail compact">
@@ -260,16 +278,19 @@ export function LocalContextPage() {
 
     <div className="card selection-summary ledger-selection-summary" id="local-selection-summary">
       <div>
-        <strong>{selectedCount} {selectedCount === 1 ? "indicator" : "indicators"} explicitly selected by checkbox for Planning Brief</strong>
+        <strong>{selectedCount} {selectedCount === 1 ? "indicator" : "indicators"} selected for Planning Brief</strong>
         <p className="subtle">
           {pilotLocalContextId
             ? "The active Pilot-used context will also appear in the Planning Brief, deduplicated if it is checkbox-selected too."
-            : "Only explicit selections from the currently loaded reviewed artifact are eligible."}
+            : "Eligible reviewed indicators start selected by default. You can change the selection before exporting."}
         </p>
       </div>
       <div className="selection-actions">
         {(selectedCount > 0 || pilotLocalContextId) && <Link className="button" to="/brief">Review context in Planning Brief</Link>}
-        {selectedCount > 0 && <button className="button secondary" type="button" onClick={clearSelectedLocalContext}>Clear selections</button>}
+        {indicators.filter(isSelectableLocalContextRecord).length >= 2 && <>
+          <button className="button secondary" type="button" onClick={selectAllLocalContext} disabled={selectedCount === indicators.filter(isSelectableLocalContextRecord).length}>Select all</button>
+          <button className="button secondary" type="button" onClick={clearSelectedLocalContext} disabled={selectedCount === 0}>Select none</button>
+        </>}
       </div>
     </div>
     <p className="sr-only" role="status" aria-live="polite">
@@ -287,6 +308,7 @@ export function LocalContextPage() {
     <article className="card ledger-panel ledger-source-group" id="local-primary-care">
       <h2>A. Primary Care Health Professional Shortage Area (HPSA) context</h2>
       <p className="subtle">{primaryCount.source_agency} · {primaryCount.source_release_vintage}</p>
+      <CategorySelectionActions records={[primaryCount, primaryScore, ...primaryBreakdowns]} selectedIds={selectedLocalContextIds} onGroupChange={setLocalContextGroupSelected} label="Primary care" />
       <SelectableIndicatorRow
         record={primaryCount}
         selected={selectedLocalContextIds.includes(primaryCount.indicator_id)}
@@ -325,6 +347,7 @@ export function LocalContextPage() {
     <article className="card ledger-panel ledger-source-group" id="local-mental-health">
       <h2>B. Mental Health HPSA context</h2>
       <p className="subtle">{mentalCount.source_agency} · {mentalCount.source_release_vintage}</p>
+      <CategorySelectionActions records={[mentalCount, mentalScore, ...mentalBreakdowns]} selectedIds={selectedLocalContextIds} onGroupChange={setLocalContextGroupSelected} label="Mental health" />
       <SelectableIndicatorRow
         record={mentalCount}
         selected={selectedLocalContextIds.includes(mentalCount.indicator_id)}
@@ -363,6 +386,7 @@ export function LocalContextPage() {
     <article className="card ledger-panel ledger-source-group" id="local-acs">
       <h2>C. American Community Survey (ACS) implementation/access context</h2>
       <p className="subtle">U.S. Census Bureau · 2020–2024 ACS 5-year estimates / 2024 release. Native 90% margins of error are preserved.</p>
+      <CategorySelectionActions records={acsRecords} selectedIds={selectedLocalContextIds} onGroupChange={setLocalContextGroupSelected} label="ACS" />
       {acsRecords.map(record => <div className="ledger-record-group" key={record.indicator_id}>
         <SelectableIndicatorRow
           record={record}
