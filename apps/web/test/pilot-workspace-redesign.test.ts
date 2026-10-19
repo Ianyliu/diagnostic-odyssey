@@ -79,5 +79,5 @@ test("request creation retains a focusable control and offers a separate review 
   assert.match(sensitivity, /onClick=\{handleRequest\}/);
   assert.match(sensitivity, /requestStatus === "current" && <Link className="text-button" to="\/data-requests">Review data request<\/Link>/);
   assert.match(sensitivity, /aria-live="polite" aria-atomic="true"/);
-  assert.match(sensitivity, /Brief inclusion is a separate choice/);
+  assert.match(sensitivity, /New requests start selected in the Brief/);
 });
