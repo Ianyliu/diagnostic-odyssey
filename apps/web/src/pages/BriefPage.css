@@ -563,7 +563,8 @@
   .planning-brief-page .brief-print-footer {
     position: fixed;
     right: 0;
-    bottom: -1pt;
+    /* Reserve clearance for full-context reports at page breaks; keep the footer in the print margin. */
+    bottom: -13pt;
     left: 0;
     display: flex;
     justify-content: space-between;
