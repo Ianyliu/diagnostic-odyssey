@@ -164,6 +164,7 @@ await check("34 default records survive compact print and expanded optional appe
   assert.equal(await inputs.evaluateAll(elements => elements.filter(input => input.checked).length), 34);
   await page.getByRole("navigation", {name: "Primary navigation"}).getByRole("link", {name: "Planning brief", exact: true}).click();
   assert.match(await page.locator(".brief-executive-summary").innerText(), /34 reviewed records included/);
+  assert.doesNotMatch(await page.locator(".insight-stage-context").innerText(), /explicitly selected/i);
   const exportBrief = async () => {
     const options = page.locator("#brief-export-options");
     if (!(await options.evaluate(element => element.open))) await options.locator("summary").click();
@@ -193,7 +194,7 @@ await check("34 default records survive compact print and expanded optional appe
   assert.deepEqual(await page.locator("main details").evaluateAll(elements => elements.map(e => e.open)), before);
 
   await checkbox.check();
-  assert.equal(await page.locator("main").getAttribute("data-print-details"), "expanded");
+  assert.equal(await page.locator(".planning-brief-page").getAttribute("data-print-details"), "expanded");
   await page.evaluate(() => window.dispatchEvent(new Event("beforeprint")));
   await page.emulateMedia({media: "print"});
   assert.ok(await page.locator("#brief-national-burden").isVisible());
@@ -213,6 +214,7 @@ await check("customized Local Context and no selection remain distinct in JSON a
   await page.goto(base + "/brief");
   assert.match(await page.locator(".brief-executive-summary").innerText(), /0 reviewed records included/);
   await page.goto(base + "/local-context");
+  await page.locator("#local-acs-category > summary").click();
   await page.locator("#local-acs-category").getByRole("button", {name: "Select all", exact: true}).click();
   await page.locator('input[id^="select-local-context-"]').first().check();
   const total = await inputs.evaluateAll(elements => elements.filter(input => input.checked).length);
