@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { canExportEstimate } from "@diagnostic-odyssey/contracts";
 import { useArtifact } from "../data/ArtifactContext";
 import { OpeningProvenance, useOpeningMotion } from "./OpeningProvenance";
+import { HeadlineFindings } from "../components/HeadlineFindings";
 import { planningInsightsEnabled } from "../data/planningInsightsEnabled";
 import "./OverviewPage.css";
 
@@ -16,6 +17,12 @@ const journey: ReadonlyArray<readonly [
   ["3", "Scope a feasible pilot", "Set explicit planning assumptions and stress-test reach, capacity, timing, and resources.", "/pilot"],
   ["4", "Create a planning brief", "Export reviewed evidence, selected context, assumptions, boundaries, and remaining gaps.", "/brief"]
 ];
+
+const roles = [
+  { eyebrow: "01 / REVIEWED EVIDENCE", title: "Start with what the data can say.", body: "Survey-weighted national burden stays descriptive, versioned and bounded by its source universe.", tone: "reviewed" },
+  { eyebrow: "02 / LOCAL CONTEXT", title: "Add implementation reality.", body: "HRSA and ACS data can inform operational judgment without inventing local Long COVID burden.", tone: "context" },
+  { eyebrow: "03 / ANALYST ASSUMPTIONS", title: "Stress-test the plan, not the evidence.", body: "Scenario inputs remain explicit assumptions, not observed interventions or causal savings.", tone: "assumption" }
+] as const;
 
 export function OverviewPage() {
   const opening = useOpeningMotion();
@@ -32,13 +39,13 @@ export function OverviewPage() {
       <section className="overview-hero" aria-labelledby="overview-title">
         <div className="overview-hero-grid" aria-hidden="true" />
         <div className="overview-hero-copy">
-          <p className="overview-kicker">Evidence for better planning</p>
+          <p className="overview-kicker">Evidence into planning, with boundaries intact</p>
           <h1 id="overview-title">
-            Evidence into planning,
-            <span>with boundaries intact.</span>
+            Long COVID&rsquo;s burden
+            <span>goes beyond the bill.</span>
           </h1>
           <p className="overview-lede">
-            Diagnostic Odyssey supports Long COVID planning by keeping reviewed national burden, local implementation context, and analyst assumptions visibly separate—then carrying their provenance into one workflow.
+            <strong className="overview-audience">For state health departments and Medicaid programs scoping Long COVID care-navigation pilots.</strong> Diagnostic Odyssey keeps reviewed national burden, local implementation context, and analyst assumptions visibly separate—then carries their provenance into one workflow.
           </p>
           <div className="overview-hero-actions" role="group" aria-label="Start exploring Diagnostic Odyssey">
             <Link className="button overview-primary-cta" to="/burden">Explore reviewed burden</Link>
@@ -57,7 +64,20 @@ export function OverviewPage() {
           </dl>
           <p className="overview-source-note">Grounded in <strong>MEPS</strong>, <strong>HRSA</strong> and <strong>ACS</strong> · source boundaries stay visible.</p>
         </div>
-        <OpeningProvenance playing={opening} />
+        <HeadlineFindings />
+      </section>
+
+      <section className="overview-value-prop" aria-labelledby="overview-value-title">
+        <div className="overview-section-heading">
+          <p className="visual-kicker">THREE EVIDENCE ROLES</p>
+          <h2 id="overview-value-title">One workspace. Three evidence roles. No black-box blending.</h2>
+        </div>
+        <div className="overview-role-grid">
+          {roles.map(role => <article className={`overview-role-card ${role.tone}`} key={role.eyebrow}>
+            <p>{role.eyebrow}</p><h3>{role.title}</h3><span>{role.body}</span>
+          </article>)}
+        </div>
+        <div className="overview-provenance-slot"><OpeningProvenance playing={opening} /></div>
       </section>
 
       <nav className="overview-destinations" aria-label="Workspace navigation">
