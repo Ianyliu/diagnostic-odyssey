@@ -126,6 +126,11 @@ await check("visible selections, collapsed category state and unchanged Pilot in
 });
 await check("collapsed report links, print completeness, exact restoration and AI dialog", async () => {
   const page = await pageAt("/brief");
+  // Compact 7–8-page contract uses an explicit none-selected Local Context state.
+  // The all-reviewed default is checked in a separate native PDF below.
+  await page.getByRole("navigation", {name: "Primary navigation"}).getByRole("link", {name: "Local context", exact: true}).click();
+  await page.getByRole("button", {name: "Select none", exact: true}).first().click();
+  await page.getByRole("navigation", {name: "Primary navigation"}).getByRole("link", {name: "Planning brief", exact: true}).click();
   await page.locator(".insight-finding summary").first().click();
   const before = await page.locator("main details").evaluateAll(elements => elements.map(e => e.open));
   const scrollBefore = await page.evaluate(() => window.scrollY);
@@ -150,6 +155,23 @@ await check("collapsed report links, print completeness, exact restoration and A
   await page.goto(base + "/pilot#pilot-trace");
   await page.waitForFunction(() => document.activeElement?.textContent === "Decision trace");
   assert.equal(await page.locator("#pilot-decision-details").evaluate(e => e.open), true);
+});
+await check("all-reviewed default prints a complete longer PDF", async () => {
+  const page = await pageAt("/local-context");
+  const inputs = page.locator('input[id^="select-local-context-"]');
+  assert.equal(await inputs.count(), 34);
+  assert.equal(await inputs.evaluateAll(elements => elements.filter(input => input.checked).length), 34);
+  await page.getByRole("navigation", {name: "Primary navigation"}).getByRole("link", {name: "Planning brief", exact: true}).click();
+  const before = await page.locator("main details").evaluateAll(elements => elements.map(e => e.open));
+  await page.evaluate(() => { window.print = () => window.dispatchEvent(new Event("beforeprint")); });
+  await page.getByRole("button", {name: "Print / save PDF", exact: true}).evaluate(button => button.click());
+  await page.emulateMedia({media: "print"});
+  assert.ok(await page.locator(".brief-print-footer").isVisible());
+  await page.pdf({path: `${output}/all-context-report.pdf`, format: "A4", printBackground: true});
+  await page.emulateMedia({media: "screen"});
+  await page.evaluate(() => window.dispatchEvent(new Event("afterprint")));
+  assert.deepEqual(await page.locator("main details").evaluateAll(elements => elements.map(e => e.open)), before);
+  assert.equal(await page.locator(".insights-print-summary").count(), 0);
 });
 for (const width of [390, 1440]) await check(`cross-route history reveals fragments and preserves ordinary scroll ${width}`, async () => {
   const page = await pageAt("/brief", width);
