@@ -59,7 +59,7 @@ test("sensitivity data-request templates are deterministic and preserve pathway 
   assert.match(window.feasibility_privacy_notes, /do not by themselves establish a causal/i);
 });
 
-test("analyst-created requests require explicit Planning Brief opt-in", () => {
+test("analyst-created requests start selected with reversible Brief inclusion", () => {
   const context = readSource("../src/data/ArtifactContext.tsx");
   const requests = readSource("../src/pages/DataRequestsPage.tsx");
   const brief = readSource("../src/pages/BriefPage.tsx");
@@ -69,10 +69,12 @@ test("analyst-created requests require explicit Planning Brief opt-in", () => {
   assert.match(context, /toggleDataRequestForBrief/);
   assert.match(context, /selectedDataRequests/);
   assert.match(requests, /Include in Planning Brief/);
-  assert.match(requests, /Explicit opt-in/);
+  assert.match(requests, /Selected by default for convenience/);
+  assert.match(context, /selectAllDataRequestsForBrief/);
+  assert.match(context, /clearDataRequestsForBrief/);
   assert.match(brief, /dataRequests:\s*selectedDataRequests/);
   assert.doesNotMatch(brief, /dataRequests:\s*bundle\.data_requests/);
-  assert.match(sensitivity, /does not automatically include it in the Planning Brief/);
+  assert.match(sensitivity, /New requests start selected in the Brief/);
 });
 
 

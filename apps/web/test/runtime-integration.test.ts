@@ -655,7 +655,7 @@ test("planning brief includes only explicitly supplied release-eligible local co
   assert.match(briefSource, /record\.prohibited_interpretation/);
   assert.match(briefSource, /formatPublishedLocalContextUncertainty\(record\)/);
   assert.match(briefSource, /available, but no local context has been selected for this brief or used in Pilot planning/);
-  assert.match(briefSource, /explicit Include-in-Brief selection or an explicit Use-in-Pilot selection/);
+  assert.match(briefSource, /Eligible reviewed records are selected for this Brief by default/);
   assert.doesNotMatch(briefSource, /development fixture|Fixture only|Partial fixture/);
 });
 
@@ -666,8 +666,9 @@ test("local-context selection UI supports reviewed records without changing Pilo
 
   assert.match(localSource, /Include in Planning Brief/);
   assert.match(localSource, /Review context in Planning Brief/);
-  assert.match(localSource, /Clear selections/);
-  assert.match(localSource, /explicitly selected by checkbox for Planning Brief/);
+  assert.match(localSource, /Select all/);
+  assert.match(localSource, /Select none/);
+  assert.match(localSource, /selected for Planning Brief/);
   assert.match(localSource, /Include in Planning Brief/);
   assert.match(localSource, /Use in Pilot planning/);
   assert.match(localSource, /separate analyst choices/);

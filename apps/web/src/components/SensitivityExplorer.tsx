@@ -48,8 +48,8 @@ export function SensitivityExplorer({
     if (!onUpsertDataRequest || requestStatus === "current") return;
     onUpsertDataRequest(field);
     setRequestAnnouncement(requestStatus === "stale"
-      ? "Data request refreshed for the applied scenario. Review its Brief selection separately."
-      : "Data request created. Review it in Data Requests; Brief inclusion is a separate choice.");
+      ? "Data request refreshed for the applied scenario. Its Brief selection has not been changed."
+      : "Data request created and preselected for the Brief. Review or deselect it in Data Requests.");
   };
 
   return <section id="sensitivity" className="sensitivity-visual" aria-labelledby="sensitivity-title">
@@ -113,8 +113,8 @@ export function SensitivityExplorer({
           {requestStatus === "stale"
             ? "Refresh explicitly before this request can be exported in the Planning Brief."
             : requestStatus === "current"
-              ? "Review the request and decide separately whether to include it in the Planning Brief."
-              : "Create a structured operational data request. Creating it does not automatically include it in the Planning Brief."}
+              ? "Review the request and adjust its Brief selection if needed."
+              : "Create a structured operational data request. New requests start selected in the Brief; review before export."}
         </span>
       </div>
       <div className="sensitivity-action-controls">
