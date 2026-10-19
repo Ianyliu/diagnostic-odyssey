@@ -133,6 +133,11 @@ export function PlanningInsights({model}: {model: PlanningInsightsModelV1}) {
     </header>
     <label className="insights-print-choice"><input type="checkbox" checked={includePrintSummary} onChange={event => setIncludePrintSummary(event.target.checked)} /><span>Include insights summary in printed Brief<small>Reviewed findings and applied assumptions; investigation prompts stay on screen.</small></span></label>
     <div id="planning-insights-content" hidden={!expanded}>
+      {model.national.context.population && model.national.context.allCauseSpending && <section className="insight-national-context" aria-label="Reviewed national population and total spending">
+        <InsightRoleBadge role="reviewed" />
+        <p><strong>{formatEstimateValue(model.national.context.population.estimate)}</strong> represented U.S. adults ages 18–64 reporting current Long COVID symptoms ({formatEstimateInterval(model.national.context.population.estimate)}) · <strong>{formatEstimateValue(model.national.context.allCauseSpending.estimate)}</strong> total 2024 all-cause health care spending ({formatEstimateInterval(model.national.context.allCauseSpending.estimate)}).</p>
+        <p className="insight-caption">Survey-weighted descriptive estimates, not health care costs caused by Long COVID or diagnostic delay. Records: {model.national.context.population.estimate.estimate_id} · {model.national.context.allCauseSpending.estimate.estimate_id}.</p>
+      </section>}
       <div className="insight-summary-grid">
         <section className="insight-card insight-national" aria-labelledby="insight-national-title">
           <InsightRoleBadge role="reviewed" /><h3 id="insight-national-title">What the reviewed evidence describes</h3>
@@ -206,5 +211,5 @@ export function PlanningInsights({model}: {model: PlanningInsightsModelV1}) {
         <Investigations model={model} />
       </WorkspaceDisclosure>
     </div>
-  </section>{includePrintSummary && <PlanningInsightsPrintSummary model={model} />}</>;
+  </section>{model.national.context.population && model.national.context.allCauseSpending && <p className="insight-national-print-headline"><strong>National reviewed context:</strong> {formatEstimateValue(model.national.context.population.estimate)} represented adults ({formatEstimateInterval(model.national.context.population.estimate)}) · {formatEstimateValue(model.national.context.allCauseSpending.estimate)} total 2024 all-cause spending ({formatEstimateInterval(model.national.context.allCauseSpending.estimate)}). Descriptive, not attributable costs. Reviewed IDs: {model.national.context.population.estimate.estimate_id}; {model.national.context.allCauseSpending.estimate.estimate_id}.</p>}{includePrintSummary && <PlanningInsightsPrintSummary model={model} />}</>;
 }
