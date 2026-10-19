@@ -202,7 +202,7 @@ await run("default 34-context selection prints concise, optionally detailed, wit
   await page.emulateMedia({media: "screen"});
   await appendix.uncheck();
   const after = await exportJson(page, "brief-after-print-options");
-  delete before.generated_at; delete after.generated_at;
+  assert.equal(after.generated_at, before.generated_at, "Print-only changes must not regenerate the canonical export timestamp");
   assert.deepEqual(after, before, "Print detail toggle must not mutate authoritative JSON, record order or provenance");
   return {canonicalRecords: ids.length, printModeDefault: "concise", appendixReversible: true};
 });
