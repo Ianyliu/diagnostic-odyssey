@@ -1,6 +1,8 @@
 # Standalone comparator tests; no raw HC-256, no released-artifact changes.
 source(file.path(Sys.getenv("DIAGNOSTIC_ODYSSEY_ROOT"),
                  "analysis", "r", "comparator", "comparator_methods.R"))
+source(file.path(Sys.getenv("DIAGNOSTIC_ODYSSEY_ROOT"),
+                 "analysis", "r", "comparator", "model_audit.R"))
 
 synthetic_comparator_frame <- function() {
   grid <- expand.grid(i = seq_len(16), psu = 1:2, stratum = 1:8)
@@ -144,4 +146,22 @@ testthat::test_that("unsupported small samples do not pass precision screen", {
   )
   testthat::expect_false(gate$public_display_recommended)
   testthat::expect_true(gate$scientific_review_required)
+})
+
+
+testthat::test_that("survey-stage audit reports fit and effective support on synthetic data", {
+  d <- comparator_prepare(synthetic_comparator_frame())
+  design <- build_meps_design(d, "PERWT24F")
+  audit <- comparator_model_audit(design)
+  testthat::expect_true(audit$stage_zero$converged)
+  testthat::expect_true(audit$stage_positive$converged)
+  testthat::expect_equal(audit$full_design$degrees_of_freedom,
+                         survey::degf(design))
+  testthat::expect_identical(audit$full_design$weight, "PERWT24F")
+  testthat::expect_gt(audit$full_design$unique_stratum_psu_n, 1L)
+  testthat::expect_true(all(unlist(audit$stage_zero$observed_probability_range) >= 0))
+  testthat::expect_true(all(unlist(audit$stage_zero$observed_probability_range) <= 1))
+  testthat::expect_true(all(unlist(audit$stage_positive$observed_conditional_mean_range) > 0))
+  testthat::expect_true(all(vapply(audit$positive_spending_support,
+                                  function(x) x$unweighted_n > 0, logical(1))))
 })
