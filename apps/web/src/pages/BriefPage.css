@@ -354,6 +354,8 @@
 
 @media print {
   .planning-brief-page {
+    display: block; /* screen grid gaps and bottom padding can create a footer-only final page */
+    padding-bottom: 0;
     color: var(--do-text);
     background: var(--do-surface);
     font-size: 9.5pt;
@@ -613,7 +615,8 @@
   .planning-brief-page .brief-print-footer {
     position: fixed;
     right: 0;
-    bottom: -1pt;
+    /* The fixed rule belongs inside the paper margin, outside the body area. */
+    bottom: -19pt;
     left: 0;
     display: flex;
     justify-content: space-between;
