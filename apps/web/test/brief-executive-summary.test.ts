@@ -6,7 +6,7 @@ import {canExportEstimate, type ArtifactBundle} from "@diagnostic-odyssey/contra
 import {BRIEF_HEADLINE_ESTIMATE_IDS, selectBriefExecutiveHighlights} from "../src/data/briefExecutiveSummary.ts";
 
 const artifactPath = fileURLToPath(new URL(
-  "../../../../artifacts/reviewed/meps-2024-long-covid-candidate-20260926T011343Z/bundle.json", import.meta.url
+  "../../../artifacts/reviewed/meps-2024-long-covid-candidate-20260926T011343Z/bundle.json", import.meta.url
 ));
 const artifact = JSON.parse(readFileSync(artifactPath, "utf8")) as ArtifactBundle;
 const national = artifact.burden_domains.flatMap(domain => domain.measures);
