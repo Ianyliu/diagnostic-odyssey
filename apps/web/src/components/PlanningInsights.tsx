@@ -79,7 +79,7 @@ export function InterventionEvidenceGap({id = "intervention-options", explanatio
 function EvidenceRoles({model}: {model: PlanningInsightsModelV1}) {
   const steps: {role: InsightRole; title: string; detail: string; href: string}[] = [
     {role: "reviewed", title: "National evidence", detail: model.national.availability === "available" ? `${model.national.findingsCount} reviewed findings` : "Reviewed summary unavailable", href: "#brief-national-burden"},
-    {role: "context", title: "Local context", detail: model.local.records.length ? `${model.local.records.length} explicitly selected` : "No verified selection", href: "#brief-local-context"},
+    {role: "context", title: "Local context", detail: model.local.records.length ? `${model.local.records.length} included in Brief` : "No verified selection", href: "#brief-local-context"},
     {role: "assumption", title: "Analyst assumptions", detail: model.scenario.applied ? "Applied Pilot inputs" : "No valid applied scenario", href: "#brief-pilot-assumptions"},
     {role: "result", title: "Planning outputs", detail: model.scenario.applied ? "Deterministic arithmetic" : "Outputs unavailable", href: model.scenario.applied ? "#brief-scenario-outputs" : "/pilot"},
     {role: "prompt", title: "Operational decisions", detail: "Analyst judgment & verification", href: "/data-requests"}
