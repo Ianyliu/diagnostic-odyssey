@@ -139,7 +139,11 @@ await check("Unicode question boundary, hostile text is inert, and edits latch s
 });
 
 await check("actual Brief composition detects scenario, local, pilot and included request changes but ignores timestamp-only recomposition", async () => {
-  const p = await page({url: fixture}); await open(p);
+  const p = await page({url: fixture});
+  // Start this controlled composition journey from an explicit no-local-selection state.
+  // The default 34-record state is verified separately in real browser acceptance.
+  await change(p, "local-clear");
+  await open(p);
   const initial = await preview(p).inputValue();
   await change(p, "timestamp");
   assert.equal(await copy(p).isEnabled(), true);
@@ -152,7 +156,13 @@ await check("actual Brief composition detects scenario, local, pilot and include
   assert.equal(envelope(await preview(p).inputValue()).payload.local_context.length, 2);
   await change(p, "request-create");
   await p.getByText(/Fixture source: loaded; local: loaded; requests: [1-9]/).waitFor({state: "attached"});
-  assert.equal(await copy(p).isEnabled(), true, "unselected requests do not alter this scope");
+  // Newly created requests are now included automatically; the existing preview
+  // must fail closed until the user regenerates it.
+  await stale(p); await regenerate(p).click();
+  assert.equal(envelope(await preview(p).inputValue()).payload.data_requests.length, 1);
+  // Explicit opt-out and re-selection must each invalidate the prior preview.
+  await change(p, "request-select"); await stale(p); await regenerate(p).click();
+  assert.equal(envelope(await preview(p).inputValue()).payload.data_requests.length, 0);
   await change(p, "request-select"); await stale(p); await regenerate(p).click();
   const data = envelope(await preview(p).inputValue());
   assert.equal(data.payload.data_requests.length, 1);
