@@ -139,6 +139,11 @@ for (const width of [1440, 820, 390, 360]) await run(`huge finite scenario prese
 });
 await run("optional actual PDF summary preserves JSON and excludes unaccepted suggestions", async () => {
   const {page} = await session();
+  // Exercise the compact 7/8-page print contract from an explicit none-selected
+  // state; defaults now include 34 eligible records and form a longer report.
+  await navigate(page, "Local context");
+  await page.getByRole("button", {name: "Select none", exact: true}).first().click();
+  await navigate(page, "Planning brief");
   const choice = page.getByRole("checkbox", {name: /Include insights summary in printed Brief/});
   assert.equal(await choice.isChecked(), false);
   const before = await exportJson(page, "print-before");
