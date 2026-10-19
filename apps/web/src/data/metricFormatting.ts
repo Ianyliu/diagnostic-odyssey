@@ -25,3 +25,10 @@ export function formatMetricValue(value: number, unit: string): string {
   const precision = Math.abs(value) < 1 ? 3 : 1;
   return `${value.toLocaleString("en-US", {maximumFractionDigits: precision})} ${unit}`;
 }
+
+/** Put the compound unit on the upper tick only; the chart's aria-label retains full units. */
+export function formatMetricTick(value: number, unit: string, includeUnit: boolean): string {
+  const text = formatMetricValue(value, unit);
+  const suffix = ` ${unit}`;
+  return includeUnit || !text.endsWith(suffix) ? text : text.slice(0, -suffix.length);
+}

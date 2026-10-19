@@ -53,6 +53,11 @@
   line-height: 1.3;
 }
 
+.metric-visual-axis span { white-space: nowrap; }
+.metric-visual-interval.is-range { top: 1px; height: 10px; box-sizing: border-box;
+  border: 2px solid color-mix(in srgb, var(--do-brand-teal) 70%, var(--do-chart-1));
+  background: transparent; }
+
 .metric-visual-meta {
   justify-content: flex-start;
   flex-wrap: wrap;
