@@ -18,7 +18,7 @@ export const createLocalContextSelectionForArtifact = (
   artifact: LocalContextArtifact
 ): LocalContextSelectionState => ({
   artifactVersion: artifact.manifest.artifact_version,
-  indicatorIds: []
+  indicatorIds: artifact.indicators.filter(isSelectableLocalContextRecord).map(record => record.indicator_id)
 });
 
 export const isSelectableLocalContextRecord = (
@@ -65,10 +65,10 @@ export function updateLocalContextSelection(
 
 export const clearLocalContextSelection = (
   artifact: LocalContextArtifact | null
-): LocalContextSelectionState =>
-  artifact
-    ? createLocalContextSelectionForArtifact(artifact)
-    : createEmptyLocalContextSelection();
+): LocalContextSelectionState => ({
+  artifactVersion: artifact?.manifest.artifact_version ?? null,
+  indicatorIds: []
+});
 
 export function resolveSelectedLocalContext(
   selection: LocalContextSelectionState,

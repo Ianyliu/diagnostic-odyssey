@@ -53,13 +53,13 @@ test("pathway boundary helper has deterministic readable fallback for unknown id
 
 test("Pilot renders the committed Scenario boundary beside assumptions with descriptive follow-up links", () => {
   const pilot = readSource("../src/pages/PilotPage.tsx");
-  const assumptionsIndex = pilot.indexOf("Planning assumptions");
+  const assumptionsIndex = pilot.indexOf("<h2>Planning assumptions</h2>");
   const boundaryIndex = pilot.indexOf("Modeled pathway boundary");
   const resultsIndex = pilot.indexOf("Baseline vs recognition/");
 
   assert.ok(assumptionsIndex >= 0);
   assert.ok(boundaryIndex > assumptionsIndex);
-  assert.ok(resultsIndex > boundaryIndex);
+  assert.ok(resultsIndex >= 0 && resultsIndex < assumptionsIndex, "mobile summary precedes editable assumptions");
   assert.match(pilot, /Target step/);
   assert.match(pilot, /Assumed mechanism/);
   assert.match(pilot, /Outside this model:/);

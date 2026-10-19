@@ -1,6 +1,7 @@
 import "./DataRequestsPage.css";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { WorkspaceDisclosure } from "../components/WorkspaceDisclosure";
 import { ContextBar } from "../components/ContextBar";
 import { useArtifact } from "../data/ArtifactContext";
 import { acquisitionResolver } from "@diagnostic-odyssey/acquisition-hints";
@@ -27,6 +28,8 @@ export function DataRequestsPage() {
     selectedDataRequests,
     upsertAnalystDataRequest,
     toggleDataRequestForBrief,
+    selectAllDataRequestsForBrief,
+    clearDataRequestsForBrief,
     removeAnalystDataRequest,
     attachAcquisitionHint,
     removeAcquisitionHint
@@ -40,7 +43,7 @@ export function DataRequestsPage() {
     <header className="page-heading">
       <p className="eyebrow">DATA REQUESTS</p>
       <h1 id="data-requests-heading" tabIndex={-1}>Turn uncertainty into a concrete request</h1>
-      <p>Requests are planning artifacts, not observed evidence. Creating a request does not put it in the Planning Brief; inclusion requires an explicit analyst choice here.</p>
+      <p>Requests are planning artifacts, not observed evidence. Available requests start selected for convenience; review or deselect them before exporting. Stale requests remain excluded from the Brief until refreshed.</p>
     </header>
     <p className="sr-only" role="status" aria-live="polite" aria-atomic="true">{announcement}</p>
 
@@ -48,7 +51,12 @@ export function DataRequestsPage() {
       <strong>No data requests have been created or loaded.</strong>
       <p>Stress-test a Pilot planner assumption first, then create a request for the operational information that would reduce that uncertainty.</p>
       <Link className="button secondary" to="/pilot#sensitivity">Open sensitivity explorer</Link>
-    </div> : <div className="data-request-grid" role="group" aria-label="Available data requests">
+    </div> : <>
+      {availableDataRequests.length >= 2 && <div className="selection-actions" role="group" aria-label="Data request selection controls">
+        <button className="button secondary" type="button" onClick={() => { selectAllDataRequestsForBrief(); setAnnouncement("All available data requests selected. Stale requests remain excluded from the Brief."); }} disabled={availableDataRequests.every(request => briefDataRequestIds.includes(request.request_id))}>Select all</button>
+        <button className="button secondary" type="button" onClick={() => { clearDataRequestsForBrief(); setAnnouncement("All data requests deselected."); }} disabled={briefDataRequestIds.length === 0}>Select none</button>
+      </div>}
+      <div className="data-request-grid" role="group" aria-label="Available data requests">
       {availableDataRequests.map(request => {
         const isAnalystRequest = analystIds.has(request.request_id);
         const selected = briefDataRequestIds.includes(request.request_id);
@@ -73,10 +81,11 @@ export function DataRequestsPage() {
               </span>
             </div>
           </header>
+          <p className="request-owner"><strong>Likely owner:</strong> {request.likely_source_owner}</p>
+          <WorkspaceDisclosure id={`request-details-${request.request_id}`} title="Request details & collection guidance">
           <dl className="data-request-details">
             <div><dt>Pathway step</dt><dd>{formatPathwayStepLabel(request.pathway_step)}</dd></div>
             {request.target_mechanism && <div><dt>Target mechanism</dt><dd>{formatMechanismLabel(request.target_mechanism)}</dd></div>}
-            <div><dt>Likely owner</dt><dd>{request.likely_source_owner}</dd></div>
             <div><dt>Granularity / time window</dt><dd>{request.granularity_time_window}</dd></div>
             <div className="request-fields"><dt>Fields needed</dt><dd>{request.fields_needed.join(", ")}</dd></div>
           </dl>
@@ -90,6 +99,18 @@ export function DataRequestsPage() {
             removeAcquisitionHint(request.request_id);
             setAnnouncement("Acquisition guidance removed. Brief selection is unchanged.");
           }}>Remove acquisition guidance</button>}
+            {isAnalystRequest && <button
+              className="text-button"
+              type="button"
+              onClick={() => {
+                removeAnalystDataRequest(request.request_id);
+                setAnnouncement("Session request removed.");
+                requestAnimationFrame(() =>
+                  (document.getElementById("request-summary") ?? document.getElementById("data-requests-heading"))?.focus()
+                );
+              }}
+            >Remove session request</button>}
+          </WorkspaceDisclosure>
           <div className="data-request-actions">
             <label className="brief-selection">
               <input
@@ -110,7 +131,7 @@ export function DataRequestsPage() {
                 <small>
                   {stale && selected
                     ? "Selected state is preserved, but this stale request is excluded from export until refreshed."
-                    : "Explicit opt-in; creating a request alone is not enough."}
+                    : "Selected by default for convenience; review before export."}
                 </small>
               </span>
             </label>
@@ -128,22 +149,11 @@ export function DataRequestsPage() {
             {stale && sensitivityField && scenario && !scenarioResult && <span className="data-request-refresh-blocked">
               Fix the Pilot planner inputs before refreshing this request.
             </span>}
-            {isAnalystRequest && <button
-              className="text-button"
-              type="button"
-              onClick={() => {
-                removeAnalystDataRequest(request.request_id);
-                setAnnouncement("Session request removed.");
-                requestAnimationFrame(() =>
-                  (document.getElementById("request-summary") ?? document.getElementById("data-requests-heading"))?.focus()
-                );
-              }}
-            >Remove session request</button>}
             </div>
           </div>
         </article>;
       })}
-    </div>}
+    </div></>}
 
     {availableDataRequests.length > 0 && <div id="request-summary" tabIndex={-1} className="request-footer-actions">
       <span>

@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "pages": 7,
+  "required_sections": [
+    "Reviewed national burden findings",
+    "Pilot planning assumptions",
+    "Scenario outputs",
+    "Local implementation context",
+    "Intervention-effect evidence",
+    "What to collect next",
+    "Interpretation boundaries"
+  ],
+  "optional_insights_absent": true,
+  "minimum_footer_clearance_pt": 12.704999170625115
+}

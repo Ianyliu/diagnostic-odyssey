@@ -1,0 +1,159 @@
+[
+  {
+    "sha": "0a0646ba192a1ca9f5450e867cc18346d3cbd718",
+    "checks": [
+      {
+        "task": "typecheck",
+        "exit": 0
+      },
+      {
+        "task": "test",
+        "exit": 0
+      },
+      {
+        "task": "build",
+        "exit": 0
+      }
+    ]
+  },
+  {
+    "sha": "98462ea3e851ea5f1f1d9d414afc7a3f8693c523",
+    "checks": [
+      {
+        "task": "typecheck",
+        "exit": 0
+      },
+      {
+        "task": "test",
+        "exit": 0
+      },
+      {
+        "task": "build",
+        "exit": 0
+      }
+    ]
+  },
+  {
+    "sha": "ca5a83b3c35a401c5383ee511cf53fbb53672d8d",
+    "checks": [
+      {
+        "task": "typecheck",
+        "exit": 0
+      },
+      {
+        "task": "test",
+        "exit": 0
+      },
+      {
+        "task": "build",
+        "exit": 0
+      }
+    ]
+  },
+  {
+    "sha": "b260f3e491219f6c86566c1bee723795c05ae6ff",
+    "checks": [
+      {
+        "task": "typecheck",
+        "exit": 0
+      },
+      {
+        "task": "test",
+        "exit": 0
+      },
+      {
+        "task": "build",
+        "exit": 0
+      }
+    ]
+  },
+  {
+    "sha": "18a5cf699fe86f1ad432b908f14acaf4b48a4782",
+    "checks": [
+      {
+        "task": "typecheck",
+        "exit": 0
+      },
+      {
+        "task": "test",
+        "exit": 0
+      },
+      {
+        "task": "build",
+        "exit": 0
+      }
+    ]
+  },
+  {
+    "sha": "19cededac3864ba8d3d53165055125bbef828aed",
+    "checks": [
+      {
+        "task": "typecheck",
+        "exit": 0
+      },
+      {
+        "task": "test",
+        "exit": 0
+      },
+      {
+        "task": "build",
+        "exit": 0
+      }
+    ]
+  },
+  {
+    "sha": "bd7d5f242406ae61fcc95449e2286b9963a05624",
+    "checks": [
+      {
+        "task": "typecheck",
+        "exit": 0
+      },
+      {
+        "task": "test",
+        "exit": 0
+      },
+      {
+        "task": "build",
+        "exit": 0
+      }
+    ]
+  },
+  {
+    "sha": "9687ce9e1d48e6a91377a77cc3f69e838ed22f9d",
+    "checks": [
+      {
+        "task": "typecheck",
+        "exit": 0
+      },
+      {
+        "task": "test",
+        "exit": 0
+      },
+      {
+        "task": "build",
+        "exit": 0
+      }
+    ]
+  },
+  {
+    "sha": "a236354fb99b463d2af339893778da7c8c8137b2",
+    "checkout": "final-clean",
+    "checks": [
+      {
+        "task": "typecheck",
+        "exit": 0,
+        "seconds": 8.6
+      },
+      {
+        "task": "test",
+        "exit": 0,
+        "seconds": 6.3
+      },
+      {
+        "task": "build",
+        "exit": 0,
+        "seconds": 6.5
+      }
+    ]
+  }
+]

@@ -1,3 +1,4 @@
+import {prepareWorkspace, navigateWorkspace} from "./workspace-helpers.mjs";
 /* global process, URL, console */
 import assert from "node:assert/strict";
 import {createRequire} from "node:module";
@@ -29,6 +30,7 @@ async function check(name, callback) {
   } finally { await context.close(); }
 }
 async function canonical(page) {
+  await prepareWorkspace(page);
   const promise = page.waitForEvent("download");
   await page.getByRole("button", {name:"Export JSON companion"}).click();
   const file = await promise;
@@ -107,11 +109,7 @@ await check("visitor can turn the illustrative concept off and back on without c
   }
   assert.deepEqual(await canonical(page), before, "toggling cannot change reviewed evidence or analyst state");
 });
-async function nav(page, name) {
-  const menu = page.getByRole("navigation", {name: "Primary navigation"});
-  if (!await menu.isVisible()) await page.getByRole("button", {name: "Menu", exact: true}).click();
-  await menu.getByRole("link", {name, exact: true}).click();
-}
+async function nav(page, name) { await navigateWorkspace(page, name); }
 function envelope(text) {
   const match = text.match(/\nBEGIN_DIAGNOSTIC_ODYSSEY_DATA\n\n```json\n\n([\s\S]*?)\n\n```\n\nEND_DIAGNOSTIC_ODYSSEY_DATA\n/);
   assert.ok(match, "AI handoff envelope delimiters must be present");
@@ -160,6 +158,7 @@ await check("fresh Brief: six complete AI goals match canonical export and downl
 
 await check("stale data request forces a current AI handoff snapshot; exploration preserves canonical state", async page => {
   await nav(page, "Local context");
+  await page.getByRole("button", {name: "Select none", exact: true}).first().click();
   await page.locator('input[id^="select-local-context-"]').first().check();
   await nav(page, "Pilot planner");
   await page.locator("#pilot-capacity").fill("5000");

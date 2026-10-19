@@ -18,6 +18,11 @@ test("Pilot groups editable assumptions and keeps selected context outside the f
     assert.match(pilot, new RegExp(group));
   }
   assert.match(pilot, /<fieldset className="pilot-assumption-group"/);
+  assert.match(pilot, /formatAppliedAssumption\(scenario, field\)/);
+  assert.match(pilot, /forceOpen=/);
+  assert.match(pilot, /<SensitivityPreview scenario=\{scenario\} paused=\{invalidDraft\}/);
+  assert.match(pilot, /Four applied planning quantities/);
+  assert.match(pilot, /Person-month exposure difference/);
   assert.equal((pilot.match(/fields: \[/g) ?? []).length, 3);
 
   const formStart = pilot.indexOf('<form id="pilot-assumptions"');
@@ -42,7 +47,7 @@ test("Pilot results retain applied/draft boundary and all seven planning quantit
     assert.match(pilot, new RegExp(label));
   }
   assert.match(pilot, /invalidDraft \? <section id="sensitivity"/);
-  assert.match(pilot, /disabled>Preview Planning Brief<\/button>/);
+  assert.match(pilot, /disabled>Review planning brief<\/button>/);
 });
 
 test("Pilot section navigation is selective and result visuals respond to their container", () => {
@@ -74,5 +79,5 @@ test("request creation retains a focusable control and offers a separate review 
   assert.match(sensitivity, /onClick=\{handleRequest\}/);
   assert.match(sensitivity, /requestStatus === "current" && <Link className="text-button" to="\/data-requests">Review data request<\/Link>/);
   assert.match(sensitivity, /aria-live="polite" aria-atomic="true"/);
-  assert.match(sensitivity, /Brief inclusion is a separate choice/);
+  assert.match(sensitivity, /New requests start selected in the Brief/);
 });

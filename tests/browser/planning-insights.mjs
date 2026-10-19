@@ -1,3 +1,4 @@
+import {prepareWorkspace, navigateWorkspace} from "./workspace-helpers.mjs";
 /* global process, console, document, window */
 import assert from "node:assert/strict";
 import { mkdir, writeFile, readFile } from "node:fs/promises";
@@ -27,15 +28,12 @@ async function session(width = 1440, theme = "light", reducedMotion = "reduce") 
     if (new URL(request.url()).origin !== new URL(base).origin) externalRequests.push(request.url());
   });
   await page.goto(`${base}/brief`);
-  await page.locator("#planning-insights-title").waitFor();
+  await page.locator("#planning-insights-title").waitFor(); await prepareWorkspace(page);
   return {context, page};
 }
-async function navigate(page, name) {
-  const nav = page.getByRole("navigation", {name: "Primary navigation"});
-  if (!await nav.isVisible()) await page.getByRole("button", {name: "Menu", exact: true}).click();
-  await nav.getByRole("link", {name, exact: true}).click();
-}
+async function navigate(page, name) { await navigateWorkspace(page, name); }
 async function exportJson(page, name) {
+  await prepareWorkspace(page);
   const pending = page.waitForEvent("download");
   await page.getByRole("button", {name: "Export JSON companion"}).click();
   const download = await pending;
@@ -49,7 +47,7 @@ for (const width of [1440, 768, 390, 360]) for (const theme of ["light", "dark"]
     assert.match(await preview.innerText(), /Deterministic planning preview — no live AI inference/);
     assert.equal(await preview.locator(".insight-finding").count(), 3);
     assert.equal(await preview.locator(".investigation-card").count(), 3);
-    assert.match(await preview.innerText(), /Available, not selected/);
+    assert.match(await preview.innerText(), /34 selected indicators/);
     await preview.screenshot({path: `${output}/insights-${width}-${theme}.png`});
     await page.screenshot({path: `${output}/brief-${width}-${theme}.png`, fullPage: true});
     const summary = preview.locator(".insight-finding summary").first();
@@ -81,7 +79,7 @@ for (const width of [1440, 768, 390, 360]) for (const theme of ["light", "dark"]
 await run("current state, local selection, requests and canonical JSON isolation", async () => {
   const {page} = await session();
   const before = await exportJson(page, "before-inspection");
-  for (const disclosure of await page.locator("#planning-insights summary").all()) await disclosure.click();
+  for (const disclosure of await page.locator("#planning-insights details:not(.workspace-disclosure) > summary").all()) await disclosure.click();
   const after = await exportJson(page, "after-inspection");
   delete before.generated_at; delete after.generated_at;
   assert.deepEqual(after, before);
@@ -97,6 +95,7 @@ await run("current state, local selection, requests and canonical JSON isolation
   assert.match(await page.locator(".insight-next").innerText(), /Choose an assumption to verify/);
   assert.match(await page.locator(".insight-next").innerText(), /does not establish which investigation should come first/);
   await navigate(page, "Local context");
+  await page.getByRole("button", {name: "Select none", exact: true}).first().click();
   await page.locator('input[id^="select-local-context-"]').first().check();
   await navigate(page, "Planning brief");
   assert.match(await page.locator(".insight-local").innerText(), /1 selected indicator/);
@@ -108,7 +107,8 @@ await run("current state, local selection, requests and canonical JSON isolation
   assert.match(await prompt.innerText(), /Request exists/);
   await prompt.getByRole("link", {name: /Review existing request/}).click();
   const request = page.locator(".data-request-sheet");
-  assert.equal(await request.getByRole("checkbox").isChecked(), false);
+  assert.equal(await request.getByRole("checkbox").isChecked(), true);
+  await request.getByRole("checkbox").uncheck();
   await request.getByRole("checkbox").check();
   await navigate(page, "Pilot planner");
   await page.locator("#pilot-capacity").fill("1000");
@@ -139,6 +139,11 @@ for (const width of [1440, 820, 390, 360]) await run(`huge finite scenario prese
 });
 await run("optional actual PDF summary preserves JSON and excludes unaccepted suggestions", async () => {
   const {page} = await session();
+  // Exercise the compact 7/8-page print contract from an explicit none-selected
+  // state; defaults now include 34 eligible records and form a longer report.
+  await navigate(page, "Local context");
+  await page.getByRole("button", {name: "Select none", exact: true}).first().click();
+  await navigate(page, "Planning brief");
   const choice = page.getByRole("checkbox", {name: /Include insights summary in printed Brief/});
   assert.equal(await choice.isChecked(), false);
   const before = await exportJson(page, "print-before");

@@ -53,7 +53,7 @@ test("presentation labels cover every current DataState and ReleaseStatus withou
   }
 });
 
-test("Overview explains the evidence-to-planning workflow across six destinations", () => {
+test("Overview explains the evidence-to-planning workflow across four stages and supporting tools", () => {
   const source = readSource("../src/pages/OverviewPage.tsx");
 
   for (const phrase of [
@@ -62,16 +62,15 @@ test("Overview explains the evidence-to-planning workflow across six destination
     "reviewed national burden",
     "local implementation context",
     "analyst assumptions",
-    "No black-box blending",
     "Review national burden estimates with survey uncertainty and explicit interpretation boundaries.",
     "Inspect implementation and access context without turning national burden into a local disease estimate.",
     "Set explicit planning assumptions and stress-test reach, capacity, timing, and resources.",
-    "See what intervention-effect evidence can and cannot support for the current scenario.",
-    "Turn local uncertainty into structured operational data requests.",
     "Export reviewed evidence, selected context, assumptions, boundaries, and remaining gaps."
   ]) {
     assert.ok(source.includes(phrase), phrase);
   }
+  assert.match(source, /Intervention evidence &amp; limits/);
+  assert.match(source, /capture data needs/);
   assert.match(source, /journey\.map\(\(\[step, title, outcome, to\]\)/);
   assert.match(source, /<small>{outcome}<\/small>/);
 });
@@ -108,7 +107,7 @@ test("Pilot interpretation describes planning arithmetic without duplicating the
   assert.match(source, /Draft not applied/);
   assert.match(source, /last valid planning assumptions/);
   assert.match(source, /Sensitivity analysis paused/);
-  assert.match(source, /disabled>Preview Planning Brief<\/button>/);
+  assert.match(source, /disabled>Review planning brief<\/button>/);
 });
 
 test("Evidence uses existing admissibility and current-scenario eligibility semantics", () => {

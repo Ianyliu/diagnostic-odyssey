@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { gapExamples } from "./storyboard";
 import { demoDecisionEvidence, getDemoPublication } from "./demoLiterature";
-import { DemoLiteratureNotice, DemoSourceCitation } from "./DemoLiterature";
+import { DemoLiteratureNotice, DemoSourceCitation } from "./DemoLiteratureComponents";
 import { ConceptCard, RoleLabel, ViewHeading } from "./ConceptPrimitives";
 import type { ConceptBriefSnapshot } from "./conceptBrief";
 

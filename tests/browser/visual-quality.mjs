@@ -1,3 +1,4 @@
+import {prepareWorkspace} from "./workspace-helpers.mjs";
 /* global process, document, innerWidth, console, getComputedStyle, navigator, location, URL */
 import assert from "node:assert/strict";
 import {createRequire} from "node:module";
@@ -45,12 +46,13 @@ async function assertNoPageOverflow(page, label) {
     `${diagnostic.route} ${label}: document ${diagnostic.documentWidth}px exceeds viewport ${diagnostic.viewportWidth}px; ` +
     `offenders: ${JSON.stringify(diagnostic.offenders)}; artifacts: ${label}-overflow.{json,png}`);
 }
-for (const width of [320, 390, 768, 1440]) for (const theme of ["light", "dark"]) for (const motion of ["reduce", "no-preference"]) {
+for (const width of [320, 390, 768, 1024, 1440]) for (const theme of ["light", "dark"]) for (const motion of ["reduce", "no-preference"]) {
   const page = await browser.newPage({viewport: {width, height: 1000}, reducedMotion: motion, colorScheme: theme});
   const label = `${width}-${theme}-${motion}`;
   try {
     await page.goto(base + "/pilot");
     await page.locator(".visual-headline").first().waitFor();
+    await prepareWorkspace(page);
     const geometry = await page.locator(".visual-headline").evaluateAll(elements => elements.map(element => {
       const range = document.createRange(); range.selectNodeContents(element);
       const rect = element.getBoundingClientRect();

@@ -2,6 +2,9 @@ import { formatPlanningCurrency, formatPlanningNumber } from "../data/planningNu
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import type { Scenario, ScenarioResult } from "@diagnostic-odyssey/contracts";
+import { WorkspaceDisclosure } from "../components/WorkspaceDisclosure";
+import { SensitivityPreview } from "../components/SensitivityPreview";
+import { formatAppliedAssumption } from "./briefAssumptions";
 import { ContextBar } from "../components/ContextBar";
 import { DecisionTrace } from "../components/DecisionTrace";
 import { InterpretationGuide } from "../components/InterpretationGuide";
@@ -156,15 +159,55 @@ function PilotPlannerWorkspace({
       <a href="#pilot-assumptions">Assumptions</a>
       <a href="#pilot-results">Results</a>
       <a href="#sensitivity">Sensitivity</a>
-      <a href="#pilot-context">Local context</a>
-      <a href="#pilot-trace">Decision trace</a>
     </nav>
     <div className="pilot-grid">
+      <article id="pilot-results" className="card result-card pilot-summary">
+        <p className="visual-kicker pilot-result-kicker">APPLIED PLANNING SCENARIO</p>
+        <h2>Baseline vs recognition/<wbr />navigation scenario</h2>
+        <p className="subtle">Deterministic planning arithmetic · not observed evidence or an evidence-derived effect</p>
+        {invalidDraft && <div className="draft-not-applied" role="status">
+          <strong>Draft not applied</strong>
+          <span>These results still reflect the last valid planning assumptions. Fix the highlighted inputs to apply this draft.</span>
+        </div>}
+        <WorkspaceDisclosure id="pilot-reading-guide" title="How to read these results"><InterpretationGuide
+          id="pilot-result-interpretation"
+          title="How to read these results"
+          whatThisShows="The mechanical planning consequences of the currently applied assumptions."
+          whyItMatters="Whether intended reach, capacity, recognition-window assumptions, and program resources appear operationally feasible together."
+          whatItDoesNotShow="A forecast, observed improvement, treatment effectiveness, causal effect, savings, or ROI."
+          whatToDoNext={invalidDraft
+            ? "Fix the draft inputs, then stress-test an assumption and create a structured data request where uncertainty matters."
+            : "Stress-test an assumption and create a structured data request where uncertainty matters."}
+        />
+        </WorkspaceDisclosure>
+        <dl className="pilot-headlines" aria-label="Four applied planning quantities">
+          {[
+            ["Participants served within capacity", scenarioResult.reached_participants, false],
+            ["Capacity gap", scenarioResult.capacity_gap, false],
+            ["Person-month exposure difference", scenarioResult.difference_person_months, false],
+            ["Program-resource requirement", scenarioResult.program_resource_requirement, true]
+          ].map(([label, value, isCurrency]) => <div key={String(label)} className={Math.abs(Number(value)) >= 1e12 ? "pilot-headline-scientific" : ""}>
+            <dt>{label}</dt><dd className={Math.abs(Number(value)) >= 1e12 ? "scientific-value" : ""}>{isCurrency ? formatPlanningCurrency(Number(value)) : formatPlanningNumber(Number(value), resultNumber)}</dd>
+          </div>)}
+        </dl>
+        <p className="visual-note">Participants and person-months are modeled planning quantities, not observed improvements or forecasts. Program resources are requirements, not savings or ROI.</p>
+        <div className="pilot-next-actions">
+          {invalidDraft && <p className="field-error">Apply valid planning inputs before continuing from this draft.</p>}
+          {invalidDraft ? <button className="button" type="button" disabled>Review planning brief</button> : <Link className="button" to="/brief">Review planning brief</Link>}
+          <Link className="text-button" to="/data-requests">Review unresolved data needs</Link>
+        </div>
+        <SensitivityPreview scenario={scenario} paused={invalidDraft} />
+      </article>
       <div className="pilot-input-column">
       <form id="pilot-assumptions" className="card assumption-card" onSubmit={event => event.preventDefault()}>
         <h2>Planning assumptions</h2>
         <p className="subtle"><strong>{PLANNING_DEFAULTS_LABEL}</strong><br />{PLANNING_DEFAULTS_DESCRIPTION}</p>
-        {assumptionGroups.map(group => <fieldset className="pilot-assumption-group" key={group.title}>
+        {assumptionGroups.map((group, index) => <WorkspaceDisclosure id={`pilot-input-group-${index}`} key={group.title}
+          title={group.title} defaultOpen={index === 0}
+          forceOpen={group.fields.some(key => Boolean(evaluation.errors[key])) || Boolean(evaluation.formError)}
+          summary={<span className="pilot-group-values"><span>Applied values</span>{pilotInputFields.filter(field => group.fields.includes(field.key)).map(field =>
+            <span key={field.key}>{field.label}: <strong>{formatAppliedAssumption(scenario, field)}</strong></span>)}</span>}>
+          <fieldset className="pilot-assumption-group">
           <legend>{group.title}</legend>
           <p>{group.description}</p>
           {pilotInputFields.filter(field => group.fields.includes(field.key)).map(field => {
@@ -194,7 +237,7 @@ function PilotPlannerWorkspace({
             </div>
           </div>;
         })}
-        </fieldset>)}
+        </fieldset></WorkspaceDisclosure>)}
         {evaluation.formError && <p className="field-error form-error" aria-live="polite">{evaluation.formError}</p>}
       </form>
         <section className="pathway-boundary" aria-labelledby="pilot-pathway-boundary-title">
@@ -215,25 +258,10 @@ function PilotPlannerWorkspace({
           </div>
         </section>
       </div>
-      <article id="pilot-results" className="card result-card">
-        <p className="visual-kicker pilot-result-kicker">APPLIED PLANNING SCENARIO</p>
-        <h2>Baseline vs recognition/<wbr />navigation scenario</h2>
-        <p className="subtle">Deterministic planning arithmetic · not observed evidence or an evidence-derived effect</p>
-        {invalidDraft && <div className="draft-not-applied" role="status">
-          <strong>Draft not applied</strong>
-          <span>These results still reflect the last valid planning assumptions. Fix the highlighted inputs to apply this draft.</span>
-        </div>}
-        <InterpretationGuide
-          id="pilot-result-interpretation"
-          title="How to read these results"
-          whatThisShows="The mechanical planning consequences of the currently applied assumptions."
-          whyItMatters="Whether intended reach, capacity, recognition-window assumptions, and program resources appear operationally feasible together."
-          whatItDoesNotShow="A forecast, observed improvement, treatment effectiveness, causal effect, savings, or ROI."
-          whatToDoNext={invalidDraft
-            ? "Fix the draft inputs, then stress-test an assumption and create a structured data request where uncertainty matters."
-            : "Stress-test an assumption and create a structured data request where uncertainty matters."}
-        />
+      <article className="card result-card pilot-detail-results">
+        <h2>Decision visuals &amp; sensitivity</h2>
         <PilotDecisionVisuals scenario={scenario} result={scenarioResult} />
+        <WorkspaceDisclosure id="pilot-all-results" title="All modeled quantities">
         <dl className="result-list pilot-result-ledger">
           <div className={Math.abs(scenarioResult.intended_reach) >= 1e12 ? "pilot-result-scientific" : undefined}><dt>Intended reach</dt><dd>{formatPlanningNumber(scenarioResult.intended_reach, resultNumber)}</dd></div>
           <div className={Math.abs(scenarioResult.reached_participants) >= 1e12 ? "pilot-result-scientific" : undefined}><dt>Reached participants</dt><dd>{formatPlanningNumber(scenarioResult.reached_participants, resultNumber)}</dd></div>
@@ -243,6 +271,7 @@ function PilotPlannerWorkspace({
           <div className={Math.abs(scenarioResult.difference_person_months) >= 1e12 ? "pilot-result-scientific" : undefined}><dt>Difference in person-month exposure</dt><dd>{formatPlanningNumber(scenarioResult.difference_person_months, resultNumber)}</dd></div>
           <div className={Math.abs(scenarioResult.program_resource_requirement) >= 1e12 ? "pilot-result-scientific" : undefined}><dt>Program-resource requirement</dt><dd>{formatPlanningCurrency(scenarioResult.program_resource_requirement)}</dd></div>
         </dl>
+        </WorkspaceDisclosure>
         <div className="sr-only" aria-live="polite" aria-atomic="true">{resultAnnouncement}</div>
         {invalidDraft ? <section id="sensitivity" className="sensitivity-paused-state" aria-labelledby="sensitivity-paused-title">
           <h3 id="sensitivity-paused-title">Sensitivity analysis paused</h3>
@@ -253,10 +282,7 @@ function PilotPlannerWorkspace({
           dataRequestStatus={sensitivityDataRequestStatus}
         />}
         <div className="guardrail compact"><strong>Not savings or ROI.</strong><p>The resource requirement is a program input. The person-month difference is a planning exposure quantity, not observed improvement.</p></div>
-        {invalidDraft ? <div className="brief-action-paused">
-          <button className="button" type="button" disabled>Preview Planning Brief</button>
-          <span>Apply valid planning inputs before continuing from this draft.</span>
-        </div> : <Link className="button" to="/brief">Preview Planning Brief</Link>}
+        <p className="pilot-request-loop">An assumption still needs checking? <Link to="/data-requests">Review data requests</Link> before finalizing your brief. <Link to="/evidence">Intervention evidence &amp; limits</Link>.</p>
       </article>
     </div>
 
@@ -291,7 +317,7 @@ function PilotPlannerWorkspace({
           </p>
         </section>
 
-        <section id="pilot-trace" className="pilot-decision-trace" aria-labelledby="pilot-decision-trace-title">
+        <WorkspaceDisclosure id="pilot-decision-details" title="Follow the decision trace"><section id="pilot-trace" className="pilot-decision-trace" aria-labelledby="pilot-decision-trace-title">
           <h2 id="pilot-decision-trace-title">Decision trace</h2>
           <DecisionTrace
             burdenEstimateCount={burdenEstimateCount}
@@ -302,6 +328,6 @@ function PilotPlannerWorkspace({
             evidence={bundle?.evidence ?? []}
             dataRequestHref="/pilot#sensitivity"
           />
-        </section>
+        </section></WorkspaceDisclosure>
   </section>;
 }

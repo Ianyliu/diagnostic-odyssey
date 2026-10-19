@@ -24,7 +24,7 @@ export function EvidencePage() {
   return <section className="page page-stack evidence-page">
     <ContextBar />
     <header className="page-heading">
-      <h1>What this analysis supports</h1>
+      <h1>Intervention evidence &amp; limits</h1>
       <p>Intervention-effect evidence is kept separate from descriptive burden and planning assumptions.</p>
     </header>
 

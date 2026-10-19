@@ -136,7 +136,7 @@ function localSection(brief: PlanningBrief, sources: PlanningInsightsSources): P
     artifactVersion: records.length ? sources.local.manifest.artifact_version : null,
     records: structuredClone(records),
     explanation: records.length
-      ? "Explicitly selected implementation context. These indicators do not rescale national burden or establish local Long COVID prevalence."
+      ? "Selected implementation context (eligible records are preselected by default). These indicators do not rescale national burden or establish local Long COVID prevalence."
       : "Selected records could not be verified against the current reviewed context. No substitute values are shown."
   };
 }

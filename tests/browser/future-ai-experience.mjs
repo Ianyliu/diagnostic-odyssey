@@ -1,3 +1,4 @@
+import {prepareWorkspace, navigateWorkspace} from "./workspace-helpers.mjs";
 /* global process, console, document, window, innerWidth, getComputedStyle, URL */
 import assert from "node:assert/strict";
 import {mkdir, readFile, writeFile, readdir} from "node:fs/promises";
@@ -25,16 +26,13 @@ async function check(name, body) {
   console.log(matrix.at(-1).status, name);
 }
 async function ready(page, path = "/concept/future-ai") {
-  await page.goto(base + path); await page.locator("main h1").waitFor();
+  await page.goto(base + path); await page.locator("main h1").waitFor(); await prepareWorkspace(page);
   if (!disabled && path === "/concept/future-ai") await page.locator(".fc-finding").first().waitFor();
 }
 async function goal(page, name) { await page.getByRole("tab", {name, exact: false}).click(); }
-async function nav(page, name) {
-  const menu = page.getByRole("navigation", {name: "Primary navigation"});
-  if (!await menu.isVisible()) await page.getByRole("button", {name: "Menu", exact: true}).click();
-  await menu.getByRole("link", {name, exact: true}).click();
-}
+async function nav(page, name) { await navigateWorkspace(page, name); }
 async function exportBrief(page, name) {
+  await prepareWorkspace(page);
   const pending = page.waitForEvent("download");
   await page.getByRole("button", {name: "Export JSON companion"}).click();
   const download = await pending; const path = `${output}/${name}.json`; await download.saveAs(path);
@@ -142,7 +140,7 @@ if (disabled) {
     const page = await (await context()).newPage(); await ready(page); await goal(page, goals[3]);
     await page.getByRole("checkbox", {name: "Remote care coordination", exact: true}).uncheck();
     assert.equal(await page.locator(".fc-strategy").count(), 2); assert.equal(await page.locator("thead th").count(), 3);
-    assert.equal(await page.getByRole("checkbox", {name: "Care navigation", exact: true}).isDisabled(), true);
+    assert.equal(await page.getByRole("checkbox", {name: "Care navigation", exact: true}).isDisabled(), false);
     await page.getByLabel("Comparison lens").selectOption("evidence"); assert.equal(await page.locator("tbody tr").count(), 3);
     assert.match(await page.locator("tbody").innerText(), /No matched comparative estimate/); assert.match(await page.locator("tbody").innerText(), /Not evaluated for local Pilot/);
     assert.match(await page.locator(".fc-demo-analysis").innerText(), /Not a winner/);
@@ -153,9 +151,15 @@ if (disabled) {
     assert.equal(await page.getByRole("rowheader", {name: "Comparative effectiveness"}).count(), 0);
     await page.evaluate(() => window.scrollTo(0, 0));
     await page.screenshot({path: `${output}/comparison-two-options.png`, fullPage: true});
+    await page.getByRole("button", {name: "Select none", exact: true}).click();
+    assert.equal(await page.locator(".fc-strategy").count(), 0);
+    assert.match(await page.locator(".fc-muted[role='status']").innerText(), /Select at least two approaches/);
+    await page.getByRole("button", {name: "Select all", exact: true}).click();
+    assert.equal(await page.locator(".fc-strategy").count(), 3);
   });
   await check("nonempty analyst state and canonical export are identical after every concept action", async () => {
     const page = await (await context({acceptDownloads: true})).newPage(); await ready(page, "/local-context");
+    await page.getByRole("button", {name: "Select none", exact: true}).first().click();
     await page.getByRole("checkbox").filter({visible: true}).first().check();
     await nav(page, "Pilot planner"); await page.getByLabel("Test assumption").selectOption("capacity");
     await page.getByRole("button", {name: "Add to data requests", exact: true}).click();

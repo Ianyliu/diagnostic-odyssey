@@ -111,3 +111,9 @@
   .data-request-sheet { border-top-color: Highlight; }
   .brief-selection input { forced-color-adjust: auto; }
 }
+
+.data-requests-page .data-request-grid { grid-template-columns: minmax(0, 1fr); max-width: 1000px; }
+.data-requests-page .data-request-sheet { border: 0; border-top: 2px solid var(--do-border); border-radius: 0; padding: 24px 0; background: transparent; }
+.request-owner { margin: 6px 0 12px; font-size: .88rem; color: var(--do-text-muted); }
+.data-requests-page .request-sheet-heading h2 { font-size: 1.2rem; }
+.data-requests-page .brief-selection { min-height: 44px; }

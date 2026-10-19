@@ -1,7 +1,5 @@
 import { Link } from "react-router-dom";
 import { canExportEstimate } from "@diagnostic-odyssey/contracts";
-import { ContextBar } from "../components/ContextBar";
-import { DecisionStateRail } from "../components/DecisionStateRail";
 import { useArtifact } from "../data/ArtifactContext";
 import { OpeningProvenance, useOpeningMotion } from "./OpeningProvenance";
 import { planningInsightsEnabled } from "../data/planningInsightsEnabled";
@@ -16,31 +14,8 @@ const journey: ReadonlyArray<readonly [
   ["1", "Describe burden", "Review national burden estimates with survey uncertainty and explicit interpretation boundaries.", "/burden"],
   ["2", "Review local constraints", "Inspect implementation and access context without turning national burden into a local disease estimate.", "/local-context"],
   ["3", "Scope a feasible pilot", "Set explicit planning assumptions and stress-test reach, capacity, timing, and resources.", "/pilot"],
-  ["4", "Test evidence claims", "See what intervention-effect evidence can and cannot support for the current scenario.", "/evidence"],
-  ["5", "Record data needs", "Turn local uncertainty into structured operational data requests.", "/data-requests"],
-  ["6", "Create a planning brief", "Export reviewed evidence, selected context, assumptions, boundaries, and remaining gaps.", "/brief"]
+  ["4", "Create a planning brief", "Export reviewed evidence, selected context, assumptions, boundaries, and remaining gaps.", "/brief"]
 ];
-
-const roles = [
-  {
-    eyebrow: "01 / REVIEWED EVIDENCE",
-    title: "Start with what the data can actually say.",
-    body: "Survey-weighted national burden stays descriptive, versioned, and bounded by its source universe.",
-    tone: "reviewed"
-  },
-  {
-    eyebrow: "02 / LOCAL CONTEXT",
-    title: "Add implementation reality without inventing local burden.",
-    body: "HRSA and ACS context can inform operational judgment while remaining separate from national estimates.",
-    tone: "context"
-  },
-  {
-    eyebrow: "03 / ANALYST ASSUMPTIONS",
-    title: "Stress-test the plan, not the evidence.",
-    body: "Pilot inputs remain explicit assumptions so scenario arithmetic never masquerades as observed effect.",
-    tone: "assumption"
-  }
-] as const;
 
 export function OverviewPage() {
   const opening = useOpeningMotion();
@@ -63,11 +38,11 @@ export function OverviewPage() {
             <span>with boundaries intact.</span>
           </h1>
           <p className="overview-lede">
-            Diagnostic Odyssey keeps reviewed national burden, local implementation context, and analyst assumptions visibly separate—then carries their provenance into one planning workflow.
+            Diagnostic Odyssey supports Long COVID planning by keeping reviewed national burden, local implementation context, and analyst assumptions visibly separate—then carrying their provenance into one workflow.
           </p>
           <div className="overview-hero-actions" role="group" aria-label="Start exploring Diagnostic Odyssey">
             <Link className="button overview-primary-cta" to="/burden">Explore reviewed burden</Link>
-            <Link className="button secondary overview-secondary-cta" to="/pilot">Open Pilot planner</Link>
+            <Link className="overview-secondary-cta" to="/pilot">Open Pilot planner</Link>
             {planningInsightsEnabled && <Link className="overview-tertiary-cta" to="/brief#planning-insights">See planning insights <span aria-hidden="true">→</span></Link>}
           </div>
           <dl className="overview-proof" aria-label="Current workspace evidence">
@@ -85,32 +60,11 @@ export function OverviewPage() {
         <OpeningProvenance playing={opening} />
       </section>
 
-      <ContextBar />
-
-      <section className="overview-value-prop" aria-labelledby="overview-value-title">
-        <div className="overview-section-heading">
-          <p className="visual-kicker">DESIGNED FOR DEFENSIBLE DECISIONS</p>
-          <h2 id="overview-value-title">One workspace. Three evidence roles. No black-box blending.</h2>
-          <p>Each layer has its own visual language, provenance, and allowed interpretation. They meet in the planning artifact without becoming one opaque score.</p>
-        </div>
-        <div className="overview-role-grid">
-          {roles.map(role => (
-            <article className={`overview-role-card ${role.tone}`} key={role.eyebrow}>
-              <p>{role.eyebrow}</p>
-              <h3>{role.title}</h3>
-              <span>{role.body}</span>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <DecisionStateRail />
-
       <nav className="overview-destinations" aria-label="Workspace navigation">
         <div className="overview-section-heading overview-destinations-heading">
           <p className="visual-kicker">HOW IT WORKS</p>
-          <h2>Follow one planning question from evidence to export.</h2>
-          <p>Move through the workflow in order, or jump directly to the layer you need.</p>
+          <h2>A clear path from evidence to a plan.</h2>
+          <p>Start where you need. Review the evidence, test assumptions, and capture what you still need to know.</p>
         </div>
         <div className="journey-grid">
           {journey.map(([step, title, outcome, to]) => (
@@ -122,6 +76,7 @@ export function OverviewPage() {
             </Link>
           ))}
         </div>
+        <p className="overview-workflow-note">Within your pilot: <Link to="/pilot#sensitivity">test sensitivity</Link> → <Link to="/data-requests">capture data needs</Link> → review your brief. <Link to="/evidence">Intervention evidence &amp; limits</Link> stays separate from descriptive burden.</p>
       </nav>
 
     </section>

@@ -1,0 +1,43 @@
+
+> diagnostic-odyssey@0.1.0 typecheck
+> npm run typecheck --workspaces --if-present
+
+
+> @diagnostic-odyssey/web@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @diagnostic-odyssey/acquisition-hints@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @diagnostic-odyssey/brief-core@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @diagnostic-odyssey/condition-adapters@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @diagnostic-odyssey/contracts@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @diagnostic-odyssey/evidence-core@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @diagnostic-odyssey/narrative-references@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @diagnostic-odyssey/planning-guidance@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @diagnostic-odyssey/scenario-engine@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @diagnostic-odyssey/ui@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit

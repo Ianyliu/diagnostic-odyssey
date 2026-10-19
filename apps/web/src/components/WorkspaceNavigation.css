@@ -1,0 +1,46 @@
+/* The four stages remain available while supporting tools stay in one menu. */
+.app-shell .header-inner { grid-template-columns: 225px minmax(0, 1fr) auto; gap: 16px; padding-block: 10px; }
+.app-shell .brand { grid-column: 1; grid-row: 1; }
+.app-shell .menu-toggle { display: inline-flex; align-items: center; grid-column: 3; grid-row: 1; }
+.app-shell .primary-nav { display: flex; grid-column: 2; grid-row: 1; justify-content: center; flex-wrap: nowrap; margin: 0; padding: 0; border: 0; }
+.app-shell .primary-nav a { display: inline-flex; gap: 7px; padding: 10px; font-size: .82rem; white-space: nowrap; }
+.stage-number { color: var(--do-text-muted); font-size: .72rem; }
+.stage-short { display: none; }
+.app-shell .header-controls { grid-column: 1 / -1; grid-row: 2; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; border-top: 1px solid var(--do-border); padding-top: 12px; }
+.app-shell .header-controls[hidden] { display: none; }
+.header-controls nav { display: flex; flex-wrap: wrap; gap: 6px 24px; }
+.header-controls nav a { display: inline-flex; align-items: center; min-height: 44px; font-size: .9rem; text-underline-offset: 4px; }
+.scope-summary { font-size: .8rem; border-block: 1px solid var(--do-border); }
+.scope-summary > summary { padding: 8px 0; }
+.scope-summary .disclosure-title { font-weight: 550; }
+.scope-summary .disclosure-summary { display: inline; margin-left: 12px; font-size: .75rem; }
+.scope-separator { padding-inline: 6px; color: var(--do-text-muted); }
+.scope-summary .context-meta { margin-block: 10px 0; }
+/* Verified at 1024px with all four complete labels; narrower layouts use the
+   same navigation as a bottom bar, avoiding wrapped or truncated destinations. */
+@media (max-width: 63.99rem) {
+  .app-shell { padding-bottom: calc(76px + env(safe-area-inset-bottom)); }
+  .app-shell .header-inner { grid-template-columns: minmax(0, 1fr) auto; padding: 8px 16px; }
+  .app-shell .menu-toggle { grid-column: 2; }
+  .app-shell .primary-nav, .app-shell .primary-nav.open {
+    display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+    position: fixed; inset: auto 0 0; z-index: 30;
+    padding: 6px max(8px, env(safe-area-inset-right)) calc(6px + env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
+    background: var(--do-surface); border-top: 1px solid var(--do-border); animation: none;
+  }
+  .app-shell .primary-nav a { display: grid; justify-content: center; justify-items: center; gap: 0; padding: 4px; min-height: 52px; border-bottom: 0; border-radius: 6px; text-align: center; }
+  .app-shell .primary-nav a.active { background: var(--do-selection-bg); color: var(--do-selection-text); }
+  .primary-nav .stage-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .stage-short { display: inline; font-size: .78rem; font-weight: 650; }
+  .stage-number { font-size: .66rem; }
+  .app-shell .header-controls { align-items: flex-start; }
+  .header-controls nav { display: grid; gap: 0; }
+  .scope-summary .disclosure-summary { display: block; margin-left: 18px; }
+  :where(input, select, textarea, button, a) { scroll-margin-block-end: calc(90px + env(safe-area-inset-bottom)); }
+  /* A modal owns the viewport; underlying workflow navigation must not compete. */
+  body:has(dialog[open], [role="dialog"][aria-modal="true"]) .primary-nav { visibility: hidden; }
+}
+@media print {
+  .app-shell { padding-bottom: 0; }
+  .app-shell .site-header, .app-shell .primary-nav, .scope-summary { display: none !important; }
+}

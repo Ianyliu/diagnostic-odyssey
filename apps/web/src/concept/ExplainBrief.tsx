@@ -10,7 +10,7 @@ import { pilotInputFields } from "../data/pilotInputDraft";
 import { formatAppliedAssumption } from "../pages/briefAssumptions";
 import type { ConceptBriefSnapshot } from "./conceptBrief";
 import { ConceptCard, RoleLabel, ViewHeading } from "./ConceptPrimitives";
-import { DemoLiteratureNotice, DemoSourceCitation } from "./DemoLiterature";
+import { DemoLiteratureNotice, DemoSourceCitation } from "./DemoLiteratureComponents";
 import { getDemoPublication } from "./demoLiterature";
 
 export function ExplainBrief({snapshot}: {snapshot: ConceptBriefSnapshot}) {

@@ -72,7 +72,7 @@ test("shell keeps navigation and context available at narrow widths without stic
   const main = readSource("../src/main.tsx");
 
   assert.match(shell, /aria-expanded=\{menuOpen\}/);
-  assert.match(shell, /aria-controls="primary-navigation"/);
+  assert.match(shell, /aria-controls="workspace-tools"/);
   assert.match(shell, /event\.key !== "Escape"/);
   assert.match(shell, /menuToggle\.current\?\.focus\(\)/);
   assert.match(workspace, /@media \(max-width: 767px\)\s*\{/);

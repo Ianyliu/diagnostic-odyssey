@@ -1,3 +1,4 @@
+import {prepareWorkspace, navigateWorkspace} from "./workspace-helpers.mjs";
 /* global process, console, document, innerWidth, window, getComputedStyle, Event */
 import assert from "node:assert/strict";
 import {createRequire} from "node:module";
@@ -16,15 +17,8 @@ async function check(name,body) {
   for(const context of browser.contexts()) await context.close();
   await writeFile(`${output}/results.json`,JSON.stringify({browser:browser.version(),results,events},null,2));
 }
-async function ready(page,path="/data-requests") {await page.goto(base+path);await page.locator("main h1").waitFor();}
-async function navigate(page,name) {
-  const nav=page.getByRole("navigation",{name:"Primary navigation"});
-  if(!await nav.isVisible()) await page.getByRole("button",{name:"Menu",exact:true}).click();
-  await nav.getByRole("link",{name,exact:true}).click();
-  const titles={"Pilot planner":"Scope a feasible pilot","Data requests":"Turn uncertainty into a concrete request","Planning brief":"Long COVID burden and pilot planning brief"};
-  await page.getByRole("heading",{name:titles[name],exact:true}).waitFor();
-  await page.waitForFunction(()=>document.querySelector('.menu-toggle')?.getAttribute('aria-expanded')!=="true");
-}
+async function ready(page,path="/data-requests") {await page.goto(base+path);await page.locator("main h1").waitFor();await prepareWorkspace(page);}
+async function navigate(page,name) { await navigateWorkspace(page,name); }
 async function download(page,name,button="Export JSON companion") {
   const pending=page.waitForEvent("download");await page.getByRole("button",{name:button,exact:true}).click();
   await (await pending).saveAs(`${output}/${name}.json`);return JSON.parse(await readFile(`${output}/${name}.json`,"utf8"));
@@ -40,12 +34,13 @@ for(const width of [1440,820,360]) for(const theme of ["light","dark"]) {
     assert.equal(await page.locator(".data-request-sheet").count(),0);
     await navigate(page,"Pilot planner");await page.locator("#sensitivity").getByRole("button",{name:"Add to data requests",exact:true}).click();
     await navigate(page,"Data requests");const request=page.locator(".data-request-sheet");
-    assert.equal(await request.count(),1);assert.equal(await request.getByRole("checkbox").isChecked(),false);
+    assert.equal(await request.count(),1);assert.equal(await request.getByRole("checkbox").isChecked(),true);
     await request.getByText("Acquisition guidance awaiting admission.",{exact:true}).waitFor();
     assert.equal(await request.getByRole("button",{name:/Attach reviewed acquisition/}).count(),0);
     assert.equal(await page.locator(".acquisition-guidance").count(),0);
     assert.ok(await overflow(page));await page.screenshot({path:`${output}/requests-pending-${width}-${theme}.png`,fullPage:true});
     const question=await request.locator("h2").innerText();const checkbox=request.getByRole("checkbox",{name:`${question} Include in Planning Brief`,exact:true});assert.equal(await checkbox.count(),1);
+    await checkbox.uncheck();assert.equal(await checkbox.isChecked(),false);
     await checkbox.focus();await page.keyboard.press("Space");assert.equal(await checkbox.isChecked(),true);
     await navigate(page,"Planning brief");let brief=await download(page,`selected-${width}-${theme}`);
     assert.equal(brief.data_requests.length,1);assert.equal(brief.acquisition_guidance,undefined);assert.equal(brief.data_requests[0].acquisition_hint,undefined);assert.equal(brief.burden_findings.length,21);

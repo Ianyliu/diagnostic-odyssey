@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { researchTargets } from "./storyboard";
-import { DemoBibliography, DemoLiteratureNotice, DemoSourceCitation, DemoSourceList } from "./DemoLiterature";
+import { DemoBibliography, DemoLiteratureNotice, DemoSourceCitation, DemoSourceList } from "./DemoLiteratureComponents";
 import { demoTopicExamples, getDemoPublication, type DemoTopicId } from "./demoLiterature";
 import { ConceptCard, QuestionList, TransferabilityQuestions, ViewHeading } from "./ConceptPrimitives";
 

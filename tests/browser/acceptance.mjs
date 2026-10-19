@@ -1,3 +1,4 @@
+import {prepareWorkspace, navigateWorkspace, setAppearance} from "./workspace-helpers.mjs";
 /* global process, console, window, document, innerWidth, innerHeight, getComputedStyle, performance, Event, MutationObserver, NodeFilter */
 import assert from "node:assert/strict";
 import { mkdir, writeFile, readFile } from "node:fs/promises";
@@ -48,20 +49,14 @@ async function check(name, body) {
 }
 async function ready(page, path = "/") {
   await page.goto(`${baseURL}${path}`);
-  await page.locator("main h1").waitFor();
+  await page.locator("main h1").waitFor(); await prepareWorkspace(page);
   await page
     .locator("main")
     .getByText("Something went wrong", { exact: false })
     .count()
     .then((n) => assert.equal(n, 0));
 }
-async function navigate(page, name) {
-  const nav = page.getByRole("navigation", { name: "Primary navigation" });
-  if (!(await nav.isVisible()))
-    await page.getByRole("button", { name: "Menu", exact: true }).click();
-  await nav.getByRole("link", { name, exact: true }).click();
-  await page.locator("main h1").waitFor();
-}
+async function navigate(page, name) { await navigateWorkspace(page, name); }
 async function assertThemeColor(page, expectedTheme) {
   if (expectedTheme) {
     await page.waitForFunction(theme => document.documentElement.dataset.theme === theme, expectedTheme);
@@ -240,6 +235,11 @@ await check(
     const page = await context.newPage();
     page.setDefaultTimeout(5000);
     await ready(page, "/brief");
+    const defaults = await exportBrief(page, "all-context-default");
+    assert.equal(defaults.local_context.length, 34, "eligible reviewed context is preselected");
+    await navigate(page, "Local context");
+    await page.getByRole("button", {name: "Select none", exact: true}).first().click();
+    await navigate(page, "Planning brief");
     const baseline = await exportBrief(page, "default-brief");
     snapshots.defaultBrief = baseline;
     assert.equal(baseline.burden_findings.length, 21);
@@ -314,7 +314,8 @@ await check(
       .locator(".data-request-sheet")
       .filter({ hasText: "SESSION PLANNING REQUEST" });
     assert.equal(await request.count(), 1);
-    assert.equal(await request.getByRole("checkbox").isChecked(), false);
+    assert.equal(await request.getByRole("checkbox").isChecked(), true, "new request starts selected");
+    await request.getByRole("checkbox").uncheck();
     await request.getByRole("checkbox").check();
     await navigate(page, "Planning brief");
     const selected = await exportBrief(page, "selected-brief");
@@ -426,11 +427,11 @@ await check("appearance persistence and reduced motion opening", async () => {
     await page.locator(".overview-provenance.is-playing").count(),
     0,
   );
-  await page.getByLabel("Appearance", { exact: true }).selectOption("dark");
+  await setAppearance(page, "dark");
   assert.equal(await page.locator("html").getAttribute("data-theme"), "dark");
   await assertThemeColor(page, "dark");
   await page.reload();
-  await page.locator("main h1").waitFor();
+  await page.locator("main h1").waitFor(); await prepareWorkspace(page);
   assert.equal(await page.locator("html").getAttribute("data-theme"), "dark");
   await assertThemeColor(page, "dark");
   await context.close();
@@ -447,6 +448,8 @@ await check("local context labels preserve native scores and exported uncertaint
     const page = await context.newPage();
     page.setDefaultTimeout(5000);
     await ready(page, "/local-context");
+    // Explicit three-record export: default selection intentionally includes all 34.
+    await page.getByRole("button", {name: "Select none", exact: true}).first().click();
     for (const id of ids) {
       const checkbox = page.locator(`#select-local-context-${id.replace(/[^a-zA-Z0-9_-]/g, "-")}`);
       const row = page.locator(".ledger-indicator-row").filter({has: checkbox});
@@ -507,20 +510,20 @@ await check("browser theme color follows bootstrap, explicit preferences, system
   await assertThemeColor(page, "light");
   await page.emulateMedia({colorScheme: "dark"});
   await assertThemeColor(page, "dark");
-  await page.getByLabel("Appearance", {exact: true}).selectOption("light");
+  await setAppearance(page, "light");
   await assertThemeColor(page, "light");
   await page.emulateMedia({colorScheme: "light"});
   await page.emulateMedia({colorScheme: "dark"});
   await assertThemeColor(page, "light");
   await page.reload();
-  await page.locator("main h1").waitFor();
+  await page.locator("main h1").waitFor(); await prepareWorkspace(page);
   await assertThemeColor(page, "light");
 
   const other = await context.newPage();
   await ready(other);
-  await other.getByLabel("Appearance", {exact: true}).selectOption("dark");
+  await setAppearance(other, "dark");
   await assertThemeColor(page, "dark");
-  await other.getByLabel("Appearance", {exact: true}).selectOption("system");
+  await setAppearance(other, "system");
   await assertThemeColor(page, "dark");
   await page.emulateMedia({colorScheme: "light"});
   await assertThemeColor(page, "light");
@@ -576,6 +579,8 @@ await check("extreme finite scenario layout and invalid sensitivity remain usabl
       page.on("pageerror", (error) => errors.push(String(error)));
       await ready(page, "/pilot");
       const assertScientificTokens = async (selector, scenarioLabel) => {
+        // Inspect the updated headline after bringing it into the rendered viewport.
+        if (selector.includes(".pilot-headlines") && await page.locator(".pilot-headlines").count()) await page.locator(".pilot-headlines").scrollIntoViewIfNeeded();
         const tokens = await page.locator(selector).evaluateAll((elements) => elements.flatMap(element => {
           const bounds = element.parentElement.getBoundingClientRect();
           const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
@@ -619,7 +624,7 @@ await check("extreme finite scenario layout and invalid sensitivity remain usabl
         return token;
       };
       const scientificToken = await assertResourceToken("1e308");
-      const scientificLedgerTokens = await assertScientificTokens(".pilot-result-ledger dd", "1e308 cost Pilot");
+      const scientificLedgerTokens = await assertScientificTokens(".pilot-headlines dd, .pilot-result-ledger dd", "1e308 cost Pilot");
       for (const route of ["pilot", "brief"]) {
         if (route === "brief") await navigate(page, "Planning brief");
         const layout = await page.evaluate(() => ({ width: innerWidth, scroll: document.documentElement.scrollWidth }));
@@ -635,7 +640,7 @@ await check("extreme finite scenario layout and invalid sensitivity remain usabl
       await page.locator("#pilot-fixed_cost").fill(String(Number.MAX_VALUE));
       assert.equal(await page.locator("#pilot-fixed_cost").getAttribute("aria-invalid"), "false");
       const maxScientificToken = await assertResourceToken("Number.MAX_VALUE");
-      const maxLedgerTokens = await assertScientificTokens(".pilot-result-ledger dd", "MAX cost Pilot");
+      const maxLedgerTokens = await assertScientificTokens(".pilot-headlines dd, .pilot-result-ledger dd", "MAX cost Pilot");
       await page.screenshot({ path: `${output}/extreme-max-pilot-${width}-${theme}.png` });
       const maxLayout = await page.evaluate(() => ({ width: innerWidth, scroll: document.documentElement.scrollWidth }));
       assert.ok(maxLayout.scroll <= maxLayout.width + 1, `MAX_VALUE resource page overflow: ${JSON.stringify(maxLayout)}`);
@@ -665,7 +670,7 @@ await check("extreme finite scenario layout and invalid sensitivity remain usabl
         await page.locator(`#pilot-${key}`).fill(value);
       }
       assert.equal(await page.getByText("Draft not applied", { exact: true }).count(), 0);
-      const maxReachedPilotTokens = await assertScientificTokens(".pilot-result-ledger dd", "MAX reached Pilot");
+      const maxReachedPilotTokens = await assertScientificTokens(".pilot-headlines dd, .pilot-result-ledger dd", "MAX reached Pilot");
       const maxReachedPilotLayout = await page.evaluate(() => ({ width: innerWidth, scroll: document.documentElement.scrollWidth }));
       assert.ok(maxReachedPilotLayout.scroll <= maxReachedPilotLayout.width + 1, `MAX reached Pilot overflow: ${JSON.stringify(maxReachedPilotLayout)}`);
       await page.screenshot({ path: `${output}/extreme-max-reached-pilot-${width}-${theme}.png` });
@@ -841,7 +846,7 @@ await check(
       () => !document.querySelector(".overview-provenance.is-playing"),
     );
     await page.reload();
-    await page.locator("main h1").waitFor();
+    await page.locator("main h1").waitFor(); await prepareWorkspace(page);
     assert.equal(
       await page.locator(".overview-provenance.is-playing").count(),
       0,
@@ -897,6 +902,14 @@ await check(
   },
 );
 async function tabTo(page, target, reverse = false) {
+  for (const parent of await target.locator("xpath=ancestor::details[not(@open)]").all()) {
+    if (await target.isVisible()) break;
+    const summary = parent.locator(":scope > summary");
+    if (await summary.isVisible()) {
+      await tabTo(page, summary, reverse);
+      await page.keyboard.press("Enter");
+    }
+  }
   for (let index = 0; index < 180; index++) {
     await page.keyboard.press(reverse ? "Shift+Tab" : "Tab");
     if (await target.evaluate((el) => document.activeElement === el)) return;
@@ -914,6 +927,10 @@ await check(
     const page = await context.newPage();
     page.setDefaultTimeout(5000);
     await ready(page, "/local-context");
+    // Keep this journey keyboard-only while clearing the new all-selected default.
+    const clearLocal = page.getByRole("button", {name: "Select none", exact: true}).first();
+    await tabTo(page, clearLocal);
+    await page.keyboard.press("Enter");
     const selection = page
       .getByRole("checkbox")
       .filter({ visible: true })
@@ -954,11 +971,9 @@ await check(
     });
     await tabTo(page, create);
     await page.keyboard.press("Enter");
-    await tabTo(
-      page,
-      nav.getByRole("link", { name: "Data requests", exact: true }),
-      true,
-    );
+    await tabTo(page, page.getByRole("button", {name: "Menu", exact: true}), true);
+    await page.keyboard.press("Enter");
+    await tabTo(page, page.getByRole("navigation", {name: "Supporting navigation"}).getByRole("link", {name: "Data requests", exact: true}));
     await page.keyboard.press("Enter");
     await page
       .getByRole("heading", {
@@ -971,7 +986,9 @@ await check(
       .filter({ hasText: "SESSION PLANNING REQUEST" })
       .getByRole("checkbox");
     await tabTo(page, request);
-    assert.equal(await request.isChecked(), false);
+    assert.equal(await request.isChecked(), true, "new request is selected by default");
+    await page.keyboard.press("Space");
+    assert.equal(await request.isChecked(), false, "keyboard can deselect the request");
     await page.keyboard.press("Space");
     assert.equal(await request.isChecked(), true);
     await tabTo(
@@ -988,6 +1005,7 @@ await check(
       .waitFor();
     const exportButton = page.getByRole("button", {
       name: "Export JSON companion",
+      includeHidden: true,
     });
     await tabTo(page, exportButton);
     const download = page.waitForEvent("download");

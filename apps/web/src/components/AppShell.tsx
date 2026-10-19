@@ -1,6 +1,8 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link, NavLink, Outlet, useLocation, useNavigationType } from "react-router-dom";
-import { useArtifact } from "../data/ArtifactContext";
+import { workspaceStages, workspaceStageForPath } from "../data/workspaceNavigation";
+import { DisclosureProvider } from "./WorkspaceDisclosure";
+import "./WorkspaceNavigation.css";
 import { focusTarget, scrollToFragment } from "../data/fragmentNavigation";
 import { ThemeControl } from "./ThemeControl";
 import { displayBuildProvenance, type BuildProvenance } from "../data/buildProvenance";
@@ -8,20 +10,9 @@ import { displayBuildProvenance, type BuildProvenance } from "../data/buildProve
 /** Replaced with a validated Git checkout identity by Vite at build time. */
 declare const __DO_BUILD_PROVENANCE__: BuildProvenance;
 
-const nav = [
-  ["/", "Overview"],
-  ["/burden", "Burden"],
-  ["/local-context", "Local context"],
-  ["/pilot", "Pilot planner"],
-  ["/evidence", "Evidence"],
-  ["/data-requests", "Data requests"],
-  ["/brief", "Planning brief"]
-] as const;
-
 const savedScroll = new Map<string, number>();
 
 export function AppShell() {
-  const {bundle, localContextStatus} = useArtifact();
   const location = useLocation();
   const navigationType = useNavigationType();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -88,6 +79,9 @@ export function AppShell() {
     setMenuOpen(false);
     const frame = requestAnimationFrame(() => {
       if (navigationType === "POP" && savedScroll.has(location.key)) {
+        // A different history entry may have closed the destination's disclosure.
+        // Reveal and focus it before restoring this entry's saved position.
+        scrollToFragment(location.hash);
         window.scrollTo(0, savedScroll.get(location.key) ?? 0);
       } else if (scrollToFragment(location.hash)) {
         // Anchor focus and scrolling were handled together.
@@ -103,13 +97,7 @@ export function AppShell() {
     };
   }, [location.key, location.hash, navigationType]);
 
-  const localContextMessage =
-    localContextStatus === "loading"
-      ? "Local implementation context · loading"
-      : localContextStatus === "loaded"
-        ? "West Virginia implementation context · reviewed state data"
-        : "Local implementation context · unavailable";
-  const approvedEvidenceCount = bundle?.evidence.filter(record => record.reviewer_status === "approved").length ?? 0;
+  const activeStage = workspaceStageForPath(location.pathname);
   const buildIdentity = displayBuildProvenance(__DO_BUILD_PROVENANCE__);
 
   return (
@@ -131,7 +119,7 @@ export function AppShell() {
             className="menu-toggle"
             type="button"
             aria-expanded={menuOpen}
-            aria-controls="primary-navigation"
+            aria-controls="workspace-tools"
             onClick={() => setMenuOpen(open => !open)}
           >{menuOpen ? "Close menu" : "Menu"}</button>
           <nav
@@ -139,28 +127,26 @@ export function AppShell() {
             aria-label="Primary navigation"
             className={"primary-nav" + (menuOpen ? " open" : "")}
           >
-            {nav.map(([to, label]) => (
-              <NavLink key={to} to={to} end={to === "/"} className={({isActive}) => isActive ? "active" : undefined}>
-                {label}
+            {workspaceStages.map(({to, label, shortLabel}, index) => (
+              <NavLink key={to} to={to} className={activeStage === to ? "active" : ""}>
+                <span className="stage-number" aria-hidden="true">{index + 1}</span>
+                <span className="stage-label">{label}</span><span className="stage-short" aria-hidden="true">{shortLabel}</span>
               </NavLink>
             ))}
           </nav>
-          <div className={"header-controls" + (menuOpen ? " open" : "")}>
+          <div id="workspace-tools" className={"header-controls" + (menuOpen ? " open" : "")} hidden={!menuOpen}>
+            <nav aria-label="Supporting navigation">
+              <Link to="/">Overview</Link>
+              <Link to="/evidence">Intervention evidence &amp; limits</Link>
+              <Link to="/data-requests">Data requests</Link>
+            </nav>
             <ThemeControl />
           </div>
         </div>
       </header>
-      <div className="prototype-strip" role="note">
-        <strong>National MEPS burden · reviewed</strong>
-        <span>{localContextMessage}</span>
-        <span>Pilot · analyst assumptions</span>
-        <span>{approvedEvidenceCount === 0
-          ? "Intervention effect · no approved record loaded"
-          : `Intervention evidence · ${approvedEvidenceCount} approved record${approvedEvidenceCount === 1 ? "" : "s"}; check scenario eligibility`}</span>
-      </div>
-      <main id="main-content" tabIndex={-1} data-navigation={navigationType}>
+      <DisclosureProvider><main id="main-content" tabIndex={-1} data-navigation={navigationType}>
         <Outlet />
-      </main>
+      </main></DisclosureProvider>
       <footer>
         <span>Diagnostic Odyssey</span>
         <span>No PHI · no state-specific Long COVID cost · no causal ROI claim</span>

@@ -16,6 +16,13 @@ export function scrollToFragment(
   try { id = decodeURIComponent(id); } catch { /* Use literal fragment. */ }
   const target = findTarget(id);
   if (!target) return false;
+  // Open from outside in before measuring/focusing. Native details remain mounted,
+  // so both same-page and router links can reveal arbitrarily nested content.
+  const disclosures: HTMLDetailsElement[] = [];
+  for (let element: HTMLElement | null = target; element; element = element.parentElement) {
+    if (element.tagName === "DETAILS") disclosures.unshift(element as HTMLDetailsElement);
+  }
+  for (const disclosure of disclosures) disclosure.open = true;
   focusTarget(target);
   target.scrollIntoView({ block: "start" });
   return true;
