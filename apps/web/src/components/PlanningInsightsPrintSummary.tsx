@@ -46,7 +46,7 @@ export function PlanningInsightsPrintSummary({model}: {model: PlanningInsightsMo
         <span>{record.geography_name} · {record.source_agency} · {record.source_release_vintage} · {formatPublishedLocalContextUncertainty(record)}</span>
         <span>{record.indicator_id} · {record.source_ref} · {record.source_locator}</span>
       </div>)}
-      {model.local.records.length > 2 && <p>First two of {model.local.records.length} selected indicators shown; inspect the complete selection in the Brief below.</p>}
+      {model.local.records.length > 2 && <p>First two of {model.local.records.length} included indicators shown; the full selection remains in the JSON companion and can be printed using the detailed appendix option.</p>}
       {model.local.artifactVersion && <p><strong>Local artifact:</strong> {model.local.artifactVersion}</p>}
       <p>{model.local.explanation}</p>
     </section>
