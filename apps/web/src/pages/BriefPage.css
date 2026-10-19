@@ -446,9 +446,14 @@
   }
 
   .planning-brief-page .brief-burden-group,
-  .planning-brief-page .brief-local-context,
   .planning-brief-page .brief-decision-trace {
     break-inside: auto;
+  }
+
+  /* Keep each reviewed local record together instead of splitting it across
+     the repeated print footer; long collections can still span pages. */
+  .planning-brief-page .brief-local-context {
+    break-inside: avoid-page;
   }
 
   /* Keep each decision and its explanation together while the ledger can span pages. */
@@ -563,8 +568,7 @@
   .planning-brief-page .brief-print-footer {
     position: fixed;
     right: 0;
-    /* Reserve clearance for full-context reports at page breaks; keep the footer in the print margin. */
-    bottom: -13pt;
+    bottom: -1pt;
     left: 0;
     display: flex;
     justify-content: space-between;
