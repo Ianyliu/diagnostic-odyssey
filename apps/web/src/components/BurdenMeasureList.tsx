@@ -54,9 +54,9 @@ export function BurdenMeasureList({estimates}: {estimates: Estimate[]}) {
             label={estimate.label}
             value={estimate.value}
             unit={estimate.unit}
-            low={estimate.distribution_summary?.p25 ?? estimate.interval_low}
-            high={estimate.distribution_summary?.p75 ?? estimate.interval_high}
-            intervalLabel={estimate.distribution_summary ? "Interquartile range (25th–75th percentile; not a confidence interval)" : estimate.interval_type}
+            low={estimate.interval_low}
+            high={estimate.interval_high}
+            intervalLabel={estimate.interval_type ? "95% confidence interval" : null}
             pointLabel={estimate.distribution_summary ? "Survey-weighted mean" : "Point estimate"}
             source={estimate.source_ref}
             universe={estimate.universe}

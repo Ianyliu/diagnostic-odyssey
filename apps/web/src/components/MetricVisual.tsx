@@ -26,9 +26,9 @@ export function MetricVisual({
   const observedHigh = typeof high === "number" ? high : value;
   const min = Math.min(0, observedLow, value);
   const rawMax = Math.max(0, observedHigh, value);
-  const padding = Math.max(Math.abs(rawMax - min) * 0.08, Math.abs(rawMax) * 0.04, 1e-9);
+  const padding = Math.max(Math.abs(rawMax - min) * 0.08, Math.abs(rawMax) * 0.04, Number.MIN_VALUE);
   const max = rawMax + padding;
-  const span = Math.max(max - min, 1e-9);
+  const span = Math.max(max - min, Number.MIN_VALUE);
   const pct = (x: number) => Math.max(0, Math.min(100, ((x - min) / span) * 100));
   const intervalLeft = pct(observedLow);
   const intervalWidth = Math.max(1.5, pct(observedHigh) - intervalLeft);

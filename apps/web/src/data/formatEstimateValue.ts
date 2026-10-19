@@ -1,10 +1,28 @@
 import type { Estimate } from "@diagnostic-odyssey/contracts";
 
-const decimal = new Intl.NumberFormat("en-US", { maximumFractionDigits: 1 });
-const percent = new Intl.NumberFormat("en-US", {
-  style: "percent",
-  maximumFractionDigits: 1
-});
+/** Use extra decimals for genuinely small nonzero values so they never display as zero. */
+function precision(value: number, unit: "native" | "percent"): number {
+  const magnitude = Math.abs(unit === "percent" ? value * 100 : value);
+  if (magnitude === 0 || magnitude >= 1) return 1;
+  if (magnitude >= .1) return 2;
+  if (magnitude >= .01) return unit === "percent" ? 2 : 3;
+  if (magnitude >= .001) return 3;
+  if (magnitude >= .0001) return 4;
+  if (magnitude >= .00001) return 5;
+  return 8;
+}
+
+function formatDecimal(value: number) {
+  return new Intl.NumberFormat("en-US", {maximumFractionDigits: precision(value, "native")}).format(value);
+}
+
+function formatProportion(value: number) {
+  const magnitude = Math.abs(value * 100);
+  if (magnitude > 0 && magnitude < 1e-8) return `${(value * 100).toExponential(2)}%`;
+  return new Intl.NumberFormat("en-US", {
+    style: "percent", maximumFractionDigits: precision(value, "percent")
+  }).format(value);
+}
 const compactCurrency = new Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "USD",
@@ -24,11 +42,11 @@ const compactPeople = new Intl.NumberFormat("en-US", {
 });
 
 export function formatNativeValue(value: number, unit: string): string {
-  if (unit === "proportion") return percent.format(value);
+  if (unit === "proportion") return formatProportion(value);
   if (unit === "USD/year") return compactCurrency.format(value);
   if (unit === "USD/person/year") return personCurrency.format(value);
   if (unit === "people") return compactPeople.format(value);
-  return `${decimal.format(value)} ${unit}`;
+  return `${formatDecimal(value)} ${unit}`;
 }
 
 function intervalLabel(intervalType: string | null): string {
@@ -61,7 +79,7 @@ export function formatEstimateInterval(
     estimate.unit !== "USD/person/year" &&
     estimate.unit !== "people"
   ) {
-    return `${label} ${decimal.format(estimate.interval_low)}–${decimal.format(estimate.interval_high)} ${estimate.unit}`;
+    return `${label} ${formatDecimal(estimate.interval_low)}–${formatDecimal(estimate.interval_high)} ${estimate.unit}`;
   }
 
   return `${label} ${formatNativeValue(estimate.interval_low, estimate.unit)}–${formatNativeValue(estimate.interval_high, estimate.unit)}`;
