@@ -2,6 +2,7 @@
 # Review-only comparator candidate. Never edits reviewed artifacts or web/runtime data.
 source(file.path("analysis", "r", "meps", "bootstrap.R"))
 source(file.path("analysis", "r", "comparator", "comparator_methods.R"))
+source(file.path("analysis", "r", "comparator", "model_audit.R"))
 
 required_packages <- c("haven", "jsonlite", "survey")
 missing_packages <- required_packages[
@@ -63,6 +64,8 @@ adjusted_insurance <- comparator_adjusted(
   full_design, replicates = 400L, seed = 20261019L, insurance = TRUE
 )
 screen <- comparator_precision_screen(unadjusted, adjusted, diagnostics)
+model_audit_primary <- comparator_model_audit(full_design)
+model_audit_insurance <- comparator_model_audit(full_design, insurance = TRUE)
 
 code_commit <- tryCatch(
   trimws(system("git rev-parse HEAD", intern = TRUE, ignore.stderr = TRUE)[[1]]),
@@ -102,7 +105,11 @@ candidate <- list(
     sensitivity_unadjusted_covariate_complete = unadjusted_covariate_complete,
     sensitivity_adjusted_interview_insurance = adjusted_insurance
   ),
-  diagnostics = diagnostics,
+  diagnostics = list(
+    cohort_and_codebook = diagnostics,
+    primary_model_audit = model_audit_primary,
+    insurance_sensitivity_model_audit = model_audit_insurance
+  ),
   precision_advisory = screen,
   interpretation = list(
     allowed = "Observational, all-cause 2024 association conditional on operational 2024 R3/1 status",
