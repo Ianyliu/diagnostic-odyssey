@@ -36,8 +36,13 @@ def verify(filename: str, *, screenshot: str):
         assert pdf.pages, (filename, "empty PDF")
         text = "\n".join(page.extract_text() or "" for page in pdf.pages)
         flat = re.sub(r"\\s+", " ", text)
+        # A multi-column role heading can wrap while the other columns share
+        # the same baseline. Crop the first column before extracting its text.
+        first_column = pdf.pages[0].crop((0, 0, pdf.pages[0].width * .36, pdf.pages[0].height))
+        first_column_text = re.sub(r"\s+", " ", first_column.extract_text() or "")
         for phrase in required_summary:
-            assert phrase in flat, (filename, "missing executive element", phrase, flat[:2500])
+            reading_order = first_column_text if phrase == "West Virginia implementation context" else flat
+            assert phrase in reading_order, (filename, "missing executive element", phrase, reading_order[:2500])
         assert "Analyze with AI" not in text and "Explore future AI concept" not in text, filename
         assert "Planning insights summary" not in text, (filename, "optional Insights must remain off")
         metrics = []
