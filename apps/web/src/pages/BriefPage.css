@@ -763,10 +763,10 @@
     display: none !important;
   }
   .planning-brief-page[data-print-details="summary"] #brief-full-report { display: none !important; }
+  /* The header already prints artifact and generation provenance. Suppress the
+     duplicate fixed footer in compact mode; it otherwise orphans page two. */
   .planning-brief-page[data-print-details="summary"] .brief-print-footer {
-    position: static;
-    margin-top: 12pt;
-    break-inside: avoid;
+    display: none !important;
   }
   .planning-brief-page[data-print-details="expanded"] .brief-executive-summary {
     break-after: auto;
