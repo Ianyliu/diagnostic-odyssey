@@ -353,6 +353,13 @@
 .planning-brief-page .brief-context-appendix-heading { font-size: 1rem; margin: .5rem 0; }
 
 @media print {
+  /* Page-margin content stays outside the printable body. A fixed-position
+     footer overlaps long tables or clips when shifted into the page margin. */
+  @page {
+    @bottom-left { content: "Diagnostic Odyssey"; font: 6.8pt sans-serif; color: #4b5750; }
+    @bottom-center { content: "Reviewed artifact · see Brief provenance"; font: 6.8pt sans-serif; color: #4b5750; }
+    @bottom-right { content: "Page " counter(page) " of " counter(pages); font: 6.8pt sans-serif; color: #4b5750; }
+  }
   .planning-brief-page {
     display: block; /* screen grid gaps and bottom padding can create a footer-only final page */
     padding-bottom: 0;
@@ -612,21 +619,7 @@
     display: none !important;
   }
 
-  .planning-brief-page .brief-print-footer {
-    position: fixed;
-    right: 0;
-    /* The fixed rule belongs inside the paper margin, outside the body area. */
-    bottom: -19pt;
-    left: 0;
-    display: flex;
-    justify-content: space-between;
-    gap: 10pt;
-    padding-top: 4pt;
-    border-top: 1px solid #b2b8b3;
-    color: #4b5750;
-    font-size: 6.8pt;
-    line-height: 1.2;
-  }
+  .planning-brief-page .brief-print-footer { display: none !important; }
 }
 
 .brief-print-decision-state,
