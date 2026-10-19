@@ -5,7 +5,9 @@
  */
 import { deflateSync } from "node:zlib";
 import { writeFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, URL } from "node:url";
+import { Buffer } from "node:buffer";
+import process from "node:process";
 
 const W = 1200, H = 630;
 const rgba = new Uint8Array(W * H * 4);
