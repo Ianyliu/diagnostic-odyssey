@@ -133,7 +133,11 @@ test("Planning Brief wires print events for browser and application print", () =
   assert.match(source, /addEventListener\("beforeprint", state\.prepare\)/);
   assert.match(source, /addEventListener\("afterprint", state\.restore\)/);
   assert.match(source, /executeBriefPrint\(printDisclosureState\.current\)/);
-  assert.match(source, /onClick=\{printBrief\}/);
+  assert.ok(source.includes("<BriefPrintControl onPrint={printBrief} pageRef={pageRef}"));
+  assert.ok(source.includes("onClick={onPrint}"));
+  assert.match(source, /data-print-details="summary"/);
+  assert.ok(source.includes('setAttribute("data-print-details"'));
+  assert.match(source, /All included records remain in the JSON export/);
   assert.match(source, /serializeBriefJson\(brief\)/);
 });
 

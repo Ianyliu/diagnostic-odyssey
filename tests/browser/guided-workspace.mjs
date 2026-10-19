@@ -126,8 +126,7 @@ await check("visible selections, collapsed category state and unchanged Pilot in
 });
 await check("collapsed report links, print completeness, exact restoration and AI dialog", async () => {
   const page = await pageAt("/brief");
-  // Compact 7–8-page contract uses an explicit none-selected Local Context state.
-  // The all-reviewed default is checked in a separate native PDF below.
+  // A none-selected Local Context state still produces the compact executive summary.
   await page.getByRole("navigation", {name: "Primary navigation"}).getByRole("link", {name: "Local context", exact: true}).click();
   await page.getByRole("button", {name: "Select none", exact: true}).first().click();
   await page.getByRole("navigation", {name: "Primary navigation"}).getByRole("link", {name: "Planning brief", exact: true}).click();
@@ -138,6 +137,8 @@ await check("collapsed report links, print completeness, exact restoration and A
   await page.getByRole("button", {name: "Print / save PDF", exact: true}).evaluate(button => button.click());
   await page.emulateMedia({media: "print"});
   assert.ok(await page.locator(".brief-print-footer").isVisible());
+  assert.equal(await page.locator("#brief-full-report").isVisible(), false, "default print hides only the detailed appendix");
+  assert.ok(await page.locator(".brief-executive-summary").isVisible());
   await page.pdf({path: `${output}/collapsed-report.pdf`, format: "A4", printBackground: true});
   await page.emulateMedia({media: "screen"});
   await page.evaluate(() => window.dispatchEvent(new Event("afterprint")));
@@ -156,22 +157,71 @@ await check("collapsed report links, print completeness, exact restoration and A
   await page.waitForFunction(() => document.activeElement?.textContent === "Decision trace");
   assert.equal(await page.locator("#pilot-decision-details").evaluate(e => e.open), true);
 });
-await check("all-reviewed default prints a complete longer PDF", async () => {
+await check("34 default records survive compact print and expanded optional appendix without modifying JSON", async () => {
   const page = await pageAt("/local-context");
   const inputs = page.locator('input[id^="select-local-context-"]');
   assert.equal(await inputs.count(), 34);
   assert.equal(await inputs.evaluateAll(elements => elements.filter(input => input.checked).length), 34);
   await page.getByRole("navigation", {name: "Primary navigation"}).getByRole("link", {name: "Planning brief", exact: true}).click();
+  assert.match(await page.locator(".brief-executive-summary").innerText(), /34 reviewed records included/);
+  assert.doesNotMatch(await page.locator(".insight-stage-context").innerText(), /explicitly selected/i);
+  const exportBrief = async () => {
+    const options = page.locator("#brief-export-options");
+    if (!(await options.evaluate(element => element.open))) await options.locator("summary").click();
+    const waiting = page.waitForEvent("download");
+    await options.getByRole("button", {name: "Export JSON companion"}).click();
+    const download = await waiting;
+    return JSON.parse(await (await import("node:fs/promises")).readFile(await download.path(), "utf8"));
+  };
+  const canonicalBefore = await exportBrief();
+  assert.equal(canonicalBefore.local_context.length, 34);
+  assert.equal(new Set(canonicalBefore.local_context.map(record => record.indicator_id)).size, 34);
+  assert.ok(canonicalBefore.local_context.every(record => record.release_status === "reviewed_released"));
+  assert.ok(canonicalBefore.local_context.every(record => record.source_ref && record.source_locator));
+  assert.equal(canonicalBefore.burden_findings.find(record => record.estimate_id === "meps24-current-long-covid-population")?.source_ref, "meps-hc256-2024");
+  assert.equal(canonicalBefore.burden_findings.find(record => record.estimate_id === "meps24-gross-all-cause-spending-total")?.unit, "USD/year");
+
+  const checkbox = page.getByRole("checkbox", {name: /Include detailed report appendix in PDF/});
+  assert.equal(await checkbox.isChecked(), false);
   const before = await page.locator("main details").evaluateAll(elements => elements.map(e => e.open));
   await page.evaluate(() => { window.print = () => window.dispatchEvent(new Event("beforeprint")); });
   await page.getByRole("button", {name: "Print / save PDF", exact: true}).evaluate(button => button.click());
   await page.emulateMedia({media: "print"});
-  assert.ok(await page.locator(".brief-print-footer").isVisible());
+  assert.equal(await page.locator("#brief-full-report").isVisible(), false);
   await page.pdf({path: `${output}/all-context-report.pdf`, format: "A4", printBackground: true});
   await page.emulateMedia({media: "screen"});
   await page.evaluate(() => window.dispatchEvent(new Event("afterprint")));
   assert.deepEqual(await page.locator("main details").evaluateAll(elements => elements.map(e => e.open)), before);
-  assert.equal(await page.locator(".insights-print-summary").count(), 0);
+
+  await checkbox.check();
+  assert.equal(await page.locator(".planning-brief-page").getAttribute("data-print-details"), "expanded");
+  await page.evaluate(() => window.dispatchEvent(new Event("beforeprint")));
+  await page.emulateMedia({media: "print"});
+  assert.ok(await page.locator("#brief-national-burden").isVisible());
+  assert.equal(await page.locator(".brief-local-context").count(), 34);
+  await page.pdf({path: `${output}/all-context-expanded.pdf`, format: "A4", printBackground: true});
+  await page.emulateMedia({media: "screen"});
+  await page.evaluate(() => window.dispatchEvent(new Event("afterprint")));
+  assert.deepEqual(await page.locator("main details").evaluateAll(elements => elements.map(e => e.open)), before);
+  const canonicalAfter = await exportBrief();
+  assert.deepEqual(canonicalAfter, canonicalBefore, "print mode must not mutate any canonical value or timestamp");
+});
+await check("customized Local Context and no selection remain distinct in JSON and compact summary", async () => {
+  const page = await pageAt("/local-context");
+  const inputs = page.locator('input[id^="select-local-context-"]');
+  await page.getByRole("button", {name: "Select none", exact: true}).first().click();
+  assert.equal(await inputs.evaluateAll(elements => elements.filter(input => input.checked).length), 0);
+  await page.getByRole("navigation", {name: "Primary navigation"}).getByRole("link", {name: "Planning brief", exact: true}).click();
+  assert.match(await page.locator(".brief-executive-summary").innerText(), /0 reviewed records included/);
+  await page.getByRole("navigation", {name: "Primary navigation"}).getByRole("link", {name: "Local context", exact: true}).click();
+  await page.locator("#local-acs-category > summary").click();
+  await page.locator("#local-acs-category").getByRole("button", {name: "Select all", exact: true}).click();
+  await page.locator('input[id^="select-local-context-"]').first().check();
+  const total = await inputs.evaluateAll(elements => elements.filter(input => input.checked).length);
+  assert.ok(total > 1 && total < 34, "category + individual update subset");
+  await page.getByRole("navigation", {name: "Primary navigation"}).getByRole("link", {name: "Planning brief", exact: true}).click();
+  assert.match(await page.locator(".brief-executive-summary").innerText(), new RegExp(total + " reviewed records included"));
+  assert.ok(await page.locator(".brief-executive-summary").isVisible());
 });
 for (const width of [390, 1440]) await check(`cross-route history reveals fragments and preserves ordinary scroll ${width}`, async () => {
   const page = await pageAt("/brief", width);

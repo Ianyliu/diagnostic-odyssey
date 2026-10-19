@@ -31,6 +31,7 @@ test("insights are deterministic, detached, and leave canonical Brief and truste
   assert.deepEqual(first, buildPlanningInsights({...brief, generated_at: "2026-10-15T00:00:00.000Z"}, sources));
   assert.equal(first.national.findingsCount, 21);
   assert.equal(first.national.highlights.length, 3);
+  assert.equal(first.national.highlights.find(row => row.domainId === "mental-human")?.estimate.estimate_id, "meps24-k6-serious-distress");
   assert.equal(first.interventions.availability, "unavailable");
   assert.equal(first.investigations.prompts.length, 3);
   first.national.highlights[0].estimate.value = -1;

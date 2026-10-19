@@ -11,6 +11,7 @@ import {
 } from "./dataRequestTemplates.ts";
 import { groupBriefBurdenFindings } from "./briefBurdenPresentation.ts";
 import { REVIEWED_MEPS_ARTIFACT_VERSION } from "./reviewedArtifact.ts";
+import { BRIEF_HEADLINE_ESTIMATE_IDS } from "./briefExecutiveSummary.ts";
 import {
   assertReviewedWvLocalContextArtifact, assertReviewedWvLocalContextRuntimeCompatibility
 } from "./reviewedLocalContextValidation.ts";
@@ -92,7 +93,12 @@ function nationalSection(brief: PlanningBrief, source: ArtifactBundle): Planning
   // Prefer an approved distribution, then a non-nested measure, then any eligible
   // finding. Never rank magnitudes across heterogeneous units or require an ID.
   const highlights = groupBriefBurdenFindings(source.burden_domains, eligible).slice(0, 3).flatMap(group => {
-    const estimate = group.findings.find(canDisplayDistributionSummary) ??
+    // The released K6 >=13 classification is more intelligible than the mean
+    // K6 score as the first mental-health headline. It remains a screen, not a diagnosis.
+    const interpretableMental = group.group_id === "mental-human"
+      ? group.findings.find(record => record.estimate_id === BRIEF_HEADLINE_ESTIMATE_IDS.seriousDistress)
+      : undefined;
+    const estimate = interpretableMental ?? group.findings.find(canDisplayDistributionSummary) ??
       group.findings.find(record => !record.component_of_measure_id) ?? group.findings[0];
     const citation = estimate && sourceRefs.get(estimate.source_ref);
     return estimate && citation ? [{domainId: group.group_id, domainLabel: group.label, estimate: structuredClone(estimate), source: structuredClone(citation)}] : [];

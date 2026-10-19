@@ -5,6 +5,7 @@ import { buildPlanningBrief, serializeBriefJson, type PlanningBrief } from "@dia
 import { AcquisitionGuidanceCard } from "../components/AcquisitionGuidanceCard";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { PlanningInsights } from "../components/PlanningInsights";
+import { BriefExecutiveSummary } from "../components/BriefExecutiveSummary";
 import { buildPlanningInsights, type PlanningInsightsSources } from "../data/planningInsights";
 import { planningInsightsEnabled } from "../data/planningInsightsEnabled";
 import { AiHandoff } from "../components/AiHandoff";
@@ -91,6 +92,24 @@ function BriefJsonExport({brief}: {brief: PlanningBrief}) {
   return <>
     <button className="button" onClick={exportJson}>Export JSON companion</button>
     <p className="brief-export-status subtle" role="status">{exportStatus}</p>
+  </>;
+}
+
+/** Own the print preference in a child so toggling layout does not rebuild the canonical Brief/timestamp. */
+function BriefPrintControl({onPrint, pageRef}: {onPrint: () => void; pageRef: {current: HTMLElement | null}}) {
+  const [includeDetails, setIncludeDetails] = useState(false);
+  return <>
+    <button className="button" onClick={onPrint}>Print / save PDF</button>
+    <label className="brief-print-choice">
+      <input type="checkbox" checked={includeDetails} onChange={event => {
+        const checked = event.target.checked;
+        setIncludeDetails(checked);
+        pageRef.current?.setAttribute("data-print-details", checked ? "expanded" : "summary");
+      }} />
+      <span>Include detailed report appendix in PDF
+        <small>Off by default for a concise printout. All included records remain in the JSON export, regardless of this setting.</small>
+      </span>
+    </label>
   </>;
 }
 
@@ -184,12 +203,12 @@ export function BriefPage({conceptAvailable = false, showFutureConcept = false, 
     executeBriefPrint(printDisclosureState.current);
   };
 
-  return <section className="page page-stack planning-brief-page" ref={pageRef}>
+  return <section className="page page-stack planning-brief-page" data-print-details="summary" ref={pageRef}>
     <ContextBar />
     <header className="page-heading">
       <p className="eyebrow">PLANNING BRIEF</p>
       <h1>Long COVID burden and pilot planning brief</h1>
-      <p>Reviewed national evidence, selected local context and explicit pilot assumptions, with their limits and next data needs.</p>
+      <p>Reviewed national evidence, included implementation context and applied pilot planning assumptions, with their limits and next data needs.</p>
     </header>
 
     <div className="brief-intelligence-actions">
@@ -210,7 +229,7 @@ export function BriefPage({conceptAvailable = false, showFutureConcept = false, 
 
     </div>
     <div className="brief-export-actions brief-primary-actions">
-      <button className="button" onClick={printBrief}>Print / save PDF</button>
+      <BriefPrintControl onPrint={printBrief} pageRef={pageRef} />
       <WorkspaceDisclosure id="brief-export-options" title="Export options"><BriefJsonExport brief={brief} /></WorkspaceDisclosure>
       <Link className="text-button" to="/data-requests">Review data needs</Link>
       <Link className="text-button" to="/evidence">Intervention evidence &amp; limits</Link>
@@ -222,6 +241,12 @@ export function BriefPage({conceptAvailable = false, showFutureConcept = false, 
       <span><b>Generated:</b> {brief.generated_at}</span>
     </div>
 
+    <BriefExecutiveSummary
+      brief={brief}
+      checkboxSelectedCount={selectedLocalContextIds.length}
+      staleRequestCount={staleSelectedDataRequestCount}
+    />
+
     {planningInsightsEnabled && <ErrorBoundary fallback={<p className="insight-unavailable">Planning insights are unavailable. The reviewed Brief and exports remain available below.</p>}>
       <BriefInsights brief={brief} sources={{national: bundle, local: localContext, localStatus: localContextStatus, availableDataRequests}} />
     </ErrorBoundary>}
@@ -231,11 +256,11 @@ export function BriefPage({conceptAvailable = false, showFutureConcept = false, 
       <div><strong>Burden estimates</strong><span>{burdenReadiness.briefStatus}</span></div>
       <div><strong>Scenario arithmetic</strong><span>{brief.scenario ? "Planning assumptions" : "No applied scenario"}</span></div>
       <div><strong>Evidence parameter</strong><span>{evidenceReadiness.status}</span></div>
-      <div><strong>Local context</strong><span>{brief.local_context.length > 0 ? `${brief.local_context.length} selected` : localContextAvailable ? "Available, not selected" : "Not selected"}</span></div>
+      <div><strong>Local context</strong><span>{brief.local_context.length > 0 ? `${brief.local_context.length} included` : localContextAvailable ? "Available, not selected" : "Not selected"}</span></div>
       <div><strong>Data requests</strong><span>{selectedDataRequests.length > 0 ? `${selectedDataRequests.length} selected` : "None selected"}</span></div>
     </section>
 
-    <WorkspaceDisclosure id="brief-full-report" title="Read full brief" summary="All reviewed findings, assumptions, context, evidence limits and data requests. The complete report is always included when printing.">
+    <WorkspaceDisclosure id="brief-full-report" title="Read full brief" summary="All reviewed findings, assumptions, context, evidence limits and data requests. The full report is available on screen, in canonical JSON, and as an optional printed appendix.">
     <div className="brief-grid">
       <aside className="brief-aside" aria-label="Planning Brief contents and actions">
         <nav className="brief-contents" aria-label="Planning Brief contents">
@@ -256,7 +281,7 @@ export function BriefPage({conceptAvailable = false, showFutureConcept = false, 
           <strong>Local context</strong>
           <span className={brief.local_context.length > 0 ? "status status-selection" : localContextAvailable ? "status status-neutral" : "status status-unavailable"}>
             {brief.local_context.length > 0
-              ? brief.local_context.length + " selected"
+              ? brief.local_context.length + " included"
               : localContextAvailable ? "Available, not selected" : "Not selected"}
           </span>
         </div>
@@ -427,7 +452,7 @@ export function BriefPage({conceptAvailable = false, showFutureConcept = false, 
           <h2>What to collect next</h2>
           {brief.data_requests.length > 0
             ? <>
-                <p className="subtle">Selected requests are included by default only while current; deselect unwanted requests before export.</p>
+                <p className="subtle">New analyst requests start selected by default; only current included requests enter exports. Deselect unwanted requests before exporting.</p>
                 <ul>{brief.data_requests.map(request => <li key={request.request_id}>
                   <strong>{request.target_question}</strong> — {request.fields_needed.join(", ")}
                   <small className="brief-request-trace">
