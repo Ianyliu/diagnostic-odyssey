@@ -46,7 +46,7 @@ async function assertNoPageOverflow(page, label) {
     `${diagnostic.route} ${label}: document ${diagnostic.documentWidth}px exceeds viewport ${diagnostic.viewportWidth}px; ` +
     `offenders: ${JSON.stringify(diagnostic.offenders)}; artifacts: ${label}-overflow.{json,png}`);
 }
-for (const width of [320, 390, 768, 1024, 1440]) for (const theme of ["light", "dark"]) for (const motion of ["reduce", "no-preference"]) {
+for (const width of [320, 360, 390, 768, 1024, 1440]) for (const theme of ["light", "dark"]) for (const motion of ["reduce", "no-preference"]) {
   const page = await browser.newPage({viewport: {width, height: 1000}, reducedMotion: motion, colorScheme: theme});
   const label = `${width}-${theme}-${motion}`;
   try {
@@ -78,10 +78,10 @@ for (const width of [320, 390, 768, 1024, 1440]) for (const theme of ["light", "
     }));
     assert.ok(maxGeometry.some(item => item.text === `$${Number.MAX_VALUE}`), `Missing full finite token: ${label}`);
     assert.ok(maxGeometry.every(item => item.lines === 1 && item.contained), `/pilot max ${label}: ${JSON.stringify(maxGeometry)}`);
-    for (const route of ["/", "/brief"]) {
+    for (const route of ["/", "/burden", "/brief"]) {
       await page.goto(base + route);
       await page.waitForLoadState("networkidle");
-      const routeLabel = `${route === "/" ? "overview" : "brief"}-${label}`;
+      const routeLabel = `${route === "/" ? "overview" : route === "/burden" ? "burden" : "brief"}-${label}`;
       await assertNoPageOverflow(page, routeLabel);
       await page.screenshot({path: `${output}/${routeLabel}.png`, fullPage: true});
     }
