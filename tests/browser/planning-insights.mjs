@@ -176,6 +176,65 @@ await run("optional actual PDF summary preserves JSON and excludes unaccepted su
   await page.pdf({path: `${output}/summary-all-context.pdf`, format: "Letter", printBackground: true});
   return {defaultOff: true, jsonUnchanged: true, suggestionsExcluded: true};
 });
+
+await run("default 34-context selection prints concise, optionally detailed, without changing canonical JSON", async () => {
+  const {page} = await session(390, "light");
+  const before = await exportJson(page, "brief-default-34");
+  assert.equal(before.local_context.length, 34, "Default is all eligible reviewed records, not an eight-record starter set");
+  const ids = before.local_context.map(record => record.indicator_id);
+  assert.equal(new Set(ids).size, 34);
+  const appendix = page.getByRole("checkbox", {name: /Include detailed local-context records in print/});
+  assert.equal(await appendix.isChecked(), false);
+  assert.equal(await page.locator("#brief-local-context .brief-local-context").count(), 34);
+  assert.equal(await page.locator("#brief-local-context .brief-local-context-executive li").count(), 4);
+  assert.match(await page.locator(".insight-national-context").innerText(), /meps24-current-long-covid-population/);
+  assert.match(await page.locator(".insight-national-context").innerText(), /meps24-gross-all-cause-spending-total/);
+  await page.screenshot({path: `${output}/brief-default-390-screen.png`, fullPage: true});
+  await page.emulateMedia({media: "print"});
+  assert.equal(await page.locator(".brief-local-context-list").isVisible(), false);
+  assert.equal(await page.locator(".brief-local-context-executive").isVisible(), true);
+  await page.pdf({path: `${output}/brief-default-34-concise.pdf`, format: "Letter", printBackground: true});
+  await page.emulateMedia({media: "screen"});
+  await appendix.check();
+  await page.emulateMedia({media: "print"});
+  assert.equal(await page.locator(".brief-local-context-list").isVisible(), true);
+  await page.pdf({path: `${output}/brief-default-34-appendix.pdf`, format: "Letter", printBackground: true});
+  await page.emulateMedia({media: "screen"});
+  await appendix.uncheck();
+  const after = await exportJson(page, "brief-after-print-options");
+  delete before.generated_at; delete after.generated_at;
+  assert.deepEqual(after, before, "Print detail toggle must not mutate authoritative JSON, record order or provenance");
+  return {canonicalRecords: ids.length, printModeDefault: "concise", appendixReversible: true};
+});
+await run("no context and customized category selection print meaningful distinct summaries", async () => {
+  const {page} = await session(390, "dark");
+  await navigate(page, "Local context");
+  await page.getByRole("button", {name: "Select none", exact: true}).first().click();
+  await navigate(page, "Planning brief");
+  const none = await exportJson(page, "brief-none-context");
+  assert.equal(none.local_context.length, 0);
+  assert.equal(none.context.local_context_id, null);
+  await page.emulateMedia({media: "print"});
+  await page.pdf({path: `${output}/brief-none-context.pdf`, format: "Letter", printBackground: true});
+  await page.emulateMedia({media: "screen"});
+  await navigate(page, "Local context");
+  // Category-level selection is independent of the global defaults.
+  const acs = page.getByRole("group", {name: "ACS access context selection controls"});
+  if (await acs.count()) await acs.getByRole("button", {name: "Select all"}).click();
+  else for (const id of ["wv.acs.no_vehicle_pct","wv.acs.uninsured_pct","wv.acs.broadband_pct","wv.acs.poverty_pct"]) {
+    await page.locator(`#select-local-context-${id.replace(/[^a-zA-Z0-9_-]/g,"-")}`).check();
+  }
+  await navigate(page, "Planning brief");
+  const custom = await exportJson(page, "brief-custom-context");
+  assert.equal(custom.local_context.length, 4);
+  assert.ok(custom.local_context.every(record => record.indicator_id.startsWith("wv.acs.")));
+  await page.emulateMedia({media: "print"});
+  assert.equal(await page.locator(".brief-local-context-executive li").count(), 4);
+  await page.pdf({path: `${output}/brief-custom-context.pdf`, format: "Letter", printBackground: true});
+  await page.emulateMedia({media: "screen"});
+  return {none: none.local_context.length, custom: custom.local_context.length};
+});
+
 await browser.close();
 console.log(JSON.stringify(results.map(({name, status, error}) => ({name, status, error})), null, 2));
 if (results.some(row => row.status === "FAIL") || errors.length || externalRequests.length) process.exitCode = 1;
