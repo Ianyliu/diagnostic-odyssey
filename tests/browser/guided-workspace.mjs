@@ -26,6 +26,20 @@ async function pageAt(path, width = 390, theme = "light") {
 async function overflow(page) {
   assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1), `overflow at ${page.url()}`);
 }
+await check("reviewed OpenGraph preview is a served, valid 1200x630 PNG", async () => {
+  const page = await pageAt("/");
+  const imageUrl = await page.locator('meta[property="og:image"]').getAttribute("content");
+  assert.equal(imageUrl, "https://diagnostic-odyssey-psi.vercel.app/og-image.png");
+  const response = await page.request.get(base + "/og-image.png");
+  assert.equal(response.status(), 200);
+  assert.match(response.headers()["content-type"] ?? "", /image\/png/);
+  const bytes = await response.body();
+  assert.equal(bytes.subarray(0, 8).toString("hex"), "89504e470d0a1a0a");
+  assert.equal(bytes.readUInt32BE(16), 1200);
+  assert.equal(bytes.readUInt32BE(20), 630);
+  await writeFile(`${output}/reviewed-og-image.png`, bytes);
+  return {width: 1200, height: 630, bytes: bytes.length};
+});
 for (const width of [320, 360, 390, 768, 1024, 1440]) for (const theme of ["light", "dark"]) {
   await check(`default guided layouts ${width} ${theme}`, async () => {
     const page = await pageAt("/", width, theme);
