@@ -5,8 +5,10 @@
  * reviewed MEPS evidence; no input or external request is accepted.
  */
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { Buffer } from "node:buffer";
+import console from "node:console";
 import { join } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, URL } from "node:url";
 import { deflateSync } from "node:zlib";
 import { assertValidArtifactBundle } from "@diagnostic-odyssey/contracts";
 import { selectHeadlineFindings } from "../../apps/web/src/data/headlineFindings.ts";
