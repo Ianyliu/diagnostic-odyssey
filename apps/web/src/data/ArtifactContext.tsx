@@ -60,6 +60,8 @@ interface ArtifactState {
   upsertAnalystDataRequest: (request: DataRequest) => void;
   removeAnalystDataRequest: (requestId: string) => void;
   toggleDataRequestForBrief: (requestId: string) => void;
+  selectAllDataRequestsForBrief: () => void;
+  clearDataRequestsForBrief: () => void;
   attachAcquisitionHint: (requestId: string) => boolean;
   removeAcquisitionHint: (requestId: string) => void;
 }
@@ -87,6 +89,8 @@ export function ArtifactProvider({children}: {children: ReactNode}) {
     try {
       const candidate = loadReviewedMepsArtifact();
       setBundle(candidate);
+      // Only loaded templates are preselected here; newly created requests are handled separately.
+      setBriefDataRequestIds(candidate.data_requests.map(request => request.request_id));
       const defaults = createPlanningScenarioDefaults();
       setScenario(defaults);
       setPilotInputDraft(createPilotInputDraft(defaults));
@@ -209,6 +213,10 @@ export function ArtifactProvider({children}: {children: ReactNode}) {
   }, [availableDataRequests, briefDataRequestIds, scenario]);
 
   const upsertAnalystDataRequest = (request: DataRequest) => {
+    // A new checkbox starts checked; refreshing an existing request preserves its choice.
+    if (!analystDataRequests.some(item => item.request_id === request.request_id)) {
+      setBriefDataRequestIds(current => current.includes(request.request_id) ? current : [...current, request.request_id]);
+    }
     setAnalystDataRequests(current => [
       ...current.filter(item => item.request_id !== request.request_id),
       request
@@ -227,6 +235,13 @@ export function ArtifactProvider({children}: {children: ReactNode}) {
         ? current.filter(id => id !== requestId)
         : [...current, requestId]
     );
+  };
+
+  const selectAllDataRequestsForBrief = () => {
+    setBriefDataRequestIds(availableDataRequests.map(request => request.request_id));
+  };
+  const clearDataRequestsForBrief = () => {
+    setBriefDataRequestIds([]);
   };
 
   const attachAcquisitionHint = (requestId: string): boolean => {
@@ -274,6 +289,8 @@ export function ArtifactProvider({children}: {children: ReactNode}) {
         upsertAnalystDataRequest,
         removeAnalystDataRequest,
         toggleDataRequestForBrief,
+        selectAllDataRequestsForBrief,
+        clearDataRequestsForBrief,
         attachAcquisitionHint,
         removeAcquisitionHint
       }}

@@ -28,6 +28,8 @@ export function DataRequestsPage() {
     selectedDataRequests,
     upsertAnalystDataRequest,
     toggleDataRequestForBrief,
+    selectAllDataRequestsForBrief,
+    clearDataRequestsForBrief,
     removeAnalystDataRequest,
     attachAcquisitionHint,
     removeAcquisitionHint
@@ -41,7 +43,7 @@ export function DataRequestsPage() {
     <header className="page-heading">
       <p className="eyebrow">DATA REQUESTS</p>
       <h1 id="data-requests-heading" tabIndex={-1}>Turn uncertainty into a concrete request</h1>
-      <p>Requests are planning artifacts, not observed evidence. Creating a request does not put it in the Planning Brief; inclusion requires an explicit analyst choice here.</p>
+      <p>Requests are planning artifacts, not observed evidence. Available requests start selected for convenience; review or deselect them before exporting. Stale requests remain excluded from the Brief until refreshed.</p>
     </header>
     <p className="sr-only" role="status" aria-live="polite" aria-atomic="true">{announcement}</p>
 
@@ -49,7 +51,12 @@ export function DataRequestsPage() {
       <strong>No data requests have been created or loaded.</strong>
       <p>Stress-test a Pilot planner assumption first, then create a request for the operational information that would reduce that uncertainty.</p>
       <Link className="button secondary" to="/pilot#sensitivity">Open sensitivity explorer</Link>
-    </div> : <div className="data-request-grid" role="group" aria-label="Available data requests">
+    </div> : <>
+      {availableDataRequests.length >= 2 && <div className="selection-actions" role="group" aria-label="Data request selection controls">
+        <button className="button secondary" type="button" onClick={() => { selectAllDataRequestsForBrief(); setAnnouncement("All available data requests selected. Stale requests remain excluded from the Brief."); }} disabled={availableDataRequests.every(request => briefDataRequestIds.includes(request.request_id))}>Select all</button>
+        <button className="button secondary" type="button" onClick={() => { clearDataRequestsForBrief(); setAnnouncement("All data requests deselected."); }} disabled={briefDataRequestIds.length === 0}>Select none</button>
+      </div>}
+      <div className="data-request-grid" role="group" aria-label="Available data requests">
       {availableDataRequests.map(request => {
         const isAnalystRequest = analystIds.has(request.request_id);
         const selected = briefDataRequestIds.includes(request.request_id);
@@ -124,7 +131,7 @@ export function DataRequestsPage() {
                 <small>
                   {stale && selected
                     ? "Selected state is preserved, but this stale request is excluded from export until refreshed."
-                    : "Explicit opt-in; creating a request alone is not enough."}
+                    : "Selected by default for convenience; review before export."}
                 </small>
               </span>
             </label>
@@ -146,7 +153,7 @@ export function DataRequestsPage() {
           </div>
         </article>;
       })}
-    </div>}
+    </div></>}
 
     {availableDataRequests.length > 0 && <div id="request-summary" tabIndex={-1} className="request-footer-actions">
       <span>
