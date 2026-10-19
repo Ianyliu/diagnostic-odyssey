@@ -211,15 +211,15 @@ await check("customized Local Context and no selection remain distinct in JSON a
   const inputs = page.locator('input[id^="select-local-context-"]');
   await page.getByRole("button", {name: "Select none", exact: true}).first().click();
   assert.equal(await inputs.evaluateAll(elements => elements.filter(input => input.checked).length), 0);
-  await page.goto(base + "/brief");
+  await page.getByRole("navigation", {name: "Primary navigation"}).getByRole("link", {name: "Planning brief", exact: true}).click();
   assert.match(await page.locator(".brief-executive-summary").innerText(), /0 reviewed records included/);
-  await page.goto(base + "/local-context");
+  await page.getByRole("navigation", {name: "Primary navigation"}).getByRole("link", {name: "Local context", exact: true}).click();
   await page.locator("#local-acs-category > summary").click();
   await page.locator("#local-acs-category").getByRole("button", {name: "Select all", exact: true}).click();
   await page.locator('input[id^="select-local-context-"]').first().check();
   const total = await inputs.evaluateAll(elements => elements.filter(input => input.checked).length);
   assert.ok(total > 1 && total < 34, "category + individual update subset");
-  await page.goto(base + "/brief");
+  await page.getByRole("navigation", {name: "Primary navigation"}).getByRole("link", {name: "Planning brief", exact: true}).click();
   assert.match(await page.locator(".brief-executive-summary").innerText(), new RegExp(total + " reviewed records included"));
   assert.ok(await page.locator(".brief-executive-summary").isVisible());
 });
