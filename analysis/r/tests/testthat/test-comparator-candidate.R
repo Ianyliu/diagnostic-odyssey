@@ -84,7 +84,7 @@ testthat::test_that("unadjusted covariance-aware contrast matches joint survey c
   v <- as.matrix(stats::vcov(reference))
   cvec <- c(-1, 1)
   expect_diff <- sum(as.numeric(stats::coef(reference)) * cvec)
-  expect_se <- sqrt(unname(t(cvec) %*% v %*% cvec))
+  expect_se <- sqrt(as.numeric(t(cvec) %*% v %*% cvec))
   testthat::expect_equal(result$results$current_minus_noncurrent$estimate, expect_diff,
                          tolerance = 1e-8)
   testthat::expect_equal(result$results$current_minus_noncurrent$standard_error, expect_se,
