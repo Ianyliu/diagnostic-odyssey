@@ -10,6 +10,7 @@ import {
 } from "@diagnostic-odyssey/contracts";
 import { mergeBriefLocalContext } from "../src/data/briefLocalContext.ts";
 import {
+  clearLocalContextSelection,
   createLocalContextSelectionForArtifact,
   resolveSelectedLocalContext,
   updateLocalContextSelection
@@ -39,7 +40,9 @@ const recordA = eligible[0]!;
 const recordB = eligible[1]!;
 
 test("Brief and Pilot local-context selections remain independent", () => {
-  let briefSelection = createLocalContextSelectionForArtifact(localContext);
+  const defaultSelection = createLocalContextSelectionForArtifact(localContext);
+  assert.deepEqual(defaultSelection.indicatorIds, eligible.map(record => record.indicator_id));
+  let briefSelection = clearLocalContextSelection(localContext);
   briefSelection = updateLocalContextSelection(briefSelection, localContext, recordA.indicator_id, true);
   let pilotSelection = createPilotLocalContextSelectionForArtifact(localContext);
   pilotSelection = selectPilotLocalContext(pilotSelection, localContext, recordB.indicator_id);
