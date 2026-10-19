@@ -39,7 +39,7 @@ export function OverviewPage() {
       <section className="overview-hero" aria-labelledby="overview-title">
         <div className="overview-hero-grid" aria-hidden="true" />
         <div className="overview-hero-copy">
-          <p className="overview-kicker">Evidence into planning, with boundaries intact</p>
+          <p className="overview-kicker">Evidence into planning, with boundaries intact.</p>
           <h1 id="overview-title">
             Long COVID&rsquo;s burden
             <span>goes beyond the bill.</span>
