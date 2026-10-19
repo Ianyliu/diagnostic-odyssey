@@ -245,8 +245,8 @@ export function LocalContextPage() {
     <ContextBar />
     <header className="page-heading">
       <p className="eyebrow">REVIEWED IMPLEMENTATION CONTEXT</p>
-      <h1>West Virginia statewide implementation constraints</h1>
-      <p>What statewide implementation constraints are documented, and what can they legitimately be used for?</p>
+      <h1>West Virginia statewide health care access context</h1>
+      <p>Explore reviewed statewide access measures and provider-shortage designations that can inform where and how a program may be implemented.</p>
     </header>
 
     <div className="ledger-layout">
@@ -271,6 +271,7 @@ export function LocalContextPage() {
     </details>
     <div className="guardrail compact">
       <strong>Statewide implementation context, separate from national burden.</strong>
+       <p><strong>HPSA</strong> (Health Professional Shortage Area) is a federal provider-access shortage designation. Counts of designations do not count affected patients or available clinicians. <strong>ACS</strong> (American Community Survey) is a Census Bureau survey; these statewide access indicators describe residents and conditions, not Long COVID cases.</p>
       <p>These indicators describe access and implementation conditions, not West Virginia Long COVID prevalence, disease costs, or intervention effects.</p>
       <strong>Missing does not mean zero.</strong>
       <p>Missing designation/data does not mean no shortage or zero implementation constraint. "Include in Planning Brief" and "Use in Pilot planning" are separate analyst choices. Neither changes national burden or Pilot planner numeric assumptions.</p>
