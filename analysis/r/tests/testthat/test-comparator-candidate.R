@@ -1,5 +1,6 @@
 # Standalone comparator tests; no raw HC-256, no released-artifact changes.
-source(file.path("analysis", "r", "comparator", "comparator_methods.R"))
+source(file.path(Sys.getenv("DIAGNOSTIC_ODYSSEY_ROOT"),
+                 "analysis", "r", "comparator", "comparator_methods.R"))
 
 synthetic_comparator_frame <- function() {
   grid <- expand.grid(i = seq_len(16), psu = 1:2, stratum = 1:8)
