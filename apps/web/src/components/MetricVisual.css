@@ -72,3 +72,17 @@
   .metric-visual-track { border: 1px solid CanvasText; background: Canvas; }
   .metric-visual-interval, .metric-visual-point { background: Highlight; }
 }
+
+/* Between mobile stacking and desktop two-column ledger, long native-unit CI
+   labels must not force a narrow measurement column beyond the 768px viewport.
+   This applies only to Burden ledgers, never Local Context or Brief selection. */
+@media (min-width: 701px) and (max-width: 900px) {
+  .burden-ledger-page .burden-domain-stack .burden-measure-row,
+  .domain-ledger-page .domain-card .burden-measure-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .burden-ledger-page .burden-domain-stack .burden-measure-row .burden-measure-details,
+  .domain-ledger-page .domain-card .burden-measure-row .burden-measure-details {
+    grid-column: 1;
+  }
+}
