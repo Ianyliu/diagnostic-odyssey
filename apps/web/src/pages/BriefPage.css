@@ -762,6 +762,34 @@
   .planning-brief-page[data-print-details="summary"] .brief-print-decision-state {
     display: none !important;
   }
+  /* Free room for the complete interpretation boundary above the required
+     repeated footer. Keep readable font sizes and all source identity. */
+  .planning-brief-page[data-print-details="summary"] .page-heading {
+    margin-bottom: 4pt;
+  }
+  .planning-brief-page[data-print-details="summary"] .page-heading h1 {
+    font-size: 19pt;
+    line-height: 1.1;
+    margin-bottom: 3pt;
+  }
+  .planning-brief-page[data-print-details="summary"] .print-provenance {
+    padding-block: 4pt;
+    margin-bottom: 5pt;
+  }
+  .planning-brief-page[data-print-details="summary"] .brief-executive-grid {
+    gap: 5pt;
+    margin-block: 5pt;
+  }
+  .planning-brief-page[data-print-details="summary"] .brief-executive-finding {
+    padding: 5pt 6pt;
+  }
+  .planning-brief-page[data-print-details="summary"] .brief-executive-roles {
+    gap: 6pt;
+    padding-top: 5pt;
+  }
+  .planning-brief-page[data-print-details="summary"] .brief-executive-boundary {
+    margin-top: 5pt;
+  }
   .planning-brief-page[data-print-details="summary"] #brief-full-report { display: none !important; }
   /* Preserve the fixed provenance footer required by existing print contracts;
      the compact mode omits only the redundant decision-state block. */
