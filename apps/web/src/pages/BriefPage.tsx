@@ -5,7 +5,8 @@ import { buildPlanningBrief, serializeBriefJson, type PlanningBrief } from "@dia
 import { AcquisitionGuidanceCard } from "../components/AcquisitionGuidanceCard";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { PlanningInsights } from "../components/PlanningInsights";
-import { buildPlanningInsights, type PlanningInsightsSources } from "../data/planningInsights";
+import { BriefExecutiveSummary } from "../components/BriefExecutiveSummary";
+import { buildPlanningInsights, buildVerifiedNationalBriefSection, type PlanningInsightsSources } from "../data/planningInsights";
 import { planningInsightsEnabled } from "../data/planningInsightsEnabled";
 import { AiHandoff } from "../components/AiHandoff";
 import {
@@ -165,6 +166,8 @@ export function BriefPage({conceptAvailable = false, showFutureConcept = false, 
   if (!bundle || !brief) return null;
 
   const localContextPreview = selectBriefLocalContextPreview(brief.local_context);
+  const nationalExecutive = buildVerifiedNationalBriefSection(brief, bundle);
+  const staleSelectedDataRequestCount = Math.max(0, briefDataRequestIds.length - selectedDataRequests.length);
   const burdenReadiness = getNationalBurdenReadiness(brief.burden_findings.length);
   const evidenceReadiness = getEvidenceParameterReadiness(
     bundle.evidence,
@@ -224,6 +227,8 @@ export function BriefPage({conceptAvailable = false, showFutureConcept = false, 
       <span><b>Generated:</b> {brief.generated_at}</span>
     </div>
 
+    <BriefExecutiveSummary brief={brief} national={nationalExecutive} checkboxSelectedIds={selectedLocalContextIds} pilotLocalContextId={pilotLocalContextId} staleRequestCount={staleSelectedDataRequestCount} />
+
     {planningInsightsEnabled && <ErrorBoundary fallback={<p className="insight-unavailable">Planning insights are unavailable. The reviewed Brief and exports remain available below.</p>}>
       <BriefInsights brief={brief} sources={{national: bundle, local: localContext, localStatus: localContextStatus, availableDataRequests}} />
     </ErrorBoundary>}
@@ -233,7 +238,7 @@ export function BriefPage({conceptAvailable = false, showFutureConcept = false, 
       <div><strong>Burden estimates</strong><span>{burdenReadiness.briefStatus}</span></div>
       <div><strong>Scenario arithmetic</strong><span>{brief.scenario ? "Planning assumptions" : "No applied scenario"}</span></div>
       <div><strong>Evidence parameter</strong><span>{evidenceReadiness.status}</span></div>
-      <div><strong>Local context</strong><span>{brief.local_context.length > 0 ? `${brief.local_context.length} selected` : localContextAvailable ? "Available, not selected" : "Not selected"}</span></div>
+      <div><strong>Local context</strong><span>{brief.local_context.length > 0 ? `${brief.local_context.length} included` : localContextAvailable ? "Available, not selected" : "Not selected"}</span></div>
       <div><strong>Data requests</strong><span>{selectedDataRequests.length > 0 ? `${selectedDataRequests.length} selected` : "None selected"}</span></div>
     </section>
 
