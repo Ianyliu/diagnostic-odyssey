@@ -117,7 +117,7 @@ try {
         const row = {selection: name, local: printLocal, planning: printInsights, effectivePlanning: insights && printInsights,
           status: insights || !printInsights ? "PASS" : "NOT_APPLICABLE_DISABLED"};
         report.printCombinations.push(row);
-        if (name === "default" || (mode === "default" && printLocal && !printInsights && name !== "none")) {
+        if (name === "default" || (mode === "default" && !printInsights && ((name === "none" && !printLocal) || (name !== "none" && printLocal)))) {
           await physicalPdf(page, name, printLocal, printInsights, "Letter", canonical);
         }
         if (mode === "default" && name === "default" && !printInsights) {
@@ -156,6 +156,7 @@ try {
       await physicalPdf(page, "stale-request", true, false, "Letter", stale);
       report.tests.push({name: "data-request-selected-deselected-stale", status: "PASS", remaining: stale.data_requests.length});
     } finally { await context.close(); }
+    {
     const {page, context} = await setup("default");
     try {
       await nav(page, "Pilot planner");
@@ -166,6 +167,7 @@ try {
       await physicalPdf(page, "extreme", true, false, "Letter", extreme);
       report.tests.push({name: "extreme-finite-scenario", status: "PASS"});
     } finally { await context.close(); }
+    }
   }
 } catch (error) {
   report.tests.push({name: "integration-matrix", status: "FAIL", error: String(error.stack ?? error)});
