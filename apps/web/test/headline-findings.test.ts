@@ -1,8 +1,9 @@
+import { readFileSync } from "node:fs";
 import assert from "node:assert/strict";
 import test from "node:test";
 import { canExportEstimate } from "@diagnostic-odyssey/contracts";
 import { loadReviewedMepsArtifact } from "../src/data/reviewedArtifact.ts";
-import { HEADLINE_FINDINGS, selectHeadlineFindings, formatWorkWeeks } from "../src/data/headlineFindings.ts";
+import { HEADLINE_FINDINGS, selectHeadlineFindings } from "../src/data/headlineFindings.ts";
 const bundle = loadReviewedMepsArtifact();
 test("headline findings resolve to reviewed export-eligible national estimates", () => {
  const rows=selectHeadlineFindings(bundle);
@@ -17,9 +18,13 @@ test("headline interpretations remain descriptive and screening is not diagnosis
  assert.doesNotMatch(labels,/caused by|attributable|savings|ROI|diagnosed with depression/i);
  assert.match(labels,/a screen, not a diagnosis/);
  assert.match(labels,/all causes/);
+ assert.match(labels,/medical bills and insurance/);
+ assert.match(labels,/K6 threshold/);
 });
-test("time translation does not imply sub-week precision",()=>{
- assert.equal(formatWorkWeeks(76.46),"about 2 forty-hour work weeks");
- assert.equal(formatWorkWeeks(40),"about 1 forty-hour work week");
- assert.equal(formatWorkWeeks(57),"about 1.5 forty-hour work weeks");
+test("ordinary estimate count uses reviewed export eligibility rather than a literal",()=>{
+ const selected=bundle.burden_domains.flatMap(domain => domain.measures).filter(canExportEstimate);
+ assert.equal(selected.length,21);
+ const source=readFileSync(new URL("../src/components/HeadlineFindings.tsx",import.meta.url),"utf8");
+ assert.match(source,/filter\(canExportEstimate\)\.length/);
+ assert.doesNotMatch(source,/Explore all 21/);
 });
