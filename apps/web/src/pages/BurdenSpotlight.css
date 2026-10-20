@@ -1,0 +1,15 @@
+/* Only two direct evidence routes; avoids duplicating the Overview's evidence-role explanation. */
+.burden-spotlight { display:grid; gap:10px; min-width:0; padding:14px 0 18px; border-block:1px solid var(--do-border); }
+.burden-spotlight-intro { margin:0; color:var(--do-text-muted); font-size:.75rem; font-weight:750;
+  letter-spacing:.07em; text-transform:uppercase; }
+.burden-spotlight > div { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+.burden-spotlight a { display:grid; gap:3px; align-content:center; min-height:64px;
+  padding:10px 14px; border-left:3px solid var(--do-reviewed-text);
+  background:var(--do-surface); color:var(--do-text); text-decoration:none;
+  overflow-wrap:anywhere; }
+.burden-spotlight a:focus-visible { outline:3px solid var(--do-selection-text); outline-offset:2px; }
+.burden-spotlight a strong { font-size:.94rem; }
+.burden-spotlight a strong span { color:var(--do-selection-text); }
+.burden-spotlight a > span { font-size:.78rem; color:var(--do-text-muted); line-height:1.45; }
+@media (max-width:650px) { .burden-spotlight > div { grid-template-columns:minmax(0,1fr); } }
+@media print { .burden-spotlight { display:none; } }

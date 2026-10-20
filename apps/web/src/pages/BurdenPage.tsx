@@ -7,6 +7,7 @@ import { IntervalWhiskerPlot } from "../components/IntervalWhiskerPlot";
 import { useArtifact } from "../data/ArtifactContext";
 import { formatDataStateLabel } from "../data/presentationLabels";
 import "./Ledger.css";
+import "./BurdenSpotlight.css";
 
 export function BurdenPage() {
   const {bundle} = useArtifact();
@@ -47,6 +48,19 @@ export function BurdenPage() {
       </details>
     </div>
 
+    <nav className="burden-spotlight" aria-label="Explore nonfinancial burden">
+      <p className="burden-spotlight-intro">Beyond spending</p>
+      <div>
+        <Link to="/burden/admin">
+          <strong>Administrative work <span aria-hidden="true">→</span></strong>
+          <span>Time spent on bills, insurance and care navigation</span>
+        </Link>
+        <Link to="/burden/human">
+          <strong>Psychological burden <span aria-hidden="true">→</span></strong>
+          <span>K6 distress and PHQ-2 screening—not diagnoses</span>
+        </Link>
+      </div>
+    </nav>
     <div className="ledger-layout">
       <nav className="ledger-section-nav" aria-label="Burden sections">
         <p className="ledger-index-heading">On this page</p>
@@ -63,7 +77,7 @@ export function BurdenPage() {
 
         return <WorkspaceDisclosure key={domain.domain_id} id={`burden-group-${domain.domain_id}`} title={domain.label}
           summary={`${formatDataStateLabel(domain.availability_state)} · ${domain.measures.length} ${domain.measures.length === 1 ? "measure" : "measures"} · ${reviewed ? "Reviewed national evidence" : "Not release-eligible"}`}
-          defaultOpen className="evidence-category"><article className="card domain-card ledger-panel" id={`burden-${domain.domain_id}`} key={domain.domain_id}>
+          defaultOpen={domain.domain_id === "healthcare-work-admin"} className="evidence-category"><article className="card domain-card ledger-panel" id={`burden-${domain.domain_id}`} key={domain.domain_id}>
           <h2 className="sr-only">{domain.label}</h2>
 
           {administrativeHourMeasures.length > 1 && <IntervalWhiskerPlot
