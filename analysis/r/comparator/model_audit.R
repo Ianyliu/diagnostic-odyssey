@@ -1,9 +1,14 @@
 # Independent descriptive/model diagnostics for comparator scientific review.
 # Never changes ordinary released estimates or the predictor/estimator implementation.
 
-comparator_model_audit <- function(full_design, insurance = FALSE) {
+comparator_model_audit <- function(full_design, insurance = FALSE,
+                                   reference_sample = c("primary", "insurance")) {
+  reference_sample <- match.arg(reference_sample)
+  if (insurance && reference_sample != "insurance") {
+    stop("Insurance model audit requires insurance-complete sample.", call. = FALSE)
+  }
   assert_survey_available()
-  domain <- if (isTRUE(insurance)) {
+  domain <- if (reference_sample == "insurance") {
     subset(full_design, .do_cmp_insurance_complete)
   } else {
     subset(full_design, .do_cmp_primary_complete)
@@ -64,7 +69,7 @@ comparator_model_audit <- function(full_design, insurance = FALSE) {
       positive_part = "survey::svyglm, Gamma(log)"
     ),
     coefficient_se_method = "survey Taylor/design-robust covariance on full-design domains",
-    comparison_population = if (insurance) "insurance-complete pooled reference" else "primary pooled reference",
+    comparison_population = reference_sample,
     covariates = c("AGE31X", "SEX", "REGION31", "PANEL",
                    if (insurance) "INS31X"),
     full_design = list(
@@ -76,6 +81,19 @@ comparator_model_audit <- function(full_design, insurance = FALSE) {
     ),
     domain_support = group_n,
     positive_spending_support = positive_n,
+    observed_probability_by_group = {
+      fitted_p <- as.numeric(stats::predict(stage_zero, newdata = df, type = "response"))
+      gp <- as.character(df$.do_cmp_group)
+      tmp <- lapply(c("noncurrent", "current"), function(g) {
+        vals <- fitted_p[gp == g]
+        list(min = min(vals), max = max(vals),
+             less_than_0_01_n = sum(vals < 0.01),
+             greater_than_0_99_n = sum(vals > 0.99),
+             near_separation_1e_minus_8_n = sum(vals <= 1e-8 | vals >= 1 - 1e-8))
+      })
+      names(tmp) <- c("noncurrent", "current")
+      tmp
+    },
     stage_zero = list(
       converged = isTRUE(stage_zero$converged),
       coefficients = coefficient_summary(stage_zero),
