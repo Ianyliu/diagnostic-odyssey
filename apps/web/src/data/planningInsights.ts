@@ -40,7 +40,7 @@ export interface InvestigationPrompt {
 export interface PlanningInsightsModelV1 {
   version: "presentation.v1";
   artifactVersion: string;
-  national: InsightSection & { findingsCount: number; highlights: InsightFinding[]; context: {population: InsightFinding | null; allCauseSpending: InsightFinding | null} };
+  national: InsightSection & { findingsCount: number; highlights: InsightFinding[]; context: {population: InsightFinding | null; allCauseSpending: InsightFinding | null; paperwork: InsightFinding | null; seriousDistress: InsightFinding | null} };
   local: InsightSection & { artifactVersion: string | null; records: LocalContextRecord[] };
   scenario: InsightSection & { applied: PlanningBrief["scenario"] };
   interventions: { availability: "unavailable"; explanation: string };
@@ -72,11 +72,12 @@ function sameValue(left: unknown, right: unknown): boolean {
   return false;
 }
 
-function nationalSection(brief: PlanningBrief, source: ArtifactBundle): PlanningInsightsModelV1["national"] {
+/** The same reviewed-identity gate supplies both the core Brief and optional insights. */
+export function buildVerifiedNationalBriefSection(brief: PlanningBrief, source: ArtifactBundle): PlanningInsightsModelV1["national"] {
   if (source.manifest.artifact_version !== REVIEWED_MEPS_ARTIFACT_VERSION ||
       brief.artifact_version !== source.manifest.artifact_version ||
       !sameValue({...brief.context, local_context_id: null}, source.context)) {
-    return {availability: "withheld", explanation: "National source identity does not match this Brief. Open the reviewed burden source to resolve it.", findingsCount: 0, highlights: [], context: {population: null, allCauseSpending: null}};
+    return {availability: "withheld", explanation: "National source identity does not match this Brief. Open the reviewed burden source to resolve it.", findingsCount: 0, highlights: [], context: {population: null, allCauseSpending: null, paperwork: null, seriousDistress: null}};
   }
   const sourceById = new Map(source.burden_domains.flatMap(domain => domain.measures).map(record => [record.estimate_id, record]));
   const sourceRefs = new Map(source.sources.map(record => [record.source_ref, record]));
@@ -98,13 +99,16 @@ function nationalSection(brief: PlanningBrief, source: ArtifactBundle): Planning
   };
   const context = {
     population: pickHeadline("meps24-current-long-covid-population"),
-    allCauseSpending: pickHeadline("meps24-gross-all-cause-spending-total")
+    allCauseSpending: pickHeadline("meps24-gross-all-cause-spending-total"),
+    paperwork: pickHeadline("meps24-healthcare-paperwork-time-mean"),
+    seriousDistress: pickHeadline("meps24-k6-serious-distress")
   };
   // One representative per available domain, in the existing artifact's order.
   // Prefer an approved distribution, then a non-nested measure, then any eligible
   // finding. Never rank magnitudes across heterogeneous units or require an ID.
   const highlights = groupBriefBurdenFindings(source.burden_domains, eligible).slice(0, 3).flatMap(group => {
-    const estimate = group.findings.find(record => record.estimate_id === "meps24-k6-serious-distress") ??
+    const estimate = (group.group_id === "mental-human"
+      ? group.findings.find(record => record.estimate_id === "meps24-k6-serious-distress") : undefined) ??
       group.findings.find(canDisplayDistributionSummary) ??
       group.findings.find(record => !record.component_of_measure_id) ?? group.findings[0];
     const citation = estimate && sourceRefs.get(estimate.source_ref);
@@ -212,7 +216,7 @@ export function buildPlanningInsights(brief: PlanningBrief, sources: PlanningIns
   const scenario = scenarioSection(brief);
   return {
     version: "presentation.v1", artifactVersion: brief.artifact_version,
-    national: nationalSection(brief, sources.national), local: localSection(brief, sources), scenario,
+    national: buildVerifiedNationalBriefSection(brief, sources.national), local: localSection(brief, sources), scenario,
     interventions: {availability: "unavailable", explanation: "No independently released, context-applicable narrative intervention reference is available. This does not establish that an intervention has no effect."},
     investigations: investigationSection(scenario.applied, sources),
     warnings: [...brief.warnings]
