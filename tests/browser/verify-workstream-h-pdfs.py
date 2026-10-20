@@ -6,6 +6,7 @@ import sys
 from pathlib import Path
 
 import pdfplumber
+from workstream_h_inventory import validate_matrix, read_json, check_inventory
 
 
 def flat(s):
@@ -13,7 +14,7 @@ def flat(s):
 
 
 
-def verify_spatial_opening(pages, record, filename):
+def verify_spatial_opening(pages, record, filename, appendix_pages):
     """Fallback for A4 two-column headings: inspect physical text geometry.
 
     An Available badge may be extracted *between* words of a long left-column
@@ -35,7 +36,8 @@ def verify_spatial_opening(pages, record, filename):
     status = {"loaded": "Available", "partial": "Partial", "unavailable": "Unavailable",
               "loading": "Loading", "error": "Error"}.get(record["state"], record["state"])
     matches = []
-    for number, page in enumerate(pages, 1):
+    for number in appendix_pages:
+        page = pages[number - 1]
         left = page.crop((0, 0, page.width - 105, page.height))
         left_text = flat(left.extract_text())
         if not full_opening.search(left_text):
@@ -77,16 +79,11 @@ def verify_detailed_openings(pages, records, filename, pdf_pages):
         heading = re.compile(re.escape(flat(record["label"])) + r"\s+" + re.escape(status) + r"\b")
         hits = [(number, m, words) for number, words in sections for m in heading.finditer(words)]
         if len(hits) != 1:
-            probes = [record["label"].split()[-1], "Look-A-Like", "Qualified", "FQHC"]
-            nearby = []
-            for page_number, raw_text in enumerate(pages, 1):
-                text_page = flat(raw_text)
-                for probe in probes:
-                    pos = text_page.lower().find(probe.lower())
-                    if pos >= 0:
-                        nearby.append({"page": page_number, "term": probe, "context": text_page[max(0, pos - 130):pos + 330]})
-                        break
-            number = verify_spatial_opening(pdf_pages, record, filename)
+            # The spatial A4 fallback is allowed only on actual detailed-appendix
+            # physical pages; an unrelated title elsewhere must never match.
+            number = verify_spatial_opening(
+                pdf_pages, record, filename, [page for page, _ in sections]
+            )
             positions.append({"id": record["indicator_id"], "page": number})
             continue
         number, match, words = hits[0]
@@ -107,74 +104,91 @@ def verify_detailed_openings(pages, records, filename, pdf_pages):
     return positions
 
 
-directory = Path(sys.argv[1])
-matrix = json.loads((directory / "matrix-results.json").read_text())
-assert len(matrix["printCombinations"]) == 20, "Expected 5 selections x 4 print choices for this feature job"
-assert not matrix["errors"], matrix["errors"]
-assert all(row["status"] == "PASS" for row in matrix["tests"]), matrix["tests"]
-verified = []
-all_positions = {}
-for entry in matrix["pdfs"]:
-    filename = entry["file"]
-    path = directory / filename
-    canonical = json.loads((directory / (filename + ".json")).read_text())
-    positions = []
-    with pdfplumber.open(path) as pdf:
-        assert len(pdf.pages) >= 1, (filename, "No pages")
-        page_text = []
-        clearances = []
-        for idx, page in enumerate(pdf.pages, 1):
-            words = page.extract_words()
-            footer = [w for w in words if w["text"] == "Diagnostic" and w["top"] > page.height - 80]
-            assert len(footer) == 1, (filename, idx, "Missing or duplicate page footer")
-            body = [ch for ch in page.chars if abs(ch["size"] - 6.8) > .05 and ch["text"].strip()]
-            assert body, (filename, idx, "Footer-only or blank page")
-            clearance = footer[0]["top"] - max(ch["bottom"] for ch in body)
-            assert clearance >= 4, (filename, idx, "Body/footer collision", clearance)
-            clearances.append(round(clearance, 2))
-            text = page.extract_text() or ""
-            assert len(flat(text)) > 350, (filename, idx, "Nearly empty substantive sheet", len(flat(text)))
-            page_text.append(text)
-        whole = "\n".join(page_text)
-        for title in ["U.S. population represented", "Total national all-cause spending",
-                      "Health care paperwork time", "Serious psychological distress"]:
-            assert title in whole, (filename, "Missing national executive heading", title)
-        assert "not attributable to Long COVID" in whole, (filename, "Missing noncausal boundary")
-        assert ("Planning insights summary" in whole) == bool(entry["insights"]), (filename, "Print insights off/on mismatch")
-        detailed = bool(entry["detailed"]) and bool(canonical["local_context"])
-        assert ("Detailed included context records" in whole) == detailed, (filename, "Appendix off/on mismatch")
-        if detailed:
-            positions = verify_detailed_openings(page_text, canonical["local_context"], filename, pdf.pages)
-        if entry["name"] in ("default", "pilot-only", "stale-request") or detailed:
-            renders = {1, len(pdf.pages)}
+def main():
+    assert len(sys.argv) in (2, 3), "Usage: verify-workstream-h-pdfs.py OUTPUT [--check-inventory]"
+    directory = Path(sys.argv[1])
+    if len(sys.argv) == 3:
+        assert sys.argv[2] == "--check-inventory", "Unknown verifier option"
+        print(json.dumps(check_inventory(directory), indent=2))
+        return
+
+    matrix = read_json(directory / "matrix-results.json")
+    # Validate independent exact-case expectations *before* touching the PDFs.
+    expected, canonicals, applicable, not_applicable = validate_matrix(directory, matrix)
+    verified = []
+    all_positions = {}
+    for filename, entry in expected.items():
+        path = directory / filename
+        canonical = canonicals[filename]
+        positions = []
+        with pdfplumber.open(path) as pdf:
+            assert len(pdf.pages) >= 1, (filename, "No pages")
+            page_text = []
+            clearances = []
+            for idx, page in enumerate(pdf.pages, 1):
+                words = page.extract_words()
+                footer = [w for w in words if w["text"] == "Diagnostic" and w["top"] > page.height - 80]
+                assert len(footer) == 1, (filename, idx, "Missing or duplicate page footer")
+                body = [ch for ch in page.chars if abs(ch["size"] - 6.8) > .05 and ch["text"].strip()]
+                assert body, (filename, idx, "Footer-only or blank page")
+                clearance = footer[0]["top"] - max(ch["bottom"] for ch in body)
+                assert clearance >= 4, (filename, idx, "Body/footer collision", clearance)
+                clearances.append(round(clearance, 2))
+                text = page.extract_text() or ""
+                assert len(flat(text)) > 350, (filename, idx, "Nearly empty substantive sheet", len(flat(text)))
+                page_text.append(text)
+            whole = "\n".join(page_text)
+            for title in ["U.S. population represented", "Total national all-cause spending",
+                          "Health care paperwork time", "Serious psychological distress"]:
+                assert title in whole, (filename, "Missing national executive heading", title)
+            assert "not attributable to Long COVID" in whole, (filename, "Missing noncausal boundary")
+            assert ("Planning insights summary" in whole) == entry["insights"], (filename, "Print insights off/on mismatch")
+            detailed = entry["detailed"] and bool(canonical["local_context"])
+            assert ("Detailed included context records" in whole) == detailed, (filename, "Appendix off/on mismatch")
             if detailed:
-                for hit in positions:
-                    if hit["id"] in {"wv.acs.poverty_pct",
-                                     "wv.hrsa.primary-care.designation-type.federally-qualified-health-center",
-                                     "wv.hrsa.primary-care.designation-type.rural-health-clinic"}:
-                        renders.update(n for n in (hit["page"] - 1, hit["page"], hit["page"] + 1)
-                                       if 1 <= n <= len(pdf.pages))
-            # Mandatory PDF-native rasterization: CI cannot silently omit boundary
-            # images when pdftoppm/poppler is absent on a runner.
-            with fitz.open(path) as rendered_pdf:
-                assert len(rendered_pdf) == len(pdf.pages)
-                for number in sorted(renders):
-                    png_path = directory / (path.stem + "-page-" + str(number) + ".png")
-                    rendered_pdf[number - 1].get_pixmap(
-                        matrix=fitz.Matrix(1.55, 1.55), alpha=False
-                    ).save(str(png_path))
-                    assert png_path.stat().st_size > 2000, (filename, number, "Rasterized page missing")
-        verified.append({"file": filename, "pages": len(pdf.pages),
-                         "minimum_footer_clearance_pt": min(clearances),
-                         "detailed_record_headings_verified": len(positions),
-                         "size": entry["size"], "local_context_count": len(canonical["local_context"]),
-                         "insights_printed": entry["insights"]})
-        if positions:
-            all_positions[filename] = positions
-rendered_pngs = sorted(p.name for p in directory.glob("*-page-*.png"))
-assert rendered_pngs, "Mandatory physical PDF page images were not emitted"
-report = {"passed": True, "mode": matrix["mode"], "rendered_page_png_count": len(rendered_pngs), "rendered_page_pngs": rendered_pngs,
-          "tested_lightweight_combinations": len(matrix["printCombinations"]),
-          "rendered_pdfs": len(verified), "results": verified, "record_positions": all_positions}
-(directory / "pdf-verification.json").write_text(json.dumps(report, indent=2) + "\n")
-print(json.dumps(report, indent=2))
+                positions = verify_detailed_openings(page_text, canonical["local_context"], filename, pdf.pages)
+            if entry["name"] in ("default", "pilot-only", "stale-request") or detailed:
+                renders = {1, len(pdf.pages)}
+                if detailed:
+                    for hit in positions:
+                        if hit["id"] in {"wv.acs.poverty_pct",
+                                         "wv.hrsa.primary-care.designation-type.federally-qualified-health-center",
+                                         "wv.hrsa.primary-care.designation-type.rural-health-clinic"}:
+                            renders.update(n for n in (hit["page"] - 1, hit["page"], hit["page"] + 1)
+                                           if 1 <= n <= len(pdf.pages))
+                with fitz.open(path) as rendered_pdf:
+                    assert len(rendered_pdf) == len(pdf.pages)
+                    for number in sorted(renders):
+                        png_path = directory / (path.stem + "-page-" + str(number) + ".png")
+                        rendered_pdf[number - 1].get_pixmap(
+                            matrix=fitz.Matrix(1.55, 1.55), alpha=False
+                        ).save(str(png_path))
+                        assert png_path.stat().st_size > 2000, (filename, number, "Rasterized page missing")
+            verified.append({"file": filename, "pages": len(pdf.pages),
+                             "minimum_footer_clearance_pt": min(clearances),
+                             "detailed_record_headings_verified": len(positions),
+                             "size": entry["size"], "local_context_count": len(canonical["local_context"]),
+                             "insights_printed": entry["insights"]})
+            if positions:
+                all_positions[filename] = positions
+
+    rendered_pngs = sorted(p.name for p in directory.glob("*.png"))
+    report = {"passed": True, "mode": matrix["mode"],
+              "rendered_page_png_count": len(rendered_pngs),
+              "rendered_page_pngs": rendered_pngs,
+              "tested_lightweight_combinations": len(matrix["printCombinations"]),
+              "applicable_print_states": applicable,
+              "not_applicable_print_states": not_applicable,
+              "rendered_pdfs": len(verified),
+              "physical_pdf_pages": sum(item["pages"] for item in verified),
+              "selected_raster_pages": len(rendered_pngs),
+              "results": verified, "record_positions": all_positions}
+    (directory / "pdf-verification.json").write_text(json.dumps(report, indent=2) + "\n")
+    # A separate read-only stage checks exact PNG inventory without rendering
+    # missing files. This also rejects extra/duplicate/false report metadata.
+    check_inventory(directory)
+    print(json.dumps(report, indent=2))
+
+
+if __name__ == "__main__":
+    main()
