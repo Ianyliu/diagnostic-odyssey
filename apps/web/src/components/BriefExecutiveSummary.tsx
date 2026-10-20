@@ -1,14 +1,8 @@
 import type { PlanningBrief } from "@diagnostic-odyssey/brief-core";
 import type { PlanningInsightsModelV1 } from "../data/planningInsights";
 import { formatEstimateInterval, formatEstimateValue } from "../data/formatEstimateValue";
+import { BRIEF_HEADLINE_IDS } from "../data/briefExecutiveHeadlines";
 
-/** Curated reviewed IDs, not new analysis or a substitute source of estimates. */
-export const BRIEF_HEADLINE_IDS = {
-  population: "meps24-current-long-covid-population",
-  spending: "meps24-gross-all-cause-spending-total",
-  paperwork: "meps24-healthcare-paperwork-time-mean",
-  distress: "meps24-k6-serious-distress"
-} as const;
 
 const HEADLINES = [
   {
