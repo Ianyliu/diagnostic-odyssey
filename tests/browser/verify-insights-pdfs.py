@@ -65,7 +65,7 @@ def assert_no_local_record_heading_orphans(page_text, local_records, filename):
         # This checks the same heading's own geography and first value, not a
         # matching geography elsewhere on the sheet or on the following page.
         geography = re.escape(record["geography_name"] + " (" + record["geography_type"] + ")")
-        opening = re.compile(r"^\\s+" + geography + r"\s+" + opening_value + r"(?=\s|%|±)")
+        opening = re.compile(r"^\s+" + geography + r"\s+" + opening_value + r"(?=\s|%|±)")
         tail = text[match.end():match.end() + 230]
         assert opening.search(tail), (
             filename, p, record["indicator_id"],
