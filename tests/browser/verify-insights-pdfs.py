@@ -33,6 +33,17 @@ for filename in ["summary-off.pdf", "summary-on.pdf", "summary-all-context.pdf",
             clearances.append(clearance)
             page_text.append(page.extract_text())
         text = "\n".join(page_text)
+        # Four curated, reviewed, population-specific national measures belong to the
+        # Brief itself, not to the optional Planning Insights print preference.
+        for heading in [
+            "U.S. population represented",
+            "Total national all-cause spending",
+            "Health care paperwork time",
+            "Serious psychological distress",
+        ]:
+            assert heading in text, (filename, "Missing always-on executive headline", heading)
+        assert "not attributable to Long COVID" in text, (filename, "Missing noncausal headline boundary")
+        assert "National reviewed context:" not in text, (filename, "Old unconditional insights print bypass")
         if filename == "summary-off.pdf":
             assert "Planning insights summary" not in text
         elif filename.startswith("summary-"):
@@ -46,12 +57,13 @@ for filename in ["summary-off.pdf", "summary-on.pdf", "summary-all-context.pdf",
             for unaccepted_prompt in ["Verify available capacity", "Verify pathway timing", "Possible source owner"]:
                 assert unaccepted_prompt not in summary
         if filename == "brief-default-34-concise.pdf":
-            assert len(pdf.pages) <= 13, (filename, "34 default records should remain concise", len(pdf.pages))
+            assert 7 <= len(pdf.pages) <= 9, (filename, "34 default with four new headings should stay close to former seven-page print", len(pdf.pages))
             assert "34 reviewed context records included" in text
             assert "meps24-current-long-covid-population" in text
             assert "meps24-gross-all-cause-spending-total" in text
             assert "Detailed included context records" not in text
         if filename == "brief-default-34-appendix.pdf":
+            assert 21 <= len(pdf.pages) <= 25, (filename, "Appendix unexpectedly differs from original 22 pages", len(pdf.pages))
             assert "Detailed included context records" in text
             assert "34 reviewed context records included" in text
         if filename == "brief-none-context.pdf":
@@ -78,6 +90,7 @@ for filename in ["summary-off.pdf", "summary-on.pdf", "summary-all-context.pdf",
 by_file = {entry["file"]: entry["pages"] for entry in results}
 assert by_file["brief-default-34-appendix.pdf"] > by_file["brief-default-34-concise.pdf"], "Appendix toggle must add pages"
 assert by_file["brief-none-context.pdf"] <= by_file["brief-default-34-concise.pdf"]
+assert by_file["brief-default-34-appendix.pdf"] - by_file["brief-default-34-concise.pdf"] >= 12
 report = {"passed": True, "results": results}
 (directory / "pdf-verification.json").write_text(json.dumps(report, indent=2) + "\n")
 print(json.dumps(report, indent=2))
