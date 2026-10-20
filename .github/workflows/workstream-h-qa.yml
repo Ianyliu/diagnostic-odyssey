@@ -36,10 +36,10 @@ jobs:
       - name: Checkout exact PR source
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          ref: \${{ github.event.pull_request.head.sha || github.sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - name: Verify exact integrated HEAD
         env:
-          EXPECTED_SHA: \${{ github.event.pull_request.head.sha || github.sha }}
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
@@ -47,8 +47,8 @@ jobs:
       - run: npm ci --no-audit --no-fund
       - name: Build combined feature configuration
         env:
-          VITE_PLANNING_INSIGHTS_PREVIEW: \${{ matrix.insights }}
-          VITE_FUTURE_AI_EXPERIENCE_DEMO: \${{ matrix.concept }}
+          VITE_PLANNING_INSIGHTS_PREVIEW: ${{ matrix.insights }}
+          VITE_FUTURE_AI_EXPERIENCE_DEMO: ${{ matrix.concept }}
         run: npm run build
       - run: npm install --prefix /tmp/workstream-h-browser --save-exact --no-audit --no-fund playwright@1.62.1
       - name: Native Chromium PDF / canonical JSON matrix
@@ -56,9 +56,9 @@ jobs:
           PLAYWRIGHT_RUNNER: /tmp/workstream-h-browser/package.json
           QA_BASE_URL: http://127.0.0.1:4199
           QA_OUTPUT: /tmp/workstream-h-results
-          QA_H_MODE: \${{ matrix.mode }}
-          QA_INSIGHTS_MODE: \${{ matrix.insights }}
-          QA_CONCEPT_MODE: \${{ matrix.concept }}
+          QA_H_MODE: ${{ matrix.mode }}
+          QA_INSIGHTS_MODE: ${{ matrix.insights }}
+          QA_CONCEPT_MODE: ${{ matrix.concept }}
         run: |
           npm exec --workspace @diagnostic-odyssey/web -- vite preview --host 127.0.0.1 --port 4199 > /tmp/workstream-h-preview.log 2>&1 &
           preview_pid=$!
@@ -76,7 +76,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: workstream-h-\${{ matrix.mode }}-\${{ github.event.pull_request.head.sha || github.sha }}
+          name: workstream-h-${{ matrix.mode }}-${{ github.event.pull_request.head.sha || github.sha }}
           path: |
             /tmp/workstream-h-results
             /tmp/workstream-h-preview.log
