@@ -48,3 +48,19 @@ The payer/source-of-payment decomposition is a separate, still-pending scientifi
 ## Test evidence policy
 
 GitHub PR CI includes `Rscript analysis/r/tests/run_tests.R`, along with build, type checking and checksums. Record the **exact final HEAD, run ID, job statuses and method-test result** after the final commit. An R test job that fails during third-party package installation is infrastructure-inconclusive, **not** a method pass.
+
+## Workstream F reproduction and failure provenance (code candidate v0.2)
+
+Independent F review requested correct adjusted contrast precision, replicate failure attribution, and explicit same-sample interpretation. The runner now fits three adjusted candidate variants, each based on 400 full-PERWT24F survey-bootstrap replicates with documented seed 20261019: primary base model on the primary complete-case sample; **base model without insurance on the insurance-complete sample**; and the **insurance-adjusted model on exactly the same insurance-complete sample**. Both insurance-complete models use the same survey-bootstrap generation seed, same variables in the pooled reference distribution, and the same sampling restrictions. Differences between the original primary base model and the insurance-complete base model quantify *composition/model-sample change* and should not be attributed to insurance adjustment.
+
+The output contains numerical checks for adjusted and unadjusted subgroup means and both contrasts, finite positive contrast SE, covariance symmetry/PSD tolerance, and RSE advisory screening. It separately identifies `publication_approved=false` and `independent_methods_review=pending`. Successful numerical screening is **never** a reviewed release.
+
+On a failed analytical stage after data-source verification, `artifacts/generated/meps24-comparator-candidate-<UTC timestamp>/failed-candidate.json` records the stage, error, requested replicates and seed, source input SHA-256, code commit and R session. If `withReplicates` fails, the code replays the exact generated design replicate columns and reports a **replicate index plus model stage and group positive/zero support**. The runner then fails with a nonzero status. **No invalid candidate estimates are written or promoted.**
+
+Successful candidates now include `primary_influence`, `insurance_complete_influence`, `primary_model_audit`, `base_model_on_insurance_complete_sample_audit` and `insurance_sensitivity_model_audit` plus unweighted/weighted sample flow. Influence outputs (delete-one-PSU and delete-one/five highest expenditures) are **diagnostic-only point perturbations**, not alternate adjusted-model uncertainties and do not remove records from the primary fit. Candidate diagnostics and sample-cell metadata require independent disclosure review *before sharing or uploading*.
+
+Capture a raw execution log, source checksums, exact commit SHA, toolchain/R session and generated JSON SHA-256. Independently re-estimate the covariance-aware unadjusted contrast, adjusted standardized means/covariance and paired insurance-complete models. In addition to the default 400 replicates, reviewers should assess Monte Carlo stability using a **separately prespecified, justified larger replicate count**; no such larger-B empirical result is yet asserted.
+
+**Current precise blocker:** Verified raw respondent-level HC-256 `h256.dta` / official ZIP was not available inside the execution environment used to author the GitHub branch, and there is no R interpreter in that container. Publicly posted reviewed aggregate artifacts do **not** supply the individual-level record needed for these models. Source hashes in this document are **expected immutable policy values**, not claims of freshly computed raw-file hashes. No numerical comparison is reported until an authorized source-verified R run succeeds.
+
+See [F1–F8 implementation disposition](meps-2024-comparator-F1-F8-response.md).
