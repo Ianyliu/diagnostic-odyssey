@@ -30,6 +30,18 @@ async function check(page,label,expected) {
   assert.equal(await page.locator(".overview-page.is-opening").count(),expected?1:0);
   return g;
 }
+async function tabToReplay(page) {
+  // Follow the real keyboard tab order, rather than focusing the control through JS.
+  for(let i=0;i<24;i++) {
+    await page.keyboard.press("Tab");
+    if(await page.evaluate(()=>document.activeElement?.matches(".preview-replay")))return;
+  }
+  throw Error("Replay was unreachable using Tab");
+}
+async function stillFocusedOnSameReplay(page) {
+  return page.evaluate(()=>document.activeElement===document.querySelector(".preview-replay")
+    &&document.activeElement===window.__replayFocusAnchor);
+}
 try{
   for(const width of [320,360,390,768,1024,1440])
   for(const theme of ["light","dark"])
@@ -83,6 +95,72 @@ try{
     results.push({label:"replay-keyboard-reduced-switch",status:"PASS"});
   }catch(e){results.push({label:"replay-keyboard-reduced-switch",status:"FAIL",error:String(e.stack)});}
   finally{await p.close();}
+  const focus=await browser.newPage({viewport:{width:390,height:900},reducedMotion:"no-preference"});
+  try{
+    await focus.goto(base+"/");
+    await focus.locator(".preview-replay").waitFor();
+    await tabToReplay(focus);
+    await focus.evaluate(()=>{window.__replayFocusAnchor=document.querySelector(".preview-replay");});
+    assert.equal(await stillFocusedOnSameReplay(focus),true,"Tab must focus Replay");
+    await focus.keyboard.press("Enter");
+    assert.equal(await focus.locator(".overview-page.is-opening").count(),1,"Enter must replay");
+    assert.equal(await stillFocusedOnSameReplay(focus),true,"Enter must not detach the focused node");
+    assert.ok(await focus.evaluate(()=>document.getAnimations().some(a=>a.animationName==="circuit-lane")));
+    await focus.evaluate(()=>{window.__firstReplayBody=document.querySelector(".preview-body");});
+    await focus.keyboard.press("Enter");
+    assert.equal(await stillFocusedOnSameReplay(focus),true,"rapid Enter must preserve DOM identity and focus");
+    assert.equal(await focus.locator(".overview-page.is-opening").count(),1);
+    assert.equal(await focus.evaluate(()=>document.querySelector(".preview-body")!==window.__firstReplayBody),true,
+      "rapid replay must reconstruct the animated circuit");
+    assert.ok(await focus.evaluate(()=>document.getAnimations().some(a=>a.animationName.startsWith("workspace-unfold"))),
+      "rapid replay must restart shell choreography");
+    await focus.keyboard.press("Tab");
+    await focus.locator(".overview-page.is-opening").waitFor({state:"detached",timeout:2000});
+    assert.equal(await focus.evaluate(()=>document.activeElement!==document.body),true,
+      "Tab interruption must not land on BODY");
+    await focus.keyboard.press("Shift+Tab");
+    assert.equal(await stillFocusedOnSameReplay(focus),true,"Shift+Tab returns to persistent Replay");
+    await focus.keyboard.press("Enter");
+    assert.equal(await stillFocusedOnSameReplay(focus),true);
+    await focus.emulateMedia({reducedMotion:"reduce"});
+    await focus.locator(".overview-page.is-opening").waitFor({state:"detached",timeout:2000});
+    assert.equal(await stillFocusedOnSameReplay(focus),true,"motion preference switch preserves keyboard focus");
+    await focus.keyboard.press("Enter");
+    assert.equal(await focus.locator(".overview-page.is-opening").count(),0,"reduced replay remains static");
+    assert.equal(await stillFocusedOnSameReplay(focus),true);
+    await focus.emulateMedia({reducedMotion:"no-preference"});
+    await focus.keyboard.press("Enter");
+    assert.equal(await focus.locator(".overview-page.is-opening").count(),1);
+    assert.equal(await stillFocusedOnSameReplay(focus),true);
+    await focus.locator(".overview-page.is-opening").waitFor({state:"detached",timeout:9500});
+    assert.equal(await stillFocusedOnSameReplay(focus),true,"natural completion preserves keyboard focus");
+    await focus.screenshot({path:out+"/keyboard-focus-complete.png",animations:"disabled"});
+    results.push({label:"tab-enter-repeat-interrupt-reduced-complete-focus",status:"PASS"});
+  }catch(e){results.push({label:"tab-enter-repeat-interrupt-reduced-complete-focus",status:"FAIL",error:String(e.stack)});}
+  finally{await focus.close();}
+
+  const pointer=await browser.newPage({viewport:{width:390,height:900},reducedMotion:"no-preference"});
+  try{
+    await pointer.goto(base+"/");
+    await pointer.locator(".overview-page.is-opening").waitFor({state:"detached",timeout:9500});
+    await pointer.locator(".overview-primary-cta").focus();
+    await pointer.evaluate(()=>{
+      window.__pointerFocusAnchor=document.activeElement;
+      // Suppress only the browser's normal mouse-down focus transfer.
+      // If application code explicitly focuses Replay, this negative test catches it.
+      document.querySelector(".preview-replay").addEventListener("mousedown",e=>e.preventDefault(),{once:true});
+    });
+    await pointer.getByRole("button",{name:"Replay animation"}).click();
+    assert.equal(await pointer.locator(".overview-page.is-opening").count(),1);
+    assert.equal(await pointer.evaluate(()=>document.activeElement===window.__pointerFocusAnchor),true,
+      "pointer replay must not programmatically steal existing focus");
+    await pointer.mouse.wheel(0,200);
+    await pointer.locator(".overview-page.is-opening").waitFor({state:"detached",timeout:2000});
+    assert.equal(await pointer.evaluate(()=>document.activeElement===window.__pointerFocusAnchor),true);
+    results.push({label:"pointer-replay-no-focus-steal",status:"PASS"});
+  }catch(e){results.push({label:"pointer-replay-no-focus-steal",status:"FAIL",error:String(e.stack)});}
+  finally{await pointer.close();}
+
   const p2=await browser.newPage({viewport:{width:360,height:900}});
   try{
     await p2.addInitScript(()=>Object.defineProperty(window,"sessionStorage",{get(){throw Error("blocked");},configurable:true}));
@@ -93,7 +171,17 @@ try{
     await p2.mouse.wheel(0,250);
     await p2.locator(".overview-page.is-opening").waitFor({state:"detached",timeout:2000});
     await check(p2,"interrupted",false);
-    results.push({label:"blocked-storage-interrupt",status:"PASS"});
+    await tabToReplay(p2);
+    await p2.keyboard.press("Enter");
+    assert.equal(await p2.locator(".overview-page.is-opening").count(),1);
+    assert.equal(await p2.evaluate(()=>document.activeElement?.matches(".preview-replay")),true,
+      "blocked storage must not lose focus");
+    await p2.keyboard.press("Enter");
+    assert.equal(await p2.evaluate(()=>document.activeElement?.matches(".preview-replay")),true);
+    await p2.mouse.wheel(0,200);
+    await p2.locator(".overview-page.is-opening").waitFor({state:"detached",timeout:2000});
+    await check(p2,"blocked repeated replay interrupted",false);
+    results.push({label:"blocked-storage-interrupt-repeat-keyboard",status:"PASS"});
   }catch(e){results.push({label:"blocked-storage-interrupt",status:"FAIL",error:String(e.stack)});}
   finally{await p2.close();}
   for(const url of ["/?review=1","/#context","/burden"]){
