@@ -1,0 +1,61 @@
+name: Opening Circuit Browser QA
+on:
+  pull_request:
+    paths:
+      - "apps/web/src/pages/openingMotion.ts"
+      - "apps/web/src/pages/OpeningProvenance.tsx"
+      - "apps/web/src/pages/OverviewPage.tsx"
+      - "apps/web/src/pages/OverviewPage.css"
+      - "apps/web/test/opening-motion.test.ts"
+      - "tests/browser/opening-circuit.mjs"
+      - ".github/workflows/opening-circuit-qa.yml"
+permissions:
+  contents: read
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22.23.3
+      - name: Verify exact HEAD and build
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          npm ci --no-audit --no-fund
+          npm run typecheck
+          npm test
+          npm run lint
+          npm run build
+      - name: Install isolated browser runner
+        run: |
+          npm install --prefix /tmp/opening-browser-runner --no-audit --no-fund --save-exact @playwright/test@1.64.0
+          node /tmp/opening-browser-runner/node_modules/playwright/cli.js install chrome
+      - name: Test exact-built opening and capture screenshots
+        env:
+          PLAYWRIGHT_RUNNER: /tmp/opening-browser-runner/package.json
+          QA_BASE_URL: http://127.0.0.1:4188
+          QA_OUTPUT: /tmp/opening-circuit-qa
+          QA_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          ./node_modules/.bin/vite preview apps/web --host 127.0.0.1 --port 4188 --strictPort >/tmp/opening-preview.log 2>&1 &
+          for n in $(seq 1 40); do
+            if curl --fail --silent http://127.0.0.1:4188/ >/dev/null; then break; fi
+            sleep 1
+          done
+          curl --fail http://127.0.0.1:4188/ -o /dev/null
+          node tests/browser/opening-circuit.mjs
+      - name: Upload visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: opening-circuit-${{ github.event.pull_request.head.sha }}
+          path: |
+            /tmp/opening-circuit-qa/
+            /tmp/opening-preview.log
+          if-no-files-found: warn

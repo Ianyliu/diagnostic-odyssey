@@ -24,7 +24,8 @@ test("overview keeps the workflow visible without promotional filler", () => {
   assert.match(overview, /Evidence into planning/);
   assert.match(overview, /boundaries intact/);
   assert.match(overview, /overview-proof/);
-  assert.match(overview, /<OpeningProvenance playing=\{opening\}/);
+  assert.match(overview, /<OpeningProvenance playing=\{opening\.playing\}/);
+  assert.match(overview, /className="overview-hero-motion"/);
   assert.match(overview, /journey-grid/);
   assert.doesNotMatch(overview, /<DecisionStateRail/);
   assert.doesNotMatch(overview, /overview-launch-pill/);
@@ -49,7 +50,9 @@ test("overview visualization preserves separate evidence lanes through the plann
   assert.match(source, /opening-lane lane-evidence/);
   assert.match(source, /opening-lane lane-context/);
   assert.match(source, /opening-lane lane-assumption/);
-  assert.match(source, /The three lanes stay distinct all the way into the Planning brief/);
+  assert.match(source, /National estimates, local context, and analyst assumptions stay separate in the Planning Brief/);
+  assert.match(source, /not a combined scientific score/);
+  assert.match(source, /Replay animation/);
   assert.doesNotMatch(source, /opening-junction/);
 });
 

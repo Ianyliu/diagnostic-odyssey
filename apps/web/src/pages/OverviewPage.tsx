@@ -29,15 +29,20 @@ export function OverviewPage() {
     : null;
 
   return (
-    <section className={"page page-stack overview-page" + (opening ? " is-opening" : "")}>
+    <section className={"page page-stack overview-page" + (opening.playing ? " is-opening" : "")}>
       <section className="overview-hero" aria-labelledby="overview-title">
         <div className="overview-hero-grid" aria-hidden="true" />
-        <div className="overview-hero-copy">
+        <div className="overview-hero-intro">
           <p className="overview-kicker">Evidence into planning, with boundaries intact.</p>
           <h1 id="overview-title">
             Long COVID&rsquo;s burden
             <span>goes beyond the bill.</span>
           </h1>
+        </div>
+        <div className="overview-hero-motion">
+          <OpeningProvenance playing={opening.playing} runId={opening.runId} onReplay={opening.replay} reducedMotion={opening.reducedMotion} announcement={opening.announcement} />
+        </div>
+        <div className="overview-hero-details">
           <p className="overview-lede">
             <strong className="overview-audience">For state health departments and Medicaid programs scoping Long COVID care-navigation pilots.</strong> Diagnostic Odyssey keeps reviewed national burden, local implementation context, and analyst assumptions visibly separate—then carries their provenance into one workflow.
           </p>
@@ -58,8 +63,8 @@ export function OverviewPage() {
           </dl>
           <p className="overview-source-note">Grounded in <strong>MEPS</strong>, <strong>HRSA</strong> and <strong>ACS</strong> · source boundaries stay visible.</p>
         </div>
-        <HeadlineFindings />
       </section>
+      <HeadlineFindings />
 
       <section className="overview-value-prop" aria-labelledby="overview-value-title">
         <div className="overview-section-heading">
@@ -67,7 +72,7 @@ export function OverviewPage() {
           <h2 id="overview-value-title">Different evidence, distinct purposes.</h2>
           <p>MEPS describes national burden; HRSA and ACS describe local implementation context, not local Long COVID prevalence; analyst inputs are planning assumptions, not observed effects. The three are never blended into one estimate.</p>
         </div>
-        <div className="overview-provenance-slot"><OpeningProvenance playing={opening} /></div>
+        <p className="overview-value-echo">The opening provenance circuit connects each evidence role to a documented planning artifact—not to a pooled estimate or invented effect.</p>
       </section>
 
       <nav className="overview-destinations" aria-label="Workspace navigation">

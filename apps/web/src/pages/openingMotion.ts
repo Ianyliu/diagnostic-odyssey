@@ -1,6 +1,7 @@
 import { getBrowserMediaQuery, readMediaQueryMatches } from "../browserMedia.ts";
 
 export const OPENING_SESSION_KEY = "diagnostic-odyssey.opening-seen";
+export const OPENING_DURATION_MS = 4100;
 
 export interface OpeningDecision {
   pathname: string;
@@ -23,6 +24,11 @@ export function shouldPlayOpening({
   } catch {
     return false;
   }
+}
+
+/** Replay is intentionally independent of the one-time autoplay storage flag. */
+export function canReplayOpening(reducedMotion: boolean): boolean {
+  return !reducedMotion;
 }
 
 export function sessionStorageOrNull(): Storage | null {
