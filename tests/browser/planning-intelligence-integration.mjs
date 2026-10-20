@@ -41,6 +41,15 @@ async function canonical(page) {
 await check("all three controls coexist and optional routes remain gated", async page => {
   assert.equal(await page.getByRole("button", {name:"Analyze with AI", exact:true}).count(), 1);
   assert.match(await page.locator("#ai-handoff-launch-note").innerText(), /No live AI model or API calls/);
+  assert.equal(await page.locator(".brief-executive-summary").count(), 1, "The Brief core always owns the national executive summary");
+  assert.equal(await page.locator(".brief-executive-finding").count(), 4);
+  for (const id of ["meps24-current-long-covid-population", "meps24-gross-all-cause-spending-total", "meps24-healthcare-paperwork-time-mean", "meps24-k6-serious-distress"]) {
+    assert.match(await page.locator(".brief-executive-summary").innerText(), new RegExp(id));
+  }
+  await page.emulateMedia({media: "print"});
+  assert.equal(await page.locator(".brief-executive-summary").isVisible(), true);
+  assert.equal(await page.locator(".insights-print-summary").count(), 0, "Insights are opt-in even when enabled");
+  await page.emulateMedia({media: "screen"});
   assert.equal(await page.locator("#planning-insights-title").count() > 0, insightsEnabled);
   if (insightsEnabled) {
     assert.match(await page.locator("#planning-insights").innerText(), /no live AI inference/);
@@ -51,9 +60,9 @@ await check("all three controls coexist and optional routes remain gated", async
     assert.match(await page.locator(".brief-concept-note").innerText(), /No live AI or model API calls/);
   }
   if (insightsEnabled) {
-    assert.equal(await page.getByRole("checkbox", {name:/Include insights summary in printed Brief/}).count(), 1);
+    assert.equal(await page.getByRole("checkbox", {name:/Include optional Planning Insights detail in printed Brief/}).count(), 1);
   } else {
-    assert.equal(await page.getByRole("checkbox", {name:/Include insights summary in printed Brief/}).count(), 0);
+    assert.equal(await page.getByRole("checkbox", {name:/Include optional Planning Insights detail in printed Brief/}).count(), 0);
   }
   await page.screenshot({path:join(output, "brief-combined.png"), fullPage:true});
 });
@@ -65,7 +74,7 @@ await check("AI handoff, optional print, and navigation do not mutate canonical 
   assert.match(await dialog.locator("#ai-handoff-intro").innerText(), /does not invoke an AI provider or consume model API tokens/);
   await dialog.getByRole("button", {name:"Close Analyze with AI"}).click();
   if (insightsEnabled) {
-    await page.getByRole("checkbox", {name:/Include insights summary in printed Brief/}).check();
+    await page.getByRole("checkbox", {name:/Include optional Planning Insights detail in printed Brief/}).check();
     await page.emulateMedia({media:"print"});
     assert.equal(await page.locator(".insights-print-summary").isVisible(), true);
     assert.equal(await page.getByRole("dialog", {name:"Analyze with AI"}).count(), 0);

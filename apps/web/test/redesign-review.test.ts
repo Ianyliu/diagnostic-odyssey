@@ -95,7 +95,11 @@ test("Planning Brief print repeats product provenance and moves decision state o
   assert.match(brief, /brief-print-decision-state/);
   assert.match(brief, /<h2>Decision state<\/h2>/);
   assert.match(css, /\.planning-brief-page \.brief-aside\s*\{\s*display:\s*none !important/s);
-  assert.match(css, /\.planning-brief-page \.brief-print-footer\s*\{[^}]*position:\s*fixed/s);
+  // Real @page margin boxes reserve document space instead of overlaying
+  // paragraph text; dynamic artifact version and timestamp remain in provenance.
+  assert.match(css, /@bottom-left\s*\{\s*content:\s*"Diagnostic Odyssey"/s);
+  assert.match(css, /@bottom-right\s*\{\s*content:\s*"Page "\s*counter\(page\)/s);
+  assert.match(css, /\.planning-brief-page \.brief-print-footer\s*\{\s*display:\s*none !important/s);
   assert.match(css, /\.brief-burden-table-wrap\s*\{[^}]*position:\s*relative/s);
 });
 

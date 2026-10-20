@@ -69,7 +69,7 @@ export function buildDecisionTrace({
     },
     {
       key: "local-context",
-      label: "Explicitly selected reviewed local constraint/context",
+      label: "Pilot-used reviewed local context (separate from Brief selections)",
       detail: pilotLocalContext
         ? pilotLocalContext.label +
           ": " +
@@ -83,7 +83,7 @@ export function buildDecisionTrace({
           ? "Reviewed local context is loading; no explicit Pilot context can be resolved yet"
           : localContextStatus === "error"
             ? "Reviewed local context is unavailable; no explicit Pilot context can be resolved"
-            : "No explicit local constraint selected"
+            : "No Pilot-specific local context chosen; Brief selections remain independent"
     },
     {
       key: "pathway",

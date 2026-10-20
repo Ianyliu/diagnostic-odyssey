@@ -79,7 +79,7 @@ export function InterventionEvidenceGap({id = "intervention-options", explanatio
 function EvidenceRoles({model}: {model: PlanningInsightsModelV1}) {
   const steps: {role: InsightRole; title: string; detail: string; href: string}[] = [
     {role: "reviewed", title: "National evidence", detail: model.national.availability === "available" ? `${model.national.findingsCount} reviewed findings` : "Reviewed summary unavailable", href: "#brief-national-burden"},
-    {role: "context", title: "Local context", detail: model.local.records.length ? `${model.local.records.length} explicitly selected` : "No verified selection", href: "#brief-local-context"},
+    {role: "context", title: "Local context", detail: model.local.records.length ? `${model.local.records.length} included` : "No verified selection", href: "#brief-local-context"},
     {role: "assumption", title: "Analyst assumptions", detail: model.scenario.applied ? "Applied Pilot inputs" : "No valid applied scenario", href: "#brief-pilot-assumptions"},
     {role: "result", title: "Planning outputs", detail: model.scenario.applied ? "Deterministic arithmetic" : "Outputs unavailable", href: model.scenario.applied ? "#brief-scenario-outputs" : "/pilot"},
     {role: "prompt", title: "Operational decisions", detail: "Analyst judgment & verification", href: "/data-requests"}
@@ -131,7 +131,7 @@ export function PlanningInsights({model}: {model: PlanningInsightsModelV1}) {
       <div><p className="visual-kicker">AT A GLANCE</p><h2 id="planning-insights-title">Your current planning picture</h2><p className="insight-caption">Deterministic planning preview — no live AI inference.</p></div>
       <button type="button" className="text-button" aria-expanded={expanded} aria-controls="planning-insights-content" onClick={() => setExpanded(value => !value)}>{expanded ? "Hide insights" : "Show insights"}</button>
     </header>
-    <label className="insights-print-choice"><input type="checkbox" checked={includePrintSummary} onChange={event => setIncludePrintSummary(event.target.checked)} /><span>Include insights summary in printed Brief<small>Reviewed findings and applied assumptions; investigation prompts stay on screen.</small></span></label>
+    <label className="insights-print-choice"><input type="checkbox" checked={includePrintSummary} onChange={event => setIncludePrintSummary(event.target.checked)} /><span>Include optional Planning Insights detail in printed Brief<small>Off by default. This adds planning highlights and assumptions only; the always-visible Brief executive summary prints either way. Investigation prompts stay on screen.</small></span></label>
     <div id="planning-insights-content" hidden={!expanded}>
       <div className="insight-summary-grid">
         <section className="insight-card insight-national" aria-labelledby="insight-national-title">
@@ -202,7 +202,7 @@ export function PlanningInsights({model}: {model: PlanningInsightsModelV1}) {
         <EvidenceRoles model={model} />
         <InterventionEvidenceGap explanation={model.interventions.explanation} />
       </WorkspaceDisclosure>
-      <WorkspaceDisclosure id="insight-investigation-details" title="Explore data gaps & next actions" summary={`${model.investigations.prompts.length} operational investigation prompts · creating a request and including it in the Brief remain separate choices.`}>
+      <WorkspaceDisclosure id="insight-investigation-details" title="Explore data gaps & next actions" summary={`${model.investigations.prompts.length} operational investigation prompts · newly created requests start included in the Brief; they can be deselected in Data Requests.`}>
         <Investigations model={model} />
       </WorkspaceDisclosure>
     </div>

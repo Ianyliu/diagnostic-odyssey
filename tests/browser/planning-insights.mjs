@@ -132,7 +132,7 @@ for (const width of [1440, 820, 390, 360]) await run(`huge finite scenario prese
   assert.ok(box.x + box.width <= width, JSON.stringify(box));
   assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1));
   if (width === 360) {
-    await page.getByRole("checkbox", {name: /Include insights summary in printed Brief/}).check();
+    await page.getByRole("checkbox", {name: /Include optional Planning Insights detail in printed Brief/}).check();
     await page.emulateMedia({media: "print"});
     await page.pdf({path: `${output}/summary-extreme.pdf`, format: "Letter", printBackground: true});
   }
@@ -144,12 +144,14 @@ await run("optional actual PDF summary preserves JSON and excludes unaccepted su
   await navigate(page, "Local context");
   await page.getByRole("button", {name: "Select none", exact: true}).first().click();
   await navigate(page, "Planning brief");
-  const choice = page.getByRole("checkbox", {name: /Include insights summary in printed Brief/});
+  const choice = page.getByRole("checkbox", {name: /Include optional Planning Insights detail in printed Brief/});
   assert.equal(await choice.isChecked(), false);
   const before = await exportJson(page, "print-before");
   await page.emulateMedia({media: "print"});
   assert.equal(await page.locator(".insights-print-summary").count(), 0);
   assert.equal(await page.locator("#planning-insights").isVisible(), false);
+  assert.equal(await page.locator(".brief-executive-summary").isVisible(), true, "Core headlines must print with optional insights disabled");
+  assert.equal(await page.locator(".brief-executive-finding").count(), 4);
   await page.pdf({path: `${output}/summary-off.pdf`, format: "Letter", printBackground: true});
   await page.emulateMedia({media: "screen"});
   await choice.check();
@@ -159,6 +161,7 @@ await run("optional actual PDF summary preserves JSON and excludes unaccepted su
   await page.emulateMedia({media: "print"});
   const summary = page.locator(".insights-print-summary");
   assert.equal(await summary.isVisible(), true);
+  assert.equal(await page.locator(".brief-executive-summary").isVisible(), true, "Core Brief headlines stay visible when optional insights are enabled");
   assert.equal(await summary.locator(".investigation-card, .intervention-gap").count(), 0);
   assert.doesNotMatch(await summary.innerText(), /Verify pathway timing|Verify available capacity|Possible source owner/);
   await page.pdf({path: `${output}/summary-on.pdf`, format: "Letter", printBackground: true});
@@ -171,10 +174,98 @@ await run("optional actual PDF summary preserves JSON and excludes unaccepted su
   await page.locator("main details").evaluateAll(elements => elements.forEach(element => {element.open = true;}));
   for (const checkbox of await page.locator('input[id^="select-local-context-"]').all()) await checkbox.check();
   await navigate(page, "Planning brief");
-  await page.getByRole("checkbox", {name: /Include insights summary in printed Brief/}).check();
+  await page.getByRole("checkbox", {name: /Include optional Planning Insights detail in printed Brief/}).check();
   await page.emulateMedia({media: "print"});
   await page.pdf({path: `${output}/summary-all-context.pdf`, format: "Letter", printBackground: true});
   return {defaultOff: true, jsonUnchanged: true, suggestionsExcluded: true};
+});
+
+await run("default 34-context selection prints concise, optionally detailed, without changing canonical JSON", async () => {
+  const {page} = await session(390, "light");
+  const before = await exportJson(page, "brief-default-34");
+  assert.equal(before.local_context.length, 34, "Default is all eligible reviewed records, not an eight-record starter set");
+  const ids = before.local_context.map(record => record.indicator_id);
+  assert.equal(new Set(ids).size, 34);
+  const appendix = page.getByRole("checkbox", {name: /Include detailed local-context records in print/});
+  assert.equal(await appendix.isChecked(), false);
+  assert.equal(await page.locator("#brief-local-context .brief-local-context").count(), 34);
+  assert.equal(await page.locator("#brief-local-context .brief-local-context-executive li").count(), 4);
+  assert.equal(await page.locator(".brief-executive-finding").count(), 4);
+  for (const id of ["meps24-current-long-covid-population", "meps24-gross-all-cause-spending-total", "meps24-healthcare-paperwork-time-mean", "meps24-k6-serious-distress"]) {
+    assert.match(await page.locator(".brief-executive-summary").innerText(), new RegExp(id));
+  }
+  assert.equal(await page.getByRole("checkbox", {name: /Include optional Planning Insights detail in printed Brief/}).isChecked(), false);
+  await page.screenshot({path: `${output}/brief-default-390-screen.png`, fullPage: true});
+  await page.emulateMedia({media: "print"});
+  assert.equal(await page.locator(".brief-local-context-list").isVisible(), false);
+  assert.equal(await page.locator(".brief-local-context-executive").isVisible(), true);
+  assert.equal(await page.locator(".brief-executive-summary").isVisible(), true);
+  await page.pdf({path: `${output}/brief-default-34-concise.pdf`, format: "Letter", printBackground: true});
+  await page.emulateMedia({media: "screen"});
+  await appendix.check();
+  await page.emulateMedia({media: "print"});
+  assert.equal(await page.locator(".brief-local-context-list").isVisible(), true);
+  await page.pdf({path: `${output}/brief-default-34-appendix.pdf`, format: "Letter", printBackground: true});
+  await page.emulateMedia({media: "screen"});
+  await appendix.uncheck();
+  const after = await exportJson(page, "brief-after-print-options");
+  assert.equal(after.generated_at, before.generated_at, "Print-only changes must not regenerate the canonical export timestamp");
+  assert.deepEqual(after, before, "Print detail toggle must not mutate authoritative JSON, record order or provenance");
+  return {canonicalRecords: ids.length, printModeDefault: "concise", appendixReversible: true};
+});
+await run("no context and customized category selection print meaningful distinct summaries", async () => {
+  const {page} = await session(390, "dark");
+  await navigate(page, "Local context");
+  await page.getByRole("button", {name: "Select none", exact: true}).first().click();
+  await navigate(page, "Planning brief");
+  const none = await exportJson(page, "brief-none-context");
+  assert.equal(none.local_context.length, 0);
+  assert.equal(none.context.local_context_id, null);
+  await page.emulateMedia({media: "print"});
+  await page.pdf({path: `${output}/brief-none-context.pdf`, format: "Letter", printBackground: true});
+  await page.emulateMedia({media: "screen"});
+  await navigate(page, "Local context");
+  // Category-level selection is independent of the global defaults.
+  const acs = page.getByRole("group", {name: "ACS access context selection controls"});
+  if (await acs.count()) await acs.getByRole("button", {name: "Select all"}).click();
+  else for (const id of ["wv.acs.no_vehicle_pct","wv.acs.uninsured_pct","wv.acs.broadband_pct","wv.acs.poverty_pct"]) {
+    await page.locator(`#select-local-context-${id.replace(/[^a-zA-Z0-9_-]/g,"-")}`).check();
+  }
+  await navigate(page, "Planning brief");
+  const custom = await exportJson(page, "brief-custom-context");
+  assert.equal(custom.local_context.length, 4);
+  assert.ok(custom.local_context.every(record => record.indicator_id.startsWith("wv.acs.")));
+  await page.emulateMedia({media: "print"});
+  assert.equal(await page.locator(".brief-local-context-executive li").count(), 4);
+  await page.pdf({path: `${output}/brief-custom-context.pdf`, format: "Letter", printBackground: true});
+  await page.emulateMedia({media: "screen"});
+  return {none: none.local_context.length, custom: custom.local_context.length};
+});
+
+await run("Pilot-used context is included once even after Select none and print preferences keep identity", async () => {
+  const {page} = await session(390, "light");
+  await navigate(page, "Local context");
+  await page.getByRole("button", {name: "Select none", exact: true}).first().click();
+  const pilotButton = page.getByRole("button", {name: /Use .* in Pilot planning/}).first();
+  const pilotLabel = await pilotButton.getAttribute("aria-label");
+  assert.ok(pilotLabel?.startsWith("Use ") && pilotLabel.endsWith(" in Pilot planning"));
+  await pilotButton.click();
+  await navigate(page, "Planning brief");
+  const before = await exportJson(page, "brief-pilot-only-context");
+  assert.equal(before.local_context.length, 1, "Active Pilot-used record enters Brief despite no checkbox selection");
+  assert.ok(pilotLabel.includes(before.local_context[0].label), "Pilot-used record matches the selected indicator label");
+  assert.equal(await page.locator("#brief-local-context .brief-local-context").count(), 1);
+  assert.match(await page.locator(".brief-executive-summary").innerText(), /1 extra via Use in Pilot/);
+  const appendix = page.getByRole("checkbox", {name: /Include detailed local-context records in print/});
+  await appendix.check();
+  await page.emulateMedia({media: "print"});
+  assert.equal(await page.locator(".brief-local-context-opening").isVisible(), true);
+  await page.pdf({path: `${output}/brief-pilot-only-context.pdf`, format: "Letter", printBackground: true});
+  await page.emulateMedia({media: "screen"});
+  await appendix.uncheck();
+  const after = await exportJson(page, "brief-pilot-only-after-print");
+  assert.deepEqual(after, before, "Pilot-only record and canonical generated_at survive all print toggles");
+  return {pilotOnlyRecords: before.local_context.length, recordId: before.local_context[0].indicator_id};
 });
 await browser.close();
 console.log(JSON.stringify(results.map(({name, status, error}) => ({name, status, error})), null, 2));

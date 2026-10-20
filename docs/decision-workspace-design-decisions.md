@@ -20,15 +20,15 @@ Current dependency: the reviewed West Virginia local-context artifact is state-l
 
 ### Analyst-created data requests
 
-Session-created operational data requests are **explicit opt-in to the Planning Brief**.
+Session-created operational data requests **start included in the Planning Brief** (and can be deselected). Creation is an analyst action; inclusion is a separate reversible checkbox, initially checked for new requests.
 
 Creating a request:
 - does not make it observed evidence;
-- does not automatically include it in export;
+- starts included in the Brief, can be deselected at any time, and stale requests remain excluded from export until refreshed;
 - may originate from a sensitivity finding or later from an unsupported claim/gap;
 - must preserve target question, pathway step, fields needed, likely owner, granularity/time window, rationale, and feasibility/privacy notes.
 
-The user explicitly selects **Include in Planning Brief** before a request enters the Brief.
+The **Include in Planning Brief** checkbox remains visible so the analyst can exclude any request before export.
 
 ### Claim Tester
 

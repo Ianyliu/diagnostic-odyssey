@@ -90,7 +90,7 @@ test("six-step decision trace source preserves current descriptive boundaries", 
   assert.equal(bundle.burden_domains.flatMap(domain => domain.measures).length, 21);
   for (const label of [
     "Released observed burden",
-    "Explicitly selected reviewed local constraint/context",
+    "Pilot-used reviewed local context (separate from Brief selections)",
     "Target pathway step",
     "Planning mechanism",
     "Measurement / data request needed",
@@ -99,7 +99,7 @@ test("six-step decision trace source preserves current descriptive boundaries", 
     assert.ok(source.includes(label));
   }
   assert.match(source, /reviewed estimates · national descriptive evidence/);
-  assert.match(source, /No explicit local constraint selected/);
+  assert.match(source, /No Pilot-specific local context chosen; Brief selections remain independent/);
   assert.match(source, /Reviewed local context is loading/);
   assert.match(source, /Reviewed local context is unavailable/);
   assert.match(source, /formatPathwayStepLabel/);
