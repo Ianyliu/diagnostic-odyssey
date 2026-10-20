@@ -2,7 +2,7 @@
  * Local proxy mode verifies browser behavior with simulated headers only.
  * Use an immutable actual Vercel preview URL for real served-header attestation.
  */
-/* global process, console, window, document, getComputedStyle, localStorage */
+/* global process, console, window, document, getComputedStyle, localStorage, fetch, performance, setTimeout */
 import assert from "node:assert/strict";
 import { mkdir,writeFile } from "node:fs/promises";
 import { createRequire } from "node:module";
@@ -63,9 +63,9 @@ for(const [theme,width] of [["light",390],["dark",1440]]){
  await check("Chromium CSP, first paint, no egress: "+theme+" "+width+" "+path,async()=>{
    const context=await browser.newContext({colorScheme:theme,viewport:{width,height:900},reducedMotion:"reduce",acceptDownloads:true});
    const page=await context.newPage();
-   const violations=[],errors=[],external=[];
+   const errors=[],external=[];
    await context.addInitScript(preference=>{
-      try{localStorage.setItem("diagnostic-odyssey.theme",preference);}catch{}
+      try{localStorage.setItem("diagnostic-odyssey.theme",preference);}catch{ /* blocked storage is a supported fallback */ }
       document.addEventListener("securitypolicyviolation",ev=>{
         (window.__violations??=[]).push({directive:ev.effectiveDirective,blockedURI:ev.blockedURI});
       });

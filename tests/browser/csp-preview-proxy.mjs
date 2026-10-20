@@ -1,5 +1,5 @@
 /* Local-only simulation of Vercel response-header application. NOT a deployed-header attestation. */
-/* global process, console */
+/* global process, console, URL, fetch, Buffer */
 import { createServer } from "node:http";
 import { readFileSync } from "node:fs";
 const config = JSON.parse(readFileSync(new URL("../../apps/web/vercel.json",import.meta.url),"utf8"));
