@@ -392,7 +392,10 @@ export function BriefPage({conceptAvailable = false, showFutureConcept = false, 
                 </p>
                 {brief.local_context.map(record =>
                   <article className="brief-local-context" key={record.indicator_id}>
-                    <div className="card-title-row">
+                    {/* Protect only this short opening unit during printing. The remainder
+                        of a lengthy record must still be free to continue onto a new page. */}
+                    <div className="brief-local-context-opening">
+                      <div className="card-title-row">
                       <div>
                         <strong>{record.label}</strong>
                         <span>{record.geography_name} ({record.geography_type})</span>
@@ -403,7 +406,8 @@ export function BriefPage({conceptAvailable = false, showFutureConcept = false, 
                         {formatDataStateLabel(record.state)}
                       </span>
                     </div>
-                    <p className="brief-local-context-value">{formatLocalContextValue(record)}</p>
+                      <p className="brief-local-context-value">{formatLocalContextValue(record)}</p>
+                    </div>
                     <p className="subtle">
                       <strong>Source:</strong> {record.source_agency} · {record.source_release_vintage}
                     </p>
