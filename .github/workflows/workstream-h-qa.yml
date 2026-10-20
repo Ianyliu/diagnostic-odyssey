@@ -70,7 +70,7 @@ jobs:
           node tests/browser/workstream-h-qa.mjs
       - name: Inspect every physical PDF page
         run: |
-          python3 -m pip install --disable-pip-version-check pdfplumber==0.11.7
+          python3 -m pip install --disable-pip-version-check pdfplumber==0.11.7 PyMuPDF==1.26.5
           python3 tests/browser/verify-workstream-h-pdfs.py /tmp/workstream-h-results
       - name: Upload matrix, canonical JSON, native PDF, and page-boundary renders
         if: always()
