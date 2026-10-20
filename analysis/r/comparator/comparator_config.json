@@ -1,5 +1,5 @@
 {
-  "schema_version": "0.1.0-candidate",
+  "schema_version": "0.2.0-candidate",
   "status": "preliminary_methods_review_only",
   "source_ref": "meps-hc256-2024",
   "baseline_parent_commit": "dac9b64526e4df1a93357d1a3776774cae4b1512",
@@ -22,7 +22,30 @@
   "sensitivity": {
     "restricted_comparator": "known no Long COVID history",
     "interview_insurance": "INS31X",
-    "annual_insurance_for_descriptive_validation_only": "INSCOV24"
+    "annual_insurance_for_descriptive_validation_only": "INSCOV24",
+    "implemented": {
+      "no_history_comparator": "unadjusted only; cannot infer an adjusted restricted-history association",
+      "covariate_complete_unadjusted": "implemented",
+      "interview_insurance_adjustment": "implemented; paired to base model on the same insurance-complete sample"
+    },
+    "diagnostic_only": {
+      "psu_influence": "leave-one PSU weighted mean contrast perturbation; not jackknife SE",
+      "tail_spending": "leave-top-one/top-five per group weighted point contrast; not trimmed primary estimator",
+      "effective_n": "Kish-weight proxy; not design-based df",
+      "cross_covariate_overlap": "joint age band by sex/region/panel support counts; not formal positivity proof",
+      "probability_extremes": "observed and both standardization scenarios"
+    },
+    "deferred": [
+      "adjusted no-history analysis",
+      "alternative spending-family model robustness",
+      "full two-part refit after high-spending exclusions",
+      "missing outcome model/imputation",
+      "formal causal identification or overlap weighting"
+    ],
+    "out_of_scope": [
+      "payer/source-of-payment decomposition",
+      "Long COVID attributable or avoidable costs"
+    ]
   },
   "codes": {
     "SEX": [
@@ -63,12 +86,15 @@
     "adjusted": "full-person-design bootstrap with both models refit each replicate",
     "replicates": 400,
     "seed": 20261019,
-    "interval": "t based, df from full PERSON design"
+    "interval": "t based, df from full PERSON design",
+    "failure_policy": "fail-closed, identify full-sample or replicate column, stage, group, support; no replicate deletion",
+    "covariance": "finite symmetric PSD within tolerance; negative marginal variances rejected"
   },
   "precision_screen": {
     "min_group_valid_n": 100,
     "min_group_positive_n": 30,
-    "max_mean_rse": 0.3
+    "max_mean_rse": 0.3,
+    "interpretation": "Preliminary numeric advisory only; public display and publication require independent signoff"
   },
   "release": {
     "automatic_release": false,
