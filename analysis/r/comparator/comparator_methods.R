@@ -132,13 +132,36 @@ comparator_domain_diagnostics <- function(data, design) {
   )
 }
 
-comparator_t_ci <- function(values, covariance, df, level = 0.95) {
-  if (length(values) != nrow(covariance) ||
+comparator_validate_covariance <- function(values, covariance, tolerance = 1e-8) {
+  if (!is.numeric(values) || !is.matrix(covariance) ||
+      length(values) != nrow(covariance) ||
       nrow(covariance) != ncol(covariance) ||
       any(!is.finite(values)) || any(!is.finite(covariance))) {
     stop("Nonfinite or malformed comparator covariance.", call. = FALSE)
   }
-  ses <- sqrt(pmax(0, diag(covariance)))
+  # Never let pmax(0, negative variances) conceal a failed estimator.
+  scale <- max(1, max(abs(covariance)))
+  if (max(abs(covariance - t(covariance))) > tolerance * scale) {
+    stop("Comparator covariance is not symmetric.", call. = FALSE)
+  }
+  v <- (covariance + t(covariance)) / 2
+  if (any(diag(v) < 0)) {
+    stop("Comparator covariance has a negative marginal variance.", call. = FALSE)
+  }
+  eigenvalues <- eigen(v, symmetric = TRUE, only.values = TRUE)$values
+  if (min(eigenvalues) < -tolerance * scale) {
+    stop("Comparator covariance is not positive semidefinite.", call. = FALSE)
+  }
+  v
+}
+
+comparator_t_ci <- function(values, covariance, df, level = 0.95) {
+  covariance <- comparator_validate_covariance(values, covariance)
+  if (length(df) != 1L || !is.finite(df) || df <= 0 ||
+      length(level) != 1L || !is.finite(level) || level <= 0 || level >= 1) {
+    stop("Invalid comparator interval degrees of freedom or level.", call. = FALSE)
+  }
+  ses <- sqrt(diag(covariance))
   crit <- stats::qt(1 - (1 - level) / 2, df = df)
   lapply(seq_along(values), function(i) {
     list(estimate = unname(values[[i]]), standard_error = unname(ses[[i]]),
@@ -297,24 +320,51 @@ comparator_precision_screen <- function(unadjusted, adjusted, diagnostics,
                                         min_positive_n = 30L,
                                         max_mean_rse = 0.30) {
   groups <- c("current", "noncurrent")
+  valid_stat <- function(stat, mean = FALSE) {
+    if (!is.list(stat)) return(FALSE)
+    z <- unlist(stat[c("estimate", "standard_error", "interval_low", "interval_high")],
+                use.names = FALSE)
+    if (length(z) != 4L || any(!is.finite(z)) ||
+        z[[2]] <= 0 || z[[3]] > z[[1]] || z[[4]] < z[[1]] ||
+        z[[4]] <= z[[3]]) return(FALSE)
+    if (mean) return(z[[1]] > 0 && z[[2]] / z[[1]] <= max_mean_rse)
+    TRUE
+  }
+  cov_ok <- tryCatch({
+    comparator_validate_covariance(
+      vapply(c("noncurrent_mean", "current_mean", "current_minus_noncurrent"),
+             function(x) adjusted$results[[x]]$estimate, numeric(1)),
+      as.matrix(adjusted$covariance)
+    )
+    TRUE
+  }, error = function(e) FALSE)
   checks <- list(
     unadjusted_sample = all(unlist(diagnostics$valid_spending_n[groups]) >= min_valid_n),
     positive_support = all(unlist(diagnostics$positive_spending_n[groups]) >= min_positive_n),
     weighted_denominators_positive = all(unlist(diagnostics$weight_by_group[groups]) > 0),
     adjusted_replicates_complete = identical(adjusted$replicates_requested,
-                                             adjusted$replicates_successful)
+                                             adjusted$replicates_successful),
+    adjusted_covariance_finite_symmetric_psd = cov_ok,
+    unadjusted_contrast_precision = valid_stat(
+      unadjusted$results$current_minus_noncurrent),
+    adjusted_contrast_precision = valid_stat(adjusted$results$current_minus_noncurrent)
   )
   for (group in groups) {
-    stat <- unadjusted$results[[paste0(group, "_mean")]]
-    checks[[paste0(group, "_mean_rse_ok")]] <-
-      is.finite(stat$estimate) && stat$estimate > 0 &&
-      is.finite(stat$standard_error) &&
-      stat$standard_error / stat$estimate <= max_mean_rse
+    checks[[paste0(group, "_unadjusted_mean_rse_ok")]] <-
+      valid_stat(unadjusted$results[[paste0(group, "_mean")]], mean = TRUE)
+    checks[[paste0(group, "_adjusted_mean_rse_ok")]] <-
+      valid_stat(adjusted$results[[paste0(group, "_mean")]], mean = TRUE)
   }
   list(
     screening_checks = checks,
-    public_display_recommended = isTRUE(all(unlist(checks))),
+    numerical_advisory_passed = isTRUE(all(unlist(checks))),
     scientific_review_required = TRUE,
-    policy = paste("Advisory thresholds only; project AHRQ reliability and",
-                   "independent methods review still required."))
+    independent_methods_approval = "pending",
+    publication_approved = FALSE,
+    policy = paste(
+      "Finite, nonnegative joint covariance, contrast SE and interval required;",
+      "mean RSE threshold is advisory. Near-zero contrast does not receive an",
+      "RSE screening threshold. Passing numerical checks is NEVER publication approval."
+    )
+  )
 }
