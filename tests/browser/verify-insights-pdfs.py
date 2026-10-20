@@ -81,10 +81,13 @@ results = []
 record_positions = {}
 selected_json = json.loads((directory / "brief-default-34.json").read_text())
 selected_records = selected_json["local_context"]
+pilot_json = json.loads((directory / "brief-pilot-only-context.json").read_text())
+assert len(pilot_json["local_context"]) == 1
 assert len(selected_records) == 34 and len({r["indicator_id"] for r in selected_records}) == 34
 for filename in ["summary-off.pdf", "summary-on.pdf", "summary-all-context.pdf", "summary-extreme.pdf",
                  "brief-default-34-concise.pdf", "brief-default-34-appendix.pdf",
-                 "brief-none-context.pdf", "brief-custom-context.pdf"]:
+                 "brief-none-context.pdf", "brief-custom-context.pdf",
+                 "brief-pilot-only-context.pdf"]:
     with pdfplumber.open(directory / filename) as pdf:
         page_text = []
         clearances = []
@@ -135,6 +138,11 @@ for filename in ["summary-off.pdf", "summary-on.pdf", "summary-all-context.pdf",
             assert 21 <= len(pdf.pages) <= 25, (filename, "Appendix unexpectedly differs from original 22 pages", len(pdf.pages))
             assert "Detailed included context records" in text
             assert "34 reviewed context records included" in text
+        if filename == "brief-pilot-only-context.pdf":
+            record_positions[filename] = assert_no_local_record_heading_orphans(
+                page_text, pilot_json["local_context"], filename
+            )
+            assert "1 reviewed context record included" in text, (filename, "Pilot-only record omitted from printed synopsis")
         if filename == "brief-none-context.pdf":
             assert "34 reviewed context records included" not in text
             assert "no local context has been selected" in text.lower()
@@ -148,7 +156,20 @@ for filename in ["summary-off.pdf", "summary-on.pdf", "summary-all-context.pdf",
                 assert len((page_content or "").strip()) > 350, (filename, index + 1, "Nearly blank printed page")
         if shutil.which("pdftoppm") and filename.startswith("brief-"):
             # Attach renderings from the PDF itself (not DOM screenshots) to CI artifacts.
-            for page_number, suffix in [(1, "first"), (len(pdf.pages), "last")]:
+            pages_to_render = {1: "first", len(pdf.pages): "last"}
+            if filename == "brief-default-34-appendix.pdf":
+                # Render the actual corrected heading boundaries, even if their
+                # page numbers shift during legitimate print-layout changes.
+                for entry in record_positions[filename]:
+                    if entry["id"] in {
+                        "wv.acs.poverty_pct",
+                        "wv.hrsa.primary-care.designation-type.federally-qualified-health-center",
+                        "wv.hrsa.primary-care.designation-type.rural-health-clinic",
+                    }:
+                        for adjacent in (entry["page"] - 1, entry["page"], entry["page"] + 1):
+                            if 1 <= adjacent <= len(pdf.pages):
+                                pages_to_render[adjacent] = f"boundary-{adjacent:02d}"
+            for page_number, suffix in sorted(pages_to_render.items()):
                 subprocess.run(
                     ["pdftoppm", "-f", str(page_number), "-l", str(page_number),
                      "-singlefile", "-scale-to", "1100", "-png",
