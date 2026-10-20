@@ -913,3 +913,201 @@
 /* Workstream A final hierarchy: one concise role explanation, not three extra cards. */
 .overview-value-prop .overview-provenance-slot { margin-top: 14px; }
 @media (max-width: 720px) { .overview-value-prop { padding: 20px 16px; } }
+
+
+/* Workstream J: the opening provenance circuit occupies the first-screen hero.
+   Previous compact overrides remain upstream; these rules deliberately restore
+   the independent Brief output at every width rather than hiding evidence. */
+.overview-page { gap: clamp(24px, 3vw, 42px); }
+.overview-hero {
+  grid-template-columns: minmax(0, .86fr) minmax(0, 1.14fr);
+  grid-template-rows: auto 1fr;
+  align-items: start;
+  column-gap: clamp(22px, 3.3vw, 54px);
+  row-gap: 0;
+  padding-block: clamp(30px, 3.4vw, 50px);
+}
+.overview-hero-intro, .overview-hero-details { position: relative; z-index: 1; min-width: 0; grid-column: 1; }
+.overview-hero-intro { grid-row: 1; }
+.overview-hero-details { grid-row: 2; }
+.overview-hero-motion { grid-column: 2; grid-row: 1 / 3; min-width: 0; align-self: center; position: relative; z-index: 1; }
+.overview-hero .overview-hero-motion .overview-provenance { max-width: none; width: 100%; }
+.overview-hero .overview-kicker { margin-bottom: 18px; }
+.overview-hero .overview-lede { margin-top: 22px; }
+.overview-hero .overview-proof { margin-top: 22px; }
+.overview-page > .headline-findings { width: 100%; display: grid; gap: 0; }
+.overview-page > .headline-findings .headline-findings-list { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; }
+.overview-page > .headline-findings .headline-finding {
+  display: block; grid-column: auto; border-top: 1px solid var(--do-border);
+  border-right: 1px solid var(--do-border); padding: 15px 15px 8px;
+}
+.overview-page > .headline-findings .headline-finding:first-child { padding-left: 0; }
+.overview-page > .headline-findings .headline-finding:last-child { border-right: 0; }
+.overview-page > .headline-findings .headline-finding dt { margin-bottom: 7px; }
+.overview-page > .headline-findings .headline-findings-note { max-width: 84ch; }
+.overview-value-prop { padding-block: 26px; }
+.overview-value-echo { margin: 0; color: var(--do-text-muted); font-size: .85rem; line-height: 1.6; }
+.overview-hero-motion .overview-provenance figcaption { max-width: 70ch; }
+.overview-hero-motion .workspace-preview {
+  position: relative; transform: none; border-radius: 18px; border: 1px solid #395265;
+  background: var(--do-surface); box-shadow: 0 24px 58px rgba(16,40,55,.20);
+  backdrop-filter: none;
+}
+.preview-chrome {
+  display: flex; flex-wrap: wrap; gap: 12px;
+  min-height: 64px; padding: 11px clamp(13px, 2vw, 20px);
+  background: #102e42; color: #dae7ee;
+}
+.preview-chrome-label { flex: 1 1 110px; display: grid; gap: 3px; min-width: 0; }
+.preview-chrome-label strong { color: #f4f8f9; font-size: .88rem; line-height: 1.15; letter-spacing: .012em; }
+.preview-chrome-label span { color: #c0d6dc; font-size: .69rem; line-height: 1.35; }
+.preview-brand-dot { flex: 0 0 11px; width: 11px; height: 11px; align-self: center; }
+.preview-replay {
+  appearance: none; align-self: center; display: inline-flex; justify-content: center;
+  align-items: center; gap: 5px; min-height: 40px; padding: 6px 11px;
+  border: 1px solid #8bc6c6; border-radius: 999px; background: #184c5c;
+  color: #f3ffff; font: inherit; font-size: .74rem; font-weight: 730;
+  cursor: pointer; transition: background .15s ease, border-color .15s ease;
+}
+.preview-replay:hover { background: #236778; border-color: #cbffff; }
+.preview-replay:focus-visible { outline: 3px solid #ffe29b; outline-offset: 3px; }
+.preview-replay > span { font-size: 1.05rem; }
+.preview-progress { height: 4px; background: #234958; overflow: hidden; }
+.preview-progress > span { display: block; width: 100%; height: 100%; transform-origin: left;
+  background: linear-gradient(90deg, #7ac8bd, #c8d3ef 52%, #f1c578); }
+.preview-body {
+  position: relative; display: grid;
+  grid-template-columns: minmax(0,1fr) 32px minmax(0,.92fr);
+  min-height: 340px; gap: 0; align-items: stretch;
+}
+.preview-lanes { align-content: center; gap: 11px; padding: clamp(14px, 2vw, 24px); min-width: 0; }
+.opening-lane { min-width: 0; grid-template-columns: minmax(0,1fr);
+  gap: 4px; padding: 15px 17px 15px 20px; border-radius: 10px; box-shadow: none;
+  background: color-mix(in srgb, var(--do-surface-elevated) 85%, var(--do-surface)); }
+.opening-lane::after { width: 4px; }
+.opening-lane strong { grid-column: 1; font-size: clamp(.85rem, 1vw, 1rem); line-height: 1.25; }
+.opening-lane small { grid-column: 1; font-size: .68rem; line-height: 1.45; }
+.lane-rule { display: none; }
+.preview-routes { display: grid; grid-template-rows: repeat(3, 1fr); align-items: center; }
+.preview-routes > span { display: block; height: 2px; width: 100%; position: relative; transform-origin: left; background: currentColor; }
+.preview-routes > span::after { content: ""; position: absolute; right: 0; top: -3px; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.route-evidence { color: var(--do-reviewed-text); }
+.route-context { color: var(--do-selection-text); }
+.route-assumption { color: var(--do-assumption-text); }
+.preview-output { display: grid; min-width: 0; align-content: center; gap: 12px;
+  padding: clamp(15px, 2vw, 28px); border-left: 1px solid var(--do-border);
+  background: color-mix(in srgb, var(--do-reviewed-bg) 34%, var(--do-surface)); }
+.preview-output-topline { font-size: .72rem; letter-spacing: .07em; }
+.preview-output > strong { max-width: 18ch; color: var(--do-text); font-family: var(--do-font-display);
+  font-size: clamp(1.38rem, 1.8vw, 1.9rem); line-height: 1.09; }
+.preview-output-description { margin: 0; color: var(--do-text-muted); font-size: .77rem; line-height: 1.5; }
+.preview-boundary-line { margin-block: 3px; height: 4px; }
+.preview-output ul { gap: 8px; font-size: .69rem; line-height: 1.35; }
+.preview-footer { justify-content: flex-start; flex-wrap: wrap; font-size: .63rem; letter-spacing: .075em; }
+.preview-footer-state { margin-left: auto; color: var(--do-selection-text); letter-spacing: 0; text-transform: none; }
+.overview-hero-motion .overview-provenance figcaption { text-align: left; color: var(--do-text-muted); font-size: .71rem; }
+
+/* Timed, semantic reveal: separate records first, independent provenance paths
+   second, then a Brief that never presents a synthetic numerical combination. */
+.overview-provenance.is-playing .workspace-preview {
+  animation: workspace-unfold .8s cubic-bezier(.18,.8,.2,1) both;
+}
+.overview-provenance.is-playing .preview-progress > span {
+  animation: circuit-progress 3.55s linear both;
+}
+.overview-provenance.is-playing .opening-lane {
+  animation: circuit-lane .75s cubic-bezier(.18,.8,.2,1) both;
+}
+.overview-provenance.is-playing .lane-context { animation-delay: .60s; }
+.overview-provenance.is-playing .lane-assumption { animation-delay: 1.20s; }
+.overview-provenance.is-playing .preview-routes > span {
+  animation: circuit-route .60s cubic-bezier(.17,.7,.3,1) both;
+}
+.overview-provenance.is-playing .route-evidence { animation-delay: .55s; }
+.overview-provenance.is-playing .route-context { animation-delay: 1.15s; }
+.overview-provenance.is-playing .route-assumption { animation-delay: 1.75s; }
+.overview-provenance.is-playing .preview-output {
+  animation: circuit-brief .95s cubic-bezier(.18,.8,.2,1) 2.20s both;
+}
+.overview-provenance.is-playing .preview-footer-state {
+  animation: circuit-final .5s ease-out 3.1s both;
+}
+@keyframes workspace-unfold { from { opacity: .6; transform: translateY(15px) scale(.985); } to { opacity: 1; transform: none; } }
+@keyframes circuit-lane { from { opacity: .12; transform: translateX(-17px); } to { opacity: 1; transform: none; } }
+@keyframes circuit-route { from { opacity: .2; transform: scaleX(0); } to { opacity: 1; transform: scaleX(1); } }
+@keyframes circuit-brief { from { opacity: .10; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes circuit-progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes circuit-final { from { opacity: .1; } to { opacity: 1; } }
+
+@media (max-width: 1150px) and (min-width: 880px) {
+  .overview-hero { grid-template-columns: minmax(0,.88fr) minmax(0,1.12fr); gap: 0 20px; }
+  .preview-body { grid-template-columns: minmax(0,1fr); }
+  .preview-lanes { padding: 13px; gap: 5px; }
+  .preview-routes { display: flex; justify-content: space-around; height: 18px; }
+  .preview-routes > span { width: 2px; height: 100%; transform-origin: top; }
+  .preview-routes > span::after { right: -3px; top: auto; bottom: 0; }
+  .preview-output { border-left: 0; border-top: 1px solid var(--do-border); }
+  .overview-provenance.is-playing .preview-routes > span { animation-name: circuit-route-vertical; }
+}
+@keyframes circuit-route-vertical { from { opacity: .2; transform: scaleY(0); } to { opacity: 1; transform: scaleY(1); } }
+@media (max-width: 879px) {
+  .overview-hero {
+    grid-template-columns: minmax(0,1fr); grid-template-rows: auto auto auto;
+    gap: 16px; padding-block: 26px;
+  }
+  .overview-hero-intro { grid-column: 1; grid-row: 1; }
+  .overview-hero-motion { grid-column: 1; grid-row: 2; }
+  .overview-hero-details { grid-column: 1; grid-row: 3; }
+  .overview-hero .overview-proof, .overview-hero .overview-source-note { display: grid; }
+  .overview-hero .overview-source-note { display: block; }
+  .preview-body { grid-template-columns: minmax(0,1fr) 30px minmax(0,1fr); min-height: 260px; }
+  .preview-lanes { gap: 6px; padding: 14px; }
+  .opening-lane { border: 1px solid var(--do-border); border-radius: 8px; padding: 11px 12px 11px 16px; background: var(--do-surface); }
+  .opening-lane + .opening-lane { border-top: 1px solid var(--do-border); }
+  .opening-lane::after { display: block; }
+  .preview-routes { display: grid; }
+  .preview-output { display: grid; border-top: 0; border-left: 1px solid var(--do-border); padding: 17px; }
+  .preview-footer { display: flex; }
+  .overview-page > .headline-findings .headline-findings-list { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .overview-page > .headline-findings .headline-finding:nth-child(2) { border-right: 0; }
+  .overview-hero-motion .overview-provenance figcaption { text-align: left; }
+}
+@media (max-width: 540px) {
+  .overview-hero { gap: 14px; }
+  .overview-hero .overview-kicker { font-size: .67rem; margin-bottom: 12px; }
+  .overview-hero h1 { font-size: clamp(2.1rem, 9vw, 2.65rem); }
+  .preview-chrome { min-height: 55px; gap: 7px; padding: 8px 11px; }
+  .preview-chrome-label { flex-basis: 90px; }
+  .preview-chrome-label strong { font-size: .79rem; }
+  .preview-chrome-label span { font-size: .60rem; }
+  .preview-replay { min-height: 44px; padding: 6px 8px; font-size: .68rem; }
+  .preview-body { grid-template-columns: minmax(0,1fr); min-height: 0; }
+  .preview-lanes { gap: 5px; padding: 12px; }
+  .opening-lane { padding: 9px 12px 9px 16px; }
+  .opening-lane strong { font-size: .88rem; }
+  .opening-lane small { font-size: .67rem; }
+  .preview-routes { display: flex; justify-content: space-around; height: 18px; }
+  .preview-routes > span { width: 2px; height: 100%; transform-origin: top; }
+  .preview-routes > span::after { right: -3px; top: auto; bottom: 0; }
+  .overview-provenance.is-playing .preview-routes > span { animation-name: circuit-route-vertical; }
+  .preview-output { display: grid; border-top: 1px solid var(--do-border); border-left: 0; gap: 8px; padding: 15px; }
+  .preview-output > strong { max-width: 30ch; font-size: 1.35rem; }
+  .preview-output ul { grid-template-columns: 1fr; font-size: .69rem; }
+  .preview-footer { gap: 5px; justify-content: center; text-align: center; font-size: .58rem; padding: 9px; }
+  .preview-footer-state { flex-basis: 100%; margin-left: 0; }
+  .overview-page > .headline-findings .headline-findings-list { grid-template-columns: 1fr; }
+  .overview-page > .headline-findings .headline-finding { border-right: 0; padding: 12px 0; }
+  .overview-page > .headline-findings .headline-finding:first-child { padding-top: 12px; }
+  .overview-page > .headline-findings .headline-finding dt { font-size: 1.6rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .overview-provenance.is-playing :is(.workspace-preview, .opening-lane, .preview-routes > span, .preview-output, .preview-footer-state, .preview-progress > span) {
+    animation: none !important; transform: none !important; opacity: 1 !important;
+  }
+}
+@media print {
+  .overview-provenance.is-playing :is(.workspace-preview, .opening-lane, .preview-routes > span, .preview-output, .preview-footer-state, .preview-progress > span) {
+    animation: none !important; transform: none !important; opacity: 1 !important;
+  }
+  .preview-replay, .preview-progress { display: none; }
+}
