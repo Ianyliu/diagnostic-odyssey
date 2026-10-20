@@ -107,6 +107,8 @@ provenance <- list(
     runner = sha256_file(repo_path("analysis", "r", "comparator", "run_comparator_candidate.R"))
   ),
   R_version = R.version.string,
+  R_session_info = as.list(capture.output(print(utils::sessionInfo()))),
+  R_locale = as.list(Sys.getlocale()),
   platform = R.version$platform,
   OS_type = .Platform$OS.type,
   package_versions = as.list(vapply(
@@ -201,6 +203,8 @@ review <- list(
   comparator_config_sha256 = provenance$comparator_config_sha256,
   R_version = provenance$R_version,
   package_versions = provenance$package_versions,
+  R_session_info = provenance$R_session_info,
+  OS_type = provenance$OS_type,
   bootstrap_seed = provenance$bootstrap$seed,
   bootstrap_replicates = provenance$bootstrap$replicates,
   code_commit = code_commit,
