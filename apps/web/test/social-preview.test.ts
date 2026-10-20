@@ -21,3 +21,17 @@ test("OG artwork is version-independent, nonnumeric and uses only local determin
  assert.match(source,/TRANSPARENT PILOT PLANS/);
  assert.match(source,/NO CAUSAL SAVINGS OR ROI/);
 });
+
+test("social artwork alt is literal, matching across OpenGraph and Twitter",()=>{
+ const get=(attribute:string,name:string)=>{
+   const tag=html.match(new RegExp(`<meta ${attribute}="${name}" content="([^"]+)"\\s*\\/>`));
+   assert.ok(tag,`Missing metadata ${name}`);
+   return tag[1];
+ };
+ const og=get("property","og:image:alt"),twitter=get("name","twitter:image:alt");
+ assert.equal(og,twitter);
+ assert.match(og,/Long COVID goes beyond the bill/);
+ for (const label of ["reviewed national burden","local implementation","transparent pilot plans"]) assert.match(og,new RegExp(label,"i"));
+ assert.match(og,/all-cause burden is not attributable cost/i);
+ assert.doesNotMatch(og,/\\b(?:confidence intervals?|\\d+%|CI)\\b/i);
+});
