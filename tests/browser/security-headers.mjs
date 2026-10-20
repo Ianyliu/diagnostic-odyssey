@@ -90,7 +90,7 @@ for(const [theme,width] of [["light",390],["dark",1440]]){
    assert.deepEqual(external,[],"static app must not issue cross-origin requests");
    if(path==="/burden"){
      const span=page.locator(".metric-visual-interval").first();
-     if(await span.count())assert.ok(await span.evaluate(el=>getComputedStyle(el).width!=="0px"),"React CSSOM styles preserved");
+     if(await span.count())assert.ok(await span.evaluate(el=>el.style.left.endsWith("%") && el.style.width.endsWith("%")),"React percentage positions and widths remain set via CSSOM (including legitimate zero-width intervals)");
    }
    report.violations.push(...observed.violations.map(v=>({...v,path,theme})));
    report.externalRequests.push(...external.map(url=>({url,path,theme})));
