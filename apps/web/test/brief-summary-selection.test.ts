@@ -121,7 +121,7 @@ test("always-on executive projection is the same strict gate as optional insight
     withheld.burden_findings = withheld.burden_findings.map(row => row.estimate_id === id ? {...row, release_status: "suppressed" as const} : row);
     assert.equal(Object.values(buildVerifiedNationalBriefSection(withheld, national).context).filter(Boolean).length, 3);
   }
-  const mismatch = {...brief, context: {...brief.context, condition: "altered"}};
+  const mismatch = {...brief, artifact_version: "unreviewed-version"};
   assert.ok(Object.values(buildVerifiedNationalBriefSection(mismatch, national).context).every(row => row === null));
   assert.equal(serializeBriefJson(brief), exported);
 });
