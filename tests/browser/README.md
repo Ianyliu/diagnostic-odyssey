@@ -77,3 +77,50 @@ node tests/browser/compare-results.mjs \
 The report includes SHA-256 digests of each normalized snapshot. It supplements
 reviewed-file manifest verification; it does not replace it or authorize evidence
 admission.
+
+## Workstream H: fail-closed output acceptance (D-H1)
+
+The Chromium runner `workstream-h-qa.mjs` emits 20 uniquely enumerated
+selection/print coordinates per feature mode: default, deterministic-only,
+concept-only, and all-enabled. This is **80 enumerated rows, 60 applicable
+PASS states, and 20 explicit NOT_APPLICABLE_DISABLED rows**, not 80
+independently executable states. The existing integrated candidate produced
+**24 native Chromium PDFs (349 physical pages)** with **113 deliberately
+selected first/last/appendix-adjacent raster page PNGs**; these are not
+rasterizations of all 349 pages.
+
+`workstream_h_inventory.py` independently defines the exact mandatory PDF
+filenames/metadata: **12 for default; 4 for each other feature mode**.
+It enforces manifest uniqueness and coverage, on-disk PDF and parseable
+canonical `.pdf.json` companions, 21 national findings and required local
+selection counts, unique Boolean print coordinates and accurate applicable
+versus disabled statuses. Native PDF page/heading/footer inspection remains in
+`verify-workstream-h-pdfs.py`, with the long A4-heading spatial fallback
+restricted to the physical pages of the detailed appendix and the original
+right-side badge clearance tests preserved.
+
+After the verifier renders required first/last and FQHC/RHC/poverty-adjacent
+pages, invoke the **non-mutating** validation stage:
+
+```sh
+python3 tests/browser/verify-workstream-h-pdfs.py /tmp/workstream-h-results
+python3 tests/browser/verify-workstream-h-pdfs.py /tmp/workstream-h-results --check-inventory
+WORKSTREAM_H_QA_OUTPUT=/tmp/workstream-h-results \
+  python3 -m unittest discover -s tests/browser -p 'test_workstream_h_inventory.py' -v
+```
+
+The postrender stage reconstructs every expected PNG filename from physically
+verified record-page positions and real PDF page counts; it checks exact names,
+nontrivial decodable image contents, and complete verification-report coverage.
+Unlike the render stage, `--check-inventory` **never recreates missing PNGs**.
+Thirteen negative mutations per feature mode (52 in the four-job matrix)
+require failure for missing PDF, missing manifest row, duplicate/invalid
+metadata, altered/duplicate/missing print coordinates, missing companion,
+extra PDF, missing/truncated PNG, and duplicate report entry. Each mutation
+uses hard-linked disposable files, with copy-on-write for changed JSON, so
+committed sources and original CI artifacts remain unchanged. GitHub Actions
+runs both the non-mutating checker and the negative suite for every mode;
+any nonzero result blocks Workstream H acceptance.
+
+Passing these harness checks does not imply deployment parity, manual
+screen-reader/native-print acceptance, or release of deferred comparator data.

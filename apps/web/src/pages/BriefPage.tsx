@@ -1,11 +1,12 @@
 import { formatPlanningCurrency, formatPlanningNumber } from "../data/planningNumberFormatting.ts";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { buildPlanningBrief, serializeBriefJson, type PlanningBrief } from "@diagnostic-odyssey/brief-core";
 import { AcquisitionGuidanceCard } from "../components/AcquisitionGuidanceCard";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { PlanningInsights } from "../components/PlanningInsights";
-import { buildPlanningInsights, type PlanningInsightsSources } from "../data/planningInsights";
+import { BriefExecutiveSummary } from "../components/BriefExecutiveSummary";
+import { buildPlanningInsights, buildVerifiedNationalBriefSection, type PlanningInsightsSources } from "../data/planningInsights";
 import { planningInsightsEnabled } from "../data/planningInsightsEnabled";
 import { AiHandoff } from "../components/AiHandoff";
 import {
@@ -23,6 +24,7 @@ import {
   formatEstimateValue
 } from "../data/formatEstimateValue";
 import { mergeBriefLocalContext } from "../data/briefLocalContext";
+import { selectBriefLocalContextPreview } from "../data/briefLocalContextPreview";
 import { formatLocalContextValue } from "../data/formatLocalContextValue";
 import {
   deriveBriefContextWithSelectedLocalContext
@@ -101,6 +103,7 @@ interface FutureConceptControlProps {
 }
 export function BriefPage({conceptAvailable = false, showFutureConcept = false, onFutureConceptChange}: FutureConceptControlProps = {}) {
   const pageRef = useRef<HTMLElement>(null);
+  const [includeContextAppendixInPrint, setIncludeContextAppendixInPrint] = useState(false);
   const printDisclosureState = useRef<ReturnType<typeof createBriefPrintDisclosureState> | null>(null);
   const {
     status,
@@ -137,33 +140,34 @@ export function BriefPage({conceptAvailable = false, showFutureConcept = false, 
     };
   }, [bundle]);
 
-  if (!bundle) return null;
+  // Hold the canonical export steady when changing screen disclosures or print options.
+  // Only actual source, selection, scenario or request changes recompose this Brief.
+  const brief = useMemo(() => {
+    if (!bundle) return null;
+    const estimates = bundle.burden_domains.flatMap(domain => domain.measures);
+    const briefLocalContext = mergeBriefLocalContext(selectedLocalContext, pilotLocalContext);
+    const briefContext = deriveBriefContextWithSelectedLocalContext(
+      bundle.context, localContextStatus, localContext, briefLocalContext
+    );
+    const staleSelectedDataRequestCount =
+      Math.max(0, briefDataRequestIds.length - selectedDataRequests.length);
+    const baseBrief = buildPlanningBrief({
+      context: briefContext,
+      estimates,
+      localContext: briefLocalContext,
+      scenario: scenario && scenarioResult ? {input:scenario,result:scenarioResult} : null,
+      evidence: bundle.evidence,
+      dataRequests: selectedDataRequests
+    });
+    return withStaleSelectedDataRequestWarning(baseBrief, staleSelectedDataRequestCount);
+  }, [bundle, selectedLocalContext, pilotLocalContext, localContextStatus, localContext,
+    briefDataRequestIds, selectedDataRequests, scenario, scenarioResult]);
 
-  const estimates = bundle.burden_domains.flatMap(domain => domain.measures);
-  const briefLocalContext = mergeBriefLocalContext(
-    selectedLocalContext,
-    pilotLocalContext
-  );
-  const briefContext = deriveBriefContextWithSelectedLocalContext(
-    bundle.context,
-    localContextStatus,
-    localContext,
-    briefLocalContext
-  );
-  const staleSelectedDataRequestCount =
-    Math.max(0, briefDataRequestIds.length - selectedDataRequests.length);
-  const baseBrief = buildPlanningBrief({
-    context: briefContext,
-    estimates,
-    localContext: briefLocalContext,
-    scenario: scenario && scenarioResult ? {input:scenario,result:scenarioResult} : null,
-    evidence: bundle.evidence,
-    dataRequests: selectedDataRequests
-  });
-  const brief = withStaleSelectedDataRequestWarning(
-    baseBrief,
-    staleSelectedDataRequestCount
-  );
+  if (!bundle || !brief) return null;
+
+  const localContextPreview = selectBriefLocalContextPreview(brief.local_context);
+  const nationalExecutive = buildVerifiedNationalBriefSection(brief, bundle);
+  const staleSelectedDataRequestCount = Math.max(0, briefDataRequestIds.length - selectedDataRequests.length);
   const burdenReadiness = getNationalBurdenReadiness(brief.burden_findings.length);
   const evidenceReadiness = getEvidenceParameterReadiness(
     bundle.evidence,
@@ -184,7 +188,7 @@ export function BriefPage({conceptAvailable = false, showFutureConcept = false, 
     executeBriefPrint(printDisclosureState.current);
   };
 
-  return <section className="page page-stack planning-brief-page" ref={pageRef}>
+  return <section className={`page page-stack planning-brief-page${includeContextAppendixInPrint ? " brief-include-context-appendix" : ""}`} ref={pageRef}>
     <ContextBar />
     <header className="page-heading">
       <p className="eyebrow">PLANNING BRIEF</p>
@@ -211,6 +215,7 @@ export function BriefPage({conceptAvailable = false, showFutureConcept = false, 
     </div>
     <div className="brief-export-actions brief-primary-actions">
       <button className="button" onClick={printBrief}>Print / save PDF</button>
+      <label className="brief-appendix-control"><input type="checkbox" checked={includeContextAppendixInPrint} onChange={event => setIncludeContextAppendixInPrint(event.target.checked)} /> Include detailed local-context records in print <small>Off by default for a concise Brief. All included records remain in the JSON companion and readable on screen.</small></label>
       <WorkspaceDisclosure id="brief-export-options" title="Export options"><BriefJsonExport brief={brief} /></WorkspaceDisclosure>
       <Link className="text-button" to="/data-requests">Review data needs</Link>
       <Link className="text-button" to="/evidence">Intervention evidence &amp; limits</Link>
@@ -222,6 +227,8 @@ export function BriefPage({conceptAvailable = false, showFutureConcept = false, 
       <span><b>Generated:</b> {brief.generated_at}</span>
     </div>
 
+    <BriefExecutiveSummary brief={brief} national={nationalExecutive} checkboxSelectedIds={selectedLocalContextIds} pilotLocalContextId={pilotLocalContextId} staleRequestCount={staleSelectedDataRequestCount} />
+
     {planningInsightsEnabled && <ErrorBoundary fallback={<p className="insight-unavailable">Planning insights are unavailable. The reviewed Brief and exports remain available below.</p>}>
       <BriefInsights brief={brief} sources={{national: bundle, local: localContext, localStatus: localContextStatus, availableDataRequests}} />
     </ErrorBoundary>}
@@ -231,11 +238,11 @@ export function BriefPage({conceptAvailable = false, showFutureConcept = false, 
       <div><strong>Burden estimates</strong><span>{burdenReadiness.briefStatus}</span></div>
       <div><strong>Scenario arithmetic</strong><span>{brief.scenario ? "Planning assumptions" : "No applied scenario"}</span></div>
       <div><strong>Evidence parameter</strong><span>{evidenceReadiness.status}</span></div>
-      <div><strong>Local context</strong><span>{brief.local_context.length > 0 ? `${brief.local_context.length} selected` : localContextAvailable ? "Available, not selected" : "Not selected"}</span></div>
+      <div><strong>Local context</strong><span>{brief.local_context.length > 0 ? `${brief.local_context.length} included` : localContextAvailable ? "Available, not selected" : "Not selected"}</span></div>
       <div><strong>Data requests</strong><span>{selectedDataRequests.length > 0 ? `${selectedDataRequests.length} selected` : "None selected"}</span></div>
     </section>
 
-    <WorkspaceDisclosure id="brief-full-report" title="Read full brief" summary="All reviewed findings, assumptions, context, evidence limits and data requests. The complete report is always included when printing.">
+    <WorkspaceDisclosure id="brief-full-report" title="Read full brief" summary="All reviewed findings, assumptions, context, evidence limits and data requests remain available on screen. Printed local details are optional; canonical JSON remains complete.">
     <div className="brief-grid">
       <aside className="brief-aside" aria-label="Planning Brief contents and actions">
         <nav className="brief-contents" aria-label="Planning Brief contents">
@@ -370,14 +377,25 @@ export function BriefPage({conceptAvailable = false, showFutureConcept = false, 
 
         <section id="brief-local-context">
           <h2>Local implementation context</h2>
+          {brief.local_context.length > 0 && <div className="brief-local-context-executive" aria-label="Local context print synopsis">
+            <p><strong>{brief.local_context.length} reviewed context record{brief.local_context.length === 1 ? "" : "s"} included in this Brief.</strong> These West Virginia indicators inform implementation planning; they do not estimate state Long COVID prevalence, modify national burden, or prove savings.</p>
+            <p>HPSA figures describe shortage-area designations, not people; ACS figures describe statewide Census survey measures. An active Pilot-used record may be included separately from checkbox choices.</p>
+            <ul>{localContextPreview.map(record => <li key={record.indicator_id}><strong>{record.label}:</strong> {formatLocalContextValue(record)} <span>({record.indicator_id}; {record.source_ref})</span></li>)}</ul>
+            {brief.local_context.length > localContextPreview.length && <p>Showing {localContextPreview.length} source-traceable examples from the actual included selection, not a ranking or aggregate. The canonical JSON companion contains all {brief.local_context.length} complete records, source locators, released interpretations and limitations. Enable the detailed print option to include their full text in the PDF.</p>}
+            <p><strong>Reviewed local artifact:</strong> {brief.context.local_context_id}</p>
+          </div>}
           {brief.local_context.length > 0
             ? <div className="brief-local-context-list">
+                <h3 className="brief-context-appendix-heading">Detailed included context records</h3>
                 <p className="subtle">
                   <strong>Reviewed local-context artifact:</strong> {brief.context.local_context_id}
                 </p>
                 {brief.local_context.map(record =>
                   <article className="brief-local-context" key={record.indicator_id}>
-                    <div className="card-title-row">
+                    {/* Protect only this short opening unit during printing. The remainder
+                        of a lengthy record must still be free to continue onto a new page. */}
+                    <div className="brief-local-context-opening">
+                      <div className="card-title-row">
                       <div>
                         <strong>{record.label}</strong>
                         <span>{record.geography_name} ({record.geography_type})</span>
@@ -388,7 +406,8 @@ export function BriefPage({conceptAvailable = false, showFutureConcept = false, 
                         {formatDataStateLabel(record.state)}
                       </span>
                     </div>
-                    <p className="brief-local-context-value">{formatLocalContextValue(record)}</p>
+                      <p className="brief-local-context-value">{formatLocalContextValue(record)}</p>
+                    </div>
                     <p className="subtle">
                       <strong>Source:</strong> {record.source_agency} · {record.source_release_vintage}
                     </p>
@@ -427,7 +446,7 @@ export function BriefPage({conceptAvailable = false, showFutureConcept = false, 
           <h2>What to collect next</h2>
           {brief.data_requests.length > 0
             ? <>
-                <p className="subtle">Selected requests are included by default only while current; deselect unwanted requests before export.</p>
+                <p className="subtle">New analyst requests start included; only requests current for the applied scenario export. Deselect any request before export.</p>
                 <ul>{brief.data_requests.map(request => <li key={request.request_id}>
                   <strong>{request.target_question}</strong> — {request.fields_needed.join(", ")}
                   <small className="brief-request-trace">

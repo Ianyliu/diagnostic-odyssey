@@ -78,12 +78,29 @@ for (const width of [320, 390, 768, 1024, 1440]) for (const theme of ["light", "
     }));
     assert.ok(maxGeometry.some(item => item.text === `$${Number.MAX_VALUE}`), `Missing full finite token: ${label}`);
     assert.ok(maxGeometry.every(item => item.lines === 1 && item.contained), `/pilot max ${label}: ${JSON.stringify(maxGeometry)}`);
-    for (const route of ["/", "/brief"]) {
+    for (const route of ["/", "/burden", "/brief"]) {
       await page.goto(base + route);
       await page.waitForLoadState("networkidle");
-      const routeLabel = `${route === "/" ? "overview" : "brief"}-${label}`;
+      const routeLabel = `${route === "/" ? "overview" : route === "/burden" ? "burden" : "brief"}-${label}`;
       await assertNoPageOverflow(page, routeLabel);
       await page.screenshot({path: `${output}/${routeLabel}.png`, fullPage: true});
+      if (route === "/burden") {
+        const details = page.locator(".burden-domain-stack > details");
+        assert.deepEqual(await details.evaluateAll(items => items.map(item => item.open)), [false, true, false],
+          "Only administrative burden is expanded on a fresh visit");
+        assert.equal(await page.locator('a[href="/burden/admin"]').count(), 1);
+        assert.equal(await page.locator('a[href="/burden/human"]').count(), 1);
+        if (width === 390 && motion === "reduce") {
+          // The in-page ledger index is intentionally hidden on 390px mobile;
+          // verify direct hash navigation opens and focuses the collapsed destination.
+          await page.goto(base + "/burden#burden-mental-human");
+          await page.waitForFunction(() => document.querySelector("#burden-group-mental-human")?.open === true);
+          assert.equal(await details.nth(2).evaluate(item => item.open), true,
+            "Mental-health anchor must disclose its destination");
+          await page.keyboard.press("Tab");
+          assert.equal(await page.locator("body").evaluate(node => node.scrollWidth <= innerWidth + 1),true);
+        }
+      }
     }
     if (width < 768) {
       const menu = page.getByRole("button", {name: "Menu", exact: true});

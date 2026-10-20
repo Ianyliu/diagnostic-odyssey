@@ -38,8 +38,8 @@ def verify(filename: str):
 compact, compact_text = verify("collapsed-report.pdf")
 all_context, all_context_text = verify("all-context-report.pdf")
 assert 7 <= compact["pages"] <= 8, ("Compact report unexpectedly grew", compact["pages"])
-assert all_context["pages"] > compact["pages"], ("Selected local context did not lengthen the report", compact, all_context)
-assert re.search(r"34\s+selected", all_context_text), "Full-context PDF must show all 34 selected indicators"
+assert 7 <= all_context["pages"] <= 8, ("All-34 default print should stay concise", all_context["pages"])
+assert re.search(r"34\s+reviewed context records included", all_context_text), "Compact PDF must disclose all 34 included source records"
 result = {
     "passed": True, "required_sections": sections, "optional_insights_absent": True,
     "compact": compact, "all_reviewed_context": all_context,

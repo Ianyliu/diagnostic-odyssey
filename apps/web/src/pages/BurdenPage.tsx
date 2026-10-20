@@ -7,6 +7,7 @@ import { IntervalWhiskerPlot } from "../components/IntervalWhiskerPlot";
 import { useArtifact } from "../data/ArtifactContext";
 import { formatDataStateLabel } from "../data/presentationLabels";
 import "./Ledger.css";
+import "./BurdenSpotlight.css";
 
 export function BurdenPage() {
   const {bundle} = useArtifact();
@@ -47,6 +48,19 @@ export function BurdenPage() {
       </details>
     </div>
 
+    <nav className="burden-spotlight" aria-label="Explore nonfinancial burden">
+      <p className="burden-spotlight-intro">Beyond spending</p>
+      <div>
+        <Link to="/burden/admin">
+          <strong>Administrative work <span aria-hidden="true">→</span></strong>
+          <span>Time spent on bills, insurance and care navigation</span>
+        </Link>
+        <Link to="/burden/human">
+          <strong>Psychological burden <span aria-hidden="true">→</span></strong>
+          <span>K6 distress and PHQ-2 screening—not diagnoses</span>
+        </Link>
+      </div>
+    </nav>
     <div className="ledger-layout">
       <nav className="ledger-section-nav" aria-label="Burden sections">
         <p className="ledger-index-heading">On this page</p>
@@ -55,26 +69,16 @@ export function BurdenPage() {
         )}</ol>
       </nav>
       <div className="burden-domain-stack">
-        {bundle.burden_domains.map((domain, index) => {
+        {bundle.burden_domains.map(domain => {
         const reviewed = domain.measures.length > 0 && domain.measures.every(canExportEstimate);
         const administrativeHourMeasures = domain.domain_id === "healthcare-work-admin"
           ? domain.measures.filter(estimate => estimate.unit === "hours/person/year")
           : [];
 
         return <WorkspaceDisclosure key={domain.domain_id} id={`burden-group-${domain.domain_id}`} title={domain.label}
-          summary={`${domain.measures.length} measures · ${reviewed ? "Reviewed national evidence" : "Not release-eligible"}`}
-          defaultOpen={index === 0} className="evidence-category"><article className="card domain-card ledger-panel" id={`burden-${domain.domain_id}`} key={domain.domain_id}>
-          <div className="card-title-row burden-domain-header">
-            <div>
-              <h2>{domain.label}</h2>
-              <p className="subtle">
-                {formatDataStateLabel(domain.availability_state)} · {domain.measures.length} {domain.measures.length === 1 ? "measure" : "measures"}
-              </p>
-            </div>
-            <span className={`ledger-evidence-state ${reviewed ? "ledger-evidence-reviewed" : "ledger-evidence-gated"}`}>
-              {reviewed ? "Reviewed national evidence" : "Not release-eligible"}
-            </span>
-          </div>
+          summary={`${formatDataStateLabel(domain.availability_state)} · ${domain.measures.length} ${domain.measures.length === 1 ? "measure" : "measures"} · ${reviewed ? "Reviewed national evidence" : "Not release-eligible"}`}
+          defaultOpen={domain.domain_id === "healthcare-work-admin"} className="evidence-category"><article className="card domain-card ledger-panel" id={`burden-${domain.domain_id}`} key={domain.domain_id}>
+          <h2 className="sr-only">{domain.label}</h2>
 
           {administrativeHourMeasures.length > 1 && <IntervalWhiskerPlot
             estimates={administrativeHourMeasures}
@@ -93,6 +97,10 @@ export function BurdenPage() {
       </div>
     </div>
 
+    <aside className="guardrail" aria-label="Separately reviewed secondary evidence">
+      <strong>Additional documentation-linked evidence</strong>
+      <p>A separately governed service-use finding has a different denominator and interpretation from the 21 ordinary national estimates. <Link to="/burden/medical#linked-condition-secondary-heading">Read the secondary evidence and its limitations</Link>.</p>
+    </aside>
     <div className="guardrail">
       <strong>Native units stay separate.</strong>
       <p>Administrative time, spending, screening measures, utilization, and access experience are not added into one opaque score. Out-of-pocket spending remains nested within total spending, and K6/PHQ-2 remain screening/distress measures rather than diagnoses.</p>

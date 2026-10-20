@@ -345,8 +345,24 @@
   }
 }
 
+/* The complete local selection always stays in canonical JSON and on screen. */
+.planning-brief-page .brief-local-context-executive { display: none; }
+.planning-brief-page .brief-appendix-control { display: inline-flex; flex-wrap: wrap; align-items: center; gap: .45rem; max-width: 25rem; font-size: .82rem; }
+.planning-brief-page .brief-appendix-control small { flex-basis: 100%; color: var(--do-text-muted); line-height: 1.35; }
+.planning-brief-page .brief-appendix-control input { width: 1rem; height: 1rem; accent-color: var(--do-accent); }
+.planning-brief-page .brief-context-appendix-heading { font-size: 1rem; margin: .5rem 0; }
+
 @media print {
+  /* Page-margin content stays outside the printable body. A fixed-position
+     footer overlaps long tables or clips when shifted into the page margin. */
+  @page {
+    @bottom-left { content: "Diagnostic Odyssey"; font: 6.8pt sans-serif; color: #4b5750; }
+    @bottom-center { content: "Reviewed artifact · see Brief provenance"; font: 6.8pt sans-serif; color: #4b5750; }
+    @bottom-right { content: "Page " counter(page) " of " counter(pages); font: 6.8pt sans-serif; color: #4b5750; }
+  }
   .planning-brief-page {
+    display: block; /* screen grid gaps and bottom padding can create a footer-only final page */
+    padding-bottom: 0;
     color: var(--do-text);
     background: var(--do-surface);
     font-size: 9.5pt;
@@ -382,8 +398,8 @@
   }
 
   .planning-brief-page .brief-content > section + section {
-    margin-top: 10pt;
-    padding-top: 9pt;
+    margin-top: 7pt;
+    padding-top: 5pt;
   }
 
   .planning-brief-page .brief-content h2 {
@@ -450,11 +466,51 @@
     break-inside: auto;
   }
 
-  /* Keep each reviewed local record together instead of splitting it across
-     the repeated print footer; long collections can still span pages. */
+  /* Let long evidence paragraphs paginate normally. Only the short opening
+     unit (title, geography/status and first value) must stay on one sheet:
+     break-after on the title alone did not prevent Chromium orphans. */
   .planning-brief-page .brief-local-context {
-    break-inside: avoid-page;
+    break-inside: auto;
+    overflow-wrap: anywhere;
   }
+
+  .planning-brief-page .brief-local-context-opening {
+    display: block;
+    break-inside: avoid-page;
+    page-break-inside: avoid;
+  }
+
+  .planning-brief-page .brief-local-context-opening .card-title-row {
+    break-after: avoid-page;
+  }
+  /* A4 pages must not shrink a status badge into "Availabl" / "e" beside
+     a wrapped FQHC Look A Like title. Keep title and badge separate flex
+     items without changing semantic order or the protected opening unit. */
+  .planning-brief-page .brief-local-context-opening .card-title-row > div {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .planning-brief-page .brief-local-context-opening .card-title-row > .status {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    overflow-wrap: normal;
+  }
+
+  .planning-brief-page .brief-local-context-executive {
+    display: block;
+    margin: 5pt 0 8pt;
+    font-size: 8.5pt;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+  }
+
+  .planning-brief-page .brief-local-context-executive p { margin: 4pt 0; }
+  .planning-brief-page .brief-local-context-executive ul { padding-left: 16pt; margin: 5pt 0; }
+  .planning-brief-page .brief-local-context-executive li { margin: 2pt 0; break-inside: avoid; }
+  .planning-brief-page .brief-local-context-list { display: none !important; }
+  .planning-brief-page.brief-include-context-appendix .brief-local-context-list { display: block !important; }
+  .planning-brief-page .brief-context-appendix-heading { break-after: avoid-page; }
+  .planning-brief-page .brief-appendix-control { display: none !important; }
 
   /* Keep each decision and its explanation together while the ledger can span pages. */
   .planning-brief-page .decision-trace ol {
@@ -485,8 +541,10 @@
     margin-top: 12pt;
   }
 
+  /* Keep table headers and rows intact, but allow a short domain to
+     continue on an existing sheet rather than strand an almost-empty page. */
   .planning-brief-page .brief-burden-group-short {
-    break-inside: avoid;
+    break-inside: auto;
   }
 
   .planning-brief-page .brief-burden-group-heading,
@@ -539,19 +597,34 @@
   }
 
   .planning-brief-page #brief-pilot-assumptions {
-    break-inside: avoid;
+    break-inside: auto;
   }
 
   .planning-brief-page .brief-applied-assumptions,
   .planning-brief-page .brief-output-list {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     background: #ffffff;
-    break-inside: avoid;
+    break-inside: auto;
   }
 
   .planning-brief-page .brief-applied-assumptions > div,
   .planning-brief-page .brief-output-list > div {
     break-inside: avoid;
+  }
+
+  /* A negative evidence/request status should not consume an entire card
+     or force an otherwise empty final print sheet. */
+  .planning-brief-page #brief-intervention-evidence .empty-state,
+  .planning-brief-page #brief-data-requests .empty-state {
+    border: 0;
+    background: #fff;
+    padding: 2pt 0;
+    margin: 0;
+    break-inside: avoid;
+  }
+  .planning-brief-page #brief-intervention-evidence .empty-state p,
+  .planning-brief-page #brief-data-requests .empty-state p {
+    margin: 3pt 0;
   }
 
   .planning-brief-page .brief-scenario-trace > div,
@@ -565,20 +638,7 @@
     display: none !important;
   }
 
-  .planning-brief-page .brief-print-footer {
-    position: fixed;
-    right: 0;
-    bottom: -1pt;
-    left: 0;
-    display: flex;
-    justify-content: space-between;
-    gap: 10pt;
-    padding-top: 4pt;
-    border-top: 1px solid #b2b8b3;
-    color: #4b5750;
-    font-size: 6.8pt;
-    line-height: 1.2;
-  }
+  .planning-brief-page .brief-print-footer { display: none !important; }
 }
 
 .brief-print-decision-state,
@@ -648,4 +708,53 @@
  #brief-full-report, #brief-full-report > .disclosure-content { display: block !important; }
  #brief-full-report::details-content { content-visibility: visible !important; display: block !important; }
  #brief-full-report > summary { display: none !important; }
+}
+
+/* Brief-owned summary: appears on screen and in every printed Brief, independent
+   of Planning Insights preview and its opt-in extra print pages. */
+.planning-brief-page .brief-executive-summary {
+  border: 1px solid var(--do-border);
+  border-top: 3px solid var(--do-reviewed-border);
+  padding: clamp(1rem, 2vw, 1.4rem);
+  background: var(--do-surface);
+  border-radius: var(--do-radius-card);
+  min-width: 0;
+}
+.planning-brief-page .brief-executive-header h2 { font-size: 1.28rem; margin: .15rem 0 .45rem; }
+.planning-brief-page .brief-executive-header p:last-child { font-size: .88rem; line-height: 1.5; max-width: 75ch; }
+.planning-brief-page .brief-executive-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .8rem 1.4rem; }
+.planning-brief-page .brief-executive-finding { min-width: 0; border-top: 1px solid var(--do-border); padding-top: .65rem; overflow-wrap: anywhere; }
+.planning-brief-page .brief-executive-finding h3 { margin: 0 0 .3rem; font-size: .88rem; }
+.planning-brief-page .brief-executive-value { font-size: 1.2rem; font-variant-numeric: tabular-nums; }
+.planning-brief-page .brief-executive-interval { display: block; color: var(--do-text-muted); font-size: .8rem; }
+.planning-brief-page .brief-executive-finding p { margin: .3rem 0; line-height: 1.4; font-size: .8rem; }
+.planning-brief-page .brief-executive-finding small { font-size: .68rem; color: var(--do-text-muted); overflow-wrap: anywhere; }
+.planning-brief-page .brief-executive-roles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; border-top: 1px solid var(--do-border); margin-top: .9rem; padding-top: .7rem; }
+.planning-brief-page .brief-executive-roles strong { font-size: .8rem; }
+.planning-brief-page .brief-executive-roles p { margin: .3rem 0; font-size: .75rem; line-height: 1.4; }
+.planning-brief-page .brief-executive-boundary { margin: .5rem 0 0; font-size: .76rem; line-height: 1.4; color: var(--do-text-muted); }
+@media (max-width: 650px) {
+  .planning-brief-page .brief-executive-grid, .planning-brief-page .brief-executive-roles { grid-template-columns: minmax(0, 1fr); }
+}
+@media print {
+  .planning-brief-page .brief-executive-summary {
+    display: block !important; color: #242a2d; background: #fff;
+    border: 0; border-top: 1pt solid #9da39c; border-radius: 0;
+    padding: 5pt 0 7pt; margin: 0 0 5pt;
+    font-size: 8pt; line-height: 1.32;
+  }
+  .planning-brief-page .brief-executive-header h2 { font-size: 11pt; margin: 0 0 3pt; break-after: avoid-page; }
+  .planning-brief-page .brief-executive-header .eyebrow { font-size: 7pt !important; margin: 0 0 2pt; }
+  .planning-brief-page .brief-executive-header p:last-child { font-size: 8pt; margin: 0 0 5pt; max-width: none; }
+  .planning-brief-page .brief-executive-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4pt 16pt; }
+  .planning-brief-page .brief-executive-finding { padding-top: 3pt; border-color: #b2b8b3; break-inside: avoid; }
+  .planning-brief-page .brief-executive-finding h3 { font-size: 8pt; margin: 0 0 2pt; break-after: avoid-page; }
+  .planning-brief-page .brief-executive-value { font-size: 10pt; }
+  .planning-brief-page .brief-executive-interval { font-size: 7.5pt; color: #3e4a50; }
+  .planning-brief-page .brief-executive-finding p { font-size: 7.5pt; margin: 2pt 0; }
+  .planning-brief-page .brief-executive-finding small { font-size: 6.8pt; color: #3e4a50; }
+  .planning-brief-page .brief-executive-roles { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8pt; margin-top: 5pt; padding-top: 4pt; border-color: #b2b8b3; }
+  .planning-brief-page .brief-executive-roles strong { font-size: 7.4pt; }
+  .planning-brief-page .brief-executive-roles p { font-size: 7pt; margin: 2pt 0; }
+  .planning-brief-page .brief-executive-boundary { font-size: 7.2pt; margin: 4pt 0 0; }
 }

@@ -11,6 +11,7 @@ import {
 } from "./dataRequestTemplates.ts";
 import { groupBriefBurdenFindings } from "./briefBurdenPresentation.ts";
 import { REVIEWED_MEPS_ARTIFACT_VERSION } from "./reviewedArtifact.ts";
+import { BRIEF_HEADLINE_IDS } from "./briefExecutiveHeadlines.ts";
 import {
   assertReviewedWvLocalContextArtifact, assertReviewedWvLocalContextRuntimeCompatibility
 } from "./reviewedLocalContextValidation.ts";
@@ -40,7 +41,7 @@ export interface InvestigationPrompt {
 export interface PlanningInsightsModelV1 {
   version: "presentation.v1";
   artifactVersion: string;
-  national: InsightSection & { findingsCount: number; highlights: InsightFinding[] };
+  national: InsightSection & { findingsCount: number; highlights: InsightFinding[]; context: {population: InsightFinding | null; allCauseSpending: InsightFinding | null; paperwork: InsightFinding | null; seriousDistress: InsightFinding | null} };
   local: InsightSection & { artifactVersion: string | null; records: LocalContextRecord[] };
   scenario: InsightSection & { applied: PlanningBrief["scenario"] };
   interventions: { availability: "unavailable"; explanation: string };
@@ -72,11 +73,12 @@ function sameValue(left: unknown, right: unknown): boolean {
   return false;
 }
 
-function nationalSection(brief: PlanningBrief, source: ArtifactBundle): PlanningInsightsModelV1["national"] {
+/** The same reviewed-identity gate supplies both the core Brief and optional insights. */
+export function buildVerifiedNationalBriefSection(brief: PlanningBrief, source: ArtifactBundle): PlanningInsightsModelV1["national"] {
   if (source.manifest.artifact_version !== REVIEWED_MEPS_ARTIFACT_VERSION ||
       brief.artifact_version !== source.manifest.artifact_version ||
       !sameValue({...brief.context, local_context_id: null}, source.context)) {
-    return {availability: "withheld", explanation: "National source identity does not match this Brief. Open the reviewed burden source to resolve it.", findingsCount: 0, highlights: []};
+    return {availability: "withheld", explanation: "National source identity does not match this Brief. Open the reviewed burden source to resolve it.", findingsCount: 0, highlights: [], context: {population: null, allCauseSpending: null, paperwork: null, seriousDistress: null}};
   }
   const sourceById = new Map(source.burden_domains.flatMap(domain => domain.measures).map(record => [record.estimate_id, record]));
   const sourceRefs = new Map(source.sources.map(record => [record.source_ref, record]));
@@ -88,11 +90,27 @@ function nationalSection(brief: PlanningBrief, source: ArtifactBundle): Planning
       record.artifact_version === brief.artifact_version &&
       sameValue(record, sourceById.get(record.estimate_id)) && sourceRefs.has(record.source_ref);
   });
+  // Named headline records may enter the projection only after the same exact-identity,
+  // release and provenance checks as every other eligible Brief finding.
+  const eligibleById = new Map(eligible.map(record => [record.estimate_id, record]));
+  const pickHeadline = (estimateId: string): InsightFinding | null => {
+    const estimate = eligibleById.get(estimateId);
+    const citation = estimate && sourceRefs.get(estimate.source_ref);
+    return estimate && citation ? {domainId: "national-context", domainLabel: "National descriptive context", estimate: structuredClone(estimate), source: structuredClone(citation)} : null;
+  };
+  const context = {
+    population: pickHeadline(BRIEF_HEADLINE_IDS.population),
+    allCauseSpending: pickHeadline(BRIEF_HEADLINE_IDS.spending),
+    paperwork: pickHeadline(BRIEF_HEADLINE_IDS.paperwork),
+    seriousDistress: pickHeadline(BRIEF_HEADLINE_IDS.distress)
+  };
   // One representative per available domain, in the existing artifact's order.
   // Prefer an approved distribution, then a non-nested measure, then any eligible
   // finding. Never rank magnitudes across heterogeneous units or require an ID.
   const highlights = groupBriefBurdenFindings(source.burden_domains, eligible).slice(0, 3).flatMap(group => {
-    const estimate = group.findings.find(canDisplayDistributionSummary) ??
+    const estimate = (group.group_id === "mental-human"
+      ? group.findings.find(record => record.estimate_id === BRIEF_HEADLINE_IDS.distress) : undefined) ??
+      group.findings.find(canDisplayDistributionSummary) ??
       group.findings.find(record => !record.component_of_measure_id) ?? group.findings[0];
     const citation = estimate && sourceRefs.get(estimate.source_ref);
     return estimate && citation ? [{domainId: group.group_id, domainLabel: group.label, estimate: structuredClone(estimate), source: structuredClone(citation)}] : [];
@@ -103,7 +121,7 @@ function nationalSection(brief: PlanningBrief, source: ArtifactBundle): Planning
     explanation: eligible.length
       ? `One finding per available domain; descriptive highlights, not a ranking of burden.${withheld ? " Some findings were withheld because their release or source identity could not be verified." : ""}`
       : "No validated released finding can be summarized for this Brief. Missing or withheld evidence is not zero burden.",
-    findingsCount: eligible.length, highlights
+    findingsCount: eligible.length, highlights, context
   };
 }
 
@@ -136,7 +154,7 @@ function localSection(brief: PlanningBrief, sources: PlanningInsightsSources): P
     artifactVersion: records.length ? sources.local.manifest.artifact_version : null,
     records: structuredClone(records),
     explanation: records.length
-      ? "Selected implementation context (eligible records are preselected by default). These indicators do not rescale national burden or establish local Long COVID prevalence."
+      ? "Reviewed implementation context included in this Brief (eligible indicators start selected by default, and an active Pilot-used record can also be included). These indicators do not rescale national burden or establish local Long COVID prevalence."
       : "Selected records could not be verified against the current reviewed context. No substitute values are shown."
   };
 }
@@ -199,7 +217,7 @@ export function buildPlanningInsights(brief: PlanningBrief, sources: PlanningIns
   const scenario = scenarioSection(brief);
   return {
     version: "presentation.v1", artifactVersion: brief.artifact_version,
-    national: nationalSection(brief, sources.national), local: localSection(brief, sources), scenario,
+    national: buildVerifiedNationalBriefSection(brief, sources.national), local: localSection(brief, sources), scenario,
     interventions: {availability: "unavailable", explanation: "No independently released, context-applicable narrative intervention reference is available. This does not establish that an intervention has no effect."},
     investigations: investigationSection(scenario.applied, sources),
     warnings: [...brief.warnings]
