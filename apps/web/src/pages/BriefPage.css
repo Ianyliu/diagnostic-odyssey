@@ -466,14 +466,21 @@
     break-inside: auto;
   }
 
-  /* Keep each reviewed local record together instead of splitting it across
-     the repeated print footer; long collections can still span pages. */
+  /* Let long evidence paragraphs paginate normally. Only the short opening
+     unit (title, geography/status and first value) must stay on one sheet:
+     break-after on the title alone did not prevent Chromium orphans. */
   .planning-brief-page .brief-local-context {
     break-inside: auto;
     overflow-wrap: anywhere;
   }
 
-  .planning-brief-page .brief-local-context .card-title-row {
+  .planning-brief-page .brief-local-context-opening {
+    display: block;
+    break-inside: avoid-page;
+    page-break-inside: avoid;
+  }
+
+  .planning-brief-page .brief-local-context-opening .card-title-row {
     break-after: avoid-page;
   }
 
