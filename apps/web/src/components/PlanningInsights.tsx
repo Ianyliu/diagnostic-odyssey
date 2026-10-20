@@ -131,13 +131,8 @@ export function PlanningInsights({model}: {model: PlanningInsightsModelV1}) {
       <div><p className="visual-kicker">AT A GLANCE</p><h2 id="planning-insights-title">Your current planning picture</h2><p className="insight-caption">Deterministic planning preview — no live AI inference.</p></div>
       <button type="button" className="text-button" aria-expanded={expanded} aria-controls="planning-insights-content" onClick={() => setExpanded(value => !value)}>{expanded ? "Hide insights" : "Show insights"}</button>
     </header>
-    <label className="insights-print-choice"><input type="checkbox" checked={includePrintSummary} onChange={event => setIncludePrintSummary(event.target.checked)} /><span>Include insights summary in printed Brief<small>Reviewed findings and applied assumptions; investigation prompts stay on screen.</small></span></label>
+    <label className="insights-print-choice"><input type="checkbox" checked={includePrintSummary} onChange={event => setIncludePrintSummary(event.target.checked)} /><span>Include optional Planning Insights detail in printed Brief<small>Off by default. This adds planning highlights and assumptions only; the always-visible Brief executive summary prints either way. Investigation prompts stay on screen.</small></span></label>
     <div id="planning-insights-content" hidden={!expanded}>
-      {model.national.context.population && model.national.context.allCauseSpending && <section className="insight-national-context" aria-label="Reviewed national population and total spending">
-        <InsightRoleBadge role="reviewed" />
-        <p><strong>{formatEstimateValue(model.national.context.population.estimate)}</strong> represented U.S. adults ages 18–64 reporting current Long COVID symptoms ({formatEstimateInterval(model.national.context.population.estimate)}) · <strong>{formatEstimateValue(model.national.context.allCauseSpending.estimate)}</strong> total 2024 all-cause health care spending ({formatEstimateInterval(model.national.context.allCauseSpending.estimate)}).</p>
-        <p className="insight-caption">Survey-weighted descriptive estimates, not health care costs caused by Long COVID or diagnostic delay. Records: {model.national.context.population.estimate.estimate_id} · {model.national.context.allCauseSpending.estimate.estimate_id}.</p>
-      </section>}
       <div className="insight-summary-grid">
         <section className="insight-card insight-national" aria-labelledby="insight-national-title">
           <InsightRoleBadge role="reviewed" /><h3 id="insight-national-title">What the reviewed evidence describes</h3>
@@ -211,5 +206,5 @@ export function PlanningInsights({model}: {model: PlanningInsightsModelV1}) {
         <Investigations model={model} />
       </WorkspaceDisclosure>
     </div>
-  </section>{model.national.context.population && model.national.context.allCauseSpending && <p className="insight-national-print-headline"><strong>National reviewed context:</strong> {formatEstimateValue(model.national.context.population.estimate)} represented adults ({formatEstimateInterval(model.national.context.population.estimate)}) · {formatEstimateValue(model.national.context.allCauseSpending.estimate)} total 2024 all-cause spending ({formatEstimateInterval(model.national.context.allCauseSpending.estimate)}). Descriptive, not attributable costs. Reviewed IDs: {model.national.context.population.estimate.estimate_id}; {model.national.context.allCauseSpending.estimate.estimate_id}.</p>}{includePrintSummary && <PlanningInsightsPrintSummary model={model} />}</>;
+  </section>{includePrintSummary && <PlanningInsightsPrintSummary model={model} />}</>;
 }
