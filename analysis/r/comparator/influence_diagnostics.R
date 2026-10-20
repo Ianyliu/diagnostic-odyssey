@@ -21,8 +21,8 @@ comparator_overlap_cells <- function(df) {
                                 levels = c("noncurrent", "current")),
                    outcome_levels)
   # Counts only; never emit identifying cross-cell labels.
-  zero <- support[, , "0", drop = FALSE][, , 1]
-  positive <- support[, , "1", drop = FALSE][, , 1]
+  zero <- matrix(support[, , "0"], nrow = nrow(x), ncol = 2L)
+  positive <- matrix(support[, , "1"], nrow = nrow(x), ncol = 2L)
   list(
     dimensions = c("AGE31X bands [18,30),[30,45),[45,65)",
                    "SEX", "REGION31", "PANEL"),
