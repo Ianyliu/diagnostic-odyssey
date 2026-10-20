@@ -3,6 +3,7 @@
  * Use an immutable actual Vercel preview URL for real served-header attestation.
  */
 /* global process, console, window, document, getComputedStyle, localStorage, fetch, performance, setTimeout */
+import {prepareWorkspace} from "./workspace-helpers.mjs";
 import assert from "node:assert/strict";
 import { mkdir,readFile,writeFile } from "node:fs/promises";
 import { createRequire } from "node:module";
@@ -104,11 +105,26 @@ await check("protected Brief: actual canonical JSON download, physical PDF, keyb
  const page=await context.newPage();
  await page.goto(base+"/brief");
  await page.locator("main h1").waitFor();
+ await prepareWorkspace(page);
  await page.keyboard.press("Tab");
  assert.equal(await page.locator(":focus").innerText(),"Skip to main content");
- const event=page.waitForEvent("download");
+ const errors=[], violations=[];
+ page.on("pageerror", error=>errors.push(String(error)));
+ await page.evaluate(()=>document.addEventListener("securitypolicyviolation", event=>{
+   (window.__exportCspViolations??=[]).push({directive:event.effectiveDirective,blockedURI:event.blockedURI});
+ }));
+ const event=page.waitForEvent("download",{timeout:7000});
  await page.getByRole("button",{name:"Export JSON companion"}).click();
- const download=await event;
+ let download;
+ try {download=await event;} catch(error) {
+   const feedback=await page.locator(".brief-export-status").allTextContents();
+   const cspEvents=await page.evaluate(()=>window.__exportCspViolations??[]);
+   throw new Error("Protected Brief JSON download did not fire; feedback="+JSON.stringify(feedback)+
+     " CSP="+JSON.stringify(cspEvents)+" pageErrors="+JSON.stringify(errors)+" original="+String(error));
+ }
+ assert.deepEqual(errors,[],"Brief export page error");
+ violations.push(...await page.evaluate(()=>window.__exportCspViolations??[]));
+ assert.deepEqual(violations,[],"unexpected Brief export CSP violation");
  const companion=JSON.parse(await readFile(await download.path(),"utf8"));
  assert.equal(companion.burden_findings?.length,21,"reviewed national findings survive CSP");
  assert.equal(companion.local_context?.length,34,"reviewed default local context survives CSP");
