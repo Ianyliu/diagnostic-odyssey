@@ -28,3 +28,15 @@ test("mini-charts show compound units once, and keep proportion ticks",()=>{
  assert.equal(formatMetricTick(26.4,"hours/person/year",true),"26.4 hours/person/year");
  assert.equal(formatMetricTick(1,"proportion",false),"100%");
 });
+
+test("small nonzero proportions and 95% bounds never masquerade as 0.0%", () => {
+ assert.equal(formatNativeValue(0.0004, "proportion"), "0.04%");
+ assert.equal(formatNativeValue(0.00004, "proportion"), "0.004%");
+ assert.equal(formatNativeValue(0.000009, "proportion"), "0.0009%");
+ assert.equal(formatNativeValue(0.00000000001, "proportion"), "1.00e-9%");
+ assert.equal(formatNativeValue(0, "proportion"), "0.0%");
+ assert.equal(formatNativeValue(0.3434923613, "proportion"), "34.3%");
+ const synthetic = {interval_low: 0.00003, interval_high: 0.0004,
+   interval_type: "95% t CI (reviewed)", unit: "proportion"} as const;
+ assert.equal(formatEstimateInterval(synthetic), "95% CI 0.003%–0.04%");
+});

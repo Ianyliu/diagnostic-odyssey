@@ -8,11 +8,19 @@ function decimalFor(reference: number | null): Intl.NumberFormat {
   if (reference === null || reference === 0 || Math.abs(reference) >= 1) return decimal;
   return Math.abs(reference) >= 0.01 ? smallDecimal : tinyDecimal;
 }
-const percent = new Intl.NumberFormat("en-US", {
-  style: "percent",
-  minimumFractionDigits: 1,
-  maximumFractionDigits: 1
-});
+/** Adapt percentage display so a released nonzero rate never rounds to 0.0%.
+ * Values are already in 0–1 proportion units, and neither point nor CI is recomputed.
+ */
+function formatProportion(value: number): string {
+  const magnitude = Math.abs(value * 100);
+  if (magnitude > 0 && magnitude < 1e-8) return `${(value * 100).toExponential(2)}%`;
+  const digits = magnitude === 0 || magnitude >= 0.1 ? 1
+    : Math.min(8, Math.max(2, Math.ceil(-Math.log10(magnitude)) + 1));
+  return new Intl.NumberFormat("en-US", {
+    style: "percent", minimumFractionDigits: magnitude >= 0.1 || magnitude === 0 ? 1 : 0,
+    maximumFractionDigits: digits
+  }).format(value);
+}
 const compactCurrency = new Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "USD",
@@ -32,7 +40,7 @@ const compactPeople = new Intl.NumberFormat("en-US", {
 });
 
 export function formatNativeValue(value: number, unit: string): string {
-  if (unit === "proportion") return percent.format(value);
+  if (unit === "proportion") return formatProportion(value);
   if (unit === "USD/year") return compactCurrency.format(value);
   if (unit === "USD/person/year") return personCurrency.format(value);
   if (unit === "people") return compactPeople.format(value);
