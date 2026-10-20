@@ -1114,3 +1114,6 @@
 
 /* Preserve a comfortably sized Replay target even during the .985 opening scale. */
 .preview-replay { min-height: 48px; }
+
+/* Workstream J Gate 0: normal-size provenance caption must clear 4.5:1. */
+.overview-hero-motion .overview-provenance figcaption { color: var(--do-text); }
