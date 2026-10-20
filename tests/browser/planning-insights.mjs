@@ -253,8 +253,7 @@ await run("Pilot-used context is included once even after Select none and print 
   await navigate(page, "Planning brief");
   const before = await exportJson(page, "brief-pilot-only-context");
   assert.equal(before.local_context.length, 1, "Active Pilot-used record enters Brief despite no checkbox selection");
-  assert.match(pilotLabel, new RegExp(before.local_context[0].label.replace(/[.*+?^${}()|[\]\\]/g, "\\await browser.close();
-")));
+  assert.ok(pilotLabel.includes(before.local_context[0].label), "Pilot-used record matches the selected indicator label");
   assert.equal(await page.locator("#brief-local-context .brief-local-context").count(), 1);
   assert.match(await page.locator(".brief-executive-summary").innerText(), /1 extra via Use in Pilot/);
   const appendix = page.getByRole("checkbox", {name: /Include detailed local-context records in print/});
