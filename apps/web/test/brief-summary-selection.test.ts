@@ -5,7 +5,8 @@ import {buildPlanningBrief, serializeBriefJson} from "@diagnostic-odyssey/brief-
 import {canExportEstimate} from "@diagnostic-odyssey/contracts";
 import {loadReviewedMepsArtifact} from "../src/data/reviewedArtifact.ts";
 import {loadReviewedWvLocalContextArtifact} from "../src/data/reviewedLocalContext.ts";
-import {buildPlanningInsights} from "../src/data/planningInsights.ts";
+import {buildPlanningInsights, buildVerifiedNationalBriefSection} from "../src/data/planningInsights.ts";
+import {BRIEF_HEADLINE_IDS} from "../src/data/briefExecutiveHeadlines.ts";
 import {selectBriefLocalContextPreview} from "../src/data/briefLocalContextPreview.ts";
 import {
   clearLocalContextSelection, createLocalContextSelectionForArtifact,
@@ -79,8 +80,10 @@ test("national summary uses exact verified export-eligible records and withholds
   const original = serializeBriefJson(brief);
   const insights = buildPlanningInsights(brief, source);
   for (const [kind, id] of [
-    ["population", "meps24-current-long-covid-population"],
-    ["allCauseSpending", "meps24-gross-all-cause-spending-total"]
+    ["population", BRIEF_HEADLINE_IDS.population],
+    ["allCauseSpending", BRIEF_HEADLINE_IDS.spending],
+    ["paperwork", BRIEF_HEADLINE_IDS.paperwork],
+    ["seriousDistress", BRIEF_HEADLINE_IDS.distress]
   ] as const) {
     const finding = insights.national.context[kind];
     assert.equal(finding?.estimate.estimate_id, id);
@@ -100,9 +103,33 @@ test("national summary uses exact verified export-eligible records and withholds
   assert.equal(buildPlanningInsights(absent, source).national.context.population, null);
 });
 
+test("always-on executive projection is the same strict gate as optional insights and fails closed", () => {
+  const brief = makeBrief();
+  const exported = serializeBriefJson(brief);
+  const verified = buildVerifiedNationalBriefSection(brief, national);
+  assert.deepEqual(verified.context, buildPlanningInsights(brief, source).national.context);
+  assert.deepEqual(
+    [verified.context.population, verified.context.allCauseSpending, verified.context.paperwork, verified.context.seriousDistress].map(row => row?.estimate.estimate_id),
+    Object.values(BRIEF_HEADLINE_IDS)
+  );
+  assert.ok(Object.values(verified.context).every(row => row && canExportEstimate(row.estimate)));
+  for (const id of Object.values(BRIEF_HEADLINE_IDS)) {
+    const changed = structuredClone(brief);
+    changed.burden_findings = changed.burden_findings.map(row => row.estimate_id === id ? {...row, source_ref: "spoofed"} : row);
+    assert.equal(Object.values(buildVerifiedNationalBriefSection(changed, national).context).filter(Boolean).length, 3);
+    const withheld = structuredClone(brief);
+    withheld.burden_findings = withheld.burden_findings.map(row => row.estimate_id === id ? {...row, release_status: "suppressed" as const} : row);
+    assert.equal(Object.values(buildVerifiedNationalBriefSection(withheld, national).context).filter(Boolean).length, 3);
+  }
+  const mismatch = {...brief, context: {...brief.context, condition: "altered"}};
+  assert.ok(Object.values(buildVerifiedNationalBriefSection(mismatch, national).context).every(row => row === null));
+  assert.equal(serializeBriefJson(brief), exported);
+});
+
 test("print and selection copy distinguish default inclusion, optional detail and data-request status", () => {
   const read = (p: string) => readFileSync(new URL(p, import.meta.url), "utf8");
   const preview = read("../src/components/PlanningInsights.tsx");
+  const executive = read("../src/components/BriefExecutiveSummary.tsx");
   const page = read("../src/pages/BriefPage.tsx");
   const css = read("../src/pages/BriefPage.css");
   const localPage = read("../src/pages/LocalContextPage.tsx");
@@ -112,6 +139,10 @@ test("print and selection copy distinguish default inclusion, optional detail an
   assert.doesNotMatch(preview, /remain separate choices/);
   assert.match(preview, /newly created requests start included/);
   assert.match(page, /includeContextAppendixInPrint/);
+  assert.match(page, /<BriefExecutiveSummary brief=\{brief\} national=\{nationalExecutive\}/);
+  assert.match(executive, /MEPS 2024/);
+  assert.match(preview, /always-visible Brief executive summary prints either way/);
+  assert.doesNotMatch(preview, /insight-national-print-headline|insight-national-context/);
   assert.match(css, /\.brief-local-context-list \{ display: none !important; \}/);
   assert.match(css, /\.brief-include-context-appendix \.brief-local-context-list \{ display: block !important; \}/);
   assert.match(localPage, /Eligible reviewed indicators start selected by default/);
