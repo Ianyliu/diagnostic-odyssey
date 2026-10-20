@@ -105,9 +105,9 @@ await check("protected Brief: actual canonical JSON download, physical PDF, keyb
  const page=await context.newPage();
  await page.goto(base+"/brief");
  await page.locator("main h1").waitFor();
- await prepareWorkspace(page);
  await page.keyboard.press("Tab");
  assert.equal(await page.locator(":focus").innerText(),"Skip to main content");
+ await prepareWorkspace(page);
  const errors=[], violations=[];
  page.on("pageerror", error=>errors.push(String(error)));
  await page.evaluate(()=>document.addEventListener("securitypolicyviolation", event=>{
