@@ -34,7 +34,7 @@ export function metricAriaDescription({
   pointLabel = "Published value", intervalStyle = "confidence", narrowInterval = false
 }: {
   label: string; value: number; unit: string; low?: number | null; high?: number | null;
-  intervalLabel?: string | null; pointLabel?: string;
+  intervalLabel?: string | null | undefined; pointLabel?: string;
   intervalStyle?: "confidence" | "range"; narrowInterval?: boolean;
 }): string {
   if (low === null || high === null)
