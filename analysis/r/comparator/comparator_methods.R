@@ -224,46 +224,81 @@ comparator_unadjusted <- function(full_design, group_variable = ".do_cmp_group",
 }
 
 comparator_stage_predictions <- function(w, data, group_variable, insurance = FALSE) {
+  stage_error <- function(stage, reason, group = "all") {
+    stop(sprintf("stage=%s group=%s: %s", stage, group, reason), call. = FALSE)
+  }
   df <- data
   df$.do_cmp_w <- as.numeric(w)
   if (length(df$.do_cmp_w) != nrow(df) || any(!is.finite(df$.do_cmp_w)) ||
       any(df$.do_cmp_w < 0) || sum(df$.do_cmp_w) <= 0) {
-    stop("Invalid survey replicate weights.", call. = FALSE)
+    stage_error("weights", "invalid/nonfinite/negative survey replicate weights")
   }
   df$.do_cmp_exposure <- factor(as.character(df[[group_variable]]),
                                 levels = c("noncurrent", "current"))
   included <- df$.do_cmp_w > 0
   for (g in c("noncurrent", "current")) {
-    if (!any(included & df$.do_cmp_exposure == g) ||
-        !any(included & df$.do_cmp_exposure == g & df$.do_cmp_positive == 1L)) {
-      stop("Replicate lacks exposure/positive-outcome support.", call. = FALSE)
+    eligible <- included & !is.na(df$.do_cmp_exposure) & df$.do_cmp_exposure == g
+    n_pos <- sum(eligible & df$.do_cmp_positive == 1L, na.rm = TRUE)
+    n_zero <- sum(eligible & df$.do_cmp_positive == 0L, na.rm = TRUE)
+    if (sum(eligible) < 2L || n_pos < 1L || n_zero < 1L) {
+      stage_error("support",
+                  sprintf("insufficient sample: total=%d positive=%d zero=%d",
+                          sum(eligible), n_pos, n_zero), g)
     }
   }
   adjust <- ".do_cmp_exposure + .do_cmp_age10 + .do_cmp_sex + .do_cmp_region + .do_cmp_panel"
   if (insurance) adjust <- paste(adjust, "+ .do_cmp_insurance")
   binary_formula <- stats::as.formula(paste(".do_cmp_positive ~", adjust))
   positive_formula <- stats::as.formula(paste(".do_cmp_y ~", adjust))
-  part1 <- stats::glm(binary_formula, family = stats::quasibinomial(link = "logit"),
-                      weights = .do_cmp_w, data = df, na.action = stats::na.fail)
-  pos <- df[df$.do_cmp_positive == 1L, , drop = FALSE]
-  part2 <- stats::glm(positive_formula, family = stats::Gamma(link = "log"),
-                      weights = .do_cmp_w, data = pos, na.action = stats::na.fail)
-  if (!isTRUE(part1$converged) || !isTRUE(part2$converged) ||
-      part1$rank < length(stats::coef(part1)) ||
-      part2$rank < length(stats::coef(part2))) {
-    stop("Nonconverged or rank-deficient two-part model.", call. = FALSE)
+  fit_stage <- function(stage, expression) {
+    warning_messages <- character()
+    fit <- tryCatch(
+      withCallingHandlers(
+        expression,
+        warning = function(warning) {
+          warning_messages <<- c(warning_messages, conditionMessage(warning))
+          invokeRestart("muffleWarning")
+        }
+      ),
+      error = function(e) stage_error(stage, conditionMessage(e))
+    )
+    if (length(warning_messages)) {
+      stage_error(stage, paste("fit warnings:", paste(unique(warning_messages),
+                                                    collapse = " | ")))
+    }
+    coefficients <- stats::coef(fit)
+    if (!isTRUE(fit$converged) || fit$rank < length(coefficients) ||
+        any(!is.finite(coefficients))) {
+      stage_error(stage, "nonconverged, nonfinite or rank-deficient model")
+    }
+    fit
   }
+  part1 <- fit_stage("binary_logit", stats::glm(
+    binary_formula, family = stats::quasibinomial(link = "logit"),
+    weights = .do_cmp_w, data = df, na.action = stats::na.fail
+  ))
+  pos <- df[df$.do_cmp_positive == 1L & included, , drop = FALSE]
+  part2 <- fit_stage("positive_gamma", stats::glm(
+    positive_formula, family = stats::Gamma(link = "log"),
+    weights = .do_cmp_w, data = pos, na.action = stats::na.fail
+  ))
   standardized <- vapply(c("noncurrent", "current"), function(g) {
     scenario <- df
     scenario$.do_cmp_exposure <- factor(rep(g, nrow(df)),
                                        levels = c("noncurrent", "current"))
-    p <- stats::predict(part1, newdata = scenario, type = "response")
-    m <- stats::predict(part2, newdata = scenario, type = "response")
-    if (any(!is.finite(p)) || any(p < 0 | p > 1) ||
-        any(!is.finite(m)) || any(m <= 0)) {
-      stop("Invalid two-part predictions.", call. = FALSE)
+    p <- tryCatch(stats::predict(part1, newdata = scenario, type = "response"),
+                  error = function(e) stage_error("binary_prediction", conditionMessage(e), g))
+    m <- tryCatch(stats::predict(part2, newdata = scenario, type = "response"),
+                  error = function(e) stage_error("positive_prediction", conditionMessage(e), g))
+    if (any(!is.finite(p)) || any(p <= 1e-8 | p >= 1 - 1e-8)) {
+      stage_error("binary_prediction", "nonfinite or near-separated probability", g)
     }
-    stats::weighted.mean(p * m, df$.do_cmp_w)
+    if (any(!is.finite(m)) || any(m <= 0)) {
+      stage_error("positive_prediction", "nonfinite or nonpositive conditional spending", g)
+    }
+    out <- stats::weighted.mean(p * m, df$.do_cmp_w)
+    if (!is.finite(out) || out <= 0) stage_error("standardization", "nonfinite mean", g)
+    out
   }, numeric(1))
   c(noncurrent = standardized[["noncurrent"]],
     current = standardized[["current"]],
@@ -271,45 +306,93 @@ comparator_stage_predictions <- function(w, data, group_variable, insurance = FA
 }
 
 comparator_adjusted <- function(full_design, replicates = 400L,
-                                seed = 20261019L, insurance = FALSE) {
+                                seed = 20261019L, insurance = FALSE,
+                                reference_sample = c("primary", "insurance")) {
   assert_survey_available()
+  reference_sample <- match.arg(reference_sample)
+  if (insurance && reference_sample != "insurance") {
+    stop("Insurance model must use the insurance-complete reference sample.", call. = FALSE)
+  }
   replicates <- as.integer(replicates)
   if (length(replicates) != 1L || is.na(replicates) || replicates < 16L) {
     stop("Need at least 16 design-bootstrap replicates.", call. = FALSE)
   }
-  if (isTRUE(insurance)) {
-    domain_var <- ".do_cmp_insurance_complete"
+  domain_var <- if (reference_sample == "insurance") {
+    ".do_cmp_insurance_complete"
   } else {
-    domain_var <- ".do_cmp_primary_complete"
+    ".do_cmp_primary_complete"
   }
   set.seed(seed)
-  # Resampling must start from the full PERSON design, *before* domain restriction.
+  # Resampling starts from the FULL PERSON design, before subpopulation restriction.
   rep_design <- survey::as.svrepdesign(full_design, type = "bootstrap",
                                       replicates = replicates, mse = TRUE)
   domain <- subset(rep_design, get(domain_var))
+  if (!nrow(domain$variables)) stop("Empty comparator bootstrap domain.", call. = FALSE)
   theta <- function(weights, data) {
     comparator_stage_predictions(weights, data, ".do_cmp_group",
                                  insurance = insurance)
   }
-  stat <- survey::withReplicates(domain, theta, return.replicates = TRUE)
+  # Fail-closed: if withReplicates errors, independently identify the failing
+  # full-sample or exact replicate column using the original generated design.
+  stat <- tryCatch(
+    survey::withReplicates(domain, theta, return.replicates = TRUE),
+    error = function(original_error) {
+      w0 <- tryCatch(as.numeric(stats::weights(domain, type = "sampling")),
+                     error = function(e) NULL)
+      if (!is.null(w0)) {
+        baseline <- tryCatch(theta(w0, domain$variables), error = identity)
+        if (inherits(baseline, "error")) {
+          stop("Bootstrap full_sample: ", conditionMessage(baseline), call. = FALSE)
+        }
+      }
+      replicate_weights <- tryCatch(as.matrix(stats::weights(domain, type = "analysis")),
+                                    error = function(e) NULL)
+      if (is.null(replicate_weights) ||
+          nrow(replicate_weights) != nrow(domain$variables) ||
+          ncol(replicate_weights) != replicates) {
+        stop("Bootstrap failed; cannot audit replicate weight matrix: ",
+             conditionMessage(original_error), call. = FALSE)
+      }
+      for (i in seq_len(ncol(replicate_weights))) {
+        failure <- tryCatch({
+          theta(replicate_weights[, i], domain$variables)
+          NULL
+        }, error = identity)
+        if (inherits(failure, "error")) {
+          stop(sprintf("Bootstrap replicate=%d/%d: %s", i, replicates,
+                       conditionMessage(failure)), call. = FALSE)
+        }
+      }
+      stop("Bootstrap covariance/evaluation failed after all individual replicates passed: ",
+           conditionMessage(original_error), call. = FALSE)
+    }
+  )
   values <- as.numeric(stats::coef(stat))
   v <- as.matrix(stats::vcov(stat))
   if (length(values) != 3L || !identical(dim(v), c(3L, 3L))) {
     stop("Adjusted joint replicate covariance missing.", call. = FALSE)
   }
+  v <- comparator_validate_covariance(values, v)
   full_df <- survey_df(full_design, "full PERSON / PERWT24F")
   intervals <- comparator_t_ci(values, v, full_df)
   names(intervals) <- c("noncurrent_mean", "current_mean", "current_minus_noncurrent")
+  ids <- as.character(domain$variables$.do_cmp_group)
+  ww <- as.numeric(stats::weights(domain, type = "sampling"))
   list(
     method = "weighted quasi-binomial logit + positive Gamma(log); pooled marginal standardization",
     uncertainty = "full-PERWT24F-design bootstrap; refit both models and standardization per replicate",
-    insurance_sensitivity = isTRUE(insurance), weight = "PERWT24F",
+    insurance_sensitivity = isTRUE(insurance), reference_sample = reference_sample,
+    weight = "PERWT24F",
     covariates = c("AGE31X", "SEX", "REGION31", "PANEL",
                    if (insurance) "INS31X"),
-    replicates_requested = replicates,
-    replicates_successful = replicates,
+    replicates_requested = replicates, replicates_successful = replicates,
+    replicate_failures = list(), bootstrap_failure_count = 0L,
+    failure_policy = "any failed full_sample/replicate aborts; failing index, stage and group in error",
     seed = seed, ci_df = full_df, ci_df_source = "full PERSON design",
     unweighted_complete_n = nrow(domain$variables),
+    unweighted_complete_by_group = as.list(table(factor(ids, levels = c("noncurrent", "current")))),
+    weighted_complete_by_group = list(noncurrent = sum(ww[ids == "noncurrent"]),
+                                      current = sum(ww[ids == "current"])),
     covariance = unname(v),
     results = intervals
   )
