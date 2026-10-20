@@ -1,8 +1,7 @@
 """Workstream H: inspect actual Chromium PDFs, including each physical record opening."""
 import json
 import re
-import shutil
-import subprocess
+import fitz  # PyMuPDF; deterministic physical-page raster evidence, no optional binaries
 import sys
 from pathlib import Path
 
@@ -146,7 +145,7 @@ for entry in matrix["pdfs"]:
         assert ("Detailed included context records" in whole) == detailed, (filename, "Appendix off/on mismatch")
         if detailed:
             positions = verify_detailed_openings(page_text, canonical["local_context"], filename, pdf.pages)
-        if shutil.which("pdftoppm") and (entry["name"] in ("default", "pilot-only", "stale-request") or detailed):
+        if entry["name"] in ("default", "pilot-only", "stale-request") or detailed:
             renders = {1, len(pdf.pages)}
             if detailed:
                 for hit in positions:
@@ -155,11 +154,16 @@ for entry in matrix["pdfs"]:
                                      "wv.hrsa.primary-care.designation-type.rural-health-clinic"}:
                         renders.update(n for n in (hit["page"] - 1, hit["page"], hit["page"] + 1)
                                        if 1 <= n <= len(pdf.pages))
-            for number in sorted(renders):
-                subprocess.run(["pdftoppm", "-f", str(number), "-l", str(number),
-                                "-singlefile", "-scale-to", "1100", "-png",
-                                str(path), str(directory / (path.stem + "-page-" + str(number)))],
-                               capture_output=True, check=True)
+            # Mandatory PDF-native rasterization: CI cannot silently omit boundary
+            # images when pdftoppm/poppler is absent on a runner.
+            with fitz.open(path) as rendered_pdf:
+                assert len(rendered_pdf) == len(pdf.pages)
+                for number in sorted(renders):
+                    png_path = directory / (path.stem + "-page-" + str(number) + ".png")
+                    rendered_pdf[number - 1].get_pixmap(
+                        matrix=fitz.Matrix(1.55, 1.55), alpha=False
+                    ).save(str(png_path))
+                    assert png_path.stat().st_size > 2000, (filename, number, "Rasterized page missing")
         verified.append({"file": filename, "pages": len(pdf.pages),
                          "minimum_footer_clearance_pt": min(clearances),
                          "detailed_record_headings_verified": len(positions),
@@ -167,7 +171,10 @@ for entry in matrix["pdfs"]:
                          "insights_printed": entry["insights"]})
         if positions:
             all_positions[filename] = positions
-report = {"passed": True, "mode": matrix["mode"], "tested_lightweight_combinations": len(matrix["printCombinations"]),
+rendered_pngs = sorted(p.name for p in directory.glob("*-page-*.png"))
+assert rendered_pngs, "Mandatory physical PDF page images were not emitted"
+report = {"passed": True, "mode": matrix["mode"], "rendered_page_png_count": len(rendered_pngs), "rendered_page_pngs": rendered_pngs,
+          "tested_lightweight_combinations": len(matrix["printCombinations"]),
           "rendered_pdfs": len(verified), "results": verified, "record_positions": all_positions}
 (directory / "pdf-verification.json").write_text(json.dumps(report, indent=2) + "\n")
 print(json.dumps(report, indent=2))
