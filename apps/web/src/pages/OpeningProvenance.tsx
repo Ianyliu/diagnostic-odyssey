@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useState } from "react";
 import { canReplayOpening, markOpeningSeen, OPENING_DURATION_MS, reducedMotionRequested, sessionStorageOrNull, shouldPlayOpening } from "./openingMotion";
 import { getBrowserMediaQuery, readMediaQueryMatches, subscribeToMediaQuery } from "../browserMedia";
 
@@ -88,7 +88,7 @@ interface OpeningProvenanceProps {
 
 export function OpeningProvenance({ playing, runId, reducedMotion, announcement, onReplay }: OpeningProvenanceProps) {
   return <figure className={"overview-provenance" + (playing ? " is-playing" : "")} data-opening-state={playing ? "playing" : "complete"}>
-    <div className="workspace-preview" key={runId}>
+    <div className="workspace-preview" data-replay-cycle={runId % 2}>
       <div className="preview-chrome">
         <span className="preview-brand-dot" aria-hidden="true" />
         <div className="preview-chrome-label">
@@ -99,6 +99,8 @@ export function OpeningProvenance({ playing, runId, reducedMotion, announcement,
           <span aria-hidden="true">↻</span> Replay animation
         </button>
       </div>
+      {/* Only animated content remounts; the Replay control retains DOM identity and keyboard focus. */}
+      <Fragment key={runId}>
       <div className="preview-progress" aria-hidden="true"><span /></div>
       <div className="preview-body">
         <div className="preview-lanes" role="group" aria-label="Evidence roles remain separate">
@@ -147,6 +149,7 @@ export function OpeningProvenance({ playing, runId, reducedMotion, announcement,
         <span>ONE AUDITABLE ARTIFACT</span>
         <span className="preview-footer-state">{reducedMotion ? "Static view · reduced motion" : "Provenance intact"}</span>
       </div>
+      </Fragment>
     </div>
     <figcaption>
       Conceptual workflow, not a quantitative model. National estimates, local context, and analyst assumptions stay separate in the Planning Brief.

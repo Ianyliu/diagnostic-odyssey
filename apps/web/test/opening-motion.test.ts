@@ -111,6 +111,9 @@ test("opening uses session storage and remains decorative", () => {
   assert.match(source, /pointerdown/);
   assert.match(source, /keydown/);
   assert.match(source, /prefers-reduced-motion: reduce/);
+  assert.match(source, /<Fragment key=\{runId\}>/);
+  assert.match(source, /className="workspace-preview" data-replay-cycle=\{runId % 2\}/);
+  assert.doesNotMatch(source, /className="workspace-preview" key=\{runId\}/);
 });
 
 test("manual replay is independent of the once-per-session flag", async () => {
@@ -132,6 +135,7 @@ test("first-screen panel and all interpretation boundaries survive compact styli
   for(const label of ["Replay animation","visibilitychange","pagehide","not a combined scientific score"])
     assert.ok(panel.includes(label),label);
   assert.match(css,/@keyframes circuit-route/);
+  assert.match(css,/@keyframes workspace-unfold-replay/);
   assert.match(css,/@media \(prefers-reduced-motion: reduce\)/);
   assert.match(css,/\.preview-output \{ display: grid;/);
 });
