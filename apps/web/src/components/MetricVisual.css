@@ -86,3 +86,22 @@
     grid-column: 1;
   }
 }
+
+/* A vertical tick is a symbolic location marker, never an inflated CI span. */
+.metric-visual-narrow-interval {
+  position: absolute;
+  top: -5px;
+  height: 22px;
+  width: 2px;
+  background: var(--do-brand-navy);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+.metric-visual-narrow-interval.is-range {
+  background: transparent;
+  border-left: 2px dashed var(--do-brand-navy);
+}
+@media (forced-colors: active) {
+  .metric-visual-narrow-interval { background: CanvasText; }
+  .metric-visual-narrow-interval.is-range { background: transparent; border-color: CanvasText; }
+}

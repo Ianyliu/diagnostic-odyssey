@@ -40,6 +40,19 @@ await check("reviewed OpenGraph preview is a served, valid 1200x630 PNG", async 
   await writeFile(`${output}/reviewed-og-image.png`, bytes);
   return {width: 1200, height: 630, bytes: bytes.length};
 });
+await check("Burden charts expose numeric confidence bounds and distinguish descriptive IQR",async()=>{
+ const page=await pageAt("/burden",390);
+ const tracks=page.locator('.burden-domain-stack .metric-visual-track[role="img"]');
+ const labels=await tracks.evaluateAll(nodes=>nodes.map(n=>n.getAttribute("aria-label")??""));
+ assert.ok(labels.some(label=>/95% CI.*to/.test(label)), "numeric sampling CI is accessible");
+ assert.ok(labels.some(label=>/Interquartile range.*not a confidence interval/i.test(label)), "IQR is distinguished from sampling CI");
+ const normal=page.locator('.burden-domain-stack .metric-visual-interval').first();
+ assert.ok(await normal.count()>0);
+ const style=await normal.getAttribute("style");
+ assert.match(style,/left: [0-9.]+%; width: [0-9.]+%/);
+ await overflow(page);
+ return {charts:labels.length,firstInterval:style};
+});
 for (const width of [320, 360, 390, 768, 1024, 1440]) for (const theme of ["light", "dark"]) {
   await check(`default guided layouts ${width} ${theme}`, async () => {
     const page = await pageAt("/", width, theme);
