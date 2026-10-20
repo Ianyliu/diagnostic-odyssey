@@ -139,13 +139,14 @@ try {
       await page.getByRole("button", {name: "Add to data requests", exact: true}).click();
       await page.getByLabel("Test assumption").selectOption("reach");
       await page.getByRole("button", {name: "Add to data requests", exact: true}).click();
+      await page.locator("#sensitivity").getByRole("link", {name: "Review data request", exact: true}).click();
       const selected = page.locator(".data-request-sheet input[type='checkbox']");
       assert.equal(await selected.count(), 2);
       assert.equal(await selected.evaluateAll(nodes => nodes.filter(n => n.checked).length), 2);
       await nav(page, "Planning brief");
       assert.equal(JSON.parse(await jsonBytes(page)).data_requests.length, 2);
-      await nav(page, "Pilot planner");
-      await selected.first().uncheck();
+      await nav(page, "Data requests");
+      await page.locator(".data-request-sheet input[type='checkbox']").last().uncheck();
       await nav(page, "Planning brief");
       assert.equal(JSON.parse(await jsonBytes(page)).data_requests.length, 1);
       await nav(page, "Pilot planner");
