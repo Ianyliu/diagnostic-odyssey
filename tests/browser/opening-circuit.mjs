@@ -1,4 +1,4 @@
-/* global document, window, getComputedStyle, innerWidth, PerformanceObserver */
+/* global process, console, document, window, getComputedStyle, innerWidth, PerformanceObserver */
 import assert from "node:assert/strict";
 import {createRequire} from "node:module";
 import {mkdir,writeFile} from "node:fs/promises";
