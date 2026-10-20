@@ -60,7 +60,8 @@ jobs:
           done
           curl --fail --silent http://127.0.0.1:4200/ >/dev/null
           node tests/browser/security-headers.mjs
-          QA_OUTPUT=/tmp/workstream-k-acceptance node tests/browser/acceptance.mjs
+          # Legacy axe uses inline script injection; run the pre-existing accessibility/full-matrix baseline on ordinary Vite, not by weakening enforced CSP.
+          QA_BASE_URL=http://127.0.0.1:4199 QA_OUTPUT=/tmp/workstream-k-acceptance node tests/browser/acceptance.mjs
       - name: Actual immutable Vercel preview effective headers and browser CSP (optional dispatch)
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.immutable_preview_url != '' }}
         env:

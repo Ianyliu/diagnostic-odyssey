@@ -4,7 +4,7 @@
  */
 /* global process, console, window, document, getComputedStyle, localStorage, fetch, performance, setTimeout */
 import assert from "node:assert/strict";
-import { mkdir,writeFile } from "node:fs/promises";
+import { mkdir,readFile,writeFile } from "node:fs/promises";
 import { createRequire } from "node:module";
 const require = createRequire(process.env.PLAYWRIGHT_RUNNER ?? import.meta.url);
 const { chromium } = require("playwright");
@@ -99,6 +99,25 @@ for(const [theme,width] of [["light",390],["dark",1440]]){
  });
  }
 }
+await check("protected Brief: actual canonical JSON download, physical PDF, keyboard focus",async()=>{
+ const context=await browser.newContext({acceptDownloads:true,reducedMotion:"reduce",viewport:{width:390,height:900}});
+ const page=await context.newPage();
+ await page.goto(base+"/brief");
+ await page.locator("main h1").waitFor();
+ await page.keyboard.press("Tab");
+ assert.equal(await page.locator(":focus").innerText(),"Skip to main content");
+ const event=page.waitForEvent("download");
+ await page.getByRole("button",{name:"Export JSON companion"}).click();
+ const download=await event;
+ const companion=JSON.parse(await readFile(await download.path(),"utf8"));
+ assert.equal(companion.burden_findings?.length,21,"reviewed national findings survive CSP");
+ assert.equal(companion.local_context?.length,34,"reviewed default local context survives CSP");
+ const pdf=await page.pdf({format:"Letter",printBackground:true});
+ assert.equal(pdf.subarray(0,5).toString(),"%PDF-");
+ assert.ok(pdf.length>15000,"nonempty physical browser PDF");
+ await context.close();
+ return {national:companion.burden_findings.length,local:companion.local_context.length,pdfBytes:pdf.length};
+});
 await check("CSP actually rejects injected inline scripts, styles, and frames",async()=>{
  const context=await browser.newContext();
  const page=await context.newPage();

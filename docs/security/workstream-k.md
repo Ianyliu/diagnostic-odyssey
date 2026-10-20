@@ -47,8 +47,12 @@ Do not merge or promote to production without independent D and PM approval.
    minimal header-simulation proxy**. It inspects HTTP headers and MIME,
    checks direct SPA routes, Chrome light/dark before DOMContentLoaded,
    reduced-motion, React CSSOM chart styling, no accidental egress, negative
-   script/style injection and frame embedding, then reuses the full original
-   acceptance and axe/JSON/PDF browser suite. **This is CSP enforcement testing
+   script/style injection and frame embedding, and exercises the
+   protected Brief JSON download/physical PDF. The full pre-existing
+   acceptance/axe suite runs against the ordinary local Vite preview because
+   that legacy harness injects the axe library with an inline script tag (which
+   the enforced CSP deliberately blocks). This deliberately separates app
+   accessibility regression from header-enforcement checks. **This is CSP enforcement testing
    but not proof that Vercel serves the configured headers.**
 3. Separately run the `workflow_dispatch` job with an actual **immutable
    Vercel preview URL** (no production host) after its deployment reaches READY;
