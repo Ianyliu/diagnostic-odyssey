@@ -5,7 +5,8 @@ import {
 } from "@diagnostic-odyssey/contracts";
 import {
   formatEstimateInterval,
-  formatEstimateValue
+  formatEstimateValue,
+  formatIntervalLabel
 } from "../data/formatEstimateValue";
 import { formatReleaseStatusLabel } from "../data/presentationLabels";
 import { DistributionSummaryText } from "./DistributionSummaryText";
@@ -56,10 +57,9 @@ export function BurdenMeasureList({estimates}: {estimates: Estimate[]}) {
             unit={estimate.unit}
             low={estimate.distribution_summary?.p25 ?? estimate.interval_low}
             high={estimate.distribution_summary?.p75 ?? estimate.interval_high}
-            intervalLabel={estimate.distribution_summary ? "Interquartile range (25th–75th percentile; not a confidence interval)" : estimate.interval_type}
+            intervalLabel={estimate.distribution_summary ? "Interquartile range (25th–75th percentile; not a confidence interval)" : formatIntervalLabel(estimate.interval_type)}
+            intervalStyle={estimate.distribution_summary ? "range" : "confidence"}
             pointLabel={estimate.distribution_summary ? "Survey-weighted mean" : "Point estimate"}
-            source={estimate.source_ref}
-            universe={estimate.universe}
           />}
           {!reviewed && <small className="measure-release-status">
             {formatReleaseStatusLabel(estimate.release_status)}

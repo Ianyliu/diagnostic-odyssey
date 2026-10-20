@@ -53,6 +53,11 @@
   line-height: 1.3;
 }
 
+.metric-visual-axis span { white-space: nowrap; }
+.metric-visual-interval.is-range { top: 1px; height: 10px; box-sizing: border-box;
+  border: 2px solid color-mix(in srgb, var(--do-brand-teal) 70%, var(--do-chart-1));
+  background: transparent; }
+
 .metric-visual-meta {
   justify-content: flex-start;
   flex-wrap: wrap;
@@ -66,4 +71,37 @@
 @media (forced-colors: active) {
   .metric-visual-track { border: 1px solid CanvasText; background: Canvas; }
   .metric-visual-interval, .metric-visual-point { background: Highlight; }
+}
+
+/* Between mobile stacking and desktop two-column ledger, long native-unit CI
+   labels must not force a narrow measurement column beyond the 768px viewport.
+   This applies only to Burden ledgers, never Local Context or Brief selection. */
+@media (min-width: 701px) and (max-width: 900px) {
+  .burden-ledger-page .burden-domain-stack .burden-measure-row,
+  .domain-ledger-page .domain-card .burden-measure-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .burden-ledger-page .burden-domain-stack .burden-measure-row .burden-measure-details,
+  .domain-ledger-page .domain-card .burden-measure-row .burden-measure-details {
+    grid-column: 1;
+  }
+}
+
+/* A vertical tick is a symbolic location marker, never an inflated CI span. */
+.metric-visual-narrow-interval {
+  position: absolute;
+  top: -5px;
+  height: 22px;
+  width: 2px;
+  background: var(--do-brand-navy);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+.metric-visual-narrow-interval.is-range {
+  background: transparent;
+  border-left: 2px dashed var(--do-brand-navy);
+}
+@media (forced-colors: active) {
+  .metric-visual-narrow-interval { background: CanvasText; }
+  .metric-visual-narrow-interval.is-range { background: transparent; border-color: CanvasText; }
 }

@@ -69,10 +69,12 @@ test("all quantitative burden and local-context rows expose native-unit mini vis
   assert.match(burden, /<MetricVisual/);
   assert.match(local, /<MetricVisual/);
   assert.match(visual, /role="img"/);
-  assert.match(visual, /No uncertainty interval is displayed/);
+  const geometry = readSource("../src/data/metricGeometry.ts");
+  assert.match(geometry, /No uncertainty interval is displayed/);
   assert.match(visual, /intervalLabel/);
   assert.match(burden, /value=\{estimate\.value\}/);
-  assert.match(visual, /formatMetricValue/);
+  assert.match(visual, /metricAriaDescription/);
+  assert.match(geometry, /formatMetricValue/);
   assert.match(burden, /pointLabel=\{estimate\.distribution_summary/);
 });
 
