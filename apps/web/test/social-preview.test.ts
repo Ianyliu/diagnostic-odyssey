@@ -10,7 +10,7 @@ test("absolute social URL and image metadata target the approved Vercel domain",
 });
 test("social image metadata never advertises causal or unreviewed U09 claims",()=>{
  assert.doesNotMatch(html,/4\.8%|U09|attributable savings|causal ROI/i);
- assert.match(html,/all-cause spending is not attributable cost/i);
+ assert.match(html,/all-cause burden is not attributable cost/i);
 });
 
 test("OG artwork is version-independent, nonnumeric and uses only local deterministic inputs",()=>{
@@ -33,5 +33,5 @@ test("social artwork alt is literal, matching across OpenGraph and Twitter",()=>
  assert.match(og,/Long COVID goes beyond the bill/);
  for (const label of ["reviewed national burden","local implementation","transparent pilot plans"]) assert.match(og,new RegExp(label,"i"));
  assert.match(og,/all-cause burden is not attributable cost/i);
- assert.doesNotMatch(og,/\\b(?:confidence intervals?|\\d+%|CI)\\b/i);
+ assert.doesNotMatch(og,/\b(?:confidence intervals?|\d+%|CI)\b/i);
 });
