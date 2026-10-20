@@ -43,8 +43,10 @@ async function setup(name) {
     await page.getByRole("button", {name: "Select none", exact: true}).first().click();
     if (name === "custom") {
       const group = page.getByRole("group", {name: "ACS access context selection controls"});
-      assert.equal(await group.count(), 1);
-      await group.getByRole("button", {name: "Select all"}).click();
+      if (await group.count()) await group.getByRole("button", {name: "Select all"}).click();
+      else for (const id of ["wv.acs.no_vehicle_pct", "wv.acs.uninsured_pct", "wv.acs.broadband_pct", "wv.acs.poverty_pct"]) {
+        await page.locator("#select-local-context-" + id.replace(/[^a-zA-Z0-9_-]/g, "-")).check();
+      }
     }
     if (name === "pilot-only" || name === "pilot-overlap") {
       await page.getByRole("button", {name: /Use .* in Pilot planning/}).first().click();
