@@ -69,3 +69,35 @@ Prohibited: “attributable cost,” “additional cost caused by Long COVID,”
 Run only where authorized raw `h256.dta` or the verified source ZIP exists; enforce the existing `analysis/r/config/meps_hc256_source_integrity.json` SHA-256 policy. **Do not download, invent or reconstruct respondent-level records here.** The runner explicitly refuses missing raw data and writes only to `artifacts/generated/meps24-comparator-candidate/` on successful validation. It MUST NOT write `artifacts/reviewed/`, the web bundle or ordinary estimate IDs.
 
 Source: https://meps.ahrq.gov/data_stats/download_data/pufs/h256/h256doc.shtml ; codebook links in `analysis/r/comparator/comparator_config.json`.
+
+## 8. Workstream F corrections — pending fresh independent delta review
+
+This addendum supersedes any broader earlier sensitivity/precision implication. The original review at `a33f1ebf3f0f7d60b712f5d5b1ec24ec0db06d7d` requested F1–F8 changes. Changes on the *same draft PR branch* are candidate code for **a new independent review**, not an approval.
+
+**Adjusted covariance/precision (F1, F8).** Joint 3-by-3 bootstrap covariance for pooled standardized noncurrent/current means and their contrast is checked for finite values, symmetry within relative numerical tolerance, nonnegative marginal variances, and positive-semidefiniteness within tolerance. Materially negative diagonal/eigenvalues are an error; they must not be truncated to zero. The preliminary numerical advisory checks adjusted and unadjusted means, positive finite contrast SE, valid CIs, and all replicates. A near-zero signed contrast is *not* judged by its RSE; unadjusted and adjusted mean RSE checks are advisory. `numerical_advisory_passed` **never authorizes publication**. Formal disclosure review remains separate.
+
+**Bootstrap observability (F3, F4).** Design-bootstrap weights are generated from the entire PERSON design *before* restricting to the primary or interview-insurance complete-case domain. Both weighted two-part stages refit in every replicate. Zero and positive spending support is required in **each** group; rank deficient, nonconvergent, warning-generating or near-separated results fail closed. If `withReplicates` errors, diagnostics rerun the point fit and iterate **the exact generated replicate-weight columns** to identify the first failed replicate index with stage/group/reason. No replicate is silently removed and no unplanned variance fallback is used. A failure before writing the artifact is a documented execution blocker; stdout/stderr from an authorized run must be preserved. Multiple bootstrap sizes/stability checks remain **independent empirical review work**, not claimed completed by the fixed-seed 400-replicate candidate.
+
+**Sensitivity contrast (F5, F6).** The insurance-adjusted model is compared with an otherwise identical **base model on the same interview-insurance-complete reference records**, with identical full-design bootstrap construction and seed. The main base model on its broader primary complete-case universe is still retained, but comparison of those two is a **composition** comparison, not an insurance coefficient effect. The known-no-history group contrast is **unadjusted only**. Its adjusted extension is **deferred**, not claimed. Age/sex/region/panel coding, interview-insurance missingness and calendar-year insurance are reported separately. Groupwise outcome-observed/primary-complete/insurance-complete **unweighted and weighted** loss is emitted.
+
+**Diagnostic-only influence and support (F2, F7).** `comparator_influence_diagnostics()` adds group Kish effective n, positive/zero counts, weighted concentration, age-band by sex/region/panel cross-cell overlap tallies, one-PSU deletion *point-contrast* perturbations and top-one/top-five high-expenditure *point-contrast* perturbations. These are **descriptive influence probes, not valid replacement Taylor SEs, not formal imputations, and not primary trimmed estimates**. No full two-part refit under trimming is implied; that remains **deferred** pending prespecified scientific consideration. `comparator_model_audit()` adds per-group fitted probability extremes, both exposure-scenario prediction bounds, coefficient ranks/magnitudes and design-robust coefficient SE. Extreme or nonoverlapping patterns must be evaluated by a scientist; observed overlap is not proof of causal exchangeability.
+
+**Statistical and software limits.** Kish n_eff does not incorporate clustering and is not interchangeable with design df. Leave-one-PSU and high-cost-case deletion results are deterministic sensitivity diagnostics only. Two-part model comparisons remain observational, potentially model-dependent and subject to within-2024 status/spending timing mismatch. All candidate aggregates remain local **preliminary** outputs under `artifacts/generated`; some diagnostic cell aggregates could be disclosure-sensitive and must not be publicly uploaded before suppression review. Payer/source-of-payment decomposition is **out of scope**, separate Issue #31 work.
+
+### Explicit implementation inventory
+
+| Analysis | Status |
+|---|---|
+| Covariance-aware unadjusted primary group contrast | **Implemented, retained** |
+| Two-part pooled standardized primary adjusted contrast and joint bootstrap | **Implemented; synthetic-tested; real-data review pending** |
+| Known-no-history restricted comparator | **Implemented, unadjusted only** |
+| Primary covariate-complete vs outcome-observed unadjusted | **Implemented** |
+| Interview-insurance adjusted model vs primary base on *identical* insurance-complete sample | **Implemented; empirical comparison pending** |
+| Groupwise sample loss, Kish n, sparse cells, scenario probabilities, PSU/expense tail perturbations | **Diagnostic only; scientific interpretation pending** |
+| Adjusted no-history and refit-under-tail sensitivity | **Deferred** |
+| Alternative spending-family robustness, imputation, formal overlap weights | **Deferred; not required for this code candidate** |
+| Payer/source-of-payment decomposition or attributable-cost inference | **Out of scope** |
+
+### Engineering versus statistical evidence
+
+Passing R synthetic tests verifies guards and representative algebra, not real HC-256 fit stability, 400-replicate precision adequacy, population overlap, inference validity, disclosure safety or publication readiness. A scientifically acceptable candidate still requires verified raw source bytes, independent numerical reproduction, a fresh F delta review, and separate PM scientific-release authorization.
