@@ -179,6 +179,28 @@ comparator_validate_covariance <- function(values, covariance, tolerance = 1e-8)
   v
 }
 
+# The third standardized statistic MUST be current - noncurrent in every
+# replicate. A standalone PSD covariance is insufficient if this identity breaks.
+comparator_validate_contrast_covariance <- function(values, covariance,
+                                                    tolerance = 1e-7) {
+  v <- comparator_validate_covariance(values, covariance)
+  if (length(values) != 3L) {
+    stop("Expected two standardized means and their difference.", call. = FALSE)
+  }
+  cvec <- c(-1, 1)
+  expected_variance <- as.numeric(t(cvec) %*% v[1:2, 1:2] %*% cvec)
+  expected_cov <- as.vector(v[1:2, 1:2] %*% cvec)
+  scale <- max(1, max(abs(v)))
+  if (abs(values[[3]] - (values[[2]] - values[[1]])) >
+        tolerance * max(1, max(abs(values))) ||
+      abs(v[3, 3] - expected_variance) > tolerance * scale ||
+      max(abs(v[1:2, 3] - expected_cov)) > tolerance * scale) {
+    stop("Adjusted contrast covariance does not reconcile to joint subgroup means.",
+         call. = FALSE)
+  }
+  v
+}
+
 comparator_t_ci <- function(values, covariance, df, level = 0.95) {
   covariance <- comparator_validate_covariance(values, covariance)
   if (length(df) != 1L || !is.finite(df) || df <= 0 ||
@@ -409,7 +431,7 @@ comparator_adjusted <- function(full_design, replicates = 400L,
   if (length(values) != 3L || !identical(dim(v), c(3L, 3L))) {
     stop("Adjusted joint replicate covariance missing.", call. = FALSE)
   }
-  v <- comparator_validate_covariance(values, v)
+  v <- comparator_validate_contrast_covariance(values, v)
   full_df <- survey_df(full_design, "full PERSON / PERWT24F")
   intervals <- comparator_t_ci(values, v, full_df)
   names(intervals) <- c("noncurrent_mean", "current_mean", "current_minus_noncurrent")
@@ -451,7 +473,7 @@ comparator_precision_screen <- function(unadjusted, adjusted, diagnostics,
     TRUE
   }
   cov_ok <- tryCatch({
-    comparator_validate_covariance(
+    comparator_validate_contrast_covariance(
       vapply(c("noncurrent_mean", "current_mean", "current_minus_noncurrent"),
              function(x) adjusted$results[[x]]$estimate, numeric(1)),
       as.matrix(adjusted$covariance)
@@ -461,6 +483,12 @@ comparator_precision_screen <- function(unadjusted, adjusted, diagnostics,
   checks <- list(
     unadjusted_sample = all(unlist(diagnostics$valid_spending_n[groups]) >= min_valid_n),
     positive_support = all(unlist(diagnostics$positive_spending_n[groups]) >= min_positive_n),
+    adjusted_complete_sample = all(vapply(groups, function(g)
+      diagnostics$complete_case_flow_by_group[[g]]$primary_complete_n >= min_valid_n,
+      logical(1))),
+    adjusted_positive_support = all(vapply(groups, function(g)
+      diagnostics$complete_case_flow_by_group[[g]]$primary_complete_positive_n >= min_positive_n,
+      logical(1))),
     weighted_denominators_positive = all(unlist(diagnostics$weight_by_group[groups]) > 0),
     adjusted_replicates_complete = identical(adjusted$replicates_requested,
                                              adjusted$replicates_successful),
