@@ -12,3 +12,12 @@ test("social image metadata never advertises causal or unreviewed U09 claims",()
  assert.doesNotMatch(html,/4\.8%|U09|attributable savings|causal ROI/i);
  assert.match(html,/all-cause spending is not attributable cost/i);
 });
+
+test("OG artwork is version-independent, nonnumeric and uses only local deterministic inputs",()=>{
+ const source=readFileSync(new URL("../../../scripts/og/render-og-image.mjs",import.meta.url),"utf8");
+ assert.doesNotMatch(source,/meps-2024-long-covid-candidate|bundle\.json|selectHeadlineFindings|readFileSync|estimate\.value/);
+ assert.match(source,/REVIEWED NATIONAL BURDEN/);
+ assert.match(source,/LOCAL IMPLEMENTATION/);
+ assert.match(source,/TRANSPARENT PILOT PLANS/);
+ assert.match(source,/NO CAUSAL SAVINGS OR ROI/);
+});
