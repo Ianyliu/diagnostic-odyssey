@@ -3,6 +3,8 @@ source(file.path(Sys.getenv("DIAGNOSTIC_ODYSSEY_ROOT"),
                  "analysis", "r", "comparator", "comparator_methods.R"))
 source(file.path(Sys.getenv("DIAGNOSTIC_ODYSSEY_ROOT"),
                  "analysis", "r", "comparator", "model_audit.R"))
+source(file.path(Sys.getenv("DIAGNOSTIC_ODYSSEY_ROOT"),
+                 "analysis", "r", "comparator", "influence_diagnostics.R"))
 
 synthetic_comparator_frame <- function() {
   grid <- expand.grid(i = seq_len(16), psu = 1:2, stratum = 1:8)
@@ -19,7 +21,7 @@ synthetic_comparator_frame <- function() {
     SEX = 1L + ((grid$i + grid$stratum) %% 2),
     REGION31 = 1L + ((grid$i + grid$psu) %% 4),
     PANEL = 28L + ((grid$i + grid$stratum + grid$psu) %% 2),
-    INS31X = 1L + ((grid$i + grid$stratum) %% 2),
+    INS31X = 1L + ((grid$i %/% 3 + grid$stratum + grid$psu) %% 2),
     INSCOV24 = 1L + ((grid$i + grid$psu + grid$stratum) %% 3),
     TOTEXP24 = spend,
     do_age_18_64 = rep(TRUE, n),
@@ -144,7 +146,7 @@ testthat::test_that("unsupported small samples do not pass precision screen", {
     unadjusted, fake_adjusted, diagnostics,
     min_valid_n = 100000L, min_positive_n = 30000L
   )
-  testthat::expect_false(gate$public_display_recommended)
+  testthat::expect_false(gate$numerical_advisory_passed)
   testthat::expect_true(gate$scientific_review_required)
 })
 
@@ -164,4 +166,132 @@ testthat::test_that("survey-stage audit reports fit and effective support on syn
   testthat::expect_true(all(unlist(audit$stage_positive$observed_conditional_mean_range) > 0))
   testthat::expect_true(all(vapply(audit$positive_spending_support,
                                   function(x) x$unweighted_n > 0, logical(1))))
+})
+
+
+testthat::test_that("covariance helper rejects asymmetry, negative diagonal and non-PSD matrices", {
+  testthat::expect_equal(comparator_t_ci(c(4, 6), diag(c(1, 2)), df = 10)[[1]]$estimate, 4)
+  testthat::expect_error(comparator_t_ci(c(4, 6), matrix(c(1, 0, 1, 1), 2), 10),
+                         "not symmetric")
+  testthat::expect_error(comparator_t_ci(c(4, 6), diag(c(-0.2, 1)), 10),
+                         "negative marginal variance")
+  testthat::expect_error(comparator_t_ci(c(4, 6), matrix(c(1, 2, 2, 1), 2), 10),
+                         "not positive semidefinite")
+  testthat::expect_error(comparator_t_ci(c(4, 6), matrix(c(NaN, 0, 0, 1), 2), 10),
+                         "Nonfinite")
+  valid <- matrix(c(1, 0.3, 0.3, 1), 2)
+  testthat::expect_equal(comparator_validate_covariance(c(1, 2), valid), valid)
+})
+
+testthat::test_that("adjusted joint covariance difference is algebraically preserved", {
+  d <- comparator_prepare(synthetic_comparator_frame())
+  des <- build_meps_design(d, "PERWT24F")
+  fit <- comparator_adjusted(des, replicates = 16L, seed = 83L)
+  v <- fit$covariance
+  testthat::expect_equal(
+    fit$results$current_minus_noncurrent$standard_error^2,
+    v[1, 1] + v[2, 2] - 2 * v[1, 2], tolerance = 1e-6)
+  testthat::expect_equal(
+    fit$results$current_minus_noncurrent$estimate,
+    fit$results$current_mean$estimate - fit$results$noncurrent_mean$estimate,
+    tolerance = 1e-7)
+  testthat::expect_identical(fit$bootstrap_failure_count, 0L)
+  testthat::expect_length(fit$replicate_failures, 0L)
+})
+
+testthat::test_that("adjusted screening explicitly tests contrast covariance and means", {
+  d <- comparator_prepare(synthetic_comparator_frame())
+  des <- build_meps_design(d, "PERWT24F")
+  unadj <- comparator_unadjusted(des)
+  diag <- comparator_domain_diagnostics(d, des)
+  adj <- comparator_adjusted(des, 16L, seed = 101L)
+  ok <- comparator_precision_screen(unadj, adj, diag,
+                                     min_valid_n = 1L, min_positive_n = 1L,
+                                     max_mean_rse = 100)
+  testthat::expect_true(ok$screening_checks$adjusted_covariance_finite_symmetric_psd)
+  testthat::expect_true(ok$screening_checks$adjusted_contrast_precision)
+  testthat::expect_true(ok$screening_checks$current_adjusted_mean_rse_ok)
+  testthat::expect_false(ok$publication_approved)
+  adj$covariance[1, 1] <- -1
+  bad <- comparator_precision_screen(unadj, adj, diag)
+  testthat::expect_false(bad$screening_checks$adjusted_covariance_finite_symmetric_psd)
+  testthat::expect_false(bad$numerical_advisory_passed)
+})
+
+testthat::test_that("positive AND zero support, rank failure, missingness fail explicitly", {
+  d <- synthetic_comparator_frame()
+  d$TOTEXP24[d$do_current_long_covid] <- 100
+  prepared <- comparator_prepare(d)
+  des <- build_meps_design(prepared, "PERWT24F")
+  testthat::expect_error(comparator_stage_predictions(
+    stats::weights(des), des$variables, ".do_cmp_group"),
+    "stage=support group=current.*zero=0")
+  testthat::expect_error(comparator_adjusted(des, 16L, seed = 11L),
+                         "Bootstrap full_sample: stage=support|Bootstrap replicate=")
+
+  d <- synthetic_comparator_frame()
+  d$REGION31[] <- 1L
+  prepared <- comparator_prepare(d)
+  des <- build_meps_design(prepared, "PERWT24F")
+  testthat::expect_error(comparator_stage_predictions(
+    stats::weights(des), des$variables, ".do_cmp_group"),
+    "stage=binary_logit|rank-deficient")
+
+  d <- synthetic_comparator_frame()
+  d$TOTEXP24[1:3] <- -1
+  d$REGION31[4:8] <- -1
+  d$INS31X[9:12] <- -1
+  prepared <- comparator_prepare(d)
+  des <- build_meps_design(prepared, "PERWT24F")
+  flow <- comparator_domain_diagnostics(prepared, des)$complete_case_flow_by_group
+  for (g in c("current", "noncurrent")) {
+    x <- flow[[g]]
+    testthat::expect_equal(x$primary_complete_n + x$primary_excluded_from_classifiable_n,
+                           x$classifiable_n)
+    testthat::expect_equal(x$primary_complete_weight + x$primary_excluded_from_classifiable_weight,
+                           x$classifiable_weight, tolerance = 1e-7)
+    testthat::expect_equal(x$primary_complete_n,
+                           x$insurance_complete_n + x$insurance_excluded_from_primary_n)
+  }
+})
+
+testthat::test_that("insurance coefficients are compared on identical analytic sample", {
+  d <- synthetic_comparator_frame()
+  d$INS31X[c(2, 23, 44)] <- -1
+  d <- comparator_prepare(d)
+  des <- build_meps_design(d, "PERWT24F")
+  original <- comparator_adjusted(des, 16L, seed = 103L)
+  paired_base <- comparator_adjusted(des, 16L, seed = 103L,
+                                     reference_sample = "insurance")
+  with_ins <- comparator_adjusted(des, 16L, seed = 103L,
+                                  reference_sample = "insurance", insurance = TRUE)
+  testthat::expect_gt(original$unweighted_complete_n, paired_base$unweighted_complete_n)
+  testthat::expect_equal(paired_base$unweighted_complete_n, with_ins$unweighted_complete_n)
+  testthat::expect_equal(paired_base$weighted_complete_by_group, with_ins$weighted_complete_by_group)
+  testthat::expect_identical(with_ins$reference_sample, "insurance")
+  testthat::expect_error(comparator_adjusted(des, 16L, insurance = TRUE),
+                         "insurance-complete")
+  testthat::expect_true(all(is.finite(
+    vapply(with_ins$results, function(x) x$estimate, numeric(1)))))
+})
+
+testthat::test_that("Kish, sparse cells, extreme weights and spending-tail effects audited", {
+  d <- synthetic_comparator_frame()
+  d$PERWT24F[1] <- 1e6
+  d$TOTEXP24[1] <- 1e9
+  d$REGION31[c(4, 18)] <- -1
+  p <- comparator_prepare(d)
+  des <- build_meps_design(p, "PERWT24F")
+  audit <- comparator_influence_diagnostics(des)
+  testthat::expect_identical(audit$weight, "PERWT24F")
+  testthat::expect_lte(audit$group$noncurrent$kish_effective_n,
+                       audit$group$noncurrent$unweighted_n)
+  testthat::expect_lte(audit$group$current$kish_effective_n,
+                       audit$group$current$unweighted_n)
+  testthat::expect_gt(audit$joint_covariate_overlap$observed_joint_cells_n, 0)
+  testthat::expect_gt(audit$psu_influence$n_psu_examined, 1)
+  testthat::expect_true(is.finite(audit$psu_influence$max_absolute_change_in_contrast))
+  testthat::expect_true(is.finite(audit$spending_tail$delete_top_one_point_contrast))
+  testthat::expect_true(audit$spending_tail$no_records_trimmed_in_primary_model)
+  testthat::expect_true(audit$spending_tail$group$current$n > 0)
 })
