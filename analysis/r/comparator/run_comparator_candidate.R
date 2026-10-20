@@ -48,44 +48,72 @@ input_sha256 <- assert_sha256_matches(
   "MEPS HC-256 comparator analytical input"
 )
 
-data <- construct_long_covid_cohort(data)
-data <- comparator_prepare(data)
-full_design <- build_meps_design(data, "PERWT24F")
-diagnostics <- comparator_domain_diagnostics(data, full_design)
-
-unadjusted <- comparator_unadjusted(full_design)
-unadjusted_covariate_complete <- comparator_unadjusted(
-  full_design, complete_case_only = TRUE
-)
-unadjusted_no_history <- comparator_unadjusted(
-  full_design, group_variable = ".do_cmp_restricted"
-)
-adjusted <- comparator_adjusted(full_design, replicates = 400L, seed = 20261019L)
-adjusted_same_insurance_sample <- comparator_adjusted(
-  full_design, replicates = 400L, seed = 20261019L,
-  reference_sample = "insurance"
-)
-adjusted_insurance <- comparator_adjusted(
-  full_design, replicates = 400L, seed = 20261019L,
-  insurance = TRUE, reference_sample = "insurance"
-)
-screen <- comparator_precision_screen(unadjusted, adjusted, diagnostics)
-model_audit_primary <- comparator_model_audit(full_design)
-model_audit_insurance <- comparator_model_audit(full_design, insurance = TRUE,
-                                               reference_sample = "insurance")
-model_audit_base_insurance_sample <- comparator_model_audit(
-  full_design, reference_sample = "insurance"
-)
-influence_primary <- comparator_influence_diagnostics(full_design)
-influence_insurance <- comparator_influence_diagnostics(full_design,
-                                                       reference_sample = "insurance")
-
 code_commit <- tryCatch(
   trimws(system("git rev-parse HEAD", intern = TRUE, ignore.stderr = TRUE)[[1]]),
   error = function(e) "unknown"
 )
 github_sha <- Sys.getenv("GITHUB_SHA", unset = "")
 assert_code_commit_matches_github_sha(code_commit, github_sha)
+
+stamp <- format(Sys.time(), tz = "UTC", format = "%Y%m%dT%H%M%SZ")
+output_dir <- repo_path("artifacts", "generated",
+                        paste0("meps24-comparator-candidate-", stamp))
+candidate_step <- function(stage, expression) {
+  tryCatch(expression, error = function(e) {
+    dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
+    failure <- list(
+      schema_version = "comparator-execution-failure-v0.1",
+      status = "failed_preliminary_candidate",
+      automatic_release = FALSE, independent_methods_review = "pending",
+      failed_stage = stage,
+      failure_detail = conditionMessage(e),
+      source_id = "meps-hc256-2024",
+      verified_input_dta_sha256 = input_sha256,
+      expected_input_dta_sha256 = source_integrity$expected_extracted_dta_sha256,
+      code_commit = code_commit,
+      github_sha = if (nzchar(github_sha)) github_sha else NULL,
+      bootstrap_specification = list(seed = 20261019L, requested = 400L,
+                                     failed_replicates_dropped = FALSE),
+      R_version = R.version.string,
+      session_info = as.list(capture.output(print(utils::sessionInfo()))),
+      generated_at_utc = format(Sys.time(), tz = "UTC", format = "%Y-%m-%dT%H:%M:%SZ"),
+      notes = "Execution stopped; no comparator estimate published or substituted"
+    )
+    jsonlite::write_json(failure, file.path(output_dir, "failed-candidate.json"),
+                         pretty = TRUE, auto_unbox = TRUE, null = "null")
+    stop("Comparator stage ", stage, " failed; audit file ",
+         file.path(output_dir, "failed-candidate.json"), ": ",
+         conditionMessage(e), call. = FALSE)
+  })
+}
+
+data <- candidate_step("cohort_routing", construct_long_covid_cohort(data))
+data <- candidate_step("covariates", comparator_prepare(data))
+full_design <- candidate_step("person_design", build_meps_design(data, "PERWT24F"))
+diagnostics <- candidate_step("cohort_missingness", comparator_domain_diagnostics(data, full_design))
+
+unadjusted <- candidate_step("unadjusted", comparator_unadjusted(full_design))
+unadjusted_covariate_complete <- candidate_step("unadjusted_complete_case",
+  comparator_unadjusted(full_design, complete_case_only = TRUE))
+unadjusted_no_history <- candidate_step("unadjusted_no_history",
+  comparator_unadjusted(full_design, group_variable = ".do_cmp_restricted"))
+adjusted <- candidate_step("adjusted_primary",
+  comparator_adjusted(full_design, replicates = 400L, seed = 20261019L))
+adjusted_same_insurance_sample <- candidate_step("base_insurance_sample",
+  comparator_adjusted(full_design, replicates = 400L, seed = 20261019L,
+                      reference_sample = "insurance"))
+adjusted_insurance <- candidate_step("adjusted_insurance",
+  comparator_adjusted(full_design, replicates = 400L, seed = 20261019L,
+                      insurance = TRUE, reference_sample = "insurance"))
+screen <- candidate_step("precision", comparator_precision_screen(unadjusted, adjusted, diagnostics))
+model_audit_primary <- candidate_step("model_audit_primary", comparator_model_audit(full_design))
+model_audit_insurance <- candidate_step("model_audit_insurance", comparator_model_audit(
+  full_design, insurance = TRUE, reference_sample = "insurance"))
+model_audit_base_insurance_sample <- candidate_step("model_audit_paired_base",
+  comparator_model_audit(full_design, reference_sample = "insurance"))
+influence_primary <- candidate_step("influence_primary", comparator_influence_diagnostics(full_design))
+influence_insurance <- candidate_step("influence_insurance",
+  comparator_influence_diagnostics(full_design, reference_sample = "insurance"))
 
 zip_path <- hc256_zip_path()
 verified_zip_sha256 <- if (file.exists(zip_path)) {
@@ -126,9 +154,6 @@ provenance <- list(
   github_sha = if (nzchar(github_sha)) github_sha else NULL
 )
 
-stamp <- format(Sys.time(), tz = "UTC", format = "%Y%m%dT%H%M%SZ")
-output_dir <- repo_path("artifacts", "generated",
-                        paste0("meps24-comparator-candidate-", stamp))
 dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
 
 candidate <- list(
