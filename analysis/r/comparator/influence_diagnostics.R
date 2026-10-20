@@ -16,6 +16,13 @@ comparator_overlap_cells <- function(df) {
   x <- table(key, factor(as.character(df$.do_cmp_group),
                          levels = c("noncurrent", "current")))
   if (ncol(x) != 2L) stop("Unexpected overlap group count.", call. = FALSE)
+  outcome_levels <- factor(df$.do_cmp_positive, levels = c(0, 1))
+  support <- table(key, factor(as.character(df$.do_cmp_group),
+                                levels = c("noncurrent", "current")),
+                   outcome_levels)
+  # Counts only; never emit identifying cross-cell labels.
+  zero <- support[, , "0", drop = FALSE][, , 1]
+  positive <- support[, , "1", drop = FALSE][, , 1]
   list(
     dimensions = c("AGE31X bands [18,30),[30,45),[45,65)",
                    "SEX", "REGION31", "PANEL"),
@@ -24,6 +31,12 @@ comparator_overlap_cells <- function(df) {
     one_group_only_n = sum(x[, 1] == 0 | x[, 2] == 0),
     cells_with_any_group_below_5_n = sum(pmin(x[, 1], x[, 2]) < 5),
     smallest_nonempty_cell_unweighted_n = if (any(x > 0)) min(x[x > 0]) else NA_integer_,
+    cells_missing_positive_in_any_present_group_n =
+      sum((x[, 1] > 0 & positive[, 1] == 0) |
+          (x[, 2] > 0 & positive[, 2] == 0)),
+    cells_missing_zero_in_any_present_group_n =
+      sum((x[, 1] > 0 & zero[, 1] == 0) |
+          (x[, 2] > 0 & zero[, 2] == 0)),
     privacy = "No individual records or cell identifiers emitted; small cell counts diagnostic-only."
   )
 }
