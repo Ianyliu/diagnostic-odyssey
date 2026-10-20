@@ -242,6 +242,32 @@ await run("no context and customized category selection print meaningful distinc
   return {none: none.local_context.length, custom: custom.local_context.length};
 });
 
+await run("Pilot-used context is included once even after Select none and print preferences keep identity", async () => {
+  const {page} = await session(390, "light");
+  await navigate(page, "Local context");
+  await page.getByRole("button", {name: "Select none", exact: true}).first().click();
+  const pilotButton = page.getByRole("button", {name: /Use .* in Pilot planning/}).first();
+  const pilotLabel = await pilotButton.getAttribute("aria-label");
+  assert.ok(pilotLabel?.startsWith("Use ") && pilotLabel.endsWith(" in Pilot planning"));
+  await pilotButton.click();
+  await navigate(page, "Planning brief");
+  const before = await exportJson(page, "brief-pilot-only-context");
+  assert.equal(before.local_context.length, 1, "Active Pilot-used record enters Brief despite no checkbox selection");
+  assert.match(pilotLabel, new RegExp(before.local_context[0].label.replace(/[.*+?^${}()|[\]\\]/g, "\\await browser.close();
+")));
+  assert.equal(await page.locator("#brief-local-context .brief-local-context").count(), 1);
+  assert.match(await page.locator(".brief-executive-summary").innerText(), /1 extra via Use in Pilot/);
+  const appendix = page.getByRole("checkbox", {name: /Include detailed local-context records in print/});
+  await appendix.check();
+  await page.emulateMedia({media: "print"});
+  assert.equal(await page.locator(".brief-local-context-opening").isVisible(), true);
+  await page.pdf({path: `${output}/brief-pilot-only-context.pdf`, format: "Letter", printBackground: true});
+  await page.emulateMedia({media: "screen"});
+  await appendix.uncheck();
+  const after = await exportJson(page, "brief-pilot-only-after-print");
+  assert.deepEqual(after, before, "Pilot-only record and canonical generated_at survive all print toggles");
+  return {pilotOnlyRecords: before.local_context.length, recordId: before.local_context[0].indicator_id};
+});
 await browser.close();
 console.log(JSON.stringify(results.map(({name, status, error}) => ({name, status, error})), null, 2));
 if (results.some(row => row.status === "FAIL") || errors.length || externalRequests.length) process.exitCode = 1;
