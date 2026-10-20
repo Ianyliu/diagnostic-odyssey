@@ -18,12 +18,6 @@ const journey: ReadonlyArray<readonly [
   ["4", "Create a planning brief", "Export reviewed evidence, selected context, assumptions, boundaries, and remaining gaps.", "/brief"]
 ];
 
-const roles = [
-  { eyebrow: "01 / REVIEWED EVIDENCE", title: "Start with what the data can say.", body: "Survey-weighted national burden stays descriptive, versioned and bounded by its source universe.", tone: "reviewed" },
-  { eyebrow: "02 / LOCAL CONTEXT", title: "Add implementation reality.", body: "HRSA and ACS data can inform operational judgment without inventing local Long COVID burden.", tone: "context" },
-  { eyebrow: "03 / ANALYST ASSUMPTIONS", title: "Stress-test the plan, not the evidence.", body: "Scenario inputs remain explicit assumptions, not observed interventions or causal savings.", tone: "assumption" }
-] as const;
-
 export function OverviewPage() {
   const opening = useOpeningMotion();
   const {bundle, localContext, localContextStatus} = useArtifact();
@@ -69,13 +63,9 @@ export function OverviewPage() {
 
       <section className="overview-value-prop" aria-labelledby="overview-value-title">
         <div className="overview-section-heading">
-          <p className="visual-kicker">THREE EVIDENCE ROLES</p>
-          <h2 id="overview-value-title">One workspace. Three evidence roles. No black-box blending.</h2>
-        </div>
-        <div className="overview-role-grid">
-          {roles.map(role => <article className={`overview-role-card ${role.tone}`} key={role.eyebrow}>
-            <p>{role.eyebrow}</p><h3>{role.title}</h3><span>{role.body}</span>
-          </article>)}
+          <p className="visual-kicker">HOW EVIDENCE TRAVELS</p>
+          <h2 id="overview-value-title">Different evidence, distinct purposes.</h2>
+          <p>MEPS describes national burden; HRSA and ACS describe local implementation context, not local Long COVID prevalence; analyst inputs are planning assumptions, not observed effects. The three are never blended into one estimate.</p>
         </div>
         <div className="overview-provenance-slot"><OpeningProvenance playing={opening} /></div>
       </section>

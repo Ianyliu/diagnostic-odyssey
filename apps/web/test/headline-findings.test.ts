@@ -28,3 +28,12 @@ test("ordinary estimate count uses reviewed export eligibility rather than a lit
  assert.match(source,/filter\(canExportEstimate\)\.length/);
  assert.doesNotMatch(source,/Explore all 21/);
 });
+
+test("Overview keeps a single compact evidence-role explanation and one conceptual visual",()=>{
+ const source=readFileSync(new URL("../src/pages/OverviewPage.tsx",import.meta.url),"utf8");
+ assert.match(source,/Different evidence, distinct purposes/);
+ assert.match(source,/not local Long COVID prevalence/);
+ assert.match(source,/not observed effects/);
+ assert.equal(source.split("<OpeningProvenance ").length-1,1);
+ assert.doesNotMatch(source,/overview-role-grid|roles\.map/);
+});
