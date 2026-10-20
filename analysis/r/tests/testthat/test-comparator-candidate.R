@@ -9,8 +9,11 @@ source(file.path(Sys.getenv("DIAGNOSTIC_ODYSSEY_ROOT"),
 synthetic_comparator_frame <- function() {
   grid <- expand.grid(i = seq_len(16), psu = 1:2, stratum = 1:8)
   n <- nrow(grid)
-  case <- ((2 * grid$i + 3 * grid$psu + grid$stratum) %% 7) <= 2
-  positive <- ((grid$i + grid$psu + grid$stratum) %% 6) != 0
+  # Seeded Bernoulli outcomes avoid artificial perfect separation from modular
+  # arithmetic while preserving reproducibility and rare-case imbalance.
+  set.seed(20261019)
+  case <- as.logical(stats::rbinom(n, size = 1L, prob = 0.34))
+  positive <- as.logical(stats::rbinom(n, size = 1L, prob = 0.72))
   spend <- ifelse(positive, 200 + 19 * grid$i + 25 * grid$stratum +
                     100 * as.integer(case) + 30 * grid$psu, 0)
   data.frame(
