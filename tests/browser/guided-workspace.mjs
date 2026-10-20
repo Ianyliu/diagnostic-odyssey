@@ -30,6 +30,11 @@ await check("reviewed OpenGraph preview is a served, valid 1200x630 PNG", async 
   const page = await pageAt("/");
   const imageUrl = await page.locator('meta[property="og:image"]').getAttribute("content");
   assert.equal(imageUrl, "https://diagnostic-odyssey-psi.vercel.app/og-image.png");
+  const ogAlt = await page.locator('meta[property="og:image:alt"]').getAttribute("content");
+  const twitterAlt = await page.locator('meta[name="twitter:image:alt"]').getAttribute("content");
+  assert.equal(ogAlt, twitterAlt);
+  assert.match(ogAlt, /reviewed national burden.*local implementation.*transparent pilot plans/i);
+  assert.doesNotMatch(ogAlt, /confidence intervals?|\\bCI\\b/i);
   const response = await page.request.get(base + "/og-image.png");
   assert.equal(response.status(), 200);
   assert.match(response.headers()["content-type"] ?? "", /image\/png/);
