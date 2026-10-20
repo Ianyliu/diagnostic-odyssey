@@ -32,7 +32,17 @@ def verify_detailed_openings(pages, records, filename):
                   "loading": "Loading", "error": "Error"}.get(record["state"], record["state"])
         heading = re.compile(re.escape(flat(record["label"])) + r"\s+" + re.escape(status) + r"\b")
         hits = [(number, m, words) for number, words in sections for m in heading.finditer(words)]
-        assert len(hits) == 1, (filename, record["indicator_id"], "Heading missing/duplicated/split", [h[0] for h in hits])
+        if len(hits) != 1:
+            probes = [record["label"].split()[-1], "Look-A-Like", "Qualified", "FQHC"]
+            nearby = []
+            for page_number, raw_text in enumerate(pages, 1):
+                text_page = flat(raw_text)
+                for probe in probes:
+                    pos = text_page.lower().find(probe.lower())
+                    if pos >= 0:
+                        nearby.append({"page": page_number, "term": probe, "context": text_page[max(0, pos - 130):pos + 330]})
+                        break
+            raise AssertionError((filename, record["indicator_id"], "Heading missing/duplicated/split", [h[0] for h in hits], nearby[:20]))
         number, match, words = hits[0]
         value = record["value"]
         if value is None:
