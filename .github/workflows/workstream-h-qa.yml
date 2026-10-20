@@ -6,6 +6,8 @@ on:
       - "apps/web/**"
       - "tests/browser/workstream-h-qa.mjs"
       - "tests/browser/verify-workstream-h-pdfs.py"
+      - "tests/browser/workstream_h_inventory.py"
+      - "tests/browser/test_workstream_h_inventory.py"
       - ".github/workflows/workstream-h-qa.yml"
   workflow_dispatch:
 
@@ -72,6 +74,12 @@ jobs:
         run: |
           python3 -m pip install --disable-pip-version-check pdfplumber==0.11.7 PyMuPDF==1.26.5
           python3 tests/browser/verify-workstream-h-pdfs.py /tmp/workstream-h-results
+      - name: Check exact postrender output inventory without regeneration
+        run: python3 tests/browser/verify-workstream-h-pdfs.py /tmp/workstream-h-results --check-inventory
+      - name: Prove omitted/duplicate/corrupt outputs fail closed
+        env:
+          WORKSTREAM_H_QA_OUTPUT: /tmp/workstream-h-results
+        run: python3 -m unittest discover -s tests/browser -p 'test_workstream_h_inventory.py' -v
       - name: Upload matrix, canonical JSON, native PDF, and page-boundary renders
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
