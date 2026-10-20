@@ -13,7 +13,52 @@ def flat(s):
     return " ".join((s or "").split())
 
 
-def verify_detailed_openings(pages, records, filename):
+
+def verify_spatial_opening(pages, record, filename):
+    """Fallback for A4 two-column headings: inspect physical text geometry.
+
+    An Available badge may be extracted *between* words of a long left-column
+    title. Never accept merely finding a heading somewhere else in the PDF.
+    """
+    label = flat(record["label"])
+    geography = record["geography_name"] + " (" + record["geography_type"] + ")"
+    value = record["value"]
+    if value is None:
+        opening_value = r"(?:Not available|Suppressed|Not published|—)"
+    elif record["unit"] == "percent":
+        opening_value = re.escape(f"{value:,.1f}%")
+    else:
+        opening_value = re.escape(f"{value:,.0f}" if value == int(value) else f"{value:,.1f}")
+    title_pattern = r"\s+".join(re.escape(word) for word in label.split())
+    geography_pattern = r"\s+".join(re.escape(word) for word in geography.split())
+    full_opening = re.compile(title_pattern + r"\s+" + geography_pattern +
+                              r"\s+(?:Active Pilot planning context\s+)?" + opening_value + r"(?=\s|%|±)")
+    status = {"loaded": "Available", "partial": "Partial", "unavailable": "Unavailable",
+              "loading": "Loading", "error": "Error"}.get(record["state"], record["state"])
+    matches = []
+    for number, page in enumerate(pages, 1):
+        left = page.crop((0, 0, page.width - 95, page.height))
+        left_text = flat(left.extract_text())
+        if not full_opening.search(left_text):
+            continue
+        title_boxes = left.search(title_pattern, regex=True)
+        for title in title_boxes:
+            badge = [w for w in page.extract_words()
+                     if w["text"] == status and w["x0"] > page.width - 110
+                     and title["top"] - 5 <= w["top"] <= title["bottom"] + 5]
+            if len(badge) != 1:
+                continue
+            assert badge[0]["x0"] > title["x1"] + 2, (
+                filename, number, record["indicator_id"], "Heading collides horizontally with status")
+            assert badge[0]["x1"] < page.width - 15, (
+                filename, number, record["indicator_id"], "Status extends outside printable space")
+            matches.append(number)
+    assert len(matches) == 1, (
+        filename, record["indicator_id"],
+        "Opening not on one physical page with its own complete, unwrapped badge", matches)
+    return matches[0]
+
+def verify_detailed_openings(pages, records, filename, pdf_pages):
     sections = []
     inside = False
     for number, raw in enumerate(pages, 1):
@@ -42,7 +87,9 @@ def verify_detailed_openings(pages, records, filename):
                     if pos >= 0:
                         nearby.append({"page": page_number, "term": probe, "context": text_page[max(0, pos - 130):pos + 330]})
                         break
-            raise AssertionError((filename, record["indicator_id"], "Heading missing/duplicated/split", [h[0] for h in hits], nearby[:20]))
+            number = verify_spatial_opening(pdf_pages, record, filename)
+            positions.append({"id": record["indicator_id"], "page": number})
+            continue
         number, match, words = hits[0]
         value = record["value"]
         if value is None:
@@ -98,7 +145,7 @@ for entry in matrix["pdfs"]:
         detailed = bool(entry["detailed"]) and bool(canonical["local_context"])
         assert ("Detailed included context records" in whole) == detailed, (filename, "Appendix off/on mismatch")
         if detailed:
-            positions = verify_detailed_openings(page_text, canonical["local_context"], filename)
+            positions = verify_detailed_openings(page_text, canonical["local_context"], filename, pdf.pages)
         if shutil.which("pdftoppm") and (entry["name"] in ("default", "pilot-only", "stale-request") or detailed):
             renders = {1, len(pdf.pages)}
             if detailed:
