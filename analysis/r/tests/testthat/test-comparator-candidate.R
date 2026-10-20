@@ -298,3 +298,83 @@ testthat::test_that("Kish, sparse cells, extreme weights and spending-tail effec
   testthat::expect_true(audit$spending_tail$no_records_trimmed_in_primary_model)
   testthat::expect_true(audit$spending_tail$group$current$n > 0)
 })
+
+
+testthat::test_that("independent two-part reference reproduces pooled standardization", {
+  d <- comparator_prepare(synthetic_comparator_frame())
+  design <- build_meps_design(d, "PERWT24F")
+  df <- design$variables
+  weights <- as.numeric(stats::weights(design))
+  df$.do_cmp_w <- weights
+  df$.do_cmp_exposure <- factor(as.character(df$.do_cmp_group),
+                                levels = c("noncurrent", "current"))
+  rhs <- ".do_cmp_exposure + .do_cmp_age10 + .do_cmp_sex + .do_cmp_region + .do_cmp_panel"
+  fit0 <- stats::glm(stats::as.formula(paste(".do_cmp_positive ~", rhs)),
+                     data = df, weights = .do_cmp_w,
+                     family = stats::quasibinomial(link = "logit"))
+  fitplus <- stats::glm(stats::as.formula(paste(".do_cmp_y ~", rhs)),
+                        data = df[df$.do_cmp_positive == 1L, , drop = FALSE],
+                        weights = .do_cmp_w,
+                        family = stats::Gamma(link = "log"))
+  expected <- vapply(c("noncurrent", "current"), function(group) {
+    scenario <- df
+    scenario$.do_cmp_exposure <- factor(rep(group, nrow(df)),
+                                        levels = c("noncurrent", "current"))
+    stats::weighted.mean(
+      stats::predict(fit0, newdata = scenario, type = "response") *
+      stats::predict(fitplus, newdata = scenario, type = "response"), weights)
+  }, numeric(1))
+  estimator <- comparator_stage_predictions(weights, df, ".do_cmp_group")
+  testthat::expect_equal(unname(estimator[1:2]), unname(expected), tolerance = 1e-7)
+  testthat::expect_equal(unname(estimator[[3]]),
+                         unname(diff(expected)), tolerance = 1e-7)
+})
+
+testthat::test_that("exact bootstrap replicate index and group support failures are auditable", {
+  d <- comparator_prepare(synthetic_comparator_frame())
+  design <- build_meps_design(d, "PERWT24F")
+  w <- as.numeric(stats::weights(design))
+  invalid <- w
+  invalid[as.character(design$variables$.do_cmp_group) == "current"] <- 0
+  replicates <- cbind(w, w, invalid)
+  fn <- function(weights, data) {
+    comparator_stage_predictions(weights, data, ".do_cmp_group")
+  }
+  testthat::expect_error(
+    comparator_trace_replicate_failures(replicates, design$variables, fn),
+    "Bootstrap replicate=3/3: stage=support group=current:.*support="
+  )
+  testthat::expect_error(
+    comparator_trace_replicate_failures(matrix(1, 2, 1), design$variables, fn),
+    "Invalid bootstrap replicate matrix"
+  )
+})
+
+testthat::test_that("runner syntax, data gate and output isolation are invariant", {
+  root <- Sys.getenv("DIAGNOSTIC_ODYSSEY_ROOT")
+  runner <- file.path(root, "analysis", "r", "comparator",
+                      "run_comparator_candidate.R")
+  testthat::expect_silent(parse(file = runner))
+  src <- paste(readLines(runner, warn = FALSE), collapse = "\n")
+  testthat::expect_match(src, "independent_methods_review")
+  testthat::expect_match(src, "failed-candidate.json", fixed = TRUE)
+  testthat::expect_match(src, "assert_sha256_matches", fixed = TRUE)
+  testthat::expect_match(src, "candidate_step", fixed = TRUE)
+  testthat::expect_false(grepl("artifacts[\x2f]reviewed", src))
+})
+
+testthat::test_that("cross-cell zero/positive support and both scenarios are audited", {
+  d <- comparator_prepare(synthetic_comparator_frame())
+  design <- build_meps_design(d, "PERWT24F")
+  support <- comparator_influence_diagnostics(design)$joint_covariate_overlap
+  testthat::expect_gte(support$cells_missing_zero_in_any_present_group_n, 0L)
+  testthat::expect_gte(support$cells_missing_positive_in_any_present_group_n, 0L)
+  testthat::expect_lte(support$both_groups_present_n, support$observed_joint_cells_n)
+  audit <- comparator_model_audit(design)
+  for (group in c("noncurrent", "current")) {
+    x <- audit$both_exposure_scenario_predictions[[group]]
+    testthat::expect_true(all(unlist(x[c("min_probability", "max_probability")]) >= 0))
+    testthat::expect_lte(x$max_probability, 1)
+    testthat::expect_gt(x$conditional_spend_min, 0)
+  }
+})
