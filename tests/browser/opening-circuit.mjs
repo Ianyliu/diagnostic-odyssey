@@ -71,13 +71,13 @@ try{
     assert.ok(await p.evaluate(()=>document.getAnimations().some(a=>a.animationName==="circuit-lane")));
     await p.screenshot({path:out+"/replay-mobile.png",animations:"allow"});
     await p.keyboard.press("Tab");
-    assert.equal(await p.locator(".overview-page.is-opening").count(),0);
+    await p.locator(".overview-page.is-opening").waitFor({state:"detached",timeout:2000});
     assert.equal(await p.locator(".preview-output").isVisible(),true);
     await p.getByRole("button",{name:"Replay animation"}).focus();
     await p.keyboard.press("Enter");
     assert.equal(await p.locator(".overview-page.is-opening").count(),1);
     await p.emulateMedia({reducedMotion:"reduce"});
-    assert.equal(await p.locator(".overview-page.is-opening").count(),0);
+    await p.locator(".overview-page.is-opening").waitFor({state:"detached",timeout:2000});
     await p.getByRole("button",{name:"Replay animation"}).click();
     await check(p,"reduced replay",false);
     results.push({label:"replay-keyboard-reduced-switch",status:"PASS"});
@@ -91,7 +91,7 @@ try{
     await p2.getByRole("button",{name:"Replay animation"}).click();
     assert.equal(await p2.locator(".overview-page.is-opening").count(),1);
     await p2.mouse.wheel(0,250);
-    assert.equal(await p2.locator(".overview-page.is-opening").count(),0);
+    await p2.locator(".overview-page.is-opening").waitFor({state:"detached",timeout:2000});
     await check(p2,"interrupted",false);
     results.push({label:"blocked-storage-interrupt",status:"PASS"});
   }catch(e){results.push({label:"blocked-storage-interrupt",status:"FAIL",error:String(e.stack)});}
