@@ -184,6 +184,10 @@ testthat::test_that("covariance helper rejects asymmetry, negative diagonal and 
                          "Nonfinite")
   valid <- matrix(c(1, 0.3, 0.3, 1), 2)
   testthat::expect_equal(comparator_validate_covariance(c(1, 2), valid), valid)
+  testthat::expect_error(
+    comparator_validate_contrast_covariance(c(2, 3, 1), diag(3)),
+    "does not reconcile to joint subgroup means"
+  )
 })
 
 testthat::test_that("adjusted joint covariance difference is algebraically preserved", {
