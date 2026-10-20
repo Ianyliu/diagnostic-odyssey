@@ -94,13 +94,40 @@ comparator_model_audit <- function(full_design, insurance = FALSE,
       names(tmp) <- c("noncurrent", "current")
       tmp
     },
+    both_exposure_scenario_predictions = {
+      scenarios <- lapply(c("noncurrent", "current"), function(g) {
+        scen <- df
+        scen$.do_cmp_group <- factor(rep(g, nrow(scen)),
+                                     levels = c("noncurrent", "current"))
+        p <- as.numeric(stats::predict(stage_zero, newdata = scen, type = "response"))
+        m <- as.numeric(stats::predict(stage_positive, newdata = scen, type = "response"))
+        if (any(!is.finite(p)) || any(!is.finite(m)) || any(m <= 0)) {
+          stop("Scenario prediction audit failed.", call. = FALSE)
+        }
+        list(
+          min_probability = min(p), max_probability = max(p),
+          probability_below_0_01_n = sum(p < 0.01),
+          probability_above_0_99_n = sum(p > 0.99),
+          probability_near_boundary_n = sum(p <= 1e-8 | p >= 1 - 1e-8),
+          conditional_spend_min = min(m), conditional_spend_max = max(m)
+        )
+      })
+      names(scenarios) <- c("noncurrent", "current")
+      scenarios
+    },
     stage_zero = list(
       converged = isTRUE(stage_zero$converged),
+      rank = stage_zero$rank,
+      coefficient_count = length(stats::coef(stage_zero)),
+      maximum_absolute_coefficient = max(abs(stats::coef(stage_zero))),
       coefficients = coefficient_summary(stage_zero),
       observed_probability_range = as.list(predict_ranges(stage_zero, df))
     ),
     stage_positive = list(
       converged = isTRUE(stage_positive$converged),
+      rank = stage_positive$rank,
+      coefficient_count = length(stats::coef(stage_positive)),
+      maximum_absolute_coefficient = max(abs(stats::coef(stage_positive))),
       coefficients = coefficient_summary(stage_positive),
       observed_conditional_mean_range = as.list(predict_ranges(stage_positive, positive))
     ),
