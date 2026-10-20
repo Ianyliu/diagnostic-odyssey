@@ -95,7 +95,31 @@ comparator_domain_diagnostics <- function(data, design) {
       names(split(frame$code, frame$group))
     )
   }
+  sample_loss <- function(g) {
+    eligible <- scope & !is.na(group) & group == g
+    weighted <- function(mask) sum(as.numeric(data$PERWT24F[eligible & mask]), na.rm = TRUE)
+    n <- function(mask) sum(eligible & mask, na.rm = TRUE)
+    spend <- !is.na(data$.do_cmp_y)
+    primary <- data$.do_cmp_primary_complete
+    insurance <- data$.do_cmp_insurance_complete
+    list(
+      classifiable_n = n(rep(TRUE, nrow(data))),
+      classifiable_weight = weighted(rep(TRUE, nrow(data))),
+      spending_valid_n = n(spend), spending_valid_weight = weighted(spend),
+      spending_invalid_n = n(!spend), spending_invalid_weight = weighted(!spend),
+      primary_complete_n = n(primary), primary_complete_weight = weighted(primary),
+      primary_excluded_from_classifiable_n = n(!primary),
+      primary_excluded_from_classifiable_weight = weighted(!primary),
+      insurance_complete_n = n(insurance), insurance_complete_weight = weighted(insurance),
+      insurance_excluded_from_primary_n = n(primary & !insurance),
+      insurance_excluded_from_primary_weight = weighted(primary & !insurance),
+      primary_complete_positive_n = n(primary & data$.do_cmp_y > 0),
+      primary_complete_zero_n = n(primary & data$.do_cmp_y == 0)
+    )
+  }
   list(
+    complete_case_flow_by_group = list(noncurrent = sample_loss("noncurrent"),
+                                        current = sample_loss("current")),
     target_age_positive_weight_n = sum(scope, na.rm = TRUE),
     classifiable_n = sum(scope & !is.na(group), na.rm = TRUE),
     unresolved_n = sum(scope & is.na(group), na.rm = TRUE),
