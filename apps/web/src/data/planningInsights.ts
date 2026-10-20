@@ -11,6 +11,7 @@ import {
 } from "./dataRequestTemplates.ts";
 import { groupBriefBurdenFindings } from "./briefBurdenPresentation.ts";
 import { REVIEWED_MEPS_ARTIFACT_VERSION } from "./reviewedArtifact.ts";
+import { BRIEF_HEADLINE_IDS } from "./briefExecutiveHeadlines.ts";
 import {
   assertReviewedWvLocalContextArtifact, assertReviewedWvLocalContextRuntimeCompatibility
 } from "./reviewedLocalContextValidation.ts";
@@ -98,17 +99,17 @@ export function buildVerifiedNationalBriefSection(brief: PlanningBrief, source: 
     return estimate && citation ? {domainId: "national-context", domainLabel: "National descriptive context", estimate: structuredClone(estimate), source: structuredClone(citation)} : null;
   };
   const context = {
-    population: pickHeadline("meps24-current-long-covid-population"),
-    allCauseSpending: pickHeadline("meps24-gross-all-cause-spending-total"),
-    paperwork: pickHeadline("meps24-healthcare-paperwork-time-mean"),
-    seriousDistress: pickHeadline("meps24-k6-serious-distress")
+    population: pickHeadline(BRIEF_HEADLINE_IDS.population),
+    allCauseSpending: pickHeadline(BRIEF_HEADLINE_IDS.spending),
+    paperwork: pickHeadline(BRIEF_HEADLINE_IDS.paperwork),
+    seriousDistress: pickHeadline(BRIEF_HEADLINE_IDS.distress)
   };
   // One representative per available domain, in the existing artifact's order.
   // Prefer an approved distribution, then a non-nested measure, then any eligible
   // finding. Never rank magnitudes across heterogeneous units or require an ID.
   const highlights = groupBriefBurdenFindings(source.burden_domains, eligible).slice(0, 3).flatMap(group => {
     const estimate = (group.group_id === "mental-human"
-      ? group.findings.find(record => record.estimate_id === "meps24-k6-serious-distress") : undefined) ??
+      ? group.findings.find(record => record.estimate_id === BRIEF_HEADLINE_IDS.distress) : undefined) ??
       group.findings.find(canDisplayDistributionSummary) ??
       group.findings.find(record => !record.component_of_measure_id) ?? group.findings[0];
     const citation = estimate && sourceRefs.get(estimate.source_ref);
