@@ -37,7 +37,7 @@ def verify_spatial_opening(pages, record, filename):
               "loading": "Loading", "error": "Error"}.get(record["state"], record["state"])
     matches = []
     for number, page in enumerate(pages, 1):
-        left = page.crop((0, 0, page.width - 95, page.height))
+        left = page.crop((0, 0, page.width - 105, page.height))
         left_text = flat(left.extract_text())
         if not full_opening.search(left_text):
             continue
