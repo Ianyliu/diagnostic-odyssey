@@ -248,8 +248,10 @@ comparator_unadjusted <- function(full_design, group_variable = ".do_cmp_group",
 }
 
 comparator_stage_predictions <- function(w, data, group_variable, insurance = FALSE) {
+  support_trace <- character()
   stage_error <- function(stage, reason, group = "all") {
-    stop(sprintf("stage=%s group=%s: %s", stage, group, reason), call. = FALSE)
+    stop(sprintf("stage=%s group=%s: %s; support={%s}", stage, group,
+                 reason, paste(support_trace, collapse = " | ")), call. = FALSE)
   }
   df <- data
   df$.do_cmp_w <- as.numeric(w)
@@ -264,6 +266,8 @@ comparator_stage_predictions <- function(w, data, group_variable, insurance = FA
     eligible <- included & !is.na(df$.do_cmp_exposure) & df$.do_cmp_exposure == g
     n_pos <- sum(eligible & df$.do_cmp_positive == 1L, na.rm = TRUE)
     n_zero <- sum(eligible & df$.do_cmp_positive == 0L, na.rm = TRUE)
+    support_trace <- c(support_trace, sprintf("%s:n=%d/positive=%d/zero=%d",
+                                             g, sum(eligible), n_pos, n_zero))
     if (sum(eligible) < 2L || n_pos < 1L || n_zero < 1L) {
       stage_error("support",
                   sprintf("insufficient sample: total=%d positive=%d zero=%d",
