@@ -690,3 +690,52 @@
  #brief-full-report::details-content { content-visibility: visible !important; display: block !important; }
  #brief-full-report > summary { display: none !important; }
 }
+
+/* Brief-owned summary: appears on screen and in every printed Brief, independent
+   of Planning Insights preview and its opt-in extra print pages. */
+.planning-brief-page .brief-executive-summary {
+  border: 1px solid var(--do-border);
+  border-top: 3px solid var(--do-reviewed-border);
+  padding: clamp(1rem, 2vw, 1.4rem);
+  background: var(--do-surface);
+  border-radius: var(--do-radius-card);
+  min-width: 0;
+}
+.planning-brief-page .brief-executive-header h2 { font-size: 1.28rem; margin: .15rem 0 .45rem; }
+.planning-brief-page .brief-executive-header p:last-child { font-size: .88rem; line-height: 1.5; max-width: 75ch; }
+.planning-brief-page .brief-executive-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .8rem 1.4rem; }
+.planning-brief-page .brief-executive-finding { min-width: 0; border-top: 1px solid var(--do-border); padding-top: .65rem; overflow-wrap: anywhere; }
+.planning-brief-page .brief-executive-finding h3 { margin: 0 0 .3rem; font-size: .88rem; }
+.planning-brief-page .brief-executive-value { font-size: 1.2rem; font-variant-numeric: tabular-nums; }
+.planning-brief-page .brief-executive-interval { display: block; color: var(--do-text-muted); font-size: .8rem; }
+.planning-brief-page .brief-executive-finding p { margin: .3rem 0; line-height: 1.4; font-size: .8rem; }
+.planning-brief-page .brief-executive-finding small { font-size: .68rem; color: var(--do-text-muted); overflow-wrap: anywhere; }
+.planning-brief-page .brief-executive-roles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; border-top: 1px solid var(--do-border); margin-top: .9rem; padding-top: .7rem; }
+.planning-brief-page .brief-executive-roles strong { font-size: .8rem; }
+.planning-brief-page .brief-executive-roles p { margin: .3rem 0; font-size: .75rem; line-height: 1.4; }
+.planning-brief-page .brief-executive-boundary { margin: .5rem 0 0; font-size: .76rem; line-height: 1.4; color: var(--do-text-muted); }
+@media (max-width: 650px) {
+  .planning-brief-page .brief-executive-grid, .planning-brief-page .brief-executive-roles { grid-template-columns: minmax(0, 1fr); }
+}
+@media print {
+  .planning-brief-page .brief-executive-summary {
+    display: block !important; color: #242a2d; background: #fff;
+    border: 0; border-top: 1pt solid #9da39c; border-radius: 0;
+    padding: 5pt 0 7pt; margin: 0 0 5pt;
+    font-size: 8pt; line-height: 1.32;
+  }
+  .planning-brief-page .brief-executive-header h2 { font-size: 11pt; margin: 0 0 3pt; break-after: avoid-page; }
+  .planning-brief-page .brief-executive-header .eyebrow { font-size: 7pt !important; margin: 0 0 2pt; }
+  .planning-brief-page .brief-executive-header p:last-child { font-size: 8pt; margin: 0 0 5pt; max-width: none; }
+  .planning-brief-page .brief-executive-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4pt 16pt; }
+  .planning-brief-page .brief-executive-finding { padding-top: 3pt; border-color: #b2b8b3; break-inside: avoid; }
+  .planning-brief-page .brief-executive-finding h3 { font-size: 8pt; margin: 0 0 2pt; break-after: avoid-page; }
+  .planning-brief-page .brief-executive-value { font-size: 10pt; }
+  .planning-brief-page .brief-executive-interval { font-size: 7.5pt; color: #3e4a50; }
+  .planning-brief-page .brief-executive-finding p { font-size: 7.5pt; margin: 2pt 0; }
+  .planning-brief-page .brief-executive-finding small { font-size: 6.8pt; color: #3e4a50; }
+  .planning-brief-page .brief-executive-roles { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8pt; margin-top: 5pt; padding-top: 4pt; border-color: #b2b8b3; }
+  .planning-brief-page .brief-executive-roles strong { font-size: 7.4pt; }
+  .planning-brief-page .brief-executive-roles p { font-size: 7pt; margin: 2pt 0; }
+  .planning-brief-page .brief-executive-boundary { font-size: 7.2pt; margin: 4pt 0 0; }
+}
