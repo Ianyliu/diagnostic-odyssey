@@ -1111,3 +1111,6 @@
   }
   .preview-replay, .preview-progress { display: none; }
 }
+
+/* Preserve a comfortably sized Replay target even during the .985 opening scale. */
+.preview-replay { min-height: 48px; }
