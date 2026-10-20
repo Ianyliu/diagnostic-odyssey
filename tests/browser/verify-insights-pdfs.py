@@ -51,7 +51,7 @@ def assert_no_local_record_heading_orphans(page_text, local_records, filename):
             "unavailable": "Unavailable", "loading": "Loading",
             "error": "Error"
         }.get(record["state"], record["state"])
-        title_pattern = re.compile(re.escape(label) + r"\\s+" + re.escape(status) + r"\\b")
+        title_pattern = re.compile(re.escape(label) + r"\s+" + re.escape(status) + r"\b")
         hits = [(p, match, text) for p, text in sections for match in title_pattern.finditer(text)]
         assert len(hits) == 1, (filename, record["indicator_id"], "Record heading missing/duplicated/split across pages", [p for p, _, _ in hits])
         p, match, text = hits[0]
@@ -65,7 +65,7 @@ def assert_no_local_record_heading_orphans(page_text, local_records, filename):
         # This checks the same heading's own geography and first value, not a
         # matching geography elsewhere on the sheet or on the following page.
         geography = re.escape(record["geography_name"] + " (" + record["geography_type"] + ")")
-        opening = re.compile(r"^\\s+" + geography + r"\\s+" + opening_value + r"(?=\\s|%|\\u00b1)")
+        opening = re.compile(r"^\\s+" + geography + r"\s+" + opening_value + r"(?=\s|%|±)")
         tail = text[match.end():match.end() + 230]
         assert opening.search(tail), (
             filename, p, record["indicator_id"],
