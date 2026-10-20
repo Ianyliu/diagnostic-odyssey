@@ -483,6 +483,18 @@
   .planning-brief-page .brief-local-context-opening .card-title-row {
     break-after: avoid-page;
   }
+  /* A4 pages must not shrink a status badge into "Availabl" / "e" beside
+     a wrapped FQHC Look A Like title. Keep title and badge separate flex
+     items without changing semantic order or the protected opening unit. */
+  .planning-brief-page .brief-local-context-opening .card-title-row > div {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .planning-brief-page .brief-local-context-opening .card-title-row > .status {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    overflow-wrap: normal;
+  }
 
   .planning-brief-page .brief-local-context-executive {
     display: block;
