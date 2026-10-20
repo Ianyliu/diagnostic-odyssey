@@ -333,6 +333,24 @@ comparator_stage_predictions <- function(w, data, group_variable, insurance = FA
     difference = standardized[["current"]] - standardized[["noncurrent"]])
 }
 
+comparator_trace_replicate_failures <- function(replicate_weights, data, theta) {
+  if (!is.matrix(replicate_weights) || !is.numeric(replicate_weights) ||
+      nrow(replicate_weights) != nrow(data) || ncol(replicate_weights) < 1L) {
+    stop("Invalid bootstrap replicate matrix for failure tracing.", call. = FALSE)
+  }
+  for (i in seq_len(ncol(replicate_weights))) {
+    failure <- tryCatch({
+      theta(replicate_weights[, i], data)
+      NULL
+    }, error = identity)
+    if (inherits(failure, "error")) {
+      stop(sprintf("Bootstrap replicate=%d/%d: %s", i, ncol(replicate_weights),
+                   conditionMessage(failure)), call. = FALSE)
+    }
+  }
+  invisible(ncol(replicate_weights))
+}
+
 comparator_adjusted <- function(full_design, replicates = 400L,
                                 seed = 20261019L, insurance = FALSE,
                                 reference_sample = c("primary", "insurance")) {
@@ -381,16 +399,7 @@ comparator_adjusted <- function(full_design, replicates = 400L,
         stop("Bootstrap failed; cannot audit replicate weight matrix: ",
              conditionMessage(original_error), call. = FALSE)
       }
-      for (i in seq_len(ncol(replicate_weights))) {
-        failure <- tryCatch({
-          theta(replicate_weights[, i], domain$variables)
-          NULL
-        }, error = identity)
-        if (inherits(failure, "error")) {
-          stop(sprintf("Bootstrap replicate=%d/%d: %s", i, replicates,
-                       conditionMessage(failure)), call. = FALSE)
-        }
-      }
+      comparator_trace_replicate_failures(replicate_weights, domain$variables, theta)
       stop("Bootstrap covariance/evaluation failed after all individual replicates passed: ",
            conditionMessage(original_error), call. = FALSE)
     }
