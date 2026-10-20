@@ -127,6 +127,17 @@ for (const width of [1440, 768, 390]) for (const theme of ["light", "dark"]) {
     });
     assert.ok(measurements.style.ancestors.every(opacity => Number(opacity) === 1));
     const rgb = measurements.style.color.match(/[\d.]+/g).map(Number); assert.ok(rgb.length === 3 || rgb[3] === 1);
+    // The opening caption now sits inside the first-screen hero. Center it above
+    // fixed mobile navigation before comparing actual rendered text with its
+    // underlying raster; Playwright's default scroll-into-view does not account
+    // for that overlay. Keep the original 4.5:1 threshold unchanged.
+    await caption.evaluate(e => e.scrollIntoView({ block: "center", inline: "nearest", behavior: "instant" }));
+    const captionPosition = await caption.evaluate(e => {
+      const rect = e.getBoundingClientRect();
+      return { top: rect.top, bottom: rect.bottom, viewportHeight: window.innerHeight };
+    });
+    assert.ok(captionPosition.top >= 0 && captionPosition.bottom <= captionPosition.viewportHeight - (width <= 390 ? 70 : 0),
+      "Caption must be visibly unobscured before raster contrast measurement");
     const original = await caption.screenshot({ path: `${output}/caption-${width}-${theme}.png`, animations: "disabled" });
     // Measurement only: reveal the raster background; never substitute corrected
     // colors. Restore the exact inline attribute before checking text/geometry.
