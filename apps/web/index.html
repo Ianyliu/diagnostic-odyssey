@@ -25,21 +25,8 @@
     <meta name="twitter:description" content="Review evidence on the economic, administrative and psychological burden carried by adults with current Long COVID." />
     <meta name="twitter:image" content="https://diagnostic-odyssey-psi.vercel.app/og-image.png" />
     <meta name="twitter:image:alt" content="Diagnostic Odyssey card: Long COVID goes beyond the bill. Three roles are shown: reviewed national burden, local implementation, and transparent pilot plans. All-cause burden is not attributable cost." />
-    <script>
-      (function () {
-        var preference = "system";
-        try {
-          var stored = localStorage.getItem("diagnostic-odyssey.theme");
-          if (stored === "light" || stored === "dark" || stored === "system") preference = stored;
-        } catch (_) { /* Storage is optional. */ }
-        var systemDark = false;
-        try { systemDark = matchMedia("(prefers-color-scheme: dark)").matches; } catch (_) { /* Light fallback. */ }
-        var resolved = preference === "system" ? (systemDark ? "dark" : "light") : preference;
-        document.documentElement.dataset.theme = resolved;
-        document.documentElement.dataset.themePreference = preference;
-        document.querySelector('meta[name="theme-color"]').content = resolved === "dark" ? "#09131b" : "#f5f2eb";
-      })();
-    </script>
+    <!-- Parser-blocking first-paint theme bootstrap; no inline JS under CSP. -->
+    <script src="/theme-init.js"></script>
     <title>Diagnostic Odyssey</title>
   </head>
   <body>
