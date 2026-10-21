@@ -23,3 +23,11 @@
 .ai-handoff-launch{display:grid;gap:.25rem;min-width:0}
 .ai-handoff-launch-note{font-size:.72rem;line-height:1.4;color:var(--do-text-muted);font-weight:400;overflow-wrap:anywhere}
 @media print{.ai-handoff-launch{display:none!important}}
+
+.ai-handoff-modules{border:1px solid var(--do-border);border-radius:var(--do-radius-control);padding:12px;margin:16px 0}
+.ai-handoff-modules legend{padding:0 6px;font-weight:700}
+.ai-handoff-dialog label.ai-handoff-module{display:flex;gap:10px;align-items:flex-start;font-weight:500;line-height:1.45;margin:10px 0;cursor:pointer}
+.ai-handoff-module input{width:18px;height:18px;flex:none;margin:2px 0 0;accent-color:var(--do-focus)}
+.ai-handoff-provider-area,.ai-handoff-research-area{border-top:1px solid var(--do-border);padding-top:16px;margin-top:18px}
+.ai-handoff-research-area li{line-height:1.7}
+.ai-handoff-dialog a{color:var(--do-link,var(--do-text));text-decoration:underline;text-underline-offset:2px}
