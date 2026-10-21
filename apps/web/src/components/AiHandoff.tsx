@@ -4,7 +4,9 @@ import type { PlanningBrief } from "@diagnostic-odyssey/brief-core";
 import { createAiHandoffText, type AiGoal, type AiHandoffTextV1 } from "../data/aiHandoff";
 import { AI_GOALS, AI_GOAL_TEMPLATES } from "../data/aiHandoffTemplates";
 import { aiHandoffQuestionLength, inspectAiHandoffSource, type AiHandoffSourceState } from "../data/aiHandoffSession";
-import { copyAiHandoffText, downloadAiHandoff } from "../data/aiHandoffTransfer";
+import { copyAiHandoffText, copyAndOpenAiProvider, downloadAiHandoff } from "../data/aiHandoffTransfer";
+import { AI_RESEARCH_MODULES, AI_RESEARCH_MODULE_LABELS, enrichAiHandoff, type AiResearchModule } from "../data/aiHandoffResearch";
+import { AI_PUBLIC_RESEARCH_LINKS, availableAiProviders, type AiHandoffProvider } from "../data/aiHandoffProviders";
 import "./AiHandoff.css";
 
 interface Props { brief: PlanningBrief | null; sourceState: AiHandoffSourceState }
@@ -30,14 +32,17 @@ function HandoffDialog({brief, sourceState, onClose}: Props & {onClose: () => vo
   const [transferStatus, setTransferStatus] = useState("");
   const [copying, setCopying] = useState(false);
   const [goal, setGoal] = useState<AiGoal>("comprehensive");
+  const [researchModules, setResearchModules] = useState<readonly AiResearchModule[]>(["literature", "interventions"]);
+  const [openedProvider, setOpenedProvider] = useState<AiHandoffProvider | null>(null);
+  const providers = availableAiProviders(import.meta.env.VITE_AI_PROVIDERS);
   const [question, setQuestion] = useState("");
   const source = inspectAiHandoffSource(brief, sourceState);
   const questionLength = aiHandoffQuestionLength(question);
   const problem = source.problem ?? (questionLength > 2000 ? "Shorten the question to 2,000 Unicode characters or fewer." : null);
-  const identity = JSON.stringify([source.key, goal, question]);
+  const identity = JSON.stringify([source.key, goal, question, researchModules]);
   const generate = (): AiHandoffTextV1 | null => {
     if (problem || !brief) return null;
-    try { return createAiHandoffText(brief, {goal, optionalQuestion: question}); }
+    try { return enrichAiHandoff(createAiHandoffText(brief, {goal, optionalQuestion: question}), researchModules); }
     catch { return null; }
   };
   const [session, setSession] = useState(() => ({observed: identity, snapshot: generate(), stale: false}));
@@ -88,6 +93,30 @@ function HandoffDialog({brief, sourceState, onClose}: Props & {onClose: () => vo
       `${outcome === "insecure" ? "Automatic copying requires a secure browser context." : outcome === "unsupported" ? "This browser does not support clipboard copying." : "Clipboard access was denied or failed."} Use Select complete prompt, then your device’s Copy command, or download Markdown.`);
   };
 
+  const copyAndOpen = async (provider: AiHandoffProvider) => {
+    if (!current || !snapshot || copying) return;
+    const epoch = transferEpoch.current;
+    setOpenedProvider(provider);
+    setCopying(true);
+    setTransferStatus("Attempting to open " + provider.label + " and copy the complete prompt…");
+    const action = copyAndOpenAiProvider(
+      snapshot.markdown, provider, navigator.clipboard, window.isSecureContext,
+      (url, target, features) => window.open(url, target, features)
+    );
+    const outcome = await action.copy;
+    if (!mounted.current) return;
+    setCopying(false);
+    if (epoch !== transferEpoch.current) {
+      setTransferStatus("Source or options changed while copying. The clipboard may contain an older prompt; regenerate before pasting.");
+      return;
+    }
+    const launchNote = action.launch === "failed" ? "The provider page could not be opened automatically. Use the fallback link below. " :
+      "If no provider tab opened, use the fallback link below. ";
+    setTransferStatus(launchNote + (outcome === "copied"
+      ? "Complete prompt copied. Paste it into " + provider.label + " and submit only if you choose."
+      : "Clipboard copy failed or is unavailable. Use Select complete prompt or Download Markdown, then paste manually."));
+  };
+
   const download = () => {
     if (!current || !snapshot) return;
     try { downloadAiHandoff(snapshot); setTransferStatus("Markdown download requested with the complete preview text."); }
@@ -115,7 +144,17 @@ function HandoffDialog({brief, sourceState, onClose}: Props & {onClose: () => vo
         <select ref={goalRef} id="ai-handoff-goal" value={goal} onChange={event => setGoal(event.target.value as AiGoal)}>
           {AI_GOALS.map(value => <option key={value} value={value}>{AI_GOAL_TEMPLATES[value].label}</option>)}
         </select>
-        <p className="ai-handoff-scope"><strong>Scope: Current Planning Brief</strong><br />Only the evidence and selections already included in your Brief.</p>
+        <fieldset className="ai-handoff-modules">
+          <legend>Optional research tasks</legend>
+          <p className="ai-handoff-help">Choose what to ask the external AI to investigate. Regenerate the frozen prompt after changing any option.</p>
+          {AI_RESEARCH_MODULES.map(module => <label className="ai-handoff-module" key={module}>
+            <input type="checkbox" checked={researchModules.includes(module)}
+              onChange={event => setResearchModules(previous => event.target.checked
+                ? [...previous, module] : previous.filter(value => value !== module))} />
+            <span>{AI_RESEARCH_MODULE_LABELS[module]}</span>
+          </label>)}
+        </fieldset>
+        <p className="ai-handoff-scope"><strong>Scope: Current Planning Brief</strong><br />Only the evidence and selections already included in your Brief. Research sources are external and unreviewed.</p>
         <label htmlFor="ai-handoff-question">Optional question</label>
         <textarea id="ai-handoff-question" rows={4} value={question} onChange={event => setQuestion(event.target.value)}
           aria-describedby="ai-question-help ai-question-count" aria-invalid={questionLength > 2000} />
@@ -123,7 +162,7 @@ function HandoffDialog({brief, sourceState, onClose}: Props & {onClose: () => vo
         <p id="ai-question-count" className="ai-handoff-help" aria-live="polite">{questionLength.toLocaleString("en-US")} / 2,000 Unicode characters (after trimming)</p>
         <div className="ai-handoff-warning">
           <strong>Review before sharing</strong>
-          <p>Copying places the prompt on your clipboard. Pasting it into an AI service transfers it to a separately operated service. This app does not send it.</p>
+          <p>Copy &amp; Open opens a provider home page and attempts to copy the prompt. No Brief data goes in URLs or is submitted automatically. Pasting or uploading shares it under that provider's privacy terms.</p>
           <p>National evidence is not a local disease-burden estimate. Scenario arithmetic is not causal benefit, savings or ROI. An AI response is not reviewed scientific evidence.</p>
         </div>
       </div>
@@ -168,6 +207,23 @@ function HandoffDialog({brief, sourceState, onClose}: Props & {onClose: () => vo
             textRef.current?.select();
             setTransferStatus("Complete prompt selected. Use your device’s Copy command.");
           }}>Select complete prompt</button>
+        </div>
+        <div className="ai-handoff-provider-area">
+          <h3>Copy &amp; open an AI</h3>
+          <p className="ai-handoff-help">The provider opens in a separate tab. Paste and review the copied prompt before sending. Long pastes may become attachments. No auto-submission or URL prefill.</p>
+          <div className="ai-handoff-actions">
+            {providers.map(provider => <button key={provider.id} className="button secondary" type="button"
+              disabled={!current || copying} onClick={() => void copyAndOpen(provider)}>Copy &amp; open {provider.label}</button>)}
+            {!providers.length && <p className="ai-handoff-help">External AI launches are disabled for this deployment; use Copy or Download.</p>}
+          </div>
+          {openedProvider && <p className="ai-handoff-help">If the tab did not open: <a href={openedProvider.home}
+            target="_blank" rel="noopener noreferrer">Open {openedProvider.label} manually</a>. No Brief data is present in this link.</p>}
+        </div>
+        <div className="ai-handoff-research-area">
+          <h3>Search published research</h3>
+          <p className="ai-handoff-help">Fixed public-topic searches. These links contain no Brief, scenario or optional question. External results are not reviewed evidence.</p>
+          <ul>{AI_PUBLIC_RESEARCH_LINKS.map(link => <li key={link.url}><a href={link.url}
+            target="_blank" rel="noopener noreferrer">{link.label}</a></li>)}</ul>
         </div>
         <p className="ai-handoff-help ai-handoff-transfer-status" role="status">{transferStatus}</p>
       </div>
