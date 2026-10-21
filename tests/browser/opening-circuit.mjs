@@ -2,6 +2,7 @@
 import assert from "node:assert/strict";
 import {createRequire} from "node:module";
 import {mkdir,writeFile} from "node:fs/promises";
+import {readFileSync} from "node:fs";
 const require=createRequire(process.env.PLAYWRIGHT_RUNNER ?? import.meta.url);
 const {chromium}=require("playwright");
 const base=process.env.QA_BASE_URL??"http://127.0.0.1:4188";
@@ -160,6 +161,68 @@ try{
     results.push({label:"pointer-replay-no-focus-steal",status:"PASS"});
   }catch(e){results.push({label:"pointer-replay-no-focus-steal",status:"FAIL",error:String(e.stack)});}
   finally{await pointer.close();}
+
+
+  // Run J's real motion + Replay interaction behind K's actual configured CSP,
+  // applied to the built Vite preview through a Playwright response-header overlay.
+  // This is browser CSP enforcement, not an attestation of deployed Vercel headers.
+  const security=JSON.parse(readFileSync(new URL("../../apps/web/vercel.json",import.meta.url),"utf8"));
+  assert.equal(security.headers.length,1);
+  assert.equal(security.headers[0].source,"/(.*)");
+  const securityHeaders=Object.fromEntries(security.headers[0].headers.map(h=>[h.key,h.value]));
+  assert.ok(securityHeaders["Content-Security-Policy"].includes("script-src 'self'"));
+  assert.ok(securityHeaders["Content-Security-Policy"].includes("style-src-attr 'none'"));
+  assert.ok(!securityHeaders["Content-Security-Policy"].includes("unsafe-inline"));
+  for(const [theme,width] of [["light",390],["dark",1440]]){
+    const label="k-enforced-csp-"+theme+"-normal-motion-replay-focus";
+    const context=await browser.newContext({viewport:{width,height:900},colorScheme:theme,reducedMotion:"no-preference"});
+    try{
+      await context.route("**/*",async route=>{
+        const response=await route.fetch();
+        await route.fulfill({response,headers:{...response.headers(),...securityHeaders}});
+      });
+      await context.addInitScript(selected=>{
+        try{localStorage.setItem("diagnostic-odyssey.theme",selected);}catch{/* optional storage */}
+        window.__cspViolations=[];
+        document.addEventListener("securitypolicyviolation",event=>{
+          window.__cspViolations.push({directive:event.effectiveDirective,blockedURI:event.blockedURI});
+        });
+        document.addEventListener("DOMContentLoaded",()=>{window.__themeAtDCL=document.documentElement.dataset.theme;});
+      },theme);
+      const page=await context.newPage();
+      const errors=[];
+      page.on("pageerror",error=>errors.push(String(error)));
+      await page.goto(base+"/");
+      await check(page,label,true);
+      assert.equal(await page.evaluate(()=>window.__themeAtDCL),theme,"external K bootstrap sets theme before DOMContentLoaded");
+      assert.equal(await page.evaluate(()=>document.documentElement.dataset.theme),theme);
+      const cspResponse=await page.evaluate(()=>performance.getEntriesByType("resource").some(e=>e.name.endsWith("/theme-init.js")));
+      assert.equal(cspResponse,true,"synchronous theme-init.js must execute under K CSP");
+      assert.ok(await page.evaluate(()=>document.getAnimations().some(a=>a.animationName==="circuit-lane"&&a.playState==="running")),
+        "normal-motion lane choreography must run under enforced K CSP");
+      await page.screenshot({path:out+"/"+label+"-entry.png",animations:"allow"});
+      await tabToReplay(page);
+      await page.evaluate(()=>{window.__replayFocusAnchor=document.querySelector(".preview-replay");});
+      await page.keyboard.press("Enter");
+      assert.equal(await stillFocusedOnSameReplay(page),true,"CSP replay Enter keeps exact focused DOM button");
+      assert.equal(await page.locator(".overview-page.is-opening").count(),1);
+      assert.ok(await page.evaluate(()=>document.getAnimations().some(a=>a.animationName==="circuit-lane"&&a.playState==="running")),
+        "CSP replay must restart the inner circuit");
+      await page.keyboard.press("Enter");
+      assert.equal(await stillFocusedOnSameReplay(page),true,"CSP rapid replay keeps DOM identity");
+      assert.ok(await page.evaluate(()=>document.getAnimations().some(a=>a.animationName.startsWith("workspace-unfold")&&a.playState==="running")),
+        "CSP rapid replay must restart the shell");
+      await page.locator(".overview-page.is-opening").waitFor({state:"detached",timeout:9500});
+      assert.equal(await stillFocusedOnSameReplay(page),true,"CSP completion must retain keyboard focus");
+      assert.equal(await page.locator(".preview-output").isVisible(),true);
+      const violations=await page.evaluate(()=>window.__cspViolations);
+      assert.deepEqual(violations,[],"normal-motion opening/Replay must have zero unexpected K CSP violations");
+      assert.deepEqual(errors,[],"opening/Replay under K CSP must have no uncaught page errors");
+      await page.screenshot({path:out+"/"+label+"-complete.png",animations:"disabled"});
+      results.push({label,status:"PASS",security:"simulated K policy on built preview",violations});
+    }catch(e){results.push({label,status:"FAIL",error:String(e.stack)});}
+    finally{await context.close();}
+  }
 
   const p2=await browser.newPage({viewport:{width:360,height:900}});
   try{
