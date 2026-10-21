@@ -117,6 +117,36 @@ await check("six goals, current Brief scope, canonical parity, full clipboard an
   assert.deepEqual(await exportJson(p), canonical);
 });
 
+await check("optional modules are stale-gated; user-click provider launch has no data in URL", async () => {
+  const p = await page();
+  await open(p);
+  const initial = await preview(p).inputValue();
+  assert.match(initial, /## Retrieved literature or search plan/);
+  assert.match(initial, /## Investigational interventions/);
+  assert.doesNotMatch(initial, /## Visualizations and chart specifications/);
+  await p.getByRole("checkbox", {name: "Prepare evidence-based visualizations"}).check();
+  await stale(p);
+  assert.equal(await preview(p).inputValue(), initial);
+  await regenerate(p).click();
+  const regenerated = await preview(p).inputValue();
+  assert.match(regenerated, /## Visualizations and chart specifications/);
+  assert.deepEqual(envelope(regenerated), envelope(initial));
+  await p.evaluate(() => {
+    window.providerOpenCalls = [];
+    window.open = (...args) => { window.providerOpenCalls.push(args); return null; };
+  });
+  await p.getByRole("button", {name: "Copy & open ChatGPT", exact: true}).click();
+  await p.getByText(/Complete prompt copied\. Paste it into ChatGPT/).waitFor();
+  assert.equal((await p.evaluate(() => window.copyCalls)).at(-1), regenerated);
+  assert.deepEqual(await p.evaluate(() => window.providerOpenCalls), [["https://chatgpt.com/", "_blank", "noopener,noreferrer"]]);
+  assert.equal(await p.getByRole("link", {name: "Open ChatGPT manually"}).getAttribute("href"), "https://chatgpt.com/");
+  const researchLinks = await p.getByRole("link", {name: /PubMed|ClinicalTrials\.gov/}).evaluateAll(elements =>
+    elements.map(el => el.getAttribute("href")));
+  assert.equal(researchLinks.length, 3);
+  assert.ok(researchLinks.every(href => !href.includes("BEGIN_DIAGNOSTIC_ODYSSEY_DATA")));
+  await close(p).click();
+});
+
 await check("Unicode question boundary, hostile text is inert, and edits latch stale even when reverted", async () => {
   const p = await page(); await open(p);
   const question = p.getByLabel("Optional question", {exact: true});
