@@ -62,6 +62,18 @@ function envelope(text) {
   assert.ok(match, "Full envelope delimiters must be present");
   return JSON.parse(match[1]);
 }
+async function assertOnlyApprovedResearchLinks(p) {
+  const links = await p.getByRole("dialog").locator("a").evaluateAll(elements => elements.map(el => el.href));
+  assert.equal(links.length, 3, "The only active links must be the three fixed public research links.");
+  for (const href of links) {
+    const url = new URL(href);
+    assert.equal(url.protocol, "https:");
+    assert.ok(["pubmed.ncbi.nlm.nih.gov", "clinicaltrials.gov"].includes(url.hostname));
+    assert.ok(url.searchParams.has("term"));
+    assert.ok(!href.includes("unexpected.invalid"));
+  }
+  assert.equal(await p.getByRole("dialog").locator("img,script").count(), 0);
+}
 async function exportJson(p) {
   await prepareWorkspace(p);
   const pending = p.waitForEvent("download");
@@ -157,7 +169,7 @@ await check("Unicode question boundary, hostile text is inert, and edits latch s
   await question.fill(""); await stale(p);
   await question.fill(hostile); await regenerate(p).click();
   assert.equal(envelope(await preview(p).inputValue()).optional_question, hostile);
-  assert.equal(await p.getByRole("dialog").locator("img,script,a").count(), 0);
+  await assertOnlyApprovedResearchLinks(p);
   assert.equal(await p.evaluate(() => window.INJECTED), undefined);
   await question.fill("🧬".repeat(2001));
   assert.equal(await question.getAttribute("aria-invalid"), "true");
@@ -228,7 +240,7 @@ await check("hostile source fields stay inert and filtered raw records never ent
   const text = await preview(p).inputValue();
   assert.ok(!text.includes("FORBIDDEN"));
   assert.match(envelope(text).payload.burden_findings[0].label, /<img/);
-  assert.equal(await p.getByRole("dialog").locator("img,script,a").count(), 0);
+  await assertOnlyApprovedResearchLinks(p);
   assert.equal(await p.evaluate(() => window.INJECTED), undefined);
 });
 
@@ -293,10 +305,13 @@ for (const width of [390, 768, 1440]) for (const theme of ["light", "dark"]) {
     const scan = await p.evaluate(() => axe.run(document, {runOnly: {type: "tag", values: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]}}));
     await writeFile(`${output}/axe-${width}-${theme}.json`, JSON.stringify(scan, null, 2));
     assert.deepEqual(scan.violations, []);
-    await selection(p).focus(); await p.keyboard.press("Tab");
+    // The public literature links follow selection and provider buttons in DOM order.
+    // The final ClinicalTrials.gov link now tests the native dialog focus wrap.
+    const lastLink = dialog.getByRole("link", {name: /ClinicalTrials\.gov/});
+    await lastLink.focus(); await p.keyboard.press("Tab");
     assert.equal(await close(p).evaluate(e => document.activeElement === e), true);
     await p.keyboard.press("Shift+Tab");
-    assert.equal(await selection(p).evaluate(e => document.activeElement === e), true);
+    assert.equal(await lastLink.evaluate(e => document.activeElement === e), true);
     await p.keyboard.press("Escape");
     assert.equal(await dialog.count(), 0);
     assert.equal(await trigger.evaluate(e => document.activeElement === e), true);
