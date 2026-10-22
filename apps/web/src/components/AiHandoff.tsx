@@ -10,7 +10,9 @@ import { AI_PUBLIC_RESEARCH_LINKS, availableAiProviders, type AiHandoffProvider 
 import { AiGeminiPanel } from "./AiGeminiPanel";
 import "./AiHandoff.css";
 
-const stage2Preview = import.meta.env.VITE_GEMINI_STAGE2_PREVIEW === "on";
+/** Vite injects only this public build-time boolean; no browser environment secret. */
+declare const __DO_GEMINI_STAGE2_PREVIEW__: boolean;
+const stage2Preview = __DO_GEMINI_STAGE2_PREVIEW__;
 interface Props { brief: PlanningBrief | null; sourceState: AiHandoffSourceState }
 
 export function AiHandoff(props: Props) {
