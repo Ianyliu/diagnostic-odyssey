@@ -35,7 +35,7 @@ export function AiHandoff(props: Props) {
 }
 
 function HandoffDialog({brief, sourceState, onClose, presentation = "modal", suggestion}: Props & {
-  onClose: () => void; presentation?: "modal" | "inline"; suggestion?: PromptGoalSuggestion;
+  onClose: () => void; presentation?: "modal" | "inline"; suggestion?: PromptGoalSuggestion | undefined;
 }) {
   const inline = presentation === "inline";
   const dialogRef = useRef<HTMLDialogElement>(null);
