@@ -162,7 +162,8 @@ function HandoffDialog({brief, sourceState, onClose}: Props & {onClose: () => vo
         <p id="ai-question-count" className="ai-handoff-help" aria-live="polite">{questionLength.toLocaleString("en-US")} / 2,000 Unicode characters (after trimming)</p>
         <div className="ai-handoff-warning">
           <strong>Review before sharing</strong>
-          <p>Copy &amp; Open opens a provider home page and attempts to copy the prompt. No Brief data goes in URLs or is submitted automatically. Pasting or uploading shares it under that provider's privacy terms.</p>
+          <p><strong>Read the complete frozen prompt before copying.</strong> It may include analyst-entered notes or comments from the selected Brief. Do not include patient-identifying, confidential or other restricted information.</p>
+          <p>Copying writes the prompt to your device's clipboard. Opening an approved provider home page does not transfer the Brief. Only if you manually paste, upload or submit content to that separately operated service will you share it under that provider's terms. A provider launch or clipboard copy may fail.</p>
           <p>National evidence is not a local disease-burden estimate. Scenario arithmetic is not causal benefit, savings or ROI. An AI response is not reviewed scientific evidence.</p>
         </div>
       </div>
@@ -210,7 +211,7 @@ function HandoffDialog({brief, sourceState, onClose}: Props & {onClose: () => vo
         </div>
         <div className="ai-handoff-provider-area">
           <h3>Copy &amp; open an AI</h3>
-          <p className="ai-handoff-help">The provider opens in a separate tab. Paste and review the copied prompt before sending. Long pastes may become attachments. No auto-submission or URL prefill.</p>
+          <p className="ai-handoff-help">Review the complete preview first; do not share PHI or confidential content. Clicking attempts a local clipboard copy and opens the approved provider homepage, not a chat submission. Paste manually only after reviewing the provider's data terms. Long pastes may become attachments.</p>
           <div className="ai-handoff-actions">
             {providers.map(provider => <button key={provider.id} className="button secondary" type="button"
               disabled={!current || copying} onClick={() => void copyAndOpen(provider)}>Copy &amp; open {provider.label}</button>)}
