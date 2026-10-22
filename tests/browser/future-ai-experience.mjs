@@ -73,7 +73,7 @@ if (disabled) {
     assert.equal(await page.locator(".fc-live-workspace").count(),0);
     assert.equal(await page.getByRole("button",{name:/2 · Gemini/}).count(),0);
     assert.equal(await page.getByRole("button",{name:"Analyze with Gemini"}).count(),0);
-    assert.match(await page.locator(".fc-banner").innerText(),/Prompt Studio \+ Explore/);
+    assert.match(await page.locator(".fc-banner").innerText(),/Prompt Studio \+ Explore/i);
     const studio=page.locator(".ai-handoff-inline");
     const picker=studio.getByLabel("Analysis goal");
     const prompt=studio.locator("#ai-handoff-text");
