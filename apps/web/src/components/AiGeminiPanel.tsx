@@ -9,7 +9,7 @@ type Selection = {
 type Finding = {id:string;label:string;value:number;unit:string;lower:number;upper:number;source_id:string;source_locator:string};
 type Local = {id:string;label:string;value:number;unit:string;source_id:string;source_locator:string;source_vintage:string};
 type Draft = {proposal_id:string;disposition:"pending";template:{id:string;field_codes:string[];owner_code:string;privacy_code:string}};
-type ResponseBody = {
+export type ReviewedGeminiResponse = {
   mode:"reviewed_evidence_preview";provenance:{national_artifact_version:string;national_release_sha256:string;local_artifact_version:string|null;local_release_sha256:string|null};
   model:string;selected_evidence:{national:Finding[];local:Local[]};
   result:{snapshot_fingerprint:string;generation:{state:string};sections:{findings:string;interventions:string;requests:string};
@@ -17,6 +17,7 @@ type ResponseBody = {
   intervention_options:unknown[];boundary:string};
 };
 
+type ResponseBody = ReviewedGeminiResponse;
 function selectionFor(snapshot:AiHandoffTextV1):Selection {
   const p=snapshot.envelope.payload;
   return {
@@ -41,7 +42,7 @@ const warningLabels:Record<string,string>={
   ai_output_pending_independent_review:"Gemini selections and operational requests are drafts, not reviewed evidence."
 };
 function human(n:number,unit:string){return n.toLocaleString("en-US",{maximumSignificantDigits:7})+" "+unit;}
-export function AiGeminiPanel({snapshot,sourceKey}:{snapshot:AiHandoffTextV1|null;sourceKey:string}) {
+export function AiGeminiPanel({snapshot,sourceKey,onValidated}:{snapshot:AiHandoffTextV1|null;sourceKey:string;onValidated?:(result:ReviewedGeminiResponse)=>void}) {
   const [token,setToken]=useState("");
   const [consent,setConsent]=useState(false);
   const [busy,setBusy]=useState(false);
@@ -89,6 +90,7 @@ export function AiGeminiPanel({snapshot,sourceKey}:{snapshot:AiHandoffTextV1|nul
       if(liveKey.current!==startedKey||ctl.signal.aborted)return;
       if(result.mode!=="reviewed_evidence_preview"||result.result?.generation.state!=="available")throw Error("A validated response was not available.");
       setShown({key:startedKey,data:result});
+      onValidated?.(result);
       setStatus("Preview result validated against the reviewed source artifacts.");
     }catch(error){
       if(!ctl.signal.aborted&&liveKey.current===startedKey)
