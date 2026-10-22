@@ -48,11 +48,12 @@ export function useConceptBrief(liveEnabled = false) {
     scenario.scenario_id === scenarioResult.scenario_id &&
     scenario.target_pathway_step === scenarioResult.target_pathway_step &&
     scenario.mechanism === scenarioResult.target_mechanism);
-  const source = inspectAiHandoffSource(brief, {
+  const sourceState = {
     status, localContextStatus,
     localArtifactVersion: localContext?.manifest.artifact_version ?? null,
     scenario, scenarioValid, selectedLocalContextIds, pilotLocalContextId, briefDataRequestIds
-  });
+  };
+  const source = inspectAiHandoffSource(brief, sourceState);
   const liveSnapshot = useMemo(() => {
     if (!liveEnabled || !brief || source.problem) return null;
     try { return createAiHandoffText(brief); }
@@ -62,6 +63,8 @@ export function useConceptBrief(liveEnabled = false) {
   return concept && {
     ...concept,
     live: {
+      brief,
+      sourceState,
       snapshot: liveSnapshot,
       sourceKey: source.key,
       reason: source.problem ?? (liveSnapshot ? null : "Current Brief could not be validated for protected AI analysis.")

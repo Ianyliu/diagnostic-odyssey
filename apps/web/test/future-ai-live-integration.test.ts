@@ -11,11 +11,17 @@ test("live Future AI Concept requires explicit Preview build gate",()=>{
   const page=read("concept/FutureAIExperiencePage.tsx");
   assert.match(page,/typeof __DO_GEMINI_STAGE2_PREVIEW__ === "boolean"/);
   assert.match(page,/useConceptBrief\(previewGeminiEnabled\)/);
-  assert.match(page,/previewGeminiEnabled && <section className="fc-live-workspace"/);
+  assert.match(page,/previewGeminiEnabled && <section ref=\{workbench\} className="fc-unified-workbench"/);
+  assert.match(page,/<AiHandoffInline brief=\{snapshot\?\.live\.brief \?\? null\} sourceState=\{snapshot\.live\.sourceState\}/);
+  assert.match(page,/fc-workflow-panel" hidden=\{workflow !== "prompt"\}/);
+  assert.match(page,/fc-workflow-panel" hidden=\{workflow !== "gemini"\}/);
+  assert.match(page,/Use this view as prompt starting point/);
+  assert.match(page,/setSuggestion\(previous => \(\{goal: suggestedPromptGoals\[goal\]/);
+  assert.match(page,/suggestedPromptGoals: Record<GoalId,AiGoal>/);
   assert.match(page,/previewGeminiEnabled && <ConceptLiveSummary goal=\{goal\} result=\{liveResult\}/);
   assert.match(page,/onValidated=\{data=>setValidated\(\{identity:liveIdentity,data\}\)\}/);
   assert.match(page,/validated\?\.identity === liveIdentity/);
-  assert.match(page,/The same validated result carries across views/);
+  assert.match(page,/One validated result can be explored across the four views below/);
   assert.doesNotMatch(page,/fetch\(|localStorage|sessionStorage|GEMINI_API_KEY/);
 });
 
@@ -52,4 +58,24 @@ test("Planning Brief distinguishes protected live workspace from illustrative co
   assert.match(brief,/Explore AI evidence workspace/);
   assert.match(brief,/Preview only · Reviewed-data Gemini requires operator authentication and explicit consent/);
   assert.match(brief,/Interactive concept only · No live AI or model API calls/);
+});
+
+test("unified Prompt Studio reuses all six canonical handoff goals, transfers and safety checks",()=>{
+  const handoff=read("components/AiHandoff.tsx");
+  const page=read("concept/FutureAIExperiencePage.tsx");
+  const hook=read("concept/useConceptBrief.ts");
+  for(const marker of [
+    "AI_GOALS.map", "AI_RESEARCH_MODULES.map", "Copy complete prompt",
+    "Download Markdown", "Select complete prompt", "copyAndOpenAiProvider",
+    "Search published research", "Regenerate preview", "Optional question"
+  ]) assert.ok(handoff.includes(marker), marker);
+  assert.match(handoff,/export function AiHandoffInline/);
+  assert.match(handoff,/open=\{inline \|\| undefined\}/);
+  assert.match(handoff,/if \(inline\) \{/);
+  assert.match(handoff,/stage2Preview && !inline && <AiGeminiPanel/);
+  assert.match(handoff,/suggestion\?\.serial/);
+  assert.match(page,/setWorkflow\("prompt"\)/);
+  assert.match(hook,/sourceState,/);
+  assert.match(hook,/brief,\s*sourceState,/);
+  assert.doesNotMatch(page,/copyAiHandoffText\(|downloadAiHandoff\(/);
 });

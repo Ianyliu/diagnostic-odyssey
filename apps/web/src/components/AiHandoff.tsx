@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import type { PlanningBrief } from "@diagnostic-odyssey/brief-core";
 import { createAiHandoffText, type AiGoal, type AiHandoffTextV1 } from "../data/aiHandoff";
@@ -15,6 +15,12 @@ declare const __DO_GEMINI_STAGE2_PREVIEW__: boolean;
 const stage2Preview = typeof __DO_GEMINI_STAGE2_PREVIEW__ === "boolean"
   ? __DO_GEMINI_STAGE2_PREVIEW__ : false;
 interface Props { brief: PlanningBrief | null; sourceState: AiHandoffSourceState }
+export interface PromptGoalSuggestion {goal: AiGoal; serial: number}
+/** Reuse every original handoff capability in the concept workspace rather than
+ * maintaining a second, potentially divergent prompt implementation. */
+export function AiHandoffInline(props: Props & {suggestion?: PromptGoalSuggestion}) {
+  return <HandoffDialog {...props} presentation="inline" onClose={() => {}} />;
+}
 
 export function AiHandoff(props: Props) {
   const [open, setOpen] = useState(false);
@@ -28,7 +34,10 @@ export function AiHandoff(props: Props) {
   </>;
 }
 
-function HandoffDialog({brief, sourceState, onClose}: Props & {onClose: () => void}) {
+function HandoffDialog({brief, sourceState, onClose, presentation = "modal", suggestion}: Props & {
+  onClose: () => void; presentation?: "modal" | "inline"; suggestion?: PromptGoalSuggestion;
+}) {
+  const inline = presentation === "inline";
   const dialogRef = useRef<HTMLDialogElement>(null);
   const goalRef = useRef<HTMLSelectElement>(null);
   const textRef = useRef<HTMLTextAreaElement>(null);
@@ -80,6 +89,15 @@ function HandoffDialog({brief, sourceState, onClose}: Props & {onClose: () => vo
     setGoal(nextGoal);
     setResearchModules(nextModules);
   };
+  // Explicit "Use this exploration view as a prompt" action only. Switching
+  // illustrative concept tabs alone does not overwrite the user's prompt goal.
+  useEffect(() => {
+    if (suggestion) {
+      updatePromptOptions(suggestion.goal, researchModules);
+      goalRef.current?.focus();
+    }
+    // An explicit suggestion serial is updated only by an actual user click.
+  }, [suggestion?.serial]);
   const snapshot = session.snapshot;
   const payload = snapshot?.envelope.payload;
 
@@ -88,6 +106,10 @@ function HandoffDialog({brief, sourceState, onClose}: Props & {onClose: () => vo
   }, [identity, snapshot]);
 
   useLayoutEffect(() => {
+    if (inline) {
+      mounted.current = true;
+      return () => {mounted.current = false;transferEpoch.current++;};
+    }
     const dialog = dialogRef.current!;
     const previousFocus = document.activeElement;
     const previousOverflow = document.body.style.overflow;
@@ -102,7 +124,7 @@ function HandoffDialog({brief, sourceState, onClose}: Props & {onClose: () => vo
       document.body.style.overflow = previousOverflow;
       if (previousFocus instanceof HTMLElement && previousFocus.isConnected) previousFocus.focus();
     };
-  }, []);
+  }, [inline]);
 
   const copy = async () => {
     if (!current || !snapshot || copying) return;
@@ -150,19 +172,19 @@ function HandoffDialog({brief, sourceState, onClose}: Props & {onClose: () => vo
     catch { setTransferStatus("The download could not start. Use Select complete prompt and your device’s Copy command."); }
   };
 
-  return <dialog ref={dialogRef} className="ai-handoff-dialog" aria-labelledby="ai-handoff-title" aria-describedby="ai-handoff-intro"
+  return <dialog ref={dialogRef} open={inline || undefined} aria-modal={!inline} className={`ai-handoff-dialog${inline ? " ai-handoff-inline" : ""}`} aria-labelledby="ai-handoff-title" aria-describedby="ai-handoff-intro"
     onKeyDown={event => {
-      if (event.key !== "Tab") return;
+      if (inline || event.key !== "Tab") return;
       const controls = Array.from(event.currentTarget.querySelectorAll<HTMLElement>("button, input, select, textarea, summary, [href], [tabindex]"))
         .filter(element => !element.matches(":disabled") && element.tabIndex >= 0 && element.getClientRects().length > 0);
       const first = controls[0], last = controls.at(-1);
       if (event.shiftKey && document.activeElement === first) {event.preventDefault(); last?.focus();}
       else if (!event.shiftKey && document.activeElement === last) {event.preventDefault(); first?.focus();}
     }}
-    onCancel={event => {event.preventDefault(); onClose();}}>
+    onCancel={event => {if (!inline) {event.preventDefault(); onClose();}}}>
     <div className="ai-handoff-header">
-      <div><p className="eyebrow">PLANNING BRIEF · AI HANDOFF</p><h2 id="ai-handoff-title">Analyze with AI</h2></div>
-      <button className="button secondary" type="button" onClick={onClose} aria-label="Close Analyze with AI">Close</button>
+      <div><p className="eyebrow">PLANNING BRIEF · AI HANDOFF</p><h2 id="ai-handoff-title">{inline ? "Prompt Studio" : "Analyze with AI"}</h2></div>
+      {!inline && <button className="button secondary" type="button" onClick={onClose} aria-label="Close Analyze with AI">Close</button>}
     </div>
     <p id="ai-handoff-intro">Prepare a complete prompt for an external AI to interpret the reviewed evidence and analyst assumptions in this Brief. {stage2Preview ? <strong>Manual handoff makes no model calls. A separate protected Gemini action is available below with operator authentication and explicit consent.</strong> : <strong>No live model is connected here; the app does not invoke an AI provider or consume model API tokens.</strong>}</p>
     <div className="ai-handoff-layout">
@@ -254,7 +276,7 @@ function HandoffDialog({brief, sourceState, onClose}: Props & {onClose: () => vo
             target="_blank" rel="noopener noreferrer">{link.label}</a></li>)}</ul>
         </div>
         <p className="ai-handoff-help ai-handoff-transfer-status" role="status">{transferStatus}</p>
-        {stage2Preview && <AiGeminiPanel snapshot={current ? snapshot : null} sourceKey={identity} />}
+        {stage2Preview && !inline && <AiGeminiPanel snapshot={current ? snapshot : null} sourceKey={identity} />}
       </div>
     </div>
   </dialog>;
