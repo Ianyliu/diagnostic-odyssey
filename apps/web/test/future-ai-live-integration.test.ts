@@ -10,6 +10,7 @@ const read=(name:string)=>readFileSync(resolve(dir,"../src",name),"utf8");
 test("live Future AI Concept requires explicit Preview build gate",()=>{
   const page=read("concept/FutureAIExperiencePage.tsx");
   assert.match(page,/typeof __DO_GEMINI_STAGE2_PREVIEW__ === "boolean"/);
+  assert.match(page,/useConceptBrief\(previewGeminiEnabled\)/);
   assert.match(page,/previewGeminiEnabled && <section className="fc-live-workspace"/);
   assert.match(page,/previewGeminiEnabled && <ConceptLiveSummary goal=\{goal\} result=\{liveResult\}/);
   assert.match(page,/onValidated=\{data=>setValidated\(\{identity:liveIdentity,data\}\)\}/);
@@ -25,7 +26,7 @@ test("live Gemini concept input is the canonical memoized Brief, ID-only and fai
   assert.match(hook,/buildPlanningBrief\(/);
   assert.match(hook,/withStaleSelectedDataRequestWarning\(/);
   assert.match(hook,/inspectAiHandoffSource\(brief,/);
-  assert.match(hook,/if \(!brief \|\| source.problem\) return null/);
+  assert.match(hook,/if \(!liveEnabled \|\| !brief \|\| source.problem\) return null/);
   assert.match(hook,/createAiHandoffText\(brief\)/);
   assert.match(panel,/finding_ids:p\.burden_findings\.map\(f=>f\.estimate_id\)/);
   assert.match(panel,/local_ids:p\.local_context\.map\(l=>l\.indicator_id\)/);

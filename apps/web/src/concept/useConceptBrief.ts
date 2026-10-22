@@ -17,7 +17,7 @@ import { projectConceptBrief } from "./conceptBrief";
  * Memoization is essential: the Brief generated_at changes on recomposition,
  * and must not invalidate a consented Gemini response simply by switching tabs.
  */
-export function useConceptBrief() {
+export function useConceptBrief(liveEnabled = false) {
   const {
     status, bundle, localContext, localContextStatus,
     selectedLocalContext, selectedLocalContextIds, pilotLocalContext, pilotLocalContextId,
@@ -54,10 +54,10 @@ export function useConceptBrief() {
     scenario, scenarioValid, selectedLocalContextIds, pilotLocalContextId, briefDataRequestIds
   });
   const liveSnapshot = useMemo(() => {
-    if (!brief || source.problem) return null;
+    if (!liveEnabled || !brief || source.problem) return null;
     try { return createAiHandoffText(brief); }
     catch { return null; }
-  }, [brief, source.problem]);
+  }, [brief, source.problem, liveEnabled]);
 
   return concept && {
     ...concept,

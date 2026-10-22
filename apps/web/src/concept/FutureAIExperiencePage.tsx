@@ -17,7 +17,7 @@ declare const __DO_GEMINI_STAGE2_PREVIEW__: boolean;
 const previewGeminiEnabled = typeof __DO_GEMINI_STAGE2_PREVIEW__ === "boolean" && __DO_GEMINI_STAGE2_PREVIEW__;
 
 export default function FutureAIExperiencePage({onHide}: {onHide: () => void}) {
-  const snapshot = useConceptBrief();
+  const snapshot = useConceptBrief(previewGeminiEnabled);
   const [goal, setGoal] = useState<GoalId>("explain_brief");
   const [validated, setValidated] = useState<{identity:string;data:ReviewedGeminiResponse}|null>(null);
   const liveIdentity = JSON.stringify([snapshot?.live.sourceKey, snapshot?.live.snapshot?.envelope.generated_at]);
