@@ -7,6 +7,7 @@ on:
       - "packages/**"
       - "docs/ai-experience-preview/**"
       - "tests/browser/future-ai-experience.mjs"
+      - "tests/browser/future-ai-live-preview.mjs"
       - "tests/browser/verify-ai-handoff-exports.ts"
       - ".github/workflows/future-ai-experience.yml"
       - "package-lock.json"
@@ -21,7 +22,7 @@ jobs:
     timeout-minutes: 20
     strategy:
       matrix:
-        build: [default, demo]
+        build: [default, demo, protected-preview]
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
@@ -53,7 +54,9 @@ jobs:
         env:
           CONCEPT_BUILD: ${{ matrix.build }}
         run: |
-          if [ "$CONCEPT_BUILD" = demo ]; then
+          if [ "$CONCEPT_BUILD" = protected-preview ]; then
+            VERCEL_ENV=preview AI_GUIDANCE_ENABLED=on VITE_FUTURE_AI_EXPERIENCE_DEMO=on npm run build
+          elif [ "$CONCEPT_BUILD" = demo ]; then
             VITE_FUTURE_AI_EXPERIENCE_DEMO=on npm run build
           else
             VITE_FUTURE_AI_EXPERIENCE_DEMO=off npm run build
@@ -75,13 +78,17 @@ jobs:
           if [ "$CONCEPT_BUILD" = default ]; then export QA_BUILD=off; fi
           export QA_CHROME="$(command -v google-chrome)"
           export QA_DIST="$GITHUB_WORKSPACE/apps/web/dist"
-          node tests/browser/future-ai-experience.mjs
-          if [ "$CONCEPT_BUILD" = demo ]; then
-            node --experimental-strip-types tests/browser/verify-ai-handoff-exports.ts "$QA_OUTPUT"
+          if [ "$CONCEPT_BUILD" = protected-preview ]; then
+            node tests/browser/future-ai-live-preview.mjs
+          else
+            node tests/browser/future-ai-experience.mjs
+            if [ "$CONCEPT_BUILD" = demo ]; then
+              node --experimental-strip-types tests/browser/verify-ai-handoff-exports.ts "$QA_OUTPUT"
+            fi
+            QA_OUTPUT=/tmp/concept-results/acceptance node tests/browser/acceptance.mjs
+            node --experimental-strip-types tests/browser/verify-ai-handoff-exports.ts /tmp/concept-results/acceptance
+            QA_OUTPUT=/tmp/concept-results/gate0 node tests/browser/gate0-accessibility.mjs
           fi
-          QA_OUTPUT=/tmp/concept-results/acceptance node tests/browser/acceptance.mjs
-          node --experimental-strip-types tests/browser/verify-ai-handoff-exports.ts /tmp/concept-results/acceptance
-          QA_OUTPUT=/tmp/concept-results/gate0 node tests/browser/gate0-accessibility.mjs
       - name: Retain browser evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

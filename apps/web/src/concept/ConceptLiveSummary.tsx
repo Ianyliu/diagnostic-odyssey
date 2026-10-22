@@ -38,7 +38,7 @@ export function ConceptLiveSummary({goal,result}:{goal:GoalId;result:ReviewedGem
         <small>Reviewed MEPS 2024 · {item.source_id}</small>
         <h4>{item.label}</h4>
         <strong>{verifiedNumber(item.value,item.unit)}</strong>
-        <p>95% interval: {verifiedNumber(item.lower,item.unit)} to {verifiedNumber(item.upper,item.unit)}</p>
+        <p>Reported interval: {verifiedNumber(item.lower,item.unit)} to {verifiedNumber(item.upper,item.unit)}</p>
       </article>):<p>No eligible national finding was selected in this run.</p>}</div>
       <p className="fc-muted">{result.selected_evidence.local.length} WV implementation indicator(s) in this selection. Geographic context does not rescale national burden.</p>
     </>}
