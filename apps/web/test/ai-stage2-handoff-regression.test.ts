@@ -14,5 +14,6 @@ test("Stage 2 preserves all PR132 manual research and provider handoff features"
  assert.match(source,/querySelectorAll<HTMLElement>\("button, input, select, textarea/);
  const config=readFileSync(resolve(here,"../vite.config.ts"),"utf8");
  assert.match(config,/process\.env\.VERCEL_ENV === "preview" && process\.env\.AI_GUIDANCE_ENABLED === "on"/);
+ assert.match(source,/typeof __DO_GEMINI_STAGE2_PREVIEW__ === "boolean"/);
  assert.doesNotMatch(source,/import\.meta\.env\.VITE_GEMINI_STAGE2_PREVIEW/);
 });

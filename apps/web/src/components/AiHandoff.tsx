@@ -12,7 +12,8 @@ import "./AiHandoff.css";
 
 /** Vite injects only this public build-time boolean; no browser environment secret. */
 declare const __DO_GEMINI_STAGE2_PREVIEW__: boolean;
-const stage2Preview = __DO_GEMINI_STAGE2_PREVIEW__;
+const stage2Preview = typeof __DO_GEMINI_STAGE2_PREVIEW__ === "boolean"
+  ? __DO_GEMINI_STAGE2_PREVIEW__ : false;
 interface Props { brief: PlanningBrief | null; sourceState: AiHandoffSourceState }
 
 export function AiHandoff(props: Props) {
