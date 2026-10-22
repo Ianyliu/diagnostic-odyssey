@@ -22,5 +22,5 @@ test("Vercel entry mirrors trusted planning-guidance source without drift",()=>{
  const imports=entry.split("\n").filter(line=>/^import /m.test(line));
  assert.deepEqual(imports,['import {createHash,randomBytes,timingSafeEqual} from "node:crypto";'],
   "No runtime imports beyond built-in crypto");
- assert.doesNotMatch(entry,/from ["\'](?:\.|@diagnostic-odyssey\/)/);
+ assert.doesNotMatch(entry,/from ["'](?:\.|@diagnostic-odyssey\/)/);
 });

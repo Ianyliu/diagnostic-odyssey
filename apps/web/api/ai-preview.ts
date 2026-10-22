@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars -- canonical inline modules retain full audited definitions */
 // Self-contained Vercel function. Three canonical planning-guidance modules are
 // mechanically inlined without changing their algorithms. Exact source parity
 // is checked by apps/web/test/ai-preview-self-contained.test.ts.
