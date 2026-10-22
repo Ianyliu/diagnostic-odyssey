@@ -139,9 +139,8 @@ await check("fresh Brief: six complete AI goals match canonical export and downl
   for (const goal of ["comprehensive", "executive", "evidence_audit", "pilot_planning", "data_gaps", "technical"]) {
     if (await selectGoal.inputValue() !== goal) {
       await selectGoal.selectOption(goal);
-      assert.equal(await copy.isDisabled(), true, "goal change must disable stale transfers");
-      assert.equal(await download.isDisabled(), true, "goal change must disable stale downloads");
-      await dialog.getByRole("button", {name: "Regenerate preview", exact: true}).click();
+      assert.equal(await copy.isDisabled(), false, "goal change refreshes transferable prompt immediately");
+      assert.equal(await download.isDisabled(), false, "goal change refreshes downloadable prompt immediately");
     }
     assert.equal(await copy.isDisabled(), false, "generated snapshot is transferable");
     const text = await preview.inputValue();
@@ -197,11 +196,9 @@ await check("stale data request forces a current AI handoff snapshot; exploratio
   const download = dialog.getByRole("button", {name: "Download Markdown", exact: true});
   assert.equal(await copy.isDisabled(), false);
   await dialog.getByLabel("Analysis goal").selectOption("executive");
-  await dialog.getByText("The Brief or options changed. Regenerate the preview before copying or downloading.", {exact: true}).waitFor();
-  assert.equal(await copy.isDisabled(), true);
-  assert.equal(await download.isDisabled(), true);
-  await dialog.getByRole("button", {name: "Regenerate preview", exact: true}).click();
-  assert.equal(await copy.isDisabled(), false);
+  assert.equal(envelope(await preview.inputValue()).analysis_goal, "executive");
+  assert.equal(await copy.isDisabled(), false, "goal changes refresh the frozen prompt immediately");
+  assert.equal(await download.isDisabled(), false);
   const pending = page.waitForEvent("download");
   await download.click();
   assert.equal(await readFile(await (await pending).path(), "utf8"), await preview.inputValue());
