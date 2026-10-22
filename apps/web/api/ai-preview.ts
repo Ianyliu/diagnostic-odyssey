@@ -1,6 +1,6 @@
 import {createHash, randomBytes, timingSafeEqual} from "node:crypto";
-import {assertInput, assertCandidate, assertOutput, bindCandidate, projectEgress} from "@diagnostic-odyssey/planning-guidance";
-import type {PlanningGuidanceInputV1, VerifiedAuthority} from "@diagnostic-odyssey/planning-guidance";
+import {assertInput, assertCandidate, assertOutput, bindCandidate, projectEgress} from "../src/server/planning-guidance/index.ts";
+import type {PlanningGuidanceInputV1, VerifiedAuthority} from "../src/server/planning-guidance/index.ts";
 
 type Environment = Record<string, string | undefined>;
 const authority: VerifiedAuthority = {narrative:null, hints:null};
