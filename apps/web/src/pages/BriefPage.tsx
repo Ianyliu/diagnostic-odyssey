@@ -205,13 +205,13 @@ export function BriefPage({conceptAvailable = false, showFutureConcept = false, 
             scenario, scenarioValid: !scenario || !!scenarioResult,
             selectedLocalContextIds, pilotLocalContextId, briefDataRequestIds}} />
       </div>
-    {conceptAvailable && <div className="brief-concept-entry" role="group" aria-label={protectedConceptGemini ? "Protected AI evidence workspace controls" : "Future AI concept controls"}>
+    {conceptAvailable && <div className="brief-concept-entry" role="group" aria-label="AI evidence workspace controls">
       <label className="brief-concept-toggle">
         <input type="checkbox" checked={showFutureConcept} onChange={event => onFutureConceptChange?.(event.target.checked)} />
-        {protectedConceptGemini ? "Show protected AI evidence workspace" : "Show future AI concept"}
+        Show AI workspace
       </label>
-      {showFutureConcept && <Link className="button secondary" to="/concept/future-ai">{protectedConceptGemini ? "Explore AI evidence workspace →" : "Explore future AI concept →"}</Link>}
-      <small className="brief-concept-note">{protectedConceptGemini ? "* Preview only · Reviewed-data Gemini requires operator authentication and explicit consent. Research examples are still illustrative." : "* Interactive concept only · No live AI or model API calls. You can hide or re-enable the preview here."}</small>
+      {showFutureConcept && <Link className="button secondary" to="/concept/future-ai">Open AI workspace →</Link>}
+      <small className="brief-concept-note">{protectedConceptGemini ? "* Prompt Studio and Explore are available to everyone; Gemini is authenticated and consent-only in this protected Preview. Research examples remain illustrative." : "* Prompt Studio prepares manual external-AI prompts; Explore contains clearly labeled research examples. No on-site Gemini model calls are available here."}</small>
     </div>}
 
     </div>
