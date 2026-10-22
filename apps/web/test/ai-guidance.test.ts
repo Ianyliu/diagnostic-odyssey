@@ -40,9 +40,9 @@ const mock=(async(url:RequestInfo|URL,init?:RequestInit)=>{
 }) as typeof fetch;
 async function prepare(selection=selected(),provider=mock){
  const resp=await handleReviewedGuidance(request("prepare",selection),env,provider);
- assert.equal(resp.status,200,await resp.text().catch(()=>""));
- // body is consumed above only on failure; on success consume now.
- return (await resp.json() as {challenge:string}).challenge;
+ const body=await resp.text();
+ assert.equal(resp.status,200,body);
+ return (JSON.parse(body) as {challenge:string}).challenge;
 }
 test("reviewed source hashes and exact reviewed promotions are pinned",()=>{
  const map=[
