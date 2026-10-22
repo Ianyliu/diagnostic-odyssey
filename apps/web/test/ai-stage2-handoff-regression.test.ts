@@ -16,4 +16,7 @@ test("Stage 2 preserves all PR132 manual research and provider handoff features"
  assert.match(config,/process\.env\.VERCEL_ENV === "preview" && process\.env\.AI_GUIDANCE_ENABLED === "on"/);
  assert.match(source,/typeof __DO_GEMINI_STAGE2_PREVIEW__ === "boolean"/);
  assert.doesNotMatch(source,/import\.meta\.env\.VITE_GEMINI_STAGE2_PREVIEW/);
+ assert.match(source,/useState<readonly AiResearchModule\[\]>\(\(\) => \[\.\.\.AI_RESEARCH_MODULES\]\)/);
+ assert.match(source,/updatePromptOptions\(event\.target\.value as AiGoal, researchModules\)/);
+ assert.match(source,/setSession\(\{\s*observed: JSON\.stringify\(\[source\.key, nextGoal, question, nextModules\]\)/);
 });
