@@ -108,9 +108,10 @@ await check("six goals, current Brief scope, canonical parity, full clipboard an
   for (const goal of goals) {
     if (goal !== "comprehensive") {
       await p.getByLabel("Analysis goal").selectOption(goal);
-      await stale(p);
-      assert.equal(await preview(p).inputValue(), texts.at(-1));
-      await regenerate(p).click();
+      // Goal changes must update the complete frozen prompt without an
+      // extra Regenerate click. Source/question drift remains fail closed.
+      assert.equal(await copy(p).isEnabled(), true);
+      assert.notEqual(await preview(p).inputValue(), texts.at(-1));
     }
     const text = await preview(p).inputValue(); texts.push(text);
     const data = envelope(text);
@@ -129,57 +130,53 @@ await check("six goals, current Brief scope, canonical parity, full clipboard an
   assert.deepEqual(await exportJson(p), canonical);
 });
 
-await check("default handoff is unchanged, modules start unchecked and providers fail closed", async () => {
+await check("all research tasks checked by default; task toggles update prompt immediately and providers fail closed", async () => {
   const p = await page();
   await open(p);
   const initial = await preview(p).inputValue();
-  assert.doesNotMatch(initial, /## Additional research and visualization tasks/);
+  assert.match(initial, /## Additional research and visualization tasks/);
+  assert.match(initial, /## Retrieved literature or search plan/);
+  assert.match(initial, /## Investigational interventions/);
+  assert.match(initial, /## Visualizations and chart specifications/);
   assert.match(initial, /End of source data/);
   assert.equal(await p.getByRole("dialog").getByRole("checkbox").count(), 3);
-  for (const name of ["Review relevant literature", "Investigate intervention options", "Prepare evidence-based visualizations"]) {
-    assert.equal(await p.getByRole("checkbox", {name}).isChecked(), false);
-  }
+  const names = ["Review relevant literature", "Investigate intervention options", "Prepare evidence-based visualizations"];
+  for (const name of names) assert.equal(await p.getByRole("checkbox", {name}).isChecked(), true);
   assert.equal(await p.getByRole("button", {name: /^Copy & open /}).count(), 0);
   assert.match(await p.getByRole("dialog").innerText(), /Provider launch is not enabled/);
   await assertOnlyApprovedResearchLinks(p);
-  await p.getByRole("checkbox", {name: "Review relevant literature"}).check();
-  await stale(p);
-  assert.equal(await preview(p).inputValue(), initial);
-  await regenerate(p).click();
-  const withLiterature = await preview(p).inputValue();
-  assert.match(withLiterature, /## Retrieved literature or search plan/);
-  assert.doesNotMatch(withLiterature, /## Investigational interventions/);
-  assert.deepEqual(envelope(withLiterature), envelope(initial));
-  await p.getByRole("checkbox", {name: "Investigate intervention options"}).check();
-  await stale(p);
-  await regenerate(p).click();
-  assert.match(await preview(p).inputValue(), /## Investigational interventions/);
-  await p.getByRole("checkbox", {name: "Review relevant literature"}).uncheck();
-  await p.getByRole("checkbox", {name: "Investigate intervention options"}).uncheck();
-  await stale(p);
-  await regenerate(p).click();
+
+  await p.getByRole("checkbox", {name: names[0]}).uncheck();
+  const withoutLiterature = await preview(p).inputValue();
+  assert.doesNotMatch(withoutLiterature, /## Retrieved literature or search plan/);
+  assert.match(withoutLiterature, /## Investigational interventions/);
+  assert.deepEqual(envelope(withoutLiterature), envelope(initial));
+  assert.equal(await copy(p).isEnabled(), true);
+  await p.getByRole("checkbox", {name: names[1]}).uncheck();
+  await p.getByRole("checkbox", {name: names[2]}).uncheck();
+  const noTasks = await preview(p).inputValue();
+  assert.doesNotMatch(noTasks, /## Additional research and visualization tasks/);
+  assert.notEqual(noTasks, initial);
+  for (const name of names) await p.getByRole("checkbox", {name}).check();
   assert.equal(await preview(p).inputValue(), initial);
   await close(p).click();
   await open(p);
-  assert.equal(await p.getByRole("checkbox", {name: "Review relevant literature"}).isChecked(), false);
-  assert.equal(await p.getByRole("checkbox", {name: "Investigate intervention options"}).isChecked(), false);
-  assert.equal(await p.getByRole("checkbox", {name: "Prepare evidence-based visualizations"}).isChecked(), false);
+  for (const name of names) assert.equal(await p.getByRole("checkbox", {name}).isChecked(), true);
 });
 
 await check("explicit test-only provider allowlist, opted-in visuals and safe user-click launch", async () => {
   const p = await page({url: fixture});
   await open(p);
-  assert.equal(await p.getByRole("checkbox", {name: "Review relevant literature"}).isChecked(), false);
+  assert.equal(await p.getByRole("checkbox", {name: "Review relevant literature"}).isChecked(), true);
   assert.equal(await p.getByRole("button", {name: "Copy & open ChatGPT", exact: true}).count(), 1);
   assert.equal(await p.getByRole("button", {name: "Copy & open Claude", exact: true}).count(), 1);
   assert.equal(await p.getByRole("button", {name: "Copy & open Gemini", exact: true}).count(), 0);
   assert.equal(await p.getByRole("button", {name: "Copy & open Copilot", exact: true}).count(), 0);
   const initial = await preview(p).inputValue();
-  assert.doesNotMatch(initial, /## Additional research and visualization tasks/);
+  assert.match(initial, /## Additional research and visualization tasks/);
+  await p.getByRole("checkbox", {name: "Prepare evidence-based visualizations"}).uncheck();
+  assert.doesNotMatch(await preview(p).inputValue(), /## Visualizations and chart specifications/);
   await p.getByRole("checkbox", {name: "Prepare evidence-based visualizations"}).check();
-  await stale(p);
-  assert.equal(await preview(p).inputValue(), initial);
-  await regenerate(p).click();
   const regenerated = await preview(p).inputValue();
   assert.match(regenerated, /## Visualizations and chart specifications/);
   assert.deepEqual(envelope(regenerated), envelope(initial));

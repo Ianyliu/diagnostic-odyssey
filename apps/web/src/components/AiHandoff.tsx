@@ -32,7 +32,7 @@ function HandoffDialog({brief, sourceState, onClose}: Props & {onClose: () => vo
   const [transferStatus, setTransferStatus] = useState("");
   const [copying, setCopying] = useState(false);
   const [goal, setGoal] = useState<AiGoal>("comprehensive");
-  const [researchModules, setResearchModules] = useState<readonly AiResearchModule[]>([]);
+  const [researchModules, setResearchModules] = useState<readonly AiResearchModule[]>(() => [...AI_RESEARCH_MODULES]);
   const [openedProvider, setOpenedProvider] = useState<AiHandoffProvider | null>(null);
   const providers = availableAiProviders(import.meta.env.VITE_AI_PROVIDERS);
   const [question, setQuestion] = useState("");
@@ -53,6 +53,28 @@ function HandoffDialog({brief, sourceState, onClose}: Props & {onClose: () => vo
     setTransferStatus("");
   }
   const current = !problem && !session.stale && session.observed === identity && !!session.snapshot;
+  // Goal/research choices refresh the frozen prompt immediately. However,
+  // unresolved changes to source records or the question still require
+  // explicit regeneration and scientific re-validation.
+  const updatePromptOptions = (nextGoal: AiGoal, nextModules: readonly AiResearchModule[]) => {
+    transferEpoch.current++;
+    setTransferStatus("");
+    if (current && brief) {
+      let updated: AiHandoffTextV1 | null = null;
+      try {
+        updated = enrichAiHandoff(
+          createAiHandoffText(brief, {goal: nextGoal, optionalQuestion: question}), nextModules
+        );
+      } catch { /* Fail closed when the source is no longer valid. */ }
+      setSession({
+        observed: JSON.stringify([source.key, nextGoal, question, nextModules]),
+        snapshot: updated,
+        stale: false
+      });
+    }
+    setGoal(nextGoal);
+    setResearchModules(nextModules);
+  };
   const snapshot = session.snapshot;
   const payload = snapshot?.envelope.payload;
 
@@ -141,16 +163,16 @@ function HandoffDialog({brief, sourceState, onClose}: Props & {onClose: () => vo
     <div className="ai-handoff-layout">
       <div className="ai-handoff-options">
         <label htmlFor="ai-handoff-goal">Analysis goal</label>
-        <select ref={goalRef} id="ai-handoff-goal" value={goal} onChange={event => setGoal(event.target.value as AiGoal)}>
+        <select ref={goalRef} id="ai-handoff-goal" value={goal} onChange={event => updatePromptOptions(event.target.value as AiGoal, researchModules)}>
           {AI_GOALS.map(value => <option key={value} value={value}>{AI_GOAL_TEMPLATES[value].label}</option>)}
         </select>
         <fieldset className="ai-handoff-modules">
           <legend>Optional research tasks</legend>
-          <p className="ai-handoff-help">Optional and off by default. Select only the tasks you want; changes require regenerating the frozen prompt. With nothing selected, your original analysis prompt stays unchanged.</p>
+          <p className="ai-handoff-help">All three research tasks are checked by default. Uncheck any task to exclude it; the frozen prompt updates immediately. Changes to the Brief or optional question still require Regenerate preview.</p>
           {AI_RESEARCH_MODULES.map(module => <label className="ai-handoff-module" key={module}>
             <input type="checkbox" checked={researchModules.includes(module)}
-              onChange={event => setResearchModules(previous => event.target.checked
-                ? [...previous, module] : previous.filter(value => value !== module))} />
+              onChange={event => updatePromptOptions(goal, event.target.checked
+                ? [...researchModules, module] : researchModules.filter(value => value !== module))} />
             <span>{AI_RESEARCH_MODULE_LABELS[module]}</span>
           </label>)}
         </fieldset>
