@@ -62,6 +62,18 @@ function envelope(text) {
   assert.ok(match, "Full envelope delimiters must be present");
   return JSON.parse(match[1]);
 }
+async function assertOnlyApprovedResearchLinks(p) {
+  const links = await p.getByRole("dialog").locator("a").evaluateAll(elements => elements.map(el => el.href));
+  assert.equal(links.length, 3, "The only active links must be the three fixed public research links.");
+  for (const href of links) {
+    const url = new URL(href);
+    assert.equal(url.protocol, "https:");
+    assert.ok(["pubmed.ncbi.nlm.nih.gov", "clinicaltrials.gov"].includes(url.hostname));
+    assert.ok(url.searchParams.has("term"));
+    assert.ok(!href.includes("unexpected.invalid"));
+  }
+  assert.equal(await p.getByRole("dialog").locator("img,script").count(), 0);
+}
 async function exportJson(p) {
   await prepareWorkspace(p);
   const pending = p.waitForEvent("download");
@@ -96,9 +108,10 @@ await check("six goals, current Brief scope, canonical parity, full clipboard an
   for (const goal of goals) {
     if (goal !== "comprehensive") {
       await p.getByLabel("Analysis goal").selectOption(goal);
-      await stale(p);
-      assert.equal(await preview(p).inputValue(), texts.at(-1));
-      await regenerate(p).click();
+      // Goal changes must update the complete frozen prompt without an
+      // extra Regenerate click. Source/question drift remains fail closed.
+      assert.equal(await copy(p).isEnabled(), true);
+      assert.notEqual(await preview(p).inputValue(), texts.at(-1));
     }
     const text = await preview(p).inputValue(); texts.push(text);
     const data = envelope(text);
@@ -117,6 +130,71 @@ await check("six goals, current Brief scope, canonical parity, full clipboard an
   assert.deepEqual(await exportJson(p), canonical);
 });
 
+await check("all research tasks checked by default; task toggles update prompt immediately and providers fail closed", async () => {
+  const p = await page();
+  await open(p);
+  const initial = await preview(p).inputValue();
+  assert.match(initial, /## Additional research and visualization tasks/);
+  assert.match(initial, /## Retrieved literature or search plan/);
+  assert.match(initial, /## Investigational interventions/);
+  assert.match(initial, /## Visualizations and chart specifications/);
+  assert.match(initial, /End of source data/);
+  assert.equal(await p.getByRole("dialog").getByRole("checkbox").count(), 3);
+  const names = ["Review relevant literature", "Investigate intervention options", "Prepare evidence-based visualizations"];
+  for (const name of names) assert.equal(await p.getByRole("checkbox", {name}).isChecked(), true);
+  assert.equal(await p.getByRole("button", {name: /^Copy & open /}).count(), 0);
+  assert.match(await p.getByRole("dialog").innerText(), /Provider launch is not enabled/);
+  await assertOnlyApprovedResearchLinks(p);
+
+  await p.getByRole("checkbox", {name: names[0]}).uncheck();
+  const withoutLiterature = await preview(p).inputValue();
+  assert.doesNotMatch(withoutLiterature, /## Retrieved literature or search plan/);
+  assert.match(withoutLiterature, /## Investigational interventions/);
+  assert.deepEqual(envelope(withoutLiterature), envelope(initial));
+  assert.equal(await copy(p).isEnabled(), true);
+  await p.getByRole("checkbox", {name: names[1]}).uncheck();
+  await p.getByRole("checkbox", {name: names[2]}).uncheck();
+  const noTasks = await preview(p).inputValue();
+  assert.doesNotMatch(noTasks, /## Additional research and visualization tasks/);
+  assert.notEqual(noTasks, initial);
+  for (const name of names) await p.getByRole("checkbox", {name}).check();
+  assert.equal(await preview(p).inputValue(), initial);
+  await close(p).click();
+  await open(p);
+  for (const name of names) assert.equal(await p.getByRole("checkbox", {name}).isChecked(), true);
+});
+
+await check("explicit test-only provider allowlist, opted-in visuals and safe user-click launch", async () => {
+  const p = await page({url: fixture});
+  await open(p);
+  assert.equal(await p.getByRole("checkbox", {name: "Review relevant literature"}).isChecked(), true);
+  assert.equal(await p.getByRole("button", {name: "Copy & open ChatGPT", exact: true}).count(), 1);
+  assert.equal(await p.getByRole("button", {name: "Copy & open Claude", exact: true}).count(), 1);
+  assert.equal(await p.getByRole("button", {name: "Copy & open Gemini", exact: true}).count(), 0);
+  assert.equal(await p.getByRole("button", {name: "Copy & open Copilot", exact: true}).count(), 0);
+  const initial = await preview(p).inputValue();
+  assert.match(initial, /## Additional research and visualization tasks/);
+  await p.getByRole("checkbox", {name: "Prepare evidence-based visualizations"}).uncheck();
+  assert.doesNotMatch(await preview(p).inputValue(), /## Visualizations and chart specifications/);
+  await p.getByRole("checkbox", {name: "Prepare evidence-based visualizations"}).check();
+  const regenerated = await preview(p).inputValue();
+  assert.match(regenerated, /## Visualizations and chart specifications/);
+  assert.deepEqual(envelope(regenerated), envelope(initial));
+  await p.evaluate(() => {
+    window.providerOpenCalls = [];
+    window.open = (...args) => { window.providerOpenCalls.push(args); return null; };
+  });
+  await p.getByRole("button", {name: "Copy & open ChatGPT", exact: true}).click();
+  await p.getByText(/Complete prompt copied\. Paste it into ChatGPT/).waitFor();
+  assert.equal((await p.evaluate(() => window.copyCalls)).at(-1), regenerated);
+  assert.deepEqual(await p.evaluate(() => window.providerOpenCalls), [["https://chatgpt.com/", "_blank", "noopener,noreferrer"]]);
+  assert.equal(await p.getByRole("link", {name: "Open ChatGPT manually"}).getAttribute("href"), "https://chatgpt.com/");
+  const links = await p.getByRole("link", {name: /PubMed|ClinicalTrials\.gov/}).evaluateAll(elements => elements.map(el => el.getAttribute("href")));
+  assert.equal(links.length, 3);
+  assert.ok(links.every(href => !href.includes("BEGIN_DIAGNOSTIC_ODYSSEY_DATA")));
+  await close(p).click();
+});
+
 await check("Unicode question boundary, hostile text is inert, and edits latch stale even when reverted", async () => {
   const p = await page(); await open(p);
   const question = p.getByLabel("Optional question", {exact: true});
@@ -127,7 +205,7 @@ await check("Unicode question boundary, hostile text is inert, and edits latch s
   await question.fill(""); await stale(p);
   await question.fill(hostile); await regenerate(p).click();
   assert.equal(envelope(await preview(p).inputValue()).optional_question, hostile);
-  assert.equal(await p.getByRole("dialog").locator("img,script,a").count(), 0);
+  await assertOnlyApprovedResearchLinks(p);
   assert.equal(await p.evaluate(() => window.INJECTED), undefined);
   await question.fill("🧬".repeat(2001));
   assert.equal(await question.getAttribute("aria-invalid"), "true");
@@ -198,7 +276,7 @@ await check("hostile source fields stay inert and filtered raw records never ent
   const text = await preview(p).inputValue();
   assert.ok(!text.includes("FORBIDDEN"));
   assert.match(envelope(text).payload.burden_findings[0].label, /<img/);
-  assert.equal(await p.getByRole("dialog").locator("img,script,a").count(), 0);
+  await assertOnlyApprovedResearchLinks(p);
   assert.equal(await p.evaluate(() => window.INJECTED), undefined);
 });
 
@@ -263,10 +341,13 @@ for (const width of [390, 768, 1440]) for (const theme of ["light", "dark"]) {
     const scan = await p.evaluate(() => axe.run(document, {runOnly: {type: "tag", values: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]}}));
     await writeFile(`${output}/axe-${width}-${theme}.json`, JSON.stringify(scan, null, 2));
     assert.deepEqual(scan.violations, []);
-    await selection(p).focus(); await p.keyboard.press("Tab");
+    // The public literature links follow selection and provider buttons in DOM order.
+    // The final ClinicalTrials.gov link now tests the native dialog focus wrap.
+    const lastLink = dialog.getByRole("link", {name: /ClinicalTrials\.gov/});
+    await lastLink.focus(); await p.keyboard.press("Tab");
     assert.equal(await close(p).evaluate(e => document.activeElement === e), true);
     await p.keyboard.press("Shift+Tab");
-    assert.equal(await selection(p).evaluate(e => document.activeElement === e), true);
+    assert.equal(await lastLink.evaluate(e => document.activeElement === e), true);
     await p.keyboard.press("Escape");
     assert.equal(await dialog.count(), 0);
     assert.equal(await trigger.evaluate(e => document.activeElement === e), true);

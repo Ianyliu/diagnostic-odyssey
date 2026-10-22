@@ -48,6 +48,8 @@ import { formatAppliedAssumption } from "./briefAssumptions";
 import { createBriefPrintDisclosureState, executeBriefPrint, watchBriefPrintMedia } from "./briefPrint";
 import "./BriefPage.css";
 
+declare const __DO_GEMINI_STAGE2_PREVIEW__: boolean;
+const protectedConceptGemini = typeof __DO_GEMINI_STAGE2_PREVIEW__ === "boolean" && __DO_GEMINI_STAGE2_PREVIEW__;
 const resultNumber = new Intl.NumberFormat("en-US");
 
 // Keep optional projection failures inside the same boundary as optional rendering.
@@ -203,13 +205,13 @@ export function BriefPage({conceptAvailable = false, showFutureConcept = false, 
             scenario, scenarioValid: !scenario || !!scenarioResult,
             selectedLocalContextIds, pilotLocalContextId, briefDataRequestIds}} />
       </div>
-    {conceptAvailable && <div className="brief-concept-entry" role="group" aria-label="Future AI concept controls">
+    {conceptAvailable && <div className="brief-concept-entry" role="group" aria-label="AI evidence workspace controls">
       <label className="brief-concept-toggle">
         <input type="checkbox" checked={showFutureConcept} onChange={event => onFutureConceptChange?.(event.target.checked)} />
-        Show future AI concept
+        Show AI workspace
       </label>
-      {showFutureConcept && <Link className="button secondary" to="/concept/future-ai">Explore future AI concept →</Link>}
-      <small className="brief-concept-note">* Interactive concept only · No live AI or model API calls. You can hide or re-enable the preview here.</small>
+      {showFutureConcept && <Link className="button secondary" to="/concept/future-ai">Open AI workspace →</Link>}
+      <small className="brief-concept-note">{protectedConceptGemini ? "* Prompt Studio and Explore are available to everyone; Gemini is authenticated and consent-only in this protected Preview. Research examples remain illustrative." : "* Prompt Studio prepares manual external-AI prompts; Explore contains clearly labeled research examples. No on-site Gemini model calls are available here."}</small>
     </div>}
 
     </div>

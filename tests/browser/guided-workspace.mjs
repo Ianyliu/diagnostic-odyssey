@@ -84,7 +84,7 @@ for (const width of [320, 360, 390, 768, 1024, 1440]) for (const theme of ["ligh
       if (route === "/brief") {
         assert.equal(await page.locator("#brief-full-report").evaluate(e => e.open), false);
         assert.ok(await page.getByRole("button", {name: "Analyze with AI", exact: true}).isVisible());
-        assert.ok(await page.getByRole("link", {name: "Explore future AI concept →", exact: true}).isVisible());
+        assert.ok(await page.getByRole("link", {name: "Open AI workspace →", exact: true}).isVisible());
         assert.equal(await page.locator(".insight-finding").count(), 3);
       }
       layouts.push({route, navigation: rect, height: await page.evaluate(() => document.documentElement.scrollHeight)});
