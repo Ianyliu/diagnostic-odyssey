@@ -17,7 +17,7 @@ test("public manual workspace is unconditional; only Gemini requires the protect
   assert.match(page,/previewGeminiEnabled && <div className="fc-workflow-panel" hidden=\{workflow !== "gemini"\}/);
   assert.match(page,/hidden=\{previewGeminiEnabled && workflow !== "prompt"\}/);
   assert.match(page,/<AiHandoffInline brief=\{snapshot\?\.live\.brief \?\? null\} sourceState=\{snapshot\.live\.sourceState\}/);
-  assert.match(page,/fc-workflow-panel" hidden=\{workflow !== "prompt"\}/);
+  assert.match(page,/fc-workflow-panel" hidden=\{previewGeminiEnabled && workflow !== "prompt"\}/);
   assert.match(page,/fc-workflow-panel" hidden=\{workflow !== "gemini"\}/);
   assert.match(page,/Use this view as prompt starting point/);
   assert.match(page,/setSuggestion\(previous => \(\{goal: suggestedPromptGoals\[goal\]/);
