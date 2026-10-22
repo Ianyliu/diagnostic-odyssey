@@ -83,6 +83,8 @@ test("real national and WV evidence is resolved by server, with model bound to I
  assert.equal(body.selected_evidence.national[0].value,97260052511.99054);
  assert.equal(body.result.supported_findings[0].value,97260052511.99054);
  assert.equal(body.result.warnings.length,10);
+ // A signed challenge is consumed once per function instance; there is no replayed provider call.
+ assert.equal((await handleReviewedGuidance(request("analyze",s,challenge),env,mock)).status,409);
  assert.equal(body.provenance.national_release_sha256,"5b32bfb3288a28ce0a57de4d0c3ec75fe1d83c0f19ad481e687b70af4a91eca0");
  assert.equal(JSON.stringify(body).includes(key),false);
  assert.equal(JSON.stringify(body).includes(token),false);
