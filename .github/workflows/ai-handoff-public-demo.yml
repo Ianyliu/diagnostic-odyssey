@@ -1,0 +1,122 @@
+name: TOPx HHS AI preview public acceptance
+on:
+  push:
+    branches:
+      - qa/ai-handoff-public-demo-20261022
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  public-demo:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      DEMO_BASE: https://diagnostic-odyssey-ai-demo-20261022-q2j21z5pm.vercel.app
+      EXPECTED_SOURCE: 3cf62fa490f6784b8aa3d611f402bfb6f0a9245b
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22.23.3
+      - name: Public HTTP route and security headers (NO bypass/cookies)
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/ai-demo-evidence
+          curl --fail --silent --show-error --location --max-time 30 -D /tmp/ai-demo-evidence/headers.txt "${DEMO_BASE}/brief" -o /tmp/ai-demo-evidence/brief.html
+          grep -qi "<html" /tmp/ai-demo-evidence/brief.html
+          if grep -iq "Vercel Authentication\|Log in to Vercel" /tmp/ai-demo-evidence/brief.html; then
+            echo "BLOCKED: Unexpected Vercel login gate"; exit 1
+          fi
+          grep -iq "Content-Security-Policy" /tmp/ai-demo-evidence/headers.txt
+          grep -iq "Referrer-Policy: no-referrer" /tmp/ai-demo-evidence/headers.txt
+          echo "PUBLIC HTTP 200, CSP and no-referrer: PASS"
+      - name: Install isolated Chromium runner
+        run: |
+          npm install --prefix /tmp/ai-demo-runner --no-audit --no-fund --save-exact @playwright/test@1.64.0
+          node /tmp/ai-demo-runner/node_modules/playwright/cli.js install chromium
+      - name: Verify real hosted user journey and save screenshots
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import {createRequire} from 'node:module';
+          import {writeFile} from 'node:fs/promises';
+          const require = createRequire('/tmp/ai-demo-runner/package.json');
+          const {chromium} = require('playwright');
+          const base = process.env.DEMO_BASE;
+          const expected = process.env.EXPECTED_SOURCE;
+          const browser = await chromium.launch({headless:true});
+          const context = await browser.newContext({viewport:{width:1440,height:940},colorScheme:'light',reducedMotion:'reduce'});
+          const errors = [];
+          try {
+            await context.addInitScript(() => {
+              window.__demoCopied = null; window.__demoOpens = [];
+              Object.defineProperty(navigator, 'clipboard', {configurable:true, value:{
+                writeText: async text => {window.__demoCopied = text;}
+              }});
+              window.open = (...args) => {window.__demoOpens.push(args); return null;};
+            });
+            const page = await context.newPage();
+            page.on('pageerror', err => errors.push(String(err)));
+            const resp = await page.goto(base+'/brief',{waitUntil:'domcontentloaded', timeout:30000});
+            assert.equal(resp.status(),200,'Judge must open /brief without Vercel auth');
+            await page.getByRole('button',{name:'Analyze with AI',exact:true}).waitFor({timeout:30000});
+            await page.getByRole('button',{name:'Analyze with AI',exact:true}).click();
+            const dialog = page.getByRole('dialog',{name:'Analyze with AI',exact:true});
+            await dialog.waitFor();
+            const labels = [
+              'Review relevant literature',
+              'Investigate intervention options',
+              'Prepare evidence-based visualizations'
+            ];
+            for (const label of labels) assert.equal(await dialog.getByRole('checkbox',{name:label}).isChecked(),false);
+            assert.equal(await dialog.getByRole('button',{name:'Copy & open ChatGPT'}).count(),1);
+            assert.equal(await dialog.getByRole('button',{name:'Copy & open Gemini'}).count(),1);
+            assert.equal(await dialog.getByRole('button',{name:'Copy & open Claude'}).count(),0);
+            assert.equal(await dialog.getByRole('button',{name:'Copy & open Copilot'}).count(),0);
+            const prompt = dialog.getByLabel(/^Complete prompt ·/);
+            const before = await prompt.inputValue();
+            assert.ok(before.includes('BEGIN_DIAGNOSTIC_ODYSSEY_DATA'));
+            assert.ok(before.includes('END_DIAGNOSTIC_ODYSSEY_DATA'));
+            assert.ok(!before.includes('## Retrieved literature or search plan'));
+            for (const label of labels) await dialog.getByRole('checkbox',{name:label}).check();
+            assert.equal(await dialog.getByRole('button',{name:'Copy complete prompt'}).isDisabled(),true,'Stale preview must block copying');
+            await dialog.getByRole('button',{name:'Regenerate preview'}).click();
+            const after = await prompt.inputValue();
+            for (const part of ['## Retrieved literature or search plan','## Investigational interventions','## Visualizations and chart specifications']) assert.ok(after.includes(part), part);
+            const extract = text => text.slice(text.indexOf('BEGIN_DIAGNOSTIC_ODYSSEY_DATA'),text.indexOf('END_DIAGNOSTIC_ODYSSEY_DATA')+'END_DIAGNOSTIC_ODYSSEY_DATA'.length);
+            assert.equal(extract(after),extract(before),'Full canonical Brief envelope must be untouched');
+            const links = await dialog.getByRole('link',{name:/PubMed|ClinicalTrials\.gov/}).evaluateAll(a => a.map(e=>({href:e.href,rel:e.rel,target:e.target})));
+            assert.equal(links.length,3);
+            for (const l of links) {
+              assert.ok(l.href.startsWith('https://pubmed.ncbi.nlm.nih.gov/?term=')||l.href.startsWith('https://clinicaltrials.gov/search?term='));
+              assert.equal(l.target,'_blank');
+              assert.ok(l.rel.includes('noopener')&&l.rel.includes('noreferrer'));
+            }
+            await dialog.screenshot({path:'/tmp/ai-demo-evidence/dialog-desktop.png',animations:'disabled'});
+            await dialog.getByRole('button',{name:'Copy & open ChatGPT'}).click();
+            await dialog.getByText(/Complete prompt copied\. Paste it into ChatGPT/).waitFor();
+            const copy = await page.evaluate(() => window.__demoCopied);
+            assert.equal(copy,after,'Clipboard must contain exact frozen regenerated text');
+            const opens = await page.evaluate(() => window.__demoOpens);
+            assert.deepEqual(opens,[['https://chatgpt.com/','_blank','noopener,noreferrer']]);
+            assert.equal(await dialog.getByRole('link',{name:'Open ChatGPT manually'}).getAttribute('href'),'https://chatgpt.com/');
+            await page.screenshot({path:'/tmp/ai-demo-evidence/desktop-after-copy.png',fullPage:true,animations:'disabled'});
+            await page.setViewportSize({width:390,height:844});
+            await page.screenshot({path:'/tmp/ai-demo-evidence/mobile-dialog.png',animations:'disabled'});
+            assert.deepEqual(errors,[],'No browser JS uncaught errors');
+            const summary={status:'PASS',publicRoute:'/brief',expectedSource:expected,modules:labels,providerButtons:['ChatGPT','Gemini'],publicShortcuts:3,canonicalEnvelope:'identical',staleProtection:'verified',copy:'exact',homepage:'https://chatgpt.com/',pageErrors:errors};
+            await writeFile('/tmp/ai-demo-evidence/summary.json',JSON.stringify(summary,null,2));
+            console.log('PUBLIC DEMO ACCEPTANCE: '+JSON.stringify(summary));
+          } finally {await browser.close();}
+          NODE
+      - name: Upload public demonstration evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: public-ai-demo-evidence
+          path: /tmp/ai-demo-evidence/
+          if-no-files-found: warn
