@@ -63,7 +63,7 @@ try {
   await workbench.waitFor();
   const studio=page.locator(".ai-handoff-inline");
   await studio.waitFor();
-  assert.match(await page.locator(".fc-banner").innerText(),/protected Preview/i);
+  assert.match(await page.locator(".fc-banner").innerText(),/Prompt Studio \+ protected Gemini/);
   assert.equal(actions.length,0,"Prompt Studio must make no model or preparation requests");
   assert.equal(await page.getByRole("tab").count(),4);
   const picker=studio.getByLabel("Analysis goal");

@@ -22,7 +22,7 @@ jobs:
     timeout-minutes: 20
     strategy:
       matrix:
-        build: [default, demo, protected-preview]
+        build: [disabled, public, protected-preview]
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
@@ -36,7 +36,7 @@ jobs:
           node-version: 22
       - run: npm ci --no-audit --no-fund
       - name: Complete repository checks on integrated head
-        if: matrix.build == 'default'
+        if: matrix.build == 'public'
         run: |
           python3 -m pip install --disable-pip-version-check jsonschema==4.26.0
           npm run typecheck
@@ -55,9 +55,9 @@ jobs:
           CONCEPT_BUILD: ${{ matrix.build }}
         run: |
           if [ "$CONCEPT_BUILD" = protected-preview ]; then
-            VERCEL_ENV=preview AI_GUIDANCE_ENABLED=on VITE_FUTURE_AI_EXPERIENCE_DEMO=on npm run build
-          elif [ "$CONCEPT_BUILD" = demo ]; then
-            VITE_FUTURE_AI_EXPERIENCE_DEMO=on npm run build
+            VERCEL_ENV=preview AI_GUIDANCE_ENABLED=on npm run build
+          elif [ "$CONCEPT_BUILD" = public ]; then
+            VERCEL_ENV=production AI_GUIDANCE_ENABLED=on npm run build
           else
             VITE_FUTURE_AI_EXPERIENCE_DEMO=off npm run build
           fi
@@ -75,14 +75,14 @@ jobs:
             if curl --silent --fail http://127.0.0.1:4175/ > /dev/null; then break; fi
             sleep 1
           done
-          if [ "$CONCEPT_BUILD" = default ]; then export QA_BUILD=off; fi
+          if [ "$CONCEPT_BUILD" = disabled ]; then export QA_BUILD=off; fi
           export QA_CHROME="$(command -v google-chrome)"
           export QA_DIST="$GITHUB_WORKSPACE/apps/web/dist"
           if [ "$CONCEPT_BUILD" = protected-preview ]; then
             node tests/browser/future-ai-live-preview.mjs
           else
             node tests/browser/future-ai-experience.mjs
-            if [ "$CONCEPT_BUILD" = demo ]; then
+            if [ "$CONCEPT_BUILD" = public ]; then
               node --experimental-strip-types tests/browser/verify-ai-handoff-exports.ts "$QA_OUTPUT"
             fi
             QA_OUTPUT=/tmp/concept-results/acceptance node tests/browser/acceptance.mjs

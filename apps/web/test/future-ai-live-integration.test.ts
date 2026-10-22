@@ -7,11 +7,15 @@ import test from "node:test";
 const dir=dirname(fileURLToPath(import.meta.url));
 const read=(name:string)=>readFileSync(resolve(dir,"../src",name),"utf8");
 
-test("live Future AI Concept requires explicit Preview build gate",()=>{
+test("public manual workspace is unconditional; only Gemini requires the protected Preview gate",()=>{
   const page=read("concept/FutureAIExperiencePage.tsx");
   assert.match(page,/typeof __DO_GEMINI_STAGE2_PREVIEW__ === "boolean"/);
   assert.match(page,/useConceptBrief\(previewGeminiEnabled\)/);
-  assert.match(page,/previewGeminiEnabled && <section ref=\{workbench\} className="fc-unified-workbench"/);
+  assert.match(page,/<section ref=\{workbench\} className="fc-unified-workbench"/);
+  assert.doesNotMatch(page,/previewGeminiEnabled && <section ref=\{workbench\}/);
+  assert.match(page,/previewGeminiEnabled && <div className="fc-workflow-switch"/);
+  assert.match(page,/previewGeminiEnabled && <div className="fc-workflow-panel" hidden=\{workflow !== "gemini"\}/);
+  assert.match(page,/hidden=\{previewGeminiEnabled && workflow !== "prompt"\}/);
   assert.match(page,/<AiHandoffInline brief=\{snapshot\?\.live\.brief \?\? null\} sourceState=\{snapshot\.live\.sourceState\}/);
   assert.match(page,/fc-workflow-panel" hidden=\{workflow !== "prompt"\}/);
   assert.match(page,/fc-workflow-panel" hidden=\{workflow !== "gemini"\}/);
@@ -55,9 +59,10 @@ test("four goal outcomes are read-only presentations of one validated response",
 test("Planning Brief distinguishes protected live workspace from illustrative concept",()=>{
   const brief=read("pages/BriefPage.tsx");
   assert.match(brief,/typeof __DO_GEMINI_STAGE2_PREVIEW__ === "boolean"/);
-  assert.match(brief,/Explore AI evidence workspace/);
-  assert.match(brief,/Preview only · Reviewed-data Gemini requires operator authentication and explicit consent/);
-  assert.match(brief,/Interactive concept only · No live AI or model API calls/);
+  assert.match(brief,/Open AI workspace/);
+  assert.match(brief,/Show AI workspace/);
+  assert.match(brief,/Gemini is authenticated and consent-only in this protected Preview/);
+  assert.match(brief,/No on-site Gemini model calls are available here/);
 });
 
 test("unified Prompt Studio reuses all six canonical handoff goals, transfers and safety checks",()=>{
@@ -78,4 +83,16 @@ test("unified Prompt Studio reuses all six canonical handoff goals, transfers an
   assert.match(hook,/sourceState,/);
   assert.match(hook,/brief,\s*sourceState,/);
   assert.doesNotMatch(page,/copyAiHandoffText\(|downloadAiHandoff\(/);
+});
+
+// Source-level kill-switch assertions complement real public, Preview and disabled browser builds.
+test("public route retains explicit disable switch; manual workbench does not require Preview credentials",()=>{
+  const app=read("App.tsx");
+  const page=read("concept/FutureAIExperiencePage.tsx");
+  const vite=readFileSync(resolve(dir,"../vite.config.ts"),"utf8");
+  assert.match(app,/VITE_FUTURE_AI_EXPERIENCE_DEMO !== "off"/);
+  assert.match(page,/AiHandoffInline brief=\{snapshot\?\.live\.brief/);
+  assert.match(page,/<div className="fc-prompt-from-view">/);
+  assert.match(page,/On-site Gemini unavailable in public builds/);
+  assert.match(vite,/process\.env\.VERCEL_ENV === "preview" && process\.env\.AI_GUIDANCE_ENABLED === "on"/);
 });

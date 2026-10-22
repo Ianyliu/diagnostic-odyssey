@@ -57,6 +57,56 @@ if (disabled) {
     return {fixtureChunks: 0, entryPoints: 0};
   });
 } else {
+  await check("public build exposes the complete Prompt Studio and four Explore views; Gemini never activates",async()=>{
+    const ctx=await context({acceptDownloads:true});
+    await ctx.addInitScript(() => {
+      window.__copiedPrompt="";
+      Object.defineProperty(navigator,"clipboard",{configurable:true,value:{
+        writeText:async value=>{window.__copiedPrompt=value;}
+      }});
+    });
+    const page=await ctx.newPage(); await ready(page);
+    assert.equal(await page.locator(".fc-unified-workbench").count(),1);
+    assert.equal(await page.locator(".fc-unified-workbench").isVisible(),true);
+    assert.equal(await page.locator(".ai-handoff-inline").isVisible(),true);
+    assert.equal(await page.locator(".fc-prompt-from-view").count(),1);
+    assert.equal(await page.locator(".fc-live-workspace").count(),0);
+    assert.equal(await page.getByRole("button",{name:/2 · Gemini/}).count(),0);
+    assert.equal(await page.getByRole("button",{name:"Analyze with Gemini"}).count(),0);
+    assert.match(await page.locator(".fc-banner").innerText(),/Prompt Studio \+ Explore/);
+    const studio=page.locator(".ai-handoff-inline");
+    const picker=studio.getByLabel("Analysis goal");
+    const prompt=studio.locator("#ai-handoff-text");
+    assert.equal(await picker.locator("option").count(),6);
+    const original=await prompt.inputValue();
+    const checks=studio.locator(".ai-handoff-module input");
+    assert.equal(await checks.count(),3);
+    for (let i=0;i<3;i++) assert.equal(await checks.nth(i).isChecked(),true);
+    await picker.selectOption("executive");
+    assert.notEqual(await prompt.inputValue(),original,"Goal choice must immediately change complete prompt");
+    await checks.nth(0).uncheck();
+    assert.doesNotMatch(await prompt.inputValue(),/## Retrieved literature or search plan/);
+    await checks.nth(0).check();
+    await studio.locator("#ai-handoff-question").fill("What source gaps should a reviewer check?");
+    assert.equal(await studio.getByRole("button",{name:"Copy complete prompt"}).isDisabled(),true);
+    await studio.getByRole("button",{name:"Regenerate preview"}).click();
+    const frozen=await prompt.inputValue();
+    assert.match(frozen,/What source gaps should a reviewer check/);
+    await studio.getByRole("button",{name:"Copy complete prompt"}).click();
+    assert.equal(await page.evaluate(()=>window.__copiedPrompt),frozen);
+    const pending=page.waitForEvent("download");
+    await studio.getByRole("button",{name:"Download Markdown"}).click();
+    assert.match((await pending).suggestedFilename(),/\.md$/);
+    await goal(page,"Identify data gaps");
+    await page.getByRole("button",{name:/Use this view as prompt starting point/}).click();
+    assert.equal(await picker.inputValue(),"data_gaps");
+    assert.equal(await studio.getByRole("button",{name:"Copy complete prompt"}).isEnabled(),true);
+    for(const name of goals) await goal(page,name);
+    assert.equal(await page.locator(".fc-live-workspace").count(),0);
+    assert.equal(network.some(url=>url.includes("/api/ai-guidance")),false);
+    assert.equal(pageErrors.length,0);
+    return {goals:6,modulesCheckedByDefault:3,exploreViews:4,copyParity:true,geminiRequests:0};
+  });
   await check("four substantive layouts across desktop/mobile and light/dark; screenshots and axe", async () => {
     for (const width of [1440, 768, 390]) for (const theme of ["light", "dark"]) {
       const ctx = await context({viewport: {width, height: width === 1440 ? 1000 : 844}, colorScheme: theme});
@@ -80,16 +130,16 @@ if (disabled) {
     }
     return {screenshots: 24, axeEvaluations: 24};
   });
-  await check("visitor-controlled preview visibility is reversible within the app without exporting state", async () => {
+  await check("visitor-controlled AI workspace visibility is reversible within the app without exporting state", async () => {
     const ctx = await context({acceptDownloads: true}); const page = await ctx.newPage();
     await ready(page, "/brief");
-    const toggle = page.getByRole("checkbox", {name: "Show future AI concept", exact: true});
+    const toggle = page.getByRole("checkbox", {name: "Show AI workspace", exact: true});
     assert.equal(await toggle.isChecked(), true);
     await toggle.uncheck();
     assert.equal(await page.locator('a[href="/concept/future-ai"]').count(), 0);
     await toggle.check();
-    await page.getByRole("link", {name: "Explore future AI concept" }).click();
-    await page.getByRole("button", {name: "Hide future AI concept", exact: true}).click();
+    await page.getByRole("link", {name: "Open AI workspace" }).click();
+    await page.getByRole("button", {name: "Hide AI workspace", exact: true}).click();
     await page.waitForURL("**/brief");
     assert.equal(await toggle.isChecked(), false);
     await toggle.check();
@@ -167,7 +217,7 @@ if (disabled) {
     await request.getByRole("checkbox").check(); const requestBefore = await request.innerText();
     await nav(page, "Planning brief"); const before = await exportBrief(page, "before-exploration");
     assert.equal(before.local_context.length, 1); assert.equal(before.data_requests.length, 1);
-    await page.getByRole("link", {name: "Explore future AI concept"}).click();
+    await page.getByRole("link", {name: "Open AI workspace"}).click();
     assert.match(await page.locator(".fc-local").innerText(), new RegExp(before.local_context[0].label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
     await page.locator(".fc-finding summary").first().click(); assert.match(await page.locator(".fc-finding").first().innerText(), /Exact locator/);
     for (const name of goals) await goal(page, name);
@@ -201,7 +251,7 @@ if (disabled) {
     assert.equal(staleWarnings.length, 1);
     const realWarnings = await page.locator("#brief-interpretation-boundaries li").allTextContents();
     assert.deepEqual(realWarnings, before.warnings);
-    await page.getByRole("link", {name: "Explore future AI concept"}).click();
+    await page.getByRole("link", {name: "Open AI workspace"}).click();
     await page.locator(".fc-boundaries summary").click();
     assert.deepEqual(await page.locator(".fc-boundaries li").allTextContents(), realWarnings);
     await page.evaluate(() => window.scrollTo(0, 0));
@@ -221,7 +271,7 @@ if (disabled) {
     await nav(page, "Planning brief");
     const deselected = await exportBrief(page, "stale-explicitly-deselected");
     assert.equal(deselected.warnings.some(warning => /selected data request is stale/.test(warning)), false);
-    await page.getByRole("link", {name: "Explore future AI concept"}).click();
+    await page.getByRole("link", {name: "Open AI workspace"}).click();
     assert.deepEqual(await page.locator(".fc-boundaries li").allTextContents(), deselected.warnings);
     await goal(page, goals[2]); await page.getByRole("link", {name: "Open real Data Requests"}).click();
     assert.equal(await request.innerText(), unselectedBefore);
