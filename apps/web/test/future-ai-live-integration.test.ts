@@ -45,3 +45,11 @@ test("four goal outcomes are read-only presentations of one validated response",
   assert.match(summary,/Pending analyst review/);
   assert.doesNotMatch(summary,/fetch\(|setScenario\(|upsertAnalystDataRequest\(|window\.open/);
 });
+
+test("Planning Brief distinguishes protected live workspace from illustrative concept",()=>{
+  const brief=read("pages/BriefPage.tsx");
+  assert.match(brief,/typeof __DO_GEMINI_STAGE2_PREVIEW__ === "boolean"/);
+  assert.match(brief,/Explore AI evidence workspace/);
+  assert.match(brief,/Preview only · Reviewed-data Gemini requires operator authentication and explicit consent/);
+  assert.match(brief,/Interactive concept only · No live AI or model API calls/);
+});
