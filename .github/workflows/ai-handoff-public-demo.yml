@@ -96,6 +96,16 @@ jobs:
               assert.equal(l.target,'_blank');
               assert.ok(l.rel.includes('noopener')&&l.rel.includes('noreferrer'));
             }
+            // Follow actual native links in a popup, but intercept external content with a synthetic blank page.
+            // This verifies clickability and destination without retrieving unreviewed studies.
+            await context.route('https://pubmed.ncbi.nlm.nih.gov/**', route => route.fulfill({status:200,contentType:'text/html',body:'<!doctype html><title>Public research shortcut acceptance</title>'}));
+            await context.route('https://clinicaltrials.gov/**', route => route.fulfill({status:200,contentType:'text/html',body:'<!doctype html><title>Public research shortcut acceptance</title>'}));
+            for (const [name,host] of [['PubMed · Long COVID and care navigation','pubmed.ncbi.nlm.nih.gov'],['ClinicalTrials.gov · Long COVID care navigation','clinicaltrials.gov']]) {
+              const [popup] = await Promise.all([page.waitForEvent('popup'),dialog.getByRole('link',{name}).click()]);
+              await popup.waitForLoadState('domcontentloaded');
+              assert.equal(new URL(popup.url()).hostname,host);
+              await popup.close();
+            }
             await dialog.screenshot({path:'/tmp/ai-demo-evidence/dialog-desktop.png',animations:'disabled'});
             await dialog.getByRole('button',{name:'Copy & open ChatGPT'}).click();
             await dialog.getByText(/Complete prompt copied\. Paste it into ChatGPT/).waitFor();
@@ -104,11 +114,18 @@ jobs:
             const opens = await page.evaluate(() => window.__demoOpens);
             assert.deepEqual(opens,[['https://chatgpt.com/','_blank','noopener,noreferrer']]);
             assert.equal(await dialog.getByRole('link',{name:'Open ChatGPT manually'}).getAttribute('href'),'https://chatgpt.com/');
+            await dialog.getByRole('button',{name:'Copy & open Gemini'}).click();
+            await dialog.getByText(/Complete prompt copied\\. Paste it into Gemini/).waitFor();
+            assert.equal(await page.evaluate(() => window.__demoCopied),after);
+            assert.deepEqual(await page.evaluate(() => window.__demoOpens),[
+              ['https://chatgpt.com/','_blank','noopener,noreferrer'],
+              ['https://gemini.google.com/app','_blank','noopener,noreferrer']
+            ]);
             await page.screenshot({path:'/tmp/ai-demo-evidence/desktop-after-copy.png',fullPage:true,animations:'disabled'});
             await page.setViewportSize({width:390,height:844});
             await page.screenshot({path:'/tmp/ai-demo-evidence/mobile-dialog.png',animations:'disabled'});
             assert.deepEqual(errors,[],'No browser JS uncaught errors');
-            const summary={status:'PASS',publicRoute:'/brief',expectedSource:expected,modules:labels,providerButtons:['ChatGPT','Gemini'],publicShortcuts:3,canonicalEnvelope:'identical',staleProtection:'verified',copy:'exact',homepage:'https://chatgpt.com/',pageErrors:errors};
+            const summary={status:'PASS',publicRoute:'/brief',expectedSource:expected,modules:labels,providerButtons:['ChatGPT','Gemini'],publicShortcuts:3,clickedShortcuts:2,canonicalEnvelope:'identical',staleProtection:'verified',copy:'exact',homepages:['https://chatgpt.com/','https://gemini.google.com/app'],pageErrors:errors};
             await writeFile('/tmp/ai-demo-evidence/summary.json',JSON.stringify(summary,null,2));
             console.log('PUBLIC DEMO ACCEPTANCE: '+JSON.stringify(summary));
           } finally {await browser.close();}
