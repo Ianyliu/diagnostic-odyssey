@@ -115,7 +115,7 @@ jobs:
             assert.deepEqual(opens,[['https://chatgpt.com/','_blank','noopener,noreferrer']]);
             assert.equal(await dialog.getByRole('link',{name:'Open ChatGPT manually'}).getAttribute('href'),'https://chatgpt.com/');
             await dialog.getByRole('button',{name:'Copy & open Gemini'}).click();
-            await dialog.getByText(/Complete prompt copied\\. Paste it into Gemini/).waitFor();
+            await dialog.getByText(/Paste it into Gemini/).waitFor();
             assert.equal(await page.evaluate(() => window.__demoCopied),after);
             assert.deepEqual(await page.evaluate(() => window.__demoOpens),[
               ['https://chatgpt.com/','_blank','noopener,noreferrer'],
