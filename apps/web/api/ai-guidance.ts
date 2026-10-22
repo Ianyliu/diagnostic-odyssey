@@ -362,6 +362,7 @@ const allowedModels=new Set(["gemini-3.5-flash-lite","gemini-2.5-flash-lite"]);
 const safeHeaders={"Cache-Control":"no-store","X-Content-Type-Options":"nosniff","Referrer-Policy":"no-referrer"};
 const limits=new Map<string,{count:number,start:number}>();
 const challengeMaxAgeMs=90000;
+const consumedChallenges=new Map<string,number>();
 const jsonResponse=(status:number,data:unknown)=>Response.json(data,{status,headers:safeHeaders});
 const idCode=(s:string)=>s.replace(/[^A-Za-z0-9_.:-]/g,"_").slice(0,79);
 function verifyOperator(h:string|null,secret:string):boolean {
@@ -497,7 +498,13 @@ function checkChallenge(s:BriefSelection,token:string,value:unknown):boolean{
  const t=Number(time);
  if(!Number.isSafeInteger(t)||t>Date.now()+5000||Date.now()-t>challengeMaxAgeMs)return false;
  const expected=createHmac("sha256",token).update(time+"."+nonce+"."+sha(canonical(s))).digest();
- return timingSafeEqual(expected,Buffer.from(mac,"hex"));
+ if(!timingSafeEqual(expected,Buffer.from(mac,"hex")))return false;
+ // Same-instance single use; distributed replay protection requires an external durable store.
+ const now=Date.now();
+ if(consumedChallenges.size>1024)for(const [k,expiration] of consumedChallenges){if(expiration<now)consumedChallenges.delete(k)}
+ if(consumedChallenges.has(value))return false;
+ consumedChallenges.set(value,t+challengeMaxAgeMs);
+ return true;
 }
 function acceptRate(token:string){
  const key=sha(token),now=Date.now(),item=limits.get(key);
