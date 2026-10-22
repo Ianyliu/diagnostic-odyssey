@@ -87,10 +87,6 @@ export default function FutureAIExperiencePage({onHide}: {onHide: () => void}) {
     </section>
     <div className="fc-goal-selector" role="tablist" aria-label="Explore evidence and planning views">{goals.map((item, i) => <button role="tab" id={`fc-tab-${item.id}`} aria-controls="fc-output" aria-selected={goal === item.id} tabIndex={goal === item.id ? 0 : -1} ref={element => {controls.current[i] = element;}} key={item.id} onClick={() => setGoal(item.id)} onKeyDown={event => moveTab(event, i)}><span className="fc-tab-icon"><ConceptIcon name={item.icon}/></span><span><strong>{item.title}</strong><small>{item.subtitle}</small></span><span className="fc-tab-arrow" aria-hidden="true">→</span></button>)}</div>
     <div className="fc-context-strip"><span>Context: <b>Current Planning Brief</b></span><span>National: {snapshot.nationalStatus === "available" ? "reviewed" : "withheld"}</span><span>Local: {snapshot.local.status}</span><span>Pilot: {snapshot.scenario ? "applied assumptions" : "unavailable"}</span></div>
-    <div className="fc-prompt-from-view">
-      <div><strong>Use this exploration view in a prompt</strong><p>The four views organize the examples below; the six selectable prompt goals remain independent. Click to choose a suggested prompt goal without running Gemini or overwriting your research-task selections.</p></div>
-      <button className="button secondary" type="button" onClick={useAsPromptGoal}>Use this view as prompt starting point →</button>
-    </div>
     <div id="fc-output" role="tabpanel" tabIndex={0} aria-labelledby={`fc-tab-${goal}`}><div className="fc-output-content" key={goal}>
       {previewGeminiEnabled && <ConceptLiveSummary goal={goal} result={liveResult} />}
       {goal === "explain_brief" && <ExplainBrief snapshot={snapshot} />}
@@ -98,6 +94,10 @@ export default function FutureAIExperiencePage({onHide}: {onHide: () => void}) {
       {goal === "identify_data_gaps" && <IdentifyDataGaps snapshot={snapshot} />}
       {goal === "compare_strategies" && <CompareStrategies />}
     </div></div>
+    <div className="fc-prompt-from-view">
+      <div><strong>Use this exploration view in a prompt</strong><p>The four views organize the examples below; the six selectable prompt goals remain independent. Click to choose a suggested prompt goal without running Gemini or overwriting your research-task selections.</p></div>
+      <button className="button secondary" type="button" onClick={useAsPromptGoal}>Use this view as prompt starting point →</button>
+    </div>
     <details className="fc-activation"><summary><span>{previewGeminiEnabled ? "What remains outside live Gemini?" : "What this workspace does and does not establish"}</span><span className="fc-kicker">Evidence boundaries</span></summary><p>{previewGeminiEnabled ? "Protected Gemini selects only reviewed evidence IDs and pending templates; it does not retrieve literature, admit intervention effects, verify local applicability, compare strategies quantitatively or write analyst data." : "Public Prompt Studio prepares a complete evidence-bound prompt for analyst-controlled external AI handoff. It does not make a model call or review new literature."} An accountable reviewer, security, privacy and human dispositions are still required.</p><p>Research examples and comparisons in Explore remain illustrative; they do not enter canonical Brief JSON or print. Prompt Studio never invokes a model automatically. Copy, Download and Copy & Open are explicit analyst actions; an external provider receives the prompt only when the analyst chooses to share it. On-site Gemini calls are restricted to the separately authenticated, consented Preview workflow.</p><p className="fc-muted">Governance continues independently in issues #68, #26 and #23. This concept does not replace the deterministic Planning Insights in PR #105.</p></details>
   </section>;
 }
