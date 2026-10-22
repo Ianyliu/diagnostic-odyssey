@@ -8,6 +8,7 @@
     "build": "npm run build --workspace @diagnostic-odyssey/web",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
+    "bakeoff": "node --experimental-strip-types tests/bakeoff/cli.ts",
     "lint": "eslint . --max-warnings=0"
   },
   "engines": {"node": ">=22"},
