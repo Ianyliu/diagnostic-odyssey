@@ -18,7 +18,7 @@ interface Props { brief: PlanningBrief | null; sourceState: AiHandoffSourceState
 export interface PromptGoalSuggestion {goal: AiGoal; serial: number}
 /** Reuse every original handoff capability in the concept workspace rather than
  * maintaining a second, potentially divergent prompt implementation. */
-export function AiHandoffInline(props: Props & {suggestion?: PromptGoalSuggestion}) {
+export function AiHandoffInline(props: Props & {suggestion?: PromptGoalSuggestion | undefined}) {
   return <HandoffDialog {...props} presentation="inline" onClose={() => {}} />;
 }
 
