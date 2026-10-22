@@ -125,7 +125,9 @@ test("invalid provider candidates, rejected requests and secret leakage fail clo
  assert.equal(result.status,502);
  assert.deepEqual(await result.json(),{error:"provider_invalid_output"});
  const bad=(async()=>new Response(key+" "+token,{status:400})) as typeof fetch;
- const fail=await handleReviewedGuidance(request("analyze",s,challenge),env,bad);
+ // The first invalid provider result has already consumed its challenge.
+ const refreshed=await prepare(s);
+ const fail=await handleReviewedGuidance(request("analyze",s,refreshed),env,bad);
  assert.equal(fail.status,502);
  assert.equal((await fail.text()).includes(key),false);
 });
