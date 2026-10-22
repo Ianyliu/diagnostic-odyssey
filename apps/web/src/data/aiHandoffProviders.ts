@@ -7,9 +7,9 @@ export const AI_PROVIDER_CHOICES = Object.freeze([
 ] as const);
 export type AiHandoffProvider = (typeof AI_PROVIDER_CHOICES)[number];
 
-/** Undefined shows the public provider set; an empty build flag means copy-only. */
+/** Missing or empty explicit deployment approval always fails closed to copy-only. */
 export function availableAiProviders(buildSetting: string | undefined): readonly AiHandoffProvider[] {
-  if (buildSetting === undefined) return AI_PROVIDER_CHOICES;
+  if (typeof buildSetting !== "string" || !buildSetting.trim()) return [];
   const requested = new Set(buildSetting.split(",").map(item => item.trim().toLowerCase()).filter(Boolean));
   return AI_PROVIDER_CHOICES.filter(provider => requested.has(provider.id));
 }

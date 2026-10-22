@@ -32,7 +32,7 @@ function HandoffDialog({brief, sourceState, onClose}: Props & {onClose: () => vo
   const [transferStatus, setTransferStatus] = useState("");
   const [copying, setCopying] = useState(false);
   const [goal, setGoal] = useState<AiGoal>("comprehensive");
-  const [researchModules, setResearchModules] = useState<readonly AiResearchModule[]>(["literature", "interventions"]);
+  const [researchModules, setResearchModules] = useState<readonly AiResearchModule[]>([]);
   const [openedProvider, setOpenedProvider] = useState<AiHandoffProvider | null>(null);
   const providers = availableAiProviders(import.meta.env.VITE_AI_PROVIDERS);
   const [question, setQuestion] = useState("");
@@ -146,7 +146,7 @@ function HandoffDialog({brief, sourceState, onClose}: Props & {onClose: () => vo
         </select>
         <fieldset className="ai-handoff-modules">
           <legend>Optional research tasks</legend>
-          <p className="ai-handoff-help">Choose what to ask the external AI to investigate. Regenerate the frozen prompt after changing any option.</p>
+          <p className="ai-handoff-help">Optional and off by default. Select only the tasks you want; changes require regenerating the frozen prompt. With nothing selected, your original analysis prompt stays unchanged.</p>
           {AI_RESEARCH_MODULES.map(module => <label className="ai-handoff-module" key={module}>
             <input type="checkbox" checked={researchModules.includes(module)}
               onChange={event => setResearchModules(previous => event.target.checked
@@ -214,7 +214,7 @@ function HandoffDialog({brief, sourceState, onClose}: Props & {onClose: () => vo
           <div className="ai-handoff-actions">
             {providers.map(provider => <button key={provider.id} className="button secondary" type="button"
               disabled={!current || copying} onClick={() => void copyAndOpen(provider)}>Copy &amp; open {provider.label}</button>)}
-            {!providers.length && <p className="ai-handoff-help">External AI launches are disabled for this deployment; use Copy or Download.</p>}
+            {!providers.length && <p className="ai-handoff-help">Provider launch is not enabled for this deployment. You can still Copy, Download or select the full prompt manually.</p>}
           </div>
           {openedProvider && <p className="ai-handoff-help">If the tab did not open: <a href={openedProvider.home}
             target="_blank" rel="noopener noreferrer">Open {openedProvider.label} manually</a>. No Brief data is present in this link.</p>}

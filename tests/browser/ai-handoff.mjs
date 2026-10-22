@@ -129,13 +129,53 @@ await check("six goals, current Brief scope, canonical parity, full clipboard an
   assert.deepEqual(await exportJson(p), canonical);
 });
 
-await check("optional modules are stale-gated; user-click provider launch has no data in URL", async () => {
+await check("default handoff is unchanged, modules start unchecked and providers fail closed", async () => {
   const p = await page();
   await open(p);
   const initial = await preview(p).inputValue();
-  assert.match(initial, /## Retrieved literature or search plan/);
-  assert.match(initial, /## Investigational interventions/);
-  assert.doesNotMatch(initial, /## Visualizations and chart specifications/);
+  assert.doesNotMatch(initial, /## Additional research and visualization tasks/);
+  assert.match(initial, /End of source data/);
+  assert.equal(await p.getByRole("checkbox").count(), 3);
+  for (const name of ["Review relevant literature", "Investigate intervention options", "Prepare evidence-based visualizations"]) {
+    assert.equal(await p.getByRole("checkbox", {name}).isChecked(), false);
+  }
+  assert.equal(await p.getByRole("button", {name: /^Copy & open /}).count(), 0);
+  assert.match(await p.getByRole("dialog").innerText(), /Provider launch is not enabled/);
+  await assertOnlyApprovedResearchLinks(p);
+  await p.getByRole("checkbox", {name: "Review relevant literature"}).check();
+  await stale(p);
+  assert.equal(await preview(p).inputValue(), initial);
+  await regenerate(p).click();
+  const withLiterature = await preview(p).inputValue();
+  assert.match(withLiterature, /## Retrieved literature or search plan/);
+  assert.doesNotMatch(withLiterature, /## Investigational interventions/);
+  assert.deepEqual(envelope(withLiterature), envelope(initial));
+  await p.getByRole("checkbox", {name: "Investigate intervention options"}).check();
+  await stale(p);
+  await regenerate(p).click();
+  assert.match(await preview(p).inputValue(), /## Investigational interventions/);
+  await p.getByRole("checkbox", {name: "Review relevant literature"}).uncheck();
+  await p.getByRole("checkbox", {name: "Investigate intervention options"}).uncheck();
+  await stale(p);
+  await regenerate(p).click();
+  assert.equal(await preview(p).inputValue(), initial);
+  await close(p).click();
+  await open(p);
+  assert.equal(await p.getByRole("checkbox", {name: "Review relevant literature"}).isChecked(), false);
+  assert.equal(await p.getByRole("checkbox", {name: "Investigate intervention options"}).isChecked(), false);
+  assert.equal(await p.getByRole("checkbox", {name: "Prepare evidence-based visualizations"}).isChecked(), false);
+});
+
+await check("explicit test-only provider allowlist, opted-in visuals and safe user-click launch", async () => {
+  const p = await page({url: fixture});
+  await open(p);
+  assert.equal(await p.getByRole("checkbox", {name: "Review relevant literature"}).isChecked(), false);
+  assert.equal(await p.getByRole("button", {name: "Copy & open ChatGPT", exact: true}).count(), 1);
+  assert.equal(await p.getByRole("button", {name: "Copy & open Claude", exact: true}).count(), 1);
+  assert.equal(await p.getByRole("button", {name: "Copy & open Gemini", exact: true}).count(), 0);
+  assert.equal(await p.getByRole("button", {name: "Copy & open Copilot", exact: true}).count(), 0);
+  const initial = await preview(p).inputValue();
+  assert.doesNotMatch(initial, /## Additional research and visualization tasks/);
   await p.getByRole("checkbox", {name: "Prepare evidence-based visualizations"}).check();
   await stale(p);
   assert.equal(await preview(p).inputValue(), initial);
@@ -152,10 +192,9 @@ await check("optional modules are stale-gated; user-click provider launch has no
   assert.equal((await p.evaluate(() => window.copyCalls)).at(-1), regenerated);
   assert.deepEqual(await p.evaluate(() => window.providerOpenCalls), [["https://chatgpt.com/", "_blank", "noopener,noreferrer"]]);
   assert.equal(await p.getByRole("link", {name: "Open ChatGPT manually"}).getAttribute("href"), "https://chatgpt.com/");
-  const researchLinks = await p.getByRole("link", {name: /PubMed|ClinicalTrials\.gov/}).evaluateAll(elements =>
-    elements.map(el => el.getAttribute("href")));
-  assert.equal(researchLinks.length, 3);
-  assert.ok(researchLinks.every(href => !href.includes("BEGIN_DIAGNOSTIC_ODYSSEY_DATA")));
+  const links = await p.getByRole("link", {name: /PubMed|ClinicalTrials\.gov/}).evaluateAll(elements => elements.map(el => el.getAttribute("href")));
+  assert.equal(links.length, 3);
+  assert.ok(links.every(href => !href.includes("BEGIN_DIAGNOSTIC_ODYSSEY_DATA")));
   await close(p).click();
 });
 

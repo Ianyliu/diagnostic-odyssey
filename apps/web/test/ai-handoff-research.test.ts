@@ -44,7 +44,13 @@ test("provider home links exclude any private content, and build-time allowlist 
   }
   assert.deepEqual(availableAiProviders(""), []);
   assert.deepEqual(availableAiProviders("claude,chatgpt,unknown").map(p => p.id), ["chatgpt", "claude"]);
-  assert.deepEqual(availableAiProviders(undefined), AI_PROVIDER_CHOICES);
+  // No environment variable is approval: absent, blank and whitespace all fail closed.
+  assert.deepEqual(availableAiProviders(undefined), []);
+  assert.deepEqual(availableAiProviders("  "), []);
+  assert.deepEqual(availableAiProviders("unknown"), []);
+  assert.deepEqual(availableAiProviders(" , , "), []);
+  assert.deepEqual(availableAiProviders("chatgpt").map(p => p.id), ["chatgpt"]);
+  assert.deepEqual(availableAiProviders("CHATGPT, claude,unknown").map(p => p.id), ["chatgpt", "claude"]);
   for (const link of AI_PUBLIC_RESEARCH_LINKS) {
     const url = new URL(link.url);
     assert.equal(url.protocol, "https:");
