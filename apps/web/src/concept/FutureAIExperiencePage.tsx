@@ -1,6 +1,6 @@
 import { useRef, useState, type KeyboardEvent } from "react";
 import { Link } from "react-router-dom";
-import { conceptLabel, goals, type GoalId } from "./storyboard";
+import { goals, type GoalId } from "./storyboard";
 import { ConceptIcon } from "./ConceptPrimitives";
 import { useConceptBrief } from "./useConceptBrief";
 import { ExplainBrief } from "./ExplainBrief";

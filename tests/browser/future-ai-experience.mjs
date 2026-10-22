@@ -1,5 +1,5 @@
 import {prepareWorkspace, navigateWorkspace} from "./workspace-helpers.mjs";
-/* global process, console, document, window, innerWidth, getComputedStyle, URL */
+/* global process, console, document, window, navigator, innerWidth, getComputedStyle, URL */
 import assert from "node:assert/strict";
 import {mkdir, readFile, writeFile, readdir} from "node:fs/promises";
 import {createRequire} from "node:module";
