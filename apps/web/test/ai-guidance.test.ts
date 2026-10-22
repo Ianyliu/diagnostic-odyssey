@@ -108,7 +108,7 @@ test("challenge bound to exact selections; expired, tampered and wrong origins f
  const s=selected(),challenge=await prepare(s);
  const shifted={...s,finding_ids:[]};
  assert.equal((await handleReviewedGuidance(request("analyze",shifted,challenge),env,mock)).status,409);
- assert.equal((await handleReviewedGuidance(request("analyze",s,challenge.slice(0,-1)+"0"),env,mock)).status,409);
+ assert.equal((await handleReviewedGuidance(request("analyze",s,challenge.slice(0,-1)+(challenge.endsWith("0")?"1":"0")),env,mock)).status,409);
  const wrongOrigin=new Request(url,{method:"POST",headers:{"Authorization":"Bearer "+token,"Origin":"https://attacker.invalid"},body:JSON.stringify({action:"analyze",consent:true,selection:s,challenge})});
  assert.equal((await handleReviewedGuidance(wrongOrigin,env,mock)).status,403);
  const noConsent=new Request(url,{method:"POST",headers:{Authorization:"Bearer "+token},body:JSON.stringify({action:"prepare",consent:false,selection:s,challenge:null})});
