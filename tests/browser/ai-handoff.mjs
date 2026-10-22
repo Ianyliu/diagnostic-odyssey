@@ -135,7 +135,7 @@ await check("default handoff is unchanged, modules start unchecked and providers
   const initial = await preview(p).inputValue();
   assert.doesNotMatch(initial, /## Additional research and visualization tasks/);
   assert.match(initial, /End of source data/);
-  assert.equal(await p.getByRole("checkbox").count(), 3);
+  assert.equal(await p.getByRole("dialog").getByRole("checkbox").count(), 3);
   for (const name of ["Review relevant literature", "Investigate intervention options", "Prepare evidence-based visualizations"]) {
     assert.equal(await p.getByRole("checkbox", {name}).isChecked(), false);
   }
