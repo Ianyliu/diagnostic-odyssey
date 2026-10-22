@@ -390,7 +390,7 @@ function parseSelection(x:unknown):BriefSelection {
  if(o.schema_version!=="do.gemini-reviewed.v1"||o.national_artifact_version!==requiredNational)bad("unsupported national snapshot");
  if(o.local_artifact_version!==null&&o.local_artifact_version!==requiredLocal)bad("unsupported local snapshot");
  const findings=list(o.finding_ids,"finding_ids",21,id) as string[];
- const locals=list(o.local_ids,"local_ids",34,id) as string[];
+ const locals=list(o.local_ids,"local_ids",34,(x,p)=>{if(typeof x!=="string"||!/^[A-Za-z0-9][A-Za-z0-9_.:-]{0,159}$/.test(x))bad(p)}) as string[];
  unique(findings,x=>x,"finding_ids");unique(locals,x=>x,"local_ids");
  if(locals.length>0&&o.local_artifact_version!==requiredLocal)bad("local release missing");
  if(typeof o.brief_generated_at!=="string"||!/^20\d\d-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d{1,3})?Z$/.test(o.brief_generated_at)||
@@ -413,7 +413,7 @@ function inputFromSelection(s:BriefSelection):PlanningGuidanceInputV1 {
   lower:x.interval_low,upper:x.interval_high
  }));
  const loc:PlanningGuidanceInputV1["selected_local_context"]=local.indicators.filter(x=>lset.has(x.indicator_id)).map(x=>({
-  id:x.indicator_id,source_id:x.source_ref,value:x.value,unit_code:idCode(x.unit),
+  id:idCode(x.indicator_id),source_id:x.source_ref,value:x.value,unit_code:idCode(x.unit),
   vintage_id:x.source_ref.startsWith("acs")?"acs_2024_5year":"hrsa_20260924",role:"local_context"
  }));
  const contentHash=sha(canonical({version:s.schema_version,ids:[...s.finding_ids].sort(compareIds),
