@@ -5,8 +5,10 @@ import { createAiHandoffText, type AiGoal, type AiHandoffTextV1 } from "../data/
 import { AI_GOALS, AI_GOAL_TEMPLATES } from "../data/aiHandoffTemplates";
 import { aiHandoffQuestionLength, inspectAiHandoffSource, type AiHandoffSourceState } from "../data/aiHandoffSession";
 import { copyAiHandoffText, downloadAiHandoff } from "../data/aiHandoffTransfer";
+import { AiGeminiPanel } from "./AiGeminiPanel";
 import "./AiHandoff.css";
 
+const stage2Preview = import.meta.env.VITE_GEMINI_STAGE2_PREVIEW === "on";
 interface Props { brief: PlanningBrief | null; sourceState: AiHandoffSourceState }
 
 export function AiHandoff(props: Props) {
@@ -15,7 +17,7 @@ export function AiHandoff(props: Props) {
     <div className="ai-handoff-launch">
       <button className="button secondary" type="button" onClick={() => setOpen(true)} aria-haspopup="dialog"
         aria-describedby="ai-handoff-launch-note">Analyze with AI</button>
-      <small id="ai-handoff-launch-note" className="ai-handoff-launch-note">* Manual prompt handoff only · No live AI model or API calls.</small>
+      <small id="ai-handoff-launch-note" className="ai-handoff-launch-note">{stage2Preview ? "* Manual handoff by default · Protected Preview also offers opt-in Gemini." : "* Manual prompt handoff only · No live AI model or API calls."}</small>
     </div>
     {open && createPortal(<HandoffDialog {...props} onClose={() => setOpen(false)} />, document.body)}
   </>;
@@ -108,7 +110,7 @@ function HandoffDialog({brief, sourceState, onClose}: Props & {onClose: () => vo
       <div><p className="eyebrow">PLANNING BRIEF · AI HANDOFF</p><h2 id="ai-handoff-title">Analyze with AI</h2></div>
       <button className="button secondary" type="button" onClick={onClose} aria-label="Close Analyze with AI">Close</button>
     </div>
-    <p id="ai-handoff-intro">Prepare a complete prompt for an external AI to interpret the reviewed evidence and analyst assumptions in this Brief. <strong>No live model is connected here; the app does not invoke an AI provider or consume model API tokens.</strong></p>
+    <p id="ai-handoff-intro">Prepare a complete prompt for an external AI to interpret the reviewed evidence and analyst assumptions in this Brief. {stage2Preview ? <strong>Manual handoff makes no model calls. A separate protected Gemini action is available below with operator authentication and explicit consent.</strong> : <strong>No live model is connected here; the app does not invoke an AI provider or consume model API tokens.</strong>}</p>
     <div className="ai-handoff-layout">
       <div className="ai-handoff-options">
         <label htmlFor="ai-handoff-goal">Analysis goal</label>
@@ -170,6 +172,7 @@ function HandoffDialog({brief, sourceState, onClose}: Props & {onClose: () => vo
           }}>Select complete prompt</button>
         </div>
         <p className="ai-handoff-help ai-handoff-transfer-status" role="status">{transferStatus}</p>
+        {stage2Preview && <AiGeminiPanel snapshot={current ? snapshot : null} sourceKey={identity} />}
       </div>
     </div>
   </dialog>;
