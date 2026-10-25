@@ -115,5 +115,19 @@
 .data-requests-page .data-request-grid { grid-template-columns: minmax(0, 1fr); max-width: 1000px; }
 .data-requests-page .data-request-sheet { border: 0; border-top: 2px solid var(--do-border); border-radius: 0; padding: 24px 0; background: transparent; }
 .request-owner { margin: 6px 0 12px; font-size: .88rem; color: var(--do-text-muted); }
+.request-handoff,
+.request-next-step { min-width: 0; display: grid; gap: 10px; overflow-wrap: anywhere; }
+.request-handoff > h3,
+.request-next-step h3 { margin: 0; font-size: 1rem; }
+.request-handoff > p,
+.request-next-step p { margin: 0; max-width: 95ch; font-size: .88rem; line-height: 1.55; }
+.request-next-step ol { margin: 0; padding-left: 1.4em; display: grid; gap: 8px; max-width: 95ch; font-size: .88rem; line-height: 1.55; }
+.request-next-step > p { color: var(--do-text-muted); font-size: .8rem; }
+.request-next-step .text-button { justify-self: start; min-height: 44px; }
+.request-stale-guidance { color: var(--do-warning-text); }
+.request-applied-inputs { padding: 0; border: 0; background: transparent; }
+.request-applied-inputs summary { min-height: 44px; padding-block: 10px; }
+.data-requests-page :is(summary, a, button, input) { scroll-margin-block: 100px; }
+.request-applied-inputs > p { font-size: .8rem; color: var(--do-text-muted); }
 .data-requests-page .request-sheet-heading h2 { font-size: 1.2rem; }
 .data-requests-page .brief-selection { min-height: 44px; }

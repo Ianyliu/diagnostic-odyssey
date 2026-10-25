@@ -6,6 +6,7 @@ import { ContextBar } from "../components/ContextBar";
 import { useArtifact } from "../data/ArtifactContext";
 import { acquisitionResolver } from "@diagnostic-odyssey/acquisition-hints";
 import { AcquisitionGuidanceStatus } from "../components/AcquisitionGuidanceCard";
+import { buildDataRequestHandoff } from "../data/dataRequestHandoff";
 import {
   createSensitivityDataRequest,
   isDataRequestCurrentForScenario,
@@ -44,6 +45,7 @@ export function DataRequestsPage() {
       <p className="eyebrow">DATA REQUESTS</p>
       <h1 id="data-requests-heading" tabIndex={-1}>Turn uncertainty into a concrete request</h1>
       <p>Requests are planning artifacts, not observed evidence. Available requests start selected for convenience; review or deselect them before exporting. Stale requests remain excluded from the Brief until refreshed.</p>
+      <p>“Current” means the request matches the applied scenario, not that its source data is up to date. Confirm the reporting period and availability with the owner.</p>
     </header>
     <p className="sr-only" role="status" aria-live="polite" aria-atomic="true">{announcement}</p>
 
@@ -64,6 +66,7 @@ export function DataRequestsPage() {
         const stale = isAnalystRequest &&
           sensitivityField !== null &&
           !isDataRequestCurrentForScenario(request, scenario);
+        const handoff = isAnalystRequest ? buildDataRequestHandoff(request, scenarioResult ? scenario : null) : null;
         const acquisition = acquisitionResolver.resolve(request, bundle.context, scenarioResult ? scenario : null);
         const attachable = isAnalystRequest && acquisitionResolver.attach(request, bundle.context, scenarioResult ? scenario : null).state === "reviewed";
         return <article className="data-request-sheet" key={request.request_id}>
@@ -81,7 +84,32 @@ export function DataRequestsPage() {
               </span>
             </div>
           </header>
+          {handoff && <section className="request-handoff" aria-labelledby={`request-decision-${request.request_id}`}>
+            <h3 id={`request-decision-${request.request_id}`}>Decision to resolve</h3>
+            <p>{handoff.decisionQuestion}</p>
+            <div className="request-rationale">
+              <h3>{stale ? "Why this request was created · earlier assumptions" : "Why this data would matter"}</h3>
+              <p>{request.rationale}</p>
+            </div>
+            {handoff.current ? <details className="technical-disclosure request-applied-inputs">
+              <summary>Exact applied Pilot assumptions</summary>
+              <p>Analyst inputs, not reviewed evidence. Review these together when deciding whether to collect data.</p>
+              <dl className="data-request-details">
+                {handoff.appliedInputs.map(input => <div key={input.key}><dt>{input.label}</dt><dd>{input.value}</dd></div>)}
+              </dl>
+            </details> : <p className="request-stale-guidance">This request describes earlier assumptions. Review the applied Pilot inputs before refreshing; refreshing replaces the request wording and preserves its Brief selection. Request currency does not certify source freshness.</p>}
+          </section>}
           <p className="request-owner"><strong>Likely owner:</strong> {request.likely_source_owner}</p>
+          <section className="request-next-step" aria-labelledby={`request-next-${request.request_id}`}>
+            <h3 id={`request-next-${request.request_id}`}>Next step with the local data owner</h3>
+            <ol>
+              <li>Confirm who owns this question and which local source system can supply the fields and time window below. Availability is unconfirmed.</li>
+              <li>Agree on the minimum necessary aggregate summary, definitions, reporting period and small-cell protections before collection. Keep identifiers, row-level dates and linkage with the local steward; do not send them to this app.</li>
+              <li>If the summary is unavailable or incomplete, document the gap with the owner and revise the planning assumption or pilot scope. Rerun sensitivity before using the request in the Brief.</li>
+            </ol>
+            <p>Collection guidance is a planning checklist, not an approved system mapping or a quantified value-of-information estimate. Including a request in the Brief does not send it to anyone.</p>
+            <Link className="text-button" to="/pilot#sensitivity">Review assumptions and sensitivity</Link>
+          </section>
           <WorkspaceDisclosure id={`request-details-${request.request_id}`} title="Request details & collection guidance">
           <dl className="data-request-details">
             <div><dt>Pathway step</dt><dd>{formatPathwayStepLabel(request.pathway_step)}</dd></div>
@@ -89,7 +117,7 @@ export function DataRequestsPage() {
             <div><dt>Granularity / time window</dt><dd>{request.granularity_time_window}</dd></div>
             <div className="request-fields"><dt>Fields needed</dt><dd>{request.fields_needed.join(", ")}</dd></div>
           </dl>
-          <div className="request-rationale"><h3>Why collect it</h3><p>{request.rationale}</p></div>
+          {!handoff && <div className="request-rationale"><h3>Why collect it</h3><p>{request.rationale}</p></div>}
           <details className="technical-disclosure request-privacy"><summary>Feasibility and privacy</summary><p>{request.feasibility_privacy_notes}</p></details>
           <AcquisitionGuidanceStatus resolution={acquisition} />
           {attachable && acquisition.state !== "reviewed" && <button type="button" className="text-button" onClick={() => {
