@@ -269,6 +269,35 @@ comparator_unadjusted <- function(full_design, group_variable = ".do_cmp_group",
   )
 }
 
+# Scale-free estimating equations and convex objectives, not GLM dispersion/SEs.
+# Fixed numerical budgets are stage-specific; see the C3 methods note.
+comparator_fit_accuracy <- function(fit, stage) {
+  x <- stats::model.matrix(fit)
+  y <- fit$y
+  w <- fit$prior.weights / sum(fit$prior.weights)
+  eta <- as.vector(x %*% stats::coef(fit))
+  if (stage == "binary_logit") {
+    residual <- y - stats::plogis(eta)
+    loss <- pmax(eta, 0) - y * eta + log1p(exp(-abs(eta)))
+    p0 <- sum(w * y)
+    null_objective <- -p0 * log(p0) - (1 - p0) * log1p(-p0)
+    score_limit <- 1e-7
+  } else if (stage == "positive_gamma") {
+    ratio <- y * exp(-eta)
+    residual <- ratio - 1
+    loss <- ratio + eta
+    null_objective <- 1 + log(sum(w * y))
+    score_limit <- 1e-4
+  } else stop("Unknown comparator fit stage.", call. = FALSE)
+  score <- max(abs(crossprod(x, w * residual)))
+  objective <- sum(w * loss)
+  objective_limit <- null_objective + 1e-10 * (1 + abs(null_objective))
+  list(max_abs_average_score = score, score_limit = score_limit,
+       objective = objective, null_objective = null_objective,
+       passed = all(is.finite(c(score, objective, null_objective))) &&
+         score <= score_limit && objective <= objective_limit)
+}
+
 comparator_stage_predictions <- function(w, data, group_variable, insurance = FALSE) {
   support_trace <- character()
   stage_error <- function(stage, reason, group = "all") {
@@ -278,12 +307,21 @@ comparator_stage_predictions <- function(w, data, group_variable, insurance = FA
   df <- data
   df$.do_cmp_w <- as.numeric(w)
   if (length(df$.do_cmp_w) != nrow(df) || any(!is.finite(df$.do_cmp_w)) ||
-      any(df$.do_cmp_w < 0) || sum(df$.do_cmp_w) <= 0) {
+      any(df$.do_cmp_w < 0) || !is.finite(sum(df$.do_cmp_w)) ||
+      sum(df$.do_cmp_w) <= 0) {
     stage_error("weights", "invalid/nonfinite/negative survey replicate weights")
   }
   df$.do_cmp_exposure <- factor(as.character(df[[group_variable]]),
                                 levels = c("noncurrent", "current"))
   included <- df$.do_cmp_w > 0
+  # One common scalar for both unpenalized fits. Never mutate survey weights.
+  fit_scale <- mean(df$.do_cmp_w[included])
+  df$.do_cmp_fit_w <- df$.do_cmp_w / fit_scale
+  if (!is.finite(fit_scale) || fit_scale <= 0 ||
+      any(!is.finite(df$.do_cmp_fit_w)) ||
+      any((df$.do_cmp_fit_w > 0) != included)) {
+    stage_error("weights", "invalid normalized fitting weights or lost positive support")
+  }
   for (g in c("noncurrent", "current")) {
     eligible <- included & !is.na(df$.do_cmp_exposure) & df$.do_cmp_exposure == g
     n_pos <- sum(eligible & df$.do_cmp_positive == 1L, na.rm = TRUE)
@@ -321,16 +359,21 @@ comparator_stage_predictions <- function(w, data, group_variable, insurance = FA
         any(!is.finite(coefficients))) {
       stage_error(stage, "nonconverged, nonfinite or rank-deficient model")
     }
+    accuracy <- comparator_fit_accuracy(fit, stage)
+    if (!isTRUE(accuracy$passed)) {
+      stage_error(stage, sprintf("estimating-equation score/objective failed (score=%.6g, limit=%.6g)",
+                                 accuracy$max_abs_average_score, accuracy$score_limit))
+    }
     fit
   }
   part1 <- fit_stage("binary_logit", stats::glm(
     binary_formula, family = stats::quasibinomial(link = "logit"),
-    weights = .do_cmp_w, data = df, na.action = stats::na.fail
+    weights = .do_cmp_fit_w, data = df, na.action = stats::na.fail
   ))
   pos <- df[df$.do_cmp_positive == 1L & included, , drop = FALSE]
   part2 <- fit_stage("positive_gamma", stats::glm(
     positive_formula, family = stats::Gamma(link = "log"),
-    weights = .do_cmp_w, data = pos, na.action = stats::na.fail
+    weights = .do_cmp_fit_w, data = pos, na.action = stats::na.fail
   ))
   standardized <- vapply(c("noncurrent", "current"), function(g) {
     scenario <- df
