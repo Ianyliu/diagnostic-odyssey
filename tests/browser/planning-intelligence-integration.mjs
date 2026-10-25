@@ -82,13 +82,13 @@ await check("AI handoff, optional print, and navigation do not mutate canonical 
   }
   if (conceptEnabled) {
     await page.getByRole("link", {name:/Open AI workspace/}).click();
-    await page.getByRole("tablist", {name:"Future experience goals"}).waitFor();
-    assert.match(await page.locator(".fc-banner").innerText(), /Demo only · No live AI/i);
+    await page.getByRole("tablist", {name:"Explore evidence and planning views"}).waitFor();
+    assert.match(await page.locator(".fc-banner").innerText(), /Prompt Studio \+ (?:protected Gemini \+ )?Explore/i);
     for (const name of ["Explore interventions", "Identify data gaps", "Compare strategies", "Explain my Brief"]) {
       await page.getByRole("tab", {name:new RegExp(name)}).click();
       assert.equal(await page.getByRole("tab", {name:new RegExp(name)}).getAttribute("aria-selected"), "true");
     }
-    await page.getByRole("link", {name:/Back to current Brief/}).click();
+    await page.getByRole("link", {name:/Back to Planning Brief/}).click();
   } else {
     await page.goto(base + "/concept/future-ai");
     await page.waitForURL("**/brief");
@@ -108,7 +108,7 @@ await check("visitor can turn the illustrative concept off and back on without c
     assert.equal(await page.getByRole("link", {name: /Open AI workspace/}).count(), 0);
     await toggle.check();
     await page.getByRole("link", {name: /Open AI workspace/}).click();
-    await page.getByRole("tablist", {name: "Future experience goals"}).waitFor();
+    await page.getByRole("tablist", {name: "Explore evidence and planning views"}).waitFor();
     await page.getByRole("button", {name: "Hide AI workspace", exact: true}).click();
     await page.waitForURL("**/brief");
     assert.equal(await toggle.isChecked(), false, "hiding from concept returns to the Brief with preference retained");
@@ -205,9 +205,9 @@ await check("stale data request forces a current AI handoff snapshot; exploratio
   await dialog.getByRole("button", {name: "Close Analyze with AI", exact: true}).click();
   if (conceptEnabled) {
     await page.getByRole("link", {name: /Open AI workspace/}).click();
-    await page.getByRole("tablist", {name: "Future experience goals"}).waitFor();
+    await page.getByRole("tablist", {name: "Explore evidence and planning views"}).waitFor();
     await page.getByRole("tab", {name: /Compare strategies/}).click();
-    await page.getByRole("link", {name: /Back to current Brief/}).click();
+    await page.getByRole("link", {name: /Back to Planning Brief/}).click();
   }
   assert.deepEqual(await canonical(page), stale);
 });
