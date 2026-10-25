@@ -54,10 +54,10 @@ await check("all three controls coexist and optional routes remain gated", async
   if (insightsEnabled) {
     assert.match(await page.locator("#planning-insights").innerText(), /no live AI inference/);
   }
-  assert.equal(await page.getByRole("link", {name:/Explore future AI concept/}).count() > 0, conceptEnabled);
+  assert.equal(await page.getByRole("link", {name:/Open AI workspace/}).count() > 0, conceptEnabled);
   assert.equal(await page.locator(".brief-concept-note").count() > 0, conceptEnabled);
   if (conceptEnabled) {
-    assert.match(await page.locator(".brief-concept-note").innerText(), /No live AI or model API calls/);
+    assert.match(await page.locator(".brief-concept-note").innerText(), /No on-site Gemini model calls are available here/);
   }
   if (insightsEnabled) {
     assert.equal(await page.getByRole("checkbox", {name:/Include optional Planning Insights detail in printed Brief/}).count(), 1);
@@ -81,14 +81,14 @@ await check("AI handoff, optional print, and navigation do not mutate canonical 
     await page.emulateMedia({media:"screen"});
   }
   if (conceptEnabled) {
-    await page.getByRole("link", {name:/Explore future AI concept/}).click();
-    await page.getByRole("tablist", {name:"Future experience goals"}).waitFor();
-    assert.match(await page.locator(".fc-banner").innerText(), /Demo only · No live AI/i);
+    await page.getByRole("link", {name:/Open AI workspace/}).click();
+    await page.getByRole("tablist", {name:"Explore evidence and planning views"}).waitFor();
+    assert.match(await page.locator(".fc-banner").innerText(), /Prompt Studio \+ (?:protected Gemini \+ )?Explore/i);
     for (const name of ["Explore interventions", "Identify data gaps", "Compare strategies", "Explain my Brief"]) {
       await page.getByRole("tab", {name:new RegExp(name)}).click();
       assert.equal(await page.getByRole("tab", {name:new RegExp(name)}).getAttribute("aria-selected"), "true");
     }
-    await page.getByRole("link", {name:/Back to current Brief/}).click();
+    await page.getByRole("link", {name:/Back to Planning Brief/}).click();
   } else {
     await page.goto(base + "/concept/future-ai");
     await page.waitForURL("**/brief");
@@ -99,22 +99,22 @@ await check("AI handoff, optional print, and navigation do not mutate canonical 
 });
 await check("visitor can turn the illustrative concept off and back on without changing canonical Brief", async page => {
   const before = await canonical(page);
-  const toggle = page.getByRole("checkbox", {name: "Show future AI concept", exact: true});
+  const toggle = page.getByRole("checkbox", {name: "Show AI workspace", exact: true});
   if (!conceptEnabled) {
     assert.equal(await toggle.count(), 0, "build-level off excludes concept visibility controls");
   } else {
     assert.equal(await toggle.isChecked(), true, "concept starts visible when build permits it");
     await toggle.uncheck();
-    assert.equal(await page.getByRole("link", {name: /Explore future AI concept/}).count(), 0);
+    assert.equal(await page.getByRole("link", {name: /Open AI workspace/}).count(), 0);
     await toggle.check();
-    await page.getByRole("link", {name: /Explore future AI concept/}).click();
-    await page.getByRole("tablist", {name: "Future experience goals"}).waitFor();
-    await page.getByRole("button", {name: "Hide future AI concept", exact: true}).click();
+    await page.getByRole("link", {name: /Open AI workspace/}).click();
+    await page.getByRole("tablist", {name: "Explore evidence and planning views"}).waitFor();
+    await page.getByRole("button", {name: "Hide AI workspace", exact: true}).click();
     await page.waitForURL("**/brief");
     assert.equal(await toggle.isChecked(), false, "hiding from concept returns to the Brief with preference retained");
-    assert.equal(await page.getByRole("link", {name: /Explore future AI concept/}).count(), 0);
+    assert.equal(await page.getByRole("link", {name: /Open AI workspace/}).count(), 0);
     await toggle.check();
-    assert.equal(await page.getByRole("link", {name: /Explore future AI concept/}).count(), 1);
+    assert.equal(await page.getByRole("link", {name: /Open AI workspace/}).count(), 1);
   }
   assert.deepEqual(await canonical(page), before, "toggling cannot change reviewed evidence or analyst state");
 });
@@ -139,9 +139,8 @@ await check("fresh Brief: six complete AI goals match canonical export and downl
   for (const goal of ["comprehensive", "executive", "evidence_audit", "pilot_planning", "data_gaps", "technical"]) {
     if (await selectGoal.inputValue() !== goal) {
       await selectGoal.selectOption(goal);
-      assert.equal(await copy.isDisabled(), true, "goal change must disable stale transfers");
-      assert.equal(await download.isDisabled(), true, "goal change must disable stale downloads");
-      await dialog.getByRole("button", {name: "Regenerate preview", exact: true}).click();
+      assert.equal(await copy.isDisabled(), false, "goal change refreshes transferable prompt immediately");
+      assert.equal(await download.isDisabled(), false, "goal change refreshes downloadable prompt immediately");
     }
     assert.equal(await copy.isDisabled(), false, "generated snapshot is transferable");
     const text = await preview.inputValue();
@@ -197,20 +196,18 @@ await check("stale data request forces a current AI handoff snapshot; exploratio
   const download = dialog.getByRole("button", {name: "Download Markdown", exact: true});
   assert.equal(await copy.isDisabled(), false);
   await dialog.getByLabel("Analysis goal").selectOption("executive");
-  await dialog.getByText("The Brief or options changed. Regenerate the preview before copying or downloading.", {exact: true}).waitFor();
-  assert.equal(await copy.isDisabled(), true);
-  assert.equal(await download.isDisabled(), true);
-  await dialog.getByRole("button", {name: "Regenerate preview", exact: true}).click();
-  assert.equal(await copy.isDisabled(), false);
+  assert.equal(envelope(await preview.inputValue()).analysis_goal, "executive");
+  assert.equal(await copy.isDisabled(), false, "goal changes refresh the frozen prompt immediately");
+  assert.equal(await download.isDisabled(), false);
   const pending = page.waitForEvent("download");
   await download.click();
   assert.equal(await readFile(await (await pending).path(), "utf8"), await preview.inputValue());
   await dialog.getByRole("button", {name: "Close Analyze with AI", exact: true}).click();
   if (conceptEnabled) {
-    await page.getByRole("link", {name: /Explore future AI concept/}).click();
-    await page.getByRole("tablist", {name: "Future experience goals"}).waitFor();
+    await page.getByRole("link", {name: /Open AI workspace/}).click();
+    await page.getByRole("tablist", {name: "Explore evidence and planning views"}).waitFor();
     await page.getByRole("tab", {name: /Compare strategies/}).click();
-    await page.getByRole("link", {name: /Back to current Brief/}).click();
+    await page.getByRole("link", {name: /Back to Planning Brief/}).click();
   }
   assert.deepEqual(await canonical(page), stale);
 });
