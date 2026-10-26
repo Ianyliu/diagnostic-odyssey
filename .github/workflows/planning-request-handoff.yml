@@ -1,0 +1,78 @@
+name: Planning request handoff
+
+on:
+  pull_request:
+    paths:
+      - "apps/web/**"
+      - "packages/acquisition-hints/**"
+      - "packages/brief-core/**"
+      - "packages/contracts/**"
+      - "packages/scenario-engine/**"
+      - "tests/browser/planning-request-*"
+      - "tests/browser/compare-planning-request-exports.py"
+      - ".github/workflows/planning-request-handoff.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  analyst-journey:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+      - name: Verify exact checkout
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}
+        run: test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+      - run: npm ci --no-audit --no-fund
+      - run: npm run build
+      - name: Build isolated PR-base application
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          git worktree add --detach /tmp/planning-request-base "$BASE_SHA"
+          cd /tmp/planning-request-base
+          npm ci --no-audit --no-fund
+          npm run build
+      - name: Install isolated browser and PDF comparison tools
+        run: |
+          npm install --prefix /tmp/planning-request-browser --no-audit --no-fund --save-exact playwright@1.64.0 axe-core@4.11.1
+          node /tmp/planning-request-browser/node_modules/playwright/cli.js install chrome
+          sudo apt-get update -qq
+          sudo apt-get install -y poppler-utils
+      - name: Exercise analyst journey and compare canonical downloads with base
+        env:
+          PLAYWRIGHT_RUNNER: /tmp/planning-request-browser/package.json
+          QA_BASE_URL: http://127.0.0.1:4198
+          QA_DEV_BASE_URL: http://127.0.0.1:4199
+        run: |
+          ./node_modules/.bin/vite preview apps/web --host 127.0.0.1 --port 4198 --strictPort >/tmp/planning-request-preview.log 2>&1 &
+          candidate_pid=$!
+          ./node_modules/.bin/vite apps/web --host 127.0.0.1 --port 4199 --strictPort >/tmp/planning-request-dev.log 2>&1 &
+          fixture_pid=$!
+          (cd /tmp/planning-request-base && ./node_modules/.bin/vite preview apps/web --host 127.0.0.1 --port 4200 --strictPort) >/tmp/planning-request-base.log 2>&1 &
+          base_pid=$!
+          trap 'kill "$candidate_pid" "$fixture_pid" "$base_pid"' EXIT
+          for _ in {1..40}; do
+            if curl --silent --fail "$QA_BASE_URL" >/dev/null && curl --silent --fail "$QA_DEV_BASE_URL" >/dev/null && curl --silent --fail http://127.0.0.1:4200 >/dev/null; then break; fi
+            sleep 1
+          done
+          QA_OUTPUT=/tmp/planning-request-evidence/journey node tests/browser/planning-request-handoff.mjs
+          QA_BASE_URL=http://127.0.0.1:4200 QA_OUTPUT=/tmp/planning-request-evidence/base node tests/browser/planning-request-exports.mjs
+          QA_OUTPUT=/tmp/planning-request-evidence/head node tests/browser/planning-request-exports.mjs
+          python3 tests/browser/compare-planning-request-exports.py /tmp/planning-request-evidence/base /tmp/planning-request-evidence/head /tmp/planning-request-evidence/export-comparison.json
+      - name: Retain screenshots, axe, JSON, PDF and comparison evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: planning-request-handoff-${{ github.event.pull_request.head.sha }}
+          path: |
+            /tmp/planning-request-evidence/
+            /tmp/planning-request-*.log
