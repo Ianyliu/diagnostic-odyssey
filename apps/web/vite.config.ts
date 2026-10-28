@@ -17,7 +17,11 @@ const provenance = resolveBuildProvenance({
 export default defineConfig({
   plugins: [react()],
   define: {
-    __DO_BUILD_PROVENANCE__: JSON.stringify(provenance)
+    __DO_BUILD_PROVENANCE__: JSON.stringify(provenance),
+    // Build-time public boolean only; never expose server secrets or production inference.
+    __DO_GEMINI_STAGE2_PREVIEW__: JSON.stringify(
+      process.env.VERCEL_ENV === "preview" && process.env.AI_GUIDANCE_ENABLED === "on"
+    )
   },
   server: { port: 5173 }
 });

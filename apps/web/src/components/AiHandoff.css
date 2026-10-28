@@ -31,3 +31,16 @@
 .ai-handoff-provider-area,.ai-handoff-research-area{border-top:1px solid var(--do-border);padding-top:16px;margin-top:18px}
 .ai-handoff-research-area li{line-height:1.7}
 .ai-handoff-dialog a{color:var(--do-link,var(--do-text));text-decoration:underline;text-underline-offset:2px}
+
+/* Stage 2 is compiled into explicitly flagged protected preview builds only. */
+.ai-gemini-panel{margin-top:28px;border-top:2px solid var(--do-border);padding-top:20px;overflow-wrap:anywhere}
+.ai-gemini-panel h3{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.ai-gemini-tag{font-size:.68rem;font-weight:600;padding:4px 8px;border:1px solid var(--do-border);border-radius:6px;color:var(--do-text-muted)}
+.ai-gemini-panel input[type="password"]{width:100%;background:var(--do-surface-elevated);border:1px solid var(--do-control-border);border-radius:var(--do-radius-control);padding:12px;font:inherit;color:var(--do-text);margin-bottom:14px}
+.ai-gemini-panel .ai-gemini-consent{display:flex;gap:10px;align-items:flex-start;font-weight:500;font-size:.88rem;line-height:1.45;margin:6px 0 16px}
+.ai-gemini-consent input[type="checkbox"]{width:18px;height:18px;flex-shrink:0;margin:2px 0 0}
+.ai-gemini-results{border-top:1px solid var(--do-border);margin-top:18px;padding-top:12px}
+.ai-gemini-results h4{font-size:1rem;margin:18px 0 10px}
+.ai-gemini-results li{margin:8px 0;line-height:1.5}
+.ai-gemini-results details summary{cursor:pointer;font-weight:600}
+@media print{.ai-gemini-panel{display:none!important}}

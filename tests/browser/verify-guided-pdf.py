@@ -22,7 +22,7 @@ def verify(filename: str):
         for section in sections:
             assert section in text, (filename, "Missing report section", section)
         assert "Planning insights summary" not in text, (filename, "Insights must remain opt-in")
-        assert "Analyze with AI" not in text and "Explore future AI concept" not in text, filename
+        assert "Analyze with AI" not in text and "Open AI workspace" not in text, filename
         clearances = []
         for index, page in enumerate(pdf.pages):
             brand = [w for w in page.extract_words() if w["text"] == "Diagnostic" and w["top"] > page.height - 80]
