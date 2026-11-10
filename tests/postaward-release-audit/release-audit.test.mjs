@@ -12,6 +12,7 @@ import {
 } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
+import process from "node:process";
 import { fileURLToPath, URL } from "node:url";
 import { after, before, test } from "node:test";
 import { auditBuild } from "../../scripts/postaward-release-audit/verifier.mjs";
@@ -20,7 +21,6 @@ const here = dirname(fileURLToPath(new URL(import.meta.url)));
 const FIXTURES = join(here, "fixtures");
 const GOOD_BUILD = join(FIXTURES, "good-build");
 const GOOD_MANIFEST = join(FIXTURES, "good-manifest.json");
-const EMBEDDED_BUILD = join(FIXTURES, "embedded-build");
 const EMBEDDED_MANIFEST = join(FIXTURES, "embedded-manifest.json");
 const VERIFIER = join(here, "..", "..", "scripts", "postaward-release-audit", "verifier.mjs");
 

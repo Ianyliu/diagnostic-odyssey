@@ -38,6 +38,7 @@
  *             1 = overallVerdict is FAILED;
  *             2 = audit could not be performed (bad inputs).
  */
+import console from "node:console";
 import { createHash } from "node:crypto";
 import {
   createReadStream,
