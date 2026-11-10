@@ -66,13 +66,35 @@ for (const width of [320, 360, 390, 768, 1024, 1440]) for (const theme of ["ligh
       await page.goto(base + route); await page.locator("main h1").waitFor();
       await overflow(page);
       const navigation = page.getByRole("navigation", {name: "Primary navigation"});
-      assert.equal(await navigation.getByRole("link").count(), 4);
+      // Five primary-nav links: four numbered workflow stages plus one unnumbered companion.
+      assert.equal(await navigation.getByRole("link").count(), 5);
+      const stages = navigation.locator("a:has(.stage-number)");
+      assert.equal(await stages.count(), 4, "exactly four numbered stages");
+      assert.deepEqual(await stages.locator(".stage-number").allInnerTexts(), ["1", "2", "3", "4"], "stages keep their order");
+      assert.deepEqual(await stages.evaluateAll(links => links.map(link => link.getAttribute("href"))), ["/burden", "/local-context", "/pilot", "/brief"], "stages keep their destinations");
+      const companion = navigation.locator("a.companion");
+      assert.equal(await companion.count(), 1, "exactly one unnumbered companion");
+      assert.equal(await companion.locator(".stage-number").count(), 0, "companion is not a numbered stage");
+      assert.equal(await navigation.getByRole("link", {name: "Data requests", exact: true}).getAttribute("href"), "/data-requests", "companion is Data requests -> /data-requests");
       assert.equal(await navigation.getByRole("link", {name: "Reviewed evidence", exact: true}).getAttribute("href"), "/burden");
       const rect = await navigation.boundingBox();
       assert.ok(rect.x >= 0 && rect.x + rect.width <= width + 1);
-      const targets = await navigation.locator("a").evaluateAll(links => links.map(link => ({w: link.getBoundingClientRect().width, h: link.getBoundingClientRect().height})));
-      assert.ok(targets.every(target => target.w >= 44 && target.h >= 44));
+      const targets = await navigation.locator("a").evaluateAll(links => links.map(link => {const r = link.getBoundingClientRect(); return {w: r.width, h: r.height, top: r.top, left: r.left, right: r.right, bottom: r.bottom};}));
+      assert.equal(targets.length, 5, "five navigation targets");
+      assert.ok(targets.every(target => target.w >= 44 && target.h >= 44), "every nav target keeps the 44x44 minimum");
+      for (let i = 0; i < targets.length; i++) for (let j = i + 1; j < targets.length; j++) {
+        const ax = targets[i], ay = targets[j];
+        const overlapX = Math.min(ax.right, ay.right) - Math.max(ax.left, ay.left);
+        const overlapY = Math.min(ax.bottom, ay.bottom) - Math.max(ax.top, ay.top);
+        assert.ok(!(overlapX > 1 && overlapY > 1), `nav targets ${i} and ${j} overlap (${overlapX}px x ${overlapY}px)`);
+      }
       if (width < 1024) assert.ok(rect.y + rect.height <= 901);
+      if (route === "/data-requests") {
+        assert.ok(await companion.evaluate(el => el.classList.contains("active")), "companion is active on its own route");
+        assert.equal(await companion.getAttribute("aria-current"), "page", "companion carries active-route semantics");
+        assert.equal(await navigation.locator('a[href="/pilot"]').getAttribute("aria-current"), null, "Pilot stage is not active on /data-requests");
+        assert.equal(await companion.evaluate(el => el.tabIndex), 0, "companion is keyboard reachable");
+      }
       if (route === "/pilot") {
         assert.equal(await page.locator(".pilot-headlines > div").count(), 4);
         assert.equal(await page.locator("#pilot-input-group-1").evaluate(e => e.open), false);
