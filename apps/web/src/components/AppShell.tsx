@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link, NavLink, Outlet, useLocation, useNavigationType } from "react-router-dom";
-import { workspaceStages, workspaceStageForPath } from "../data/workspaceNavigation";
+import { workspaceCompanions, workspaceCompanionForPath, workspaceStages, workspaceStageForPath } from "../data/workspaceNavigation";
 import { DisclosureProvider } from "./WorkspaceDisclosure";
 import "./WorkspaceNavigation.css";
 import { focusTarget, scrollToFragment } from "../data/fragmentNavigation";
@@ -97,7 +97,9 @@ export function AppShell() {
     };
   }, [location.key, location.hash, navigationType]);
 
-  const activeStage = workspaceStageForPath(location.pathname);
+  // A companion page indicates its own active entry; numbered stages stay unhighlighted there.
+  const activeCompanion = workspaceCompanionForPath(location.pathname);
+  const activeStage = activeCompanion === null ? workspaceStageForPath(location.pathname) : null;
   const buildIdentity = displayBuildProvenance(__DO_BUILD_PROVENANCE__);
 
   return (
@@ -133,6 +135,11 @@ export function AppShell() {
                 <span className="stage-label">{label}</span><span className="stage-short" aria-hidden="true">{shortLabel}</span>
               </NavLink>
             ))}
+            {workspaceCompanions.map(({to, label, shortLabel}) => (
+              <NavLink key={to} to={to} className={"companion" + (activeCompanion === to ? " active" : "")}>
+                <span className="stage-label">{label}</span><span className="stage-short" aria-hidden="true">{shortLabel}</span>
+              </NavLink>
+            ))}
           </nav>
           <div id="workspace-tools" className={"header-controls" + (menuOpen ? " open" : "")} hidden={!menuOpen}>
             <nav aria-label="Supporting navigation">
@@ -144,6 +151,10 @@ export function AppShell() {
           </div>
         </div>
       </header>
+      <p className="session-state-note" role="note">
+        Planning inputs are session state: they stay in this browser tab and are not saved as project storage.
+        <Link to="/brief">Open the Planning Brief</Link> to export before closing the tab.
+      </p>
       <DisclosureProvider><main id="main-content" tabIndex={-1} data-navigation={navigationType}>
         <Outlet />
       </main></DisclosureProvider>

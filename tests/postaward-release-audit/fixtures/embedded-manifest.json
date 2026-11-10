@@ -1,0 +1,8 @@
+{
+  "schema": "do-asset-manifest/1",
+  "assets": {
+    "assets/embedded-11112222.js": "7be47d29463de1b03e11f22b0d13e21300bb90a687b0e1cf2a933271034417e9",
+    "assets/embedded-33334444.css": "e2936107aad6bfc39877b524f01d986e7c5a588a7ebfd0b952554fa12e161653",
+    "index.html": "f603166e47a801e27f0b1a8773530ea41f5a9eeeb202af75fb105ad9a03488b1"
+  }
+}

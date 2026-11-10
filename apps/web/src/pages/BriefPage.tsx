@@ -93,6 +93,7 @@ function BriefJsonExport({brief}: {brief: PlanningBrief}) {
   return <>
     <button className="button" onClick={exportJson}>Export JSON companion</button>
     <p className="brief-export-status subtle" role="status">{exportStatus}</p>
+    <p className="subtle brief-companion-boundary">The JSON companion is a shareable record of this Planning Brief, not a saved scenario. It does not reopen or restore your planning state.</p>
   </>;
 }
 

@@ -1,0 +1,10 @@
+{
+  "schema": "do-asset-manifest/1",
+  "assets": {
+    "assets/index-0a1b2c3d.js": "60ff4b1e87c76320339958c4fddaabe3d5cffd1a898bc86eda7929b8230bb9e3",
+    "assets/style-4d5e6f70.css": "a8c07e00129bdbc1a1c11a79384471774d34a8ec2b272b84e2e8373026773beb",
+    "build-provenance.json": "4fe27e6c908b5f2fda550742c159857b46755104263389d958d2321944b24436",
+    "favicon.svg": "28c3ccd83cf1b8e9629bee7b34b84fb92a78013834a75eae3e1e373dc047fb4f",
+    "index.html": "4d28ce167f39123d97bfaa22a26a45df4326f092d8b8d9f8d8c9ce7d976b8cbc"
+  }
+}

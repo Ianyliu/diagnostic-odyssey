@@ -281,6 +281,7 @@ function PilotPlannerWorkspace({
           onUpsertDataRequest={addSensitivityDataRequest}
           dataRequestStatus={sensitivityDataRequestStatus}
         />}
+        <div className="guardrail compact"><strong>Full sensitivity series stays in this workspace.</strong><p>The complete one-way sensitivity series is not part of the canonical Planning Brief, its JSON companion, or the AI handoff (sensitivity status <code>not_in_planning_brief</code>). An individual sensitivity finding reaches the Brief through the existing data request pathway: add a sensitivity data request above, then review its Brief inclusion in <Link to="/data-requests">Data Requests</Link> before the <Link to="/brief">Planning Brief</Link> is exported.</p></div>
         <div className="guardrail compact"><strong>Not savings or ROI.</strong><p>The resource requirement is a program input. The person-month difference is a planning exposure quantity, not observed improvement.</p></div>
         <p className="pilot-request-loop">An assumption still needs checking? <Link to="/data-requests">Review data requests</Link> before finalizing your brief. <Link to="/evidence">Intervention evidence &amp; limits</Link>.</p>
       </article>

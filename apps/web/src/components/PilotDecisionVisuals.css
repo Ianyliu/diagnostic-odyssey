@@ -118,6 +118,15 @@
   font-variant-numeric: tabular-nums;
 }
 
+.resource-denominator {
+  margin: 0;
+  color: var(--do-text);
+  font-size: 12px;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
 .window-bars {
   display: grid;
   gap: 10px;
