@@ -1,0 +1,9 @@
+{
+  "schema": "do-build-provenance/1",
+  "sourceSha": "6f1a3b5c8d2e4f7a0b1c9d3e5f7a0b2c4d6e8f10",
+  "sourceCommitDate": "2026-11-01",
+  "buildDate": "2026-11-02",
+  "sourceState": { "clean": true, "modified": 0, "untracked": 0 },
+  "toolchain": { "node": "v22.11.0", "npm": "10.9.0" },
+  "dependencyLockDigest": "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+}
