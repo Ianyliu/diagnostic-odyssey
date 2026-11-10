@@ -1,4 +1,10 @@
 /* The four stages remain available while supporting tools stay in one menu. */
+
+/* Companion entries sit beside the workflow: discoverable on every page, never a numbered stage. */
+.app-shell .primary-nav a.companion { border-left: 1px solid var(--do-border); padding-left: 12px; }
+/* Planning state is per tab; keep that boundary in view on every page before it can be lost. */
+.session-state-note { margin: 0; padding: 7px max(24px, calc((100vw - 1392px) / 2)); border-bottom: 1px solid var(--do-border); background: var(--do-canvas); color: var(--do-text-muted); font-size: .74rem; line-height: 1.45; }
+.session-state-note a { color: var(--do-accent); text-decoration: underline; text-underline-offset: 3px; padding-block: 4px; }
 .app-shell .header-inner { grid-template-columns: 225px minmax(0, 1fr) auto; gap: 16px; padding-block: 10px; }
 .app-shell .brand { grid-column: 1; grid-row: 1; }
 .app-shell .menu-toggle { display: inline-flex; align-items: center; grid-column: 3; grid-row: 1; }
@@ -23,12 +29,13 @@
   .app-shell .header-inner { grid-template-columns: minmax(0, 1fr) auto; padding: 8px 16px; }
   .app-shell .menu-toggle { grid-column: 2; }
   .app-shell .primary-nav, .app-shell .primary-nav.open {
-    display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+    display: grid; grid-template-columns: repeat(5, minmax(0, 1fr));
     position: fixed; inset: auto 0 0; z-index: 30;
     padding: 6px max(8px, env(safe-area-inset-right)) calc(6px + env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
     background: var(--do-surface); border-top: 1px solid var(--do-border); animation: none;
   }
   .app-shell .primary-nav a { display: grid; justify-content: center; justify-items: center; gap: 0; padding: 4px; min-height: 52px; border-bottom: 0; border-radius: 6px; text-align: center; }
+  .app-shell .primary-nav a.companion { padding-left: 8px; }
   .app-shell .primary-nav a.active { background: var(--do-selection-bg); color: var(--do-selection-text); }
   .primary-nav .stage-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   .stage-short { display: inline; font-size: .78rem; font-weight: 650; }
@@ -42,5 +49,5 @@
 }
 @media print {
   .app-shell { padding-bottom: 0; }
-  .app-shell .site-header, .app-shell .primary-nav, .scope-summary { display: none !important; }
+  .app-shell .site-header, .app-shell .primary-nav, .scope-summary, .session-state-note { display: none !important; }
 }

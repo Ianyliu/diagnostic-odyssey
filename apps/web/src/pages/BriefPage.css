@@ -112,6 +112,13 @@
   text-align: center;
 }
 
+/* The JSON companion is a record of the export, never a restorable save. */
+.planning-brief-page .brief-companion-boundary {
+  margin: 0;
+  font-size: .76rem;
+  line-height: 1.5;
+}
+
 .planning-brief-page .brief-content {
   display: block;
   min-width: 0;
