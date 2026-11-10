@@ -18,6 +18,14 @@ function clampPercent(value: number): number {
   return Math.max(0, Math.min(100, value));
 }
 
+/** Dynamic denominator for the resource requirement, computed from the applied result. */
+function resourceDenominatorCopy(result: ScenarioResult): string {
+  if (result.intended_reach <= 0) {
+    return "No intended participants under the current assumptions: the modeled expenditure serves no one and leaves no unmet intended reach.";
+  }
+  return `${formatPlanningNumber(result.reached_participants, integer)} of ${formatPlanningNumber(result.intended_reach, integer)} intended participants are served within the applied capacity, leaving ${formatPlanningNumber(result.capacity_gap, integer)} intended participant${result.capacity_gap === 1 ? "" : "s"} unmet.`;
+}
+
 export function PilotDecisionVisuals({
   scenario,
   result
@@ -116,7 +124,8 @@ export function PilotDecisionVisuals({
         <span><i className="legend-swatch fixed" aria-hidden="true" />Fixed {formatPlanningCurrency(result.fixed_program_cost, currency)}</span>
         <span><i className="legend-swatch variable" aria-hidden="true" />Participant-dependent {formatPlanningCurrency(result.variable_program_cost, currency)}</span>
       </div>
-      <p className="visual-note">Resource requirement is a planning input, not savings, ROI, or attributable cost.</p>
+      <p className="resource-denominator">{resourceDenominatorCopy(result)}</p>
+      <p className="visual-note">Modeled program expenditure for the applied pilot scope: a planning input, not an estimated saving, program effect, ROI, or disease-attributable cost, and distinct from national all-cause spending.</p>
     </section>
   </div>;
 }
