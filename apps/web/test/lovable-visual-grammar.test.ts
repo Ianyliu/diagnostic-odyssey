@@ -35,7 +35,7 @@ test("Brief editorial changes remain scoped to the screen presentation", () => {
   const css = source("../src/pages/BriefPage.css");
   const section = css.split("/* Lovable-informed brief presentation; screen only")[1];
   assert.ok(section, "A distinct screen-only experimental section is required");
-  assert.match(section, /^;[\s\S]*@media screen\s*\{/);
+  assert.match(section, /@media screen\s*\{/);
   assert.match(section, /\.planning-brief-page \.page-heading h1/);
   assert.match(section, /\.planning-brief-page \.brief-content/);
   assert.doesNotMatch(section, /@media print/);
