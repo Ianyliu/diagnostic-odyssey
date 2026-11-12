@@ -72,6 +72,28 @@ export function OverviewPage() {
           <h2 id="overview-value-title">Different evidence, distinct purposes.</h2>
           <p>MEPS describes national burden; HRSA and ACS describe local implementation context, not local Long COVID prevalence; analyst inputs are planning assumptions, not observed effects. The three are never blended into one estimate.</p>
         </div>
+        <div className="overview-role-grid" role="list" aria-label="How to read evidence and planning information">
+          <div className="overview-role-card reviewed" role="listitem">
+            <p>01 / REVIEWED · NATIONAL</p>
+            <h3>Observed burden</h3>
+            <span>Reviewed survey estimates retain their population, units, uncertainty and release conditions.</span>
+          </div>
+          <div className="overview-role-card context" role="listitem">
+            <p>02 / REVIEWED · LOCAL</p>
+            <h3>Delivery context</h3>
+            <span>HRSA and ACS describe implementation conditions. They do not create local illness-burden estimates.</span>
+          </div>
+          <div className="overview-role-card assumption" role="listitem">
+            <p>03 / EDITABLE · HYPOTHETICAL</p>
+            <h3>Planning assumptions</h3>
+            <span>Reach, capacity and resources are inputs to a scenario, not observations or measured intervention effects.</span>
+          </div>
+          <div className="overview-role-card gap" role="listitem">
+            <p>04 / UNRESOLVED · NEXT STEP</p>
+            <h3>Evidence and data gaps</h3>
+            <span>Outstanding questions can become explicit data requests when the analyst chooses to include them.</span>
+          </div>
+        </div>
         <p className="overview-value-echo">The opening provenance circuit connects each evidence role to a documented planning artifact—not to a pooled estimate or invented effect.</p>
       </section>
 
