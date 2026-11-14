@@ -57,6 +57,6 @@ export function calculateCapacity({eligible=120,reach=40,months=6,capacity=80,se
   const slotMonths=Math.round(monthlySlots*m);
   const availableSlotMonths=Math.round(c*m);
   const overload=Math.max(0,monthlySlots-c);
-  const utilization=c===0?(monthlySlots>0?Infinity:0):monthlySlots/c*100;
+  const utilization=c===0?(monthlySlots>0?null:0):monthlySlots/c*100;
   return {participants,monthlySlots,slotMonths,availableSlotMonths,overload,utilization,loadFactor,selected:unique,months:m,capacity:c,reach:r,eligible:e,feasible:monthlySlots<=c};
 }
