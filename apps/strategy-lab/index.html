@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#edf0eb" />
+  <meta name="description" content="Diagnostic Odyssey Strategy Lab — a clearly labeled, interactive design experiment for evidence-to-action planning." />
+  <title>Strategy Lab · Diagnostic Odyssey</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css" />
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="rail" id="rail" aria-label="Strategy Lab navigation">
+      <a class="brand" href="#brief" aria-label="Diagnostic Odyssey Strategy Lab home">
+        <span class="brand-symbol" aria-hidden="true"><span class="brand-star">✦</span></span>
+        <span><strong>Diagnostic<br>Odyssey</strong><small>STRATEGY LAB / EXPERIMENT</small></span>
+      </a>
+      <div class="tenant"><span class="tenant-mark">WV</span><span><strong>West Virginia</strong><small>Complex condition planning</small></span><span class="tenant-caret">⌄</span></div>
+      <div class="rail-caption">WORKSPACE</div>
+      <nav class="primary-nav" id="nav">
+        <a href="#brief" data-page="brief"><span class="nav-glyph">◈</span>Brief <span class="nav-index">01</span></a>
+        <a href="#terrain" data-page="terrain"><span class="nav-glyph">▦</span>Terrain <span class="nav-index">02</span></a>
+        <a href="#investigations" data-page="investigations"><span class="nav-glyph">◎</span>Investigations <span class="nav-index">03</span></a>
+        <a href="#moves" data-page="moves"><span class="nav-glyph">◇</span>Moves <span class="nav-index">04</span></a>
+        <a href="#war-room" data-page="war-room"><span class="nav-glyph">▥</span>War Room <span class="nav-index">05</span></a>
+        <a href="#record" data-page="record"><span class="nav-glyph">☰</span>Decision record <span class="nav-index">06</span></a>
+      </nav>
+      <div class="rail-bottom">
+        <div class="rail-insight"><span class="micro-label">THE THROUGHLINE</span><strong>From data<br>to action.</strong><p>Keep evidence, judgment, and missing information distinct.</p><span class="insight-line" aria-hidden="true"></span></div>
+        <p class="rail-disclaimer">Independent design concept. Uses illustrative planning examples, not a live analysis or clinical recommendation.</p>
+        <button id="themeToggle" class="rail-tool" type="button"><span aria-hidden="true">◑</span> Toggle theme</button>
+      </div>
+    </aside>
+    <div class="workspace">
+      <header class="topbar">
+        <button id="menuToggle" class="mobile-menu" type="button" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+        <div class="breadcrumb"><span>DIAGNOSTIC ODYSSEY</span><b>/</b><strong id="currentPage">Brief</strong></div>
+        <div class="top-actions"><span class="demo-pill"><span></span> CONCEPT / DEMO ONLY</span><button class="counsel-trigger" type="button" id="counselToggle"><span aria-hidden="true">✦</span> Ask Counsel</button><span class="avatar" aria-hidden="true">DO</span></div>
+      </header>
+      <main id="workspace" class="page-shell" tabindex="-1"><div class="loading">Preparing the strategy briefing…</div></main>
+      <footer class="workspace-footer"><span>Diagnostic Odyssey · Design experiment · No real intervention outcomes implied</span><a href="https://github.com/Ianyliu/diagnostic-odyssey" target="_blank" rel="noopener noreferrer">Source repository ↗</a></footer>
+    </div>
+  </div>
+  <dialog id="counselDialog" class="counsel-dialog" aria-labelledby="counselTitle">
+    <div class="dialog-head"><span class="dialog-mark">✦</span><div><span class="micro-label">STRATEGIC COUNSEL</span><h2 id="counselTitle">Question the plan.</h2></div><button id="closeCounsel" class="icon-close" type="button" aria-label="Close counsel">×</button></div>
+    <div id="counselContent"></div>
+  </dialog>
+</body>
+</html>
