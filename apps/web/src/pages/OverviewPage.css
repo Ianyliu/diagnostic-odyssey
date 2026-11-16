@@ -1469,3 +1469,9 @@
 @media print {
   .overview-page .overview-paper-illustration { display: none; }
 }
+
+/* Keep four semantic cards legible at handheld widths rather than forcing
+   the tablet two-column override into the 440–720px interval. */
+@media screen and (max-width: 720px) {
+  .overview-page .overview-role-grid { grid-template-columns: minmax(0, 1fr); }
+}
