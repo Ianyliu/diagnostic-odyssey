@@ -3,6 +3,7 @@ import { canExportEstimate } from "@diagnostic-odyssey/contracts";
 import { useArtifact } from "../data/ArtifactContext";
 import { OpeningProvenance, useOpeningMotion } from "./OpeningProvenance";
 import { HeadlineFindings } from "../components/HeadlineFindings";
+import { LandingJourney } from "../components/LandingJourney";
 import { planningInsightsEnabled } from "../data/planningInsightsEnabled";
 import "./OverviewPage.css";
 
@@ -35,22 +36,35 @@ export function OverviewPage() {
         <div className="overview-hero-intro">
           <p className="overview-kicker">Evidence into planning, with boundaries intact.</p>
           <h1 id="overview-title">
-            Long COVID&rsquo;s burden
-            <span>goes beyond the bill.</span>
+            Chart the road from <em>data</em> to <em>action.</em>
           </h1>
-        </div>
-        <div className="overview-hero-motion">
-          <OpeningProvenance playing={opening.playing} runId={opening.runId} onReplay={opening.replay} reducedMotion={opening.reducedMotion} announcement={opening.announcement} />
         </div>
         <div className="overview-hero-details">
           <p className="overview-lede">
-            <strong className="overview-audience">For state health departments and Medicaid programs scoping Long COVID care-navigation pilots.</strong> Diagnostic Odyssey keeps reviewed national burden, local implementation context, and analyst assumptions visibly separate—then carries their provenance into one workflow.
+            <strong className="overview-audience">For state health departments and Medicaid programs scoping Long COVID care-navigation pilots.</strong> Understand what the evidence shows, see the conditions on the ground, test a response—and carry a brief you can defend into the room.
           </p>
           <div className="overview-hero-actions" role="group" aria-label="Start exploring Diagnostic Odyssey">
-            <Link className="button overview-primary-cta" to="/burden">Explore reviewed burden</Link>
-            <Link className="overview-secondary-cta" to="/pilot">Open Pilot planner</Link>
+            <Link className="button overview-primary-cta" to="/burden">Explore reviewed burden <span aria-hidden="true">↗</span></Link>
+            <Link className="overview-secondary-cta" to="/pilot">Open the planner <span aria-hidden="true">→</span></Link>
             {planningInsightsEnabled && <Link className="overview-tertiary-cta" to="/brief#planning-insights">See planning insights <span aria-hidden="true">→</span></Link>}
           </div>
+        </div>
+        <div className="overview-hero-journey">
+          <LandingJourney />
+        </div>
+        <div className="overview-hero-state">
+          <span>Now charting</span>
+          <span>Long COVID</span>
+          <span>West Virginia</span>
+          <span>Reviewed national evidence + local implementation context</span>
+        </div>
+      </section>
+
+      <section className="overview-story" aria-label="How Diagnostic Odyssey moves from data to planning">
+        <div className="overview-story-copy">
+          <p className="overview-kicker">Try the pathway, not just the dashboard</p>
+          <h2>Dashboards stop at the statistic. <em>Planning starts after it.</em></h2>
+          <p>Long COVID&rsquo;s burden goes beyond the bill. Review national evidence and its uncertainty, understand local constraints, then test explicit pilot assumptions without confusing them with observed effects.</p>
           <dl className="overview-proof" aria-label="Current workspace evidence">
             <div>
               <dt>{reviewedCount || "—"}</dt>
@@ -62,8 +76,13 @@ export function OverviewPage() {
             </div>
           </dl>
           <p className="overview-source-note">Grounded in <strong>MEPS</strong>, <strong>HRSA</strong> and <strong>ACS</strong> · source boundaries stay visible.</p>
+          <Link className="overview-story-link" to="/pilot">Explore the pilot planning workspace <span aria-hidden="true">↗</span></Link>
+        </div>
+        <div className="overview-hero-motion">
+          <OpeningProvenance playing={opening.playing} runId={opening.runId} onReplay={opening.replay} reducedMotion={opening.reducedMotion} announcement={opening.announcement} />
         </div>
       </section>
+
       <HeadlineFindings />
 
       <section className="overview-value-prop" aria-labelledby="overview-value-title">
