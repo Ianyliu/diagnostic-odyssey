@@ -22,11 +22,11 @@
 }
 .lovable-journey-stop-number { color: #b1c3cb; font: 600 .66rem/1.3 ui-monospace, SFMono-Regular, Consolas, monospace; letter-spacing: .12em; text-transform: uppercase; }
 .lovable-journey-stop-label { font: 500 clamp(.95rem, 1.6vw, 1.2rem)/1.25 Georgia, "Times New Roman", serif; }
-.lovable-journey-stop-0 { transform: translate(-45%, -153%); }
-.lovable-journey-stop-1 { transform: translate(-50%, 55%); }
-.lovable-journey-stop-2 { transform: translate(-50%, -150%); }
-.lovable-journey-stop-3 { transform: translate(-50%, 54%); }
-.lovable-journey-stop-4 { transform: translate(-65%, 58%); }
+.lovable-journey-stop-0 { left: 9.375%; top: 76.74%; transform: translate(-45%, -153%); }
+.lovable-journey-stop-1 { left: 29.49%; top: 50.23%; transform: translate(-50%, 55%); }
+.lovable-journey-stop-2 { left: 49.90%; top: 70.93%; transform: translate(-50%, -150%); }
+.lovable-journey-stop-3 { left: 69.92%; top: 40%; transform: translate(-50%, 54%); }
+.lovable-journey-stop-4 { left: 90.625%; top: 26.05%; transform: translate(-65%, 58%); }
 .lovable-journey-stop-0:hover, .lovable-journey-stop-0:focus-visible,
 .lovable-journey-stop-2:hover, .lovable-journey-stop-2:focus-visible { transform: translate(-45%, -165%); }
 .lovable-journey-stop-1:hover, .lovable-journey-stop-1:focus-visible,
