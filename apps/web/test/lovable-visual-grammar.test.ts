@@ -40,3 +40,24 @@ test("Brief editorial changes remain scoped to the screen presentation", () => {
   assert.match(section, /\.planning-brief-page \.brief-content/);
   assert.doesNotMatch(section, /@media print/);
 });
+
+test("Lovable landing structure is primary and keeps the real four-stage routes", () => {
+  const overview = source("../src/pages/OverviewPage.tsx");
+  const css = source("../src/pages/OverviewPage.css");
+  const journey = source("../src/components/LandingJourney.tsx");
+  const journeyCss = source("../src/components/LandingJourney.css");
+  assert.match(overview, /Chart the road from/);
+  assert.match(overview, /<LandingJourney \/>/);
+  assert.match(overview, /overview-hero-journey/);
+  assert.match(overview, /overview-two-lenses/);
+  assert.match(overview, /overview-closing/);
+  assert.match(overview, /<OpeningProvenance playing=\{opening\.playing\}/);
+  assert.match(css, /\.overview-page \.overview-hero\s*\{[\s\S]*grid-template-areas:/);
+  for (const path of ["/burden", "/local-context", "/pilot", "/data-requests", "/brief"]) {
+    assert.ok(journey.includes(`to: "${path}"`), `Missing real destination: ${path}`);
+  }
+  assert.match(journey, /n: "Optional", to: "\/data-requests"/);
+  assert.match(journeyCss, /\.lovable-journey-mobile/);
+  assert.match(journeyCss, /prefers-reduced-motion: reduce/);
+  assert.doesNotMatch(overview, /\[14200|\[7900/);
+});
