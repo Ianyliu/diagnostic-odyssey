@@ -116,6 +116,31 @@ export function OverviewPage() {
         <p className="overview-value-echo">The opening provenance circuit connects each evidence role to a documented planning artifact—not to a pooled estimate or invented effect.</p>
       </section>
 
+      <section className="overview-two-lenses" aria-labelledby="overview-lenses-title">
+        <div className="overview-section-heading">
+          <p className="visual-kicker">TWO LENSES, KEPT APART</p>
+          <h2 id="overview-lenses-title">National evidence describes the burden. <em>Local data describes the ground.</em></h2>
+          <p>These sources answer different questions. Neither a national contrast nor a local workforce indicator automatically establishes a state-level disease burden.</p>
+        </div>
+        <div className="overview-lenses-grid">
+          <Link to="/burden" className="overview-lens is-national">
+            <span className="overview-lens-label">Reviewed evidence · national</span>
+            <strong className="overview-lens-count">{reviewedCount || "—"}</strong>
+            <h3>National burden estimates</h3>
+            <p>MEPS measures retain source, population, native units, survey uncertainty and release conditions.</p>
+            <span className="overview-lens-action">Explore reviewed burden <span aria-hidden="true">↗</span></span>
+          </Link>
+          <span className="overview-lens-separator" aria-hidden="true">Never blended</span>
+          <Link to="/local-context" className="overview-lens is-local">
+            <span className="overview-lens-label">Reviewed implementation context · state</span>
+            <strong className="overview-lens-count">{localIndicatorCount ?? "—"}</strong>
+            <h3>Local delivery indicators</h3>
+            <p>HRSA and ACS describe access, service supply and community conditions without inventing local prevalence.</p>
+            <span className="overview-lens-action">Read local context <span aria-hidden="true">↗</span></span>
+          </Link>
+        </div>
+      </section>
+
       <nav className="overview-destinations" aria-label="Workspace navigation">
         <div className="overview-section-heading overview-destinations-heading">
           <p className="visual-kicker">HOW IT WORKS</p>
@@ -135,6 +160,23 @@ export function OverviewPage() {
         <p className="overview-workflow-note">Within your pilot: <Link to="/pilot#sensitivity">test sensitivity</Link> → <Link to="/data-requests">capture data needs</Link> → review your brief. <Link to="/evidence">Intervention evidence &amp; limits</Link> stays separate from descriptive burden.</p>
       </nav>
 
+      <section className="overview-closing" aria-labelledby="overview-closing-title">
+        <div>
+          <p className="overview-kicker">THE ACTION-READY PLAN</p>
+          <h2 id="overview-closing-title">Leave with a brief, <em>not just a chart.</em></h2>
+          <p>Reviewed evidence, implementation context, explicit scenario assumptions, data needs and next steps—assembled with their boundaries intact.</p>
+          <Link className="button overview-closing-cta" to="/brief">Open the Planning Brief <span aria-hidden="true">↗</span></Link>
+        </div>
+        <div className="overview-paper-illustration" aria-hidden="true">
+          <span className="overview-paper-sheet back" />
+          <span className="overview-paper-sheet middle" />
+          <span className="overview-paper-sheet front">
+            <i className="paper-mark" /><i className="paper-line title" /><i className="paper-line" />
+            <i className="paper-line short" /><i className="paper-bar" />
+            <i className="paper-line" /><i className="paper-line" /><i className="paper-line short" />
+          </span>
+        </div>
+      </section>
     </section>
   );
 }
