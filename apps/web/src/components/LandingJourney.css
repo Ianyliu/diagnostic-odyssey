@@ -1,0 +1,63 @@
+/* Landing-only cartographic pathway, inspired by the independent Lovable concept.
+   All link targets are existing validated routes. Pattern/dashes convey kind
+   without relying on color alone. */
+.lovable-journey { width: 100%; min-width: 0; }
+.lovable-journey-canvas { position: relative; width: 100%; max-width: 1180px; margin-inline: auto; aspect-ratio: 1024 / 430; }
+.lovable-journey-path { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.lovable-journey-reveal { stroke-dasharray: 1400; stroke-dashoffset: 0; }
+.lovable-journey-point.is-evidence { fill: #477f96; stroke: #f5f0e7; }
+.lovable-journey-point.is-context { fill: #10283b; stroke: #477f96; stroke-width: 5; }
+.lovable-journey-point.is-assumption { stroke: #f4ddb0; }
+.lovable-journey-point.is-gap { fill: #cf7556; stroke: #f5f0e7; }
+.lovable-journey-point.is-brief { fill: #f5f0e7; stroke: #cf7556; stroke-width: 4; }
+.lovable-journey-stop {
+  position: absolute; display: grid; gap: 3px; min-width: 145px; padding: 11px 16px;
+  color: #f5f0e7; background: rgba(13, 31, 46, .93);
+  border: 1px solid rgba(194, 211, 220, .2); border-radius: 12px;
+  text-decoration: none; text-align: center; line-height: 1.2;
+  transition: border-color .18s ease, background .18s ease, transform .18s ease;
+}
+.lovable-journey-stop:hover, .lovable-journey-stop:focus-visible {
+  color: #fff; background: #203f53; border-color: #b7d5dc; text-decoration: none;
+}
+.lovable-journey-stop-number { color: #b1c3cb; font: 600 .66rem/1.3 ui-monospace, SFMono-Regular, Consolas, monospace; letter-spacing: .12em; text-transform: uppercase; }
+.lovable-journey-stop-label { font: 500 clamp(.95rem, 1.6vw, 1.2rem)/1.25 Georgia, "Times New Roman", serif; }
+.lovable-journey-stop-0 { left: 9.375%; top: 76.74%; transform: translate(-45%, -153%); }
+.lovable-journey-stop-1 { left: 29.49%; top: 50.23%; transform: translate(-50%, 55%); }
+.lovable-journey-stop-2 { left: 49.90%; top: 70.93%; transform: translate(-50%, -150%); }
+.lovable-journey-stop-3 { left: 69.92%; top: 40%; transform: translate(-50%, 54%); }
+.lovable-journey-stop-4 { left: 90.625%; top: 26.05%; transform: translate(-65%, 58%); }
+.lovable-journey-stop-0:hover, .lovable-journey-stop-0:focus-visible,
+.lovable-journey-stop-2:hover, .lovable-journey-stop-2:focus-visible { transform: translate(-45%, -165%); }
+.lovable-journey-stop-1:hover, .lovable-journey-stop-1:focus-visible,
+.lovable-journey-stop-3:hover, .lovable-journey-stop-3:focus-visible { transform: translate(-50%, 46%); }
+.lovable-journey-stop-4:hover, .lovable-journey-stop-4:focus-visible { transform: translate(-65%, 49%); }
+.lovable-journey-mobile { display: none; padding: 0; margin: 0; list-style: none; }
+@media (prefers-reduced-motion: no-preference) {
+  .lovable-journey-reveal { animation: lovable-trace 2.4s cubic-bezier(.65,0,.35,1) both; }
+}
+@keyframes lovable-trace { from { stroke-dashoffset: 1400; } to { stroke-dashoffset: 0; } }
+@media (max-width: 760px) {
+  .lovable-journey-canvas { display: none; }
+  .lovable-journey-mobile { display: grid; gap: 0; margin: 26px 0 0 10px; border-left: 1px dashed #607589; }
+  .lovable-journey-mobile li { position: relative; margin-left: 0; }
+  .lovable-journey-mobile li::before {
+    content: ""; position: absolute; top: 22px; left: -8px; width: 13px; height: 13px;
+    border-radius: 50%; background: #487e94; border: 2px solid #edeee9;
+  }
+  .lovable-journey-mobile li.is-assumption::before { background: repeating-linear-gradient(45deg,#e9cc88 0 3px,#9c7430 3px 5px); }
+  .lovable-journey-mobile li.is-gap::before { background: #cf7556; }
+  .lovable-journey-mobile li.is-brief::before { background: #f5f0e7; }
+  .lovable-journey-mobile a {
+    display: grid; grid-template-columns: 70px 1fr auto; gap: 12px; align-items: center;
+    min-height: 51px; padding: 9px 12px 9px 23px; color: #f5f0e7; text-decoration: none;
+    border-radius: 8px;
+  }
+  .lovable-journey-mobile a:hover, .lovable-journey-mobile a:focus-visible { background: #263b4d; }
+  .lovable-journey-mobile small { font: 600 .66rem ui-monospace, SFMono-Regular, Consolas, monospace; color: #b5c5cf; text-transform: uppercase; }
+  .lovable-journey-mobile a span:nth-child(2) { font: 500 1.16rem Georgia, "Times New Roman", serif; }
+}
+@media print, (prefers-reduced-motion: reduce) {
+  .lovable-journey-reveal { animation: none !important; stroke-dashoffset: 0 !important; }
+  .lovable-journey-stop { transition: none !important; }
+}

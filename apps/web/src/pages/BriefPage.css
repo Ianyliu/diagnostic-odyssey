@@ -758,3 +758,30 @@
   .planning-brief-page .brief-executive-roles p { font-size: 7pt; margin: 2pt 0; }
   .planning-brief-page .brief-executive-boundary { font-size: 7.2pt; margin: 4pt 0 0; }
 }
+
+/* Lovable-informed brief presentation; screen only so print geometry and
+   provenance/selection/export semantics remain unchanged. */
+@media screen {
+  .planning-brief-page .page-heading h1 {
+    font-family: var(--do-font-editorial);
+    font-weight: 500;
+    letter-spacing: -.03em;
+    line-height: 1.15;
+  }
+
+  .planning-brief-page .brief-content {
+    box-shadow: 0 18px 44px color-mix(in srgb, var(--do-text) 6%, transparent);
+  }
+
+  .planning-brief-page .brief-content > section > h2 {
+    font-family: var(--do-font-editorial);
+    font-weight: 500;
+    letter-spacing: -.02em;
+  }
+
+  .planning-brief-page .print-provenance {
+    padding-block: 1rem;
+    border-color: var(--do-border);
+    font-variant-numeric: tabular-nums;
+  }
+}
