@@ -73,3 +73,25 @@ The initiating assistant used the connected GitHub interface to author/review so
 ## Suggested evaluation question
 
 Does the visual grammar make the difference between **fact**, **implementation condition**, **assumption**, and **open question** more obvious without reducing trust, legibility, or scientific accuracy? Test with real users; do not infer success solely from screenshot attractiveness.
+
+## Design-direction correction (2026-11-16)
+
+**Owner feedback:** The initial branch preserved too much of the earlier landing page and transferred too little of Lovable's visual composition. This was a misinterpretation of the intended design experiment, not a technical necessity.
+
+**Revised design precedence:** Lovable's landing-page aesthetic now drives the **landing**. Existing Diagnostic Odyssey code remains authoritative only for data, routing, scientific eligibility, consent and artifact/export behavior. Do not default back to the prior landing visual merely because it existed before.
+
+Added in atomic commits:
+- `apps/web/src/components/LandingJourney.tsx` + `LandingJourney.css`: a dark, curved, path-based clickable visual journey, with mobile fallback. Four canonical stages remain numbered and Data Requests remains an unnumbered/optional companion.
+- `apps/web/src/pages/OverviewPage.tsx`: large dark editorial hero headed “Chart the road from data to action,” two-column introduction and action controls, separate guided route, a secondary story/provenance section, two-lens national/local comparison, and dark concluding Planning Brief composition.
+- `apps/web/src/pages/OverviewPage.css`: landing-scoped cinematic ink background, serif typography, spatial route composition, pale paper sections and dossier/brief visual.
+- `apps/web/test/lovable-visual-grammar.test.ts`: added source checks for the new landing sections, route targets and the semantic/companion distinction.
+
+The original reviewed counts remain **dynamic**, derived from `useArtifact` and `canExportEstimate`; no mock statistics, Lovable data values or scenario arithmetic were copied. Existing `OpeningProvenance` still renders once, now in the supporting story. The current print/JSON scientific infrastructure remains unchanged.
+
+### Revised review priorities for Codex
+
+Before any further creative iteration, validate whether the new layout actually *looks better* at 360/768/1024/1440px in **both** themes. Check the curved route for overlap/legibility, the two-lens numerical cards when count is zero or unavailable, the editorial document graphic's sizing, the hierarchy/contrast of headings and narrative text, the four-primary-stage navigation, the user-operated data request, and the visible evidence provenance scene.
+
+Run CI, accessibility and PDF parity. Validate existing source-regression tests (some encode the old landing structure); update only tests whose assertions are genuinely superseded by approved visual changes, not tests protecting scientific or accessibility requirements. Ensure no duplicate numerical claim or partial-unreviewed evidence is emitted.
+
+**Still a draft, not visually verified by a browser.** This pass makes the design change concrete in code. It does not establish screenshot parity or aesthetics acceptance; those require screenshot comparison and user review.
