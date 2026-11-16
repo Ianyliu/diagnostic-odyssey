@@ -58,6 +58,8 @@ test("Lovable landing structure is primary and keeps the real four-stage routes"
   }
   assert.match(journey, /n: "Optional", to: "\/data-requests"/);
   assert.match(journeyCss, /\.lovable-journey-mobile/);
+  assert.doesNotMatch(journey, /style=\{\{/);
+  assert.match(journeyCss, /\.lovable-journey-stop-0\s*\{\s*left:/);
   assert.match(journeyCss, /prefers-reduced-motion: reduce/);
   assert.doesNotMatch(overview, /\[14200|\[7900/);
 });
