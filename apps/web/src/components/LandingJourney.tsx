@@ -36,7 +36,7 @@ export function LandingJourney() {
       {waypoints.map((item, i) => <Link
         key={item.to} to={item.to}
         className={"lovable-journey-stop lovable-journey-stop-" + i}
-        style={{left: (item.x / 1024) * 100 + "%", top: (item.y / 430) * 100 + "%"}}
+
       >
         <span className="lovable-journey-stop-number">{item.n}</span>
         <span className="lovable-journey-stop-label">{item.label}</span>
