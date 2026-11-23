@@ -20,14 +20,17 @@
 .sensitivity-heading h3 {
   margin: 3px 0 0;
   color: var(--do-text);
-  font-size: 18px;
+  font-family: var(--do-font-display);
+  font-size: 20px;
+  font-weight: 600;
 }
 
 .sensitivity-visual .visual-kicker {
   margin: 0;
   color: var(--do-text-muted);
+  font-family: var(--do-font-mono);
   font-size: 11px;
-  font-weight: 750;
+  font-weight: 600;
   letter-spacing: .08em;
 }
 

@@ -192,8 +192,10 @@
 
 .planning-brief-page .brief-content h2 {
   margin: 0 0 .75rem;
-  font-size: clamp(1.24rem, 2vw, 1.5rem);
-  line-height: 1.25;
+  font-family: var(--do-font-display);
+  font-size: clamp(1.32rem, 2.1vw, 1.6rem);
+  font-weight: 600;
+  line-height: 1.22;
 }
 
 .planning-brief-page .brief-content p {
@@ -778,7 +780,7 @@
   border-radius: var(--do-radius-card);
   min-width: 0;
 }
-.planning-brief-page .brief-executive-header h2 { font-size: 1.28rem; margin: .15rem 0 .45rem; }
+.planning-brief-page .brief-executive-header h2 { font-family: var(--do-font-display); font-size: 1.4rem; font-weight: 600; margin: .15rem 0 .45rem; }
 .planning-brief-page .brief-executive-header p:last-child { font-size: .88rem; line-height: 1.5; max-width: 75ch; }
 .planning-brief-page .brief-executive-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .8rem 1.4rem; }
 .planning-brief-page .brief-executive-finding { min-width: 0; border-top: 1px solid var(--do-border); padding-top: .65rem; overflow-wrap: anywhere; }

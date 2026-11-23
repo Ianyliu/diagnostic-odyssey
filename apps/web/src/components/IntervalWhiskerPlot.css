@@ -12,14 +12,17 @@
 .interval-figure h3 {
   margin: 0.2rem 0;
   color: var(--do-text);
-  font-size: 1rem;
+  font-family: var(--do-font-display);
+  font-size: 1.12rem;
+  font-weight: 600;
 }
 
 .interval-figure .visual-kicker {
   margin: 0;
   color: var(--do-accent);
+  font-family: var(--do-font-mono);
   font-size: 0.7rem;
-  font-weight: 750;
+  font-weight: 600;
   letter-spacing: 0.1em;
 }
 

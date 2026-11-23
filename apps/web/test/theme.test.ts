@@ -21,10 +21,10 @@ test("theme preference accepts only explicit modes and System follows OS", () =>
 });
 
 test("browser theme color uses the resolved appearance rather than the preference", () => {
-  assert.equal(getThemeColor(resolveTheme("system", false)), "#f5f2eb");
-  assert.equal(getThemeColor(resolveTheme("system", true)), "#09131b");
-  assert.equal(getThemeColor(resolveTheme("light", true)), "#f5f2eb");
-  assert.equal(getThemeColor(resolveTheme("dark", false)), "#09131b");
+  assert.equal(getThemeColor(resolveTheme("system", false)), "#f7f3ec");
+  assert.equal(getThemeColor(resolveTheme("system", true)), "#0e1014");
+  assert.equal(getThemeColor(resolveTheme("light", true)), "#f7f3ec");
+  assert.equal(getThemeColor(resolveTheme("dark", false)), "#0e1014");
 });
 
 test("unavailable storage cannot block theme selection", () => {

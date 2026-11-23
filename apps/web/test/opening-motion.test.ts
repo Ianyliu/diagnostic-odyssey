@@ -137,5 +137,7 @@ test("first-screen panel and all interpretation boundaries survive compact styli
   assert.match(css,/@keyframes circuit-route/);
   assert.match(css,/@keyframes workspace-unfold-replay/);
   assert.match(css,/@media \(prefers-reduced-motion: reduce\)/);
-  assert.match(css,/\.preview-output \{ display: grid;/);
+  assert.match(css,/\.preview-output\s*\{[^}]*display:\s*grid;/s);
+  assert.match(panel,/role="tablist"/);
+  assert.match(panel,/console-signal-svg/);
 });

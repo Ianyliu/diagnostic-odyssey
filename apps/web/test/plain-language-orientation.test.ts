@@ -57,8 +57,9 @@ test("Overview explains the evidence-to-planning workflow across four stages and
   const source = readSource("../src/pages/OverviewPage.tsx");
 
   for (const phrase of [
-    "Evidence into planning,",
-    "boundaries intact.",
+    "Evidence Boundaries Intact",
+    "See the hidden cost of fragmented care.",
+    "Plan smarter before you spend.",
     "reviewed national burden",
     "local implementation context",
     "analyst assumptions",

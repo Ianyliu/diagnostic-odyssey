@@ -35,8 +35,9 @@
 .decision-visual .visual-kicker {
   margin: 0;
   color: var(--do-text-muted);
+  font-family: var(--do-font-mono);
   font-size: 11px;
-  font-weight: 750;
+  font-weight: 600;
   letter-spacing: .08em;
 }
 
@@ -44,7 +45,9 @@
   flex: 0 0 auto;
   white-space: nowrap;
   color: var(--do-text);
-  font-size: 20px;
+  font-family: var(--do-font-display);
+  font-size: 21px;
+  font-weight: 650;
   font-variant-numeric: tabular-nums;
   line-height: 1.15;
   text-align: right;

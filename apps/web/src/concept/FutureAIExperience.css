@@ -16,8 +16,8 @@
 .future-concept :is(button, input, select) { accent-color: var(--fc-accent); }
 .future-concept button { cursor: pointer; }
 .future-concept button:disabled { cursor: default; opacity: .65; }
-.future-concept :is(h1, h2, h3, h4) { color: var(--do-brand-navy); line-height: 1.25; }
-.future-concept h3 { font-size: 19px; margin: 14px 0 12px; }
+.future-concept :is(h1, h2, h3, h4) { color: var(--do-brand-navy); font-family: var(--do-font-display); line-height: 1.22; }
+.future-concept h3 { font-size: 20px; margin: 14px 0 12px; }
 .future-concept h4 { font-size: 16px; margin: 10px 0; }
 .future-concept p { margin: 10px 0; }
 .future-concept a { text-underline-offset: 4px; }
@@ -30,12 +30,12 @@
   box-shadow: 0 4px 16px #00000008; font-size: 13px;
 }
 .fc-banner svg { flex-shrink: 0; }
-.fc-banner > span { margin-left: auto; flex-shrink: 0; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; border-left: 1px solid var(--do-assumption-border); padding-left: 16px; }
+.fc-banner > span { margin-left: auto; flex-shrink: 0; font-family: var(--do-font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: .08em; border-left: 1px solid var(--do-assumption-border); padding-left: 16px; }
 .fc-hero { display: grid; grid-template-columns: 1fr 300px; gap: 42px; padding: 38px 4px 32px; align-items: center; }
 .fc-hero-meta { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
 .fc-hero-meta a { font-size: 12px; color: var(--do-text-muted); }
-.fc-kicker { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--fc-accent); font-weight: 800; }
-.fc-hero h1 { font-size: clamp(34px, 4.2vw, 58px); font-weight: 650; letter-spacing: -.045em; line-height: 1.07; margin: 22px 0 18px; }
+.fc-kicker { font-family: var(--do-font-mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--fc-accent); font-weight: 600; }
+.fc-hero h1 { font-family: var(--do-font-display); font-size: clamp(34px, 4.2vw, 56px); font-weight: 600; letter-spacing: -.03em; line-height: 1.07; margin: 22px 0 18px; }
 .fc-hero h1 > span { color: var(--fc-accent); }
 .fc-hero > div > p { max-width: 640px; font-size: 16px; color: var(--do-text-muted); }
 .fc-status-cue { margin: 14px 0 0; padding: 10px 14px; border-left: 3px solid var(--fc-accent); border-radius: 0 8px 8px 0; background: var(--do-surface); color: var(--do-text); font-size: 13px !important; }

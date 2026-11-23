@@ -17,8 +17,9 @@
 .ledger-index-heading {
   margin: 0 0 0.5rem;
   color: var(--do-text-muted);
-  font-size: 0.75rem;
-  font-weight: 750;
+  font-family: var(--do-font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -71,7 +72,7 @@
 .domain-ledger-page .burden-domain-header > div { min-width: min(100%, 20rem); flex: 1 1 20rem; }
 
 .burden-ledger-page .burden-domain-header h2,
-.domain-ledger-page .burden-domain-header h2 { margin: 0 0 0.2rem; color: var(--do-text); }
+.domain-ledger-page .burden-domain-header h2 { margin: 0 0 0.2rem; color: var(--do-text); font-family: var(--do-font-display); font-size: 1.38rem; font-weight: 600; }
 
 .ledger-evidence-state {
   display: inline-flex;

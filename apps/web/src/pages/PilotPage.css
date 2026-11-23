@@ -353,7 +353,7 @@
 .preview-gap-track { height: 6px; background: var(--do-surface-elevated); }
 .preview-gap-track > span { display: block; height: 100%; background: var(--do-assumption-text); }
 .pilot-request-loop { font-size: .88rem; line-height: 1.7; }
-.pilot-page .result-card > h2 { font-size: 1.35rem; }
+.pilot-page .result-card > h2 { font-family: var(--do-font-display); font-size: 1.5rem; font-weight: 600; }
 @media (max-width: 640px) {
  .pilot-headlines { grid-template-columns: minmax(0, 1fr); gap: 10px; }
  .pilot-headlines dd { font-size: clamp(1rem, 8cqi, 1.5rem); }
@@ -376,7 +376,7 @@
 .pilot-page .pilot-summary .pilot-next-actions { order: 1; }
 
 .pilot-presets { display: grid; gap: 10px; }
-.pilot-presets-head h2 { margin: 4px 0; font-size: 1.08rem; }
+.pilot-presets-head h2 { margin: 4px 0; font-family: var(--do-font-display); font-size: 1.2rem; font-weight: 600; }
 .pilot-presets-head p { margin: 0; line-height: 1.45; }
 .pilot-preset-list { display: grid; gap: 8px; }
 .pilot-preset-button {
@@ -395,13 +395,13 @@
 .pilot-preset-button:hover { border-color: var(--do-accent); }
 .pilot-preset-button[aria-pressed="true"] {
   border-color: var(--do-accent);
-  background: var(--do-selection-bg);
-  color: var(--do-selection-text);
+  background: color-mix(in srgb, var(--do-accent) 8%, var(--do-surface-elevated));
+  color: var(--do-text);
   box-shadow: inset 3px 0 0 var(--do-accent);
 }
 .pilot-preset-button strong { font-size: .88rem; }
 .pilot-preset-button small { color: var(--do-text-muted); font-size: .75rem; line-height: 1.35; }
-.pilot-preset-button[aria-pressed="true"] small { color: var(--do-selection-text); }
+.pilot-preset-button[aria-pressed="true"] small { color: var(--do-text-muted); }
 
 .pilot-range-slider {
   width: 100%;
