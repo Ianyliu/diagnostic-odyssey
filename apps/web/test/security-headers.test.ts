@@ -12,7 +12,7 @@ const html = get("../index.html");
 const bootstrap = get("../public/theme-init.js");
 
 function validate(input: any): void {
-  assert.deepEqual(input.rewrites, [{ source: "/(.*)", destination: "/index.html" }], "SPA catch-all must remain intact");
+  assert.deepEqual(input.rewrites, [{ source: "/:path((?!api/).*)", destination: "/index.html" }], "SPA deep links must stay available without consuming /api/* functions");
   assert.equal(input.headers?.length, 1, "one unconditional header rule");
   assert.equal(input.headers[0].source, "/(.*)", "cover documents, routes, JS, CSS, and images");
   assert.equal(input.headers[0].has, undefined);

@@ -107,21 +107,24 @@ export function AppShell() {
         <div className="header-inner">
           <Link className="brand" to="/" aria-label="Diagnostic Odyssey, Overview">
             <span className="brand-mark" aria-hidden="true">
-              <img src="/diagnostic-odyssey-icon.png" width="192" height="192" alt="" />
+              <img src="/diagnostic-odyssey-mark.svg" width="38" height="38" alt="" />
             </span>
             <span className="brand-copy">
               <strong>Diagnostic Odyssey</strong>
-              <span>Evidence workspace</span>
+              <span>Health-cost strategy</span>
             </span>
           </Link>
-          <button
-            ref={menuToggle}
-            className="menu-toggle"
-            type="button"
-            aria-expanded={menuOpen}
-            aria-controls="workspace-tools"
-            onClick={() => setMenuOpen(open => !open)}
-          >{menuOpen ? "Close menu" : "Menu"}</button>
+          <div className="header-actions">
+            <ThemeControl />
+            <button
+              ref={menuToggle}
+              className="menu-toggle"
+              type="button"
+              aria-expanded={menuOpen}
+              aria-controls="workspace-tools"
+              onClick={() => setMenuOpen(open => !open)}
+            >{menuOpen ? "Close menu" : "Menu"}</button>
+          </div>
           <nav
             id="primary-navigation"
             aria-label="Primary navigation"
@@ -137,10 +140,10 @@ export function AppShell() {
           <div id="workspace-tools" className={"header-controls" + (menuOpen ? " open" : "")} hidden={!menuOpen}>
             <nav aria-label="Supporting navigation">
               <Link to="/">Overview</Link>
-              <Link to="/evidence">Intervention evidence &amp; limits</Link>
+              <Link to="/advisor">Strategy AI</Link>
               <Link to="/data-requests">Data requests</Link>
+              <Link to="/evidence">Evidence limits</Link>
             </nav>
-            <ThemeControl />
           </div>
         </div>
       </header>

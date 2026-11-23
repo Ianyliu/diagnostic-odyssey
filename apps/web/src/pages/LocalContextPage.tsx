@@ -244,9 +244,9 @@ export function LocalContextPage() {
   return <section className="page page-stack local-ledger-page">
     <ContextBar />
     <header className="page-heading">
-      <p className="eyebrow">REVIEWED IMPLEMENTATION CONTEXT</p>
-      <h1>West Virginia statewide implementation context</h1>
-      <p>What do reviewed statewide health care access and shortage-area records tell us about planning a local program?</p>
+      <p className="eyebrow">LOCAL TERRAIN · EDITION 01</p>
+      <h1>West Virginia local terrain</h1>
+      <p>Reviewed health care access and shortage-area indicators for Edition 01 (West Virginia). Additional states and counties are planned in the platform catalog—data is never borrowed across state lines.</p>
     </header>
 
     <div className="ledger-layout">
@@ -271,10 +271,8 @@ export function LocalContextPage() {
     </details>
     <div className="guardrail compact">
       <strong>Statewide implementation context, separate from national burden.</strong>
-      <p><strong>HPSA</strong> is a federally designated Health Professional Shortage Area; counts describe designations, not patients or clinicians. <strong>ACS</strong> is the Census American Community Survey; its statewide access measures describe residents, not Long COVID cases. Category details retain exact source definitions and limitations.</p>
-      <p>These indicators describe access and implementation conditions, not West Virginia Long COVID prevalence, disease costs, or intervention effects.</p>
-      <strong>Missing does not mean zero.</strong>
-      <p>Missing designation/data does not mean no shortage or zero implementation constraint. "Include in Planning Brief" and "Use in Pilot planning" are separate analyst choices. Neither changes national burden or Pilot planner numeric assumptions.</p>
+      <p><strong>HPSA</strong> (Health Professional Shortage Area) counts describe federal designations, not patients or clinicians. <strong>ACS</strong> (American Community Survey) access figures describe statewide residents, not West Virginia Long COVID prevalence, burden, cost, causal effect, savings, ROI, or a composite access-severity score.</p>
+      <p><strong>Missing does not mean zero.</strong> Missing designation/data does not mean no shortage or zero implementation constraint. "Include in Planning Brief" and "Use in Pilot planning" are separate analyst choices. Neither changes national burden or Pilot planner numeric assumptions.</p>
     </div>
 
     <div className="card selection-summary ledger-selection-summary" id="local-selection-summary">
@@ -403,6 +401,6 @@ export function LocalContextPage() {
     </article></WorkspaceDisclosure>
       </div>
     </div>
-    <div className="workflow-next"><Link className="button" to="/pilot">Continue to Pilot planner</Link><Link to="/brief">Review selected context in Brief</Link></div>
+    <div className="workflow-next"><Link className="button" to="/pilot">Continue to Strategy Lab</Link><Link to="/brief">Review selected context in Brief</Link></div>
   </section>;
 }

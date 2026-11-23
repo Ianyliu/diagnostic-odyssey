@@ -19,6 +19,7 @@ import { ContextBar } from "../components/ContextBar";
 import { DecisionTrace } from "../components/DecisionTrace";
 import { DistributionSummaryText } from "../components/DistributionSummaryText";
 import { useArtifact } from "../data/ArtifactContext";
+import { COVERAGE_EDITION_BADGE } from "../data/coverageCatalog";
 import {
   formatEstimateInterval,
   formatEstimateValue
@@ -47,6 +48,9 @@ import {
 import { formatAppliedAssumption } from "./briefAssumptions";
 import { createBriefPrintDisclosureState, executeBriefPrint, watchBriefPrintMedia } from "./briefPrint";
 import "./BriefPage.css";
+
+declare const __DO_GEMINI_STAGE2_PREVIEW__: boolean;
+const stage2Preview = typeof __DO_GEMINI_STAGE2_PREVIEW__ === "boolean" && __DO_GEMINI_STAGE2_PREVIEW__;
 
 const resultNumber = new Intl.NumberFormat("en-US");
 
@@ -82,7 +86,7 @@ function BriefJsonExport({brief}: {brief: PlanningBrief}) {
       anchor.click();
       setExportStatus("JSON download requested with the current Planning Brief.");
     } catch {
-      setExportStatus("JSON download could not start. Your Brief is unchanged; try again or use Print / save PDF.");
+      setExportStatus("JSON download could not start. Your Brief is unchanged; try again or use Print / Save PDF.");
     } finally {
       anchor.remove();
       // Let the browser consume the URL before releasing it, as for Markdown.
@@ -90,10 +94,10 @@ function BriefJsonExport({brief}: {brief: PlanningBrief}) {
     }
   };
 
-  return <>
-    <button className="button" onClick={exportJson}>Export JSON companion</button>
+  return <div className="brief-json-export">
+    <button className="button secondary" type="button" onClick={exportJson}>Export JSON</button>
     <p className="brief-export-status subtle" role="status">{exportStatus}</p>
-  </>;
+  </div>;
 }
 
 interface FutureConceptControlProps {
@@ -191,35 +195,64 @@ export function BriefPage({conceptAvailable = false, showFutureConcept = false, 
   return <section className={`page page-stack planning-brief-page${includeContextAppendixInPrint ? " brief-include-context-appendix" : ""}`} ref={pageRef}>
     <ContextBar />
     <header className="page-heading">
-      <p className="eyebrow">PLANNING BRIEF</p>
-      <h1>Long COVID burden and pilot planning brief</h1>
-      <p>Reviewed national evidence, selected local context and explicit pilot assumptions, with their limits and next data needs.</p>
+      <p className="eyebrow">ACTION BRIEF · {COVERAGE_EDITION_BADGE}</p>
+      <h1>Care-strategy &amp; pilot planning brief</h1>
+      <p>Reviewed national evidence, selected local context, and explicit pilot assumptions—kept distinct with their limits and next data needs.</p>
     </header>
 
-    <div className="brief-intelligence-actions">
-      <div className="brief-handoff-entry">
-          <AiHandoff brief={brief} sourceState={{status, localContextStatus,
+    <section className="brief-command-bar brief-export-actions" aria-label="Executive brief command bar">
+      <div className="brief-command-primary">
+        <button className="button" type="button" onClick={printBrief}>Print / Save PDF</button>
+        {conceptAvailable && showFutureConcept && (
+          <Link className="button secondary" to="/advisor">Open Strategy AI Studio →</Link>
+        )}
+        {conceptAvailable && !showFutureConcept && (
+          <button className="button secondary" type="button" onClick={() => onFutureConceptChange?.(true)}>Show Strategy AI Studio</button>
+        )}
+        <AiHandoff
+          buttonLabel="Quick AI Prompt"
+          brief={brief}
+          sourceState={{
+            status,
+            localContextStatus,
             localArtifactVersion: localContext?.manifest.artifact_version ?? null,
-            scenario, scenarioValid: !scenario || !!scenarioResult,
-            selectedLocalContextIds, pilotLocalContextId, briefDataRequestIds}} />
+            scenario,
+            scenarioValid: !scenario || !!scenarioResult,
+            selectedLocalContextIds,
+            pilotLocalContextId,
+            briefDataRequestIds
+          }}
+        />
+        <BriefJsonExport brief={brief} />
       </div>
-    {conceptAvailable && <div className="brief-concept-entry" role="group" aria-label="Future AI concept controls">
-      <label className="brief-concept-toggle">
-        <input type="checkbox" checked={showFutureConcept} onChange={event => onFutureConceptChange?.(event.target.checked)} />
-        Show future AI concept
-      </label>
-      {showFutureConcept && <Link className="button secondary" to="/concept/future-ai">Explore future AI concept →</Link>}
-      <small className="brief-concept-note">* Interactive concept only · No live AI or model API calls. You can hide or re-enable the preview here.</small>
-    </div>}
+      <div className="brief-command-meta">
+        <p className="brief-command-cue">
+          {stage2Preview
+            ? "Prompt Studio and Live Gemini Advisor (authenticated Preview) are available in Strategy AI Studio."
+            : "Prompt Studio works immediately with any AI assistant. No on-site Gemini model calls run in public builds."}
+        </p>
+        <WorkspaceDisclosure id="brief-export-options" title="Print &amp; appendix options">
+          <div className="brief-options-panel">
+            <label className="brief-appendix-control">
+              <input type="checkbox" checked={includeContextAppendixInPrint} onChange={event => setIncludeContextAppendixInPrint(event.target.checked)} />
+              Include detailed local-context records in print
+              <small>Off by default for a concise Brief. All included records remain in Export JSON and readable on screen.</small>
+            </label>
+            {conceptAvailable && (
+              <label className="brief-concept-toggle">
+                <input type="checkbox" checked={showFutureConcept} onChange={event => onFutureConceptChange?.(event.target.checked)} />
+                Show Strategy AI Studio route
+              </label>
+            )}
+            <div className="brief-options-links">
+              <Link className="text-button" to="/data-requests">Review data needs</Link>
+              <Link className="text-button" to="/evidence">Evidence limits</Link>
+            </div>
+          </div>
+        </WorkspaceDisclosure>
+      </div>
+    </section>
 
-    </div>
-    <div className="brief-export-actions brief-primary-actions">
-      <button className="button" onClick={printBrief}>Print / save PDF</button>
-      <label className="brief-appendix-control"><input type="checkbox" checked={includeContextAppendixInPrint} onChange={event => setIncludeContextAppendixInPrint(event.target.checked)} /> Include detailed local-context records in print <small>Off by default for a concise Brief. All included records remain in the JSON companion and readable on screen.</small></label>
-      <WorkspaceDisclosure id="brief-export-options" title="Export options"><BriefJsonExport brief={brief} /></WorkspaceDisclosure>
-      <Link className="text-button" to="/data-requests">Review data needs</Link>
-      <Link className="text-button" to="/evidence">Intervention evidence &amp; limits</Link>
-    </div>
     <div className="print-provenance" role="group" aria-label="Planning Brief provenance">
       <strong>Brief provenance</strong>
       <span><b>National reviewed artifact:</b> {brief.artifact_version}</span>

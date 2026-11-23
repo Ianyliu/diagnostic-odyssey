@@ -3,6 +3,7 @@ import { canExportEstimate } from "@diagnostic-odyssey/contracts";
 import { useArtifact } from "../data/ArtifactContext";
 import { OpeningProvenance, useOpeningMotion } from "./OpeningProvenance";
 import { HeadlineFindings } from "../components/HeadlineFindings";
+import { CoverageSwitcher } from "../components/CoverageSwitcher";
 import { planningInsightsEnabled } from "../data/planningInsightsEnabled";
 import "./OverviewPage.css";
 
@@ -65,6 +66,7 @@ export function OverviewPage() {
         </div>
       </section>
       <HeadlineFindings />
+      <CoverageSwitcher />
 
       <section className="overview-value-prop" aria-labelledby="overview-value-title">
         <div className="overview-section-heading">

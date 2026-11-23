@@ -43,9 +43,9 @@ export function DataRequestsPage() {
     <ContextBar />
     <header className="page-heading">
       <p className="eyebrow">DATA REQUESTS</p>
-      <h1 id="data-requests-heading" tabIndex={-1}>Turn uncertainty into a concrete request</h1>
-      <p>Requests are planning artifacts, not observed evidence. Available requests start selected for convenience; review or deselect them before exporting. Stale requests remain excluded from the Brief until refreshed.</p>
-      <p>“Current” means the request matches the applied scenario, not that its source data is up to date. Confirm the reporting period and availability with the owner.</p>
+      <h1 id="data-requests-heading" tabIndex={-1}>Turn open questions into data requests</h1>
+      <p>Requests are planning checklists for local data owners—not observed evidence. Matching requests start selected for your Brief; deselect or remove any before export. Stale requests stay excluded until refreshed.</p>
+      <p className="subtle">&ldquo;Current&rdquo; means the request matches your active pilot assumptions—confirm reporting period and availability directly with the local owner.</p>
     </header>
     <p className="sr-only" role="status" aria-live="polite" aria-atomic="true">{announcement}</p>
 

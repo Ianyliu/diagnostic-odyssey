@@ -24,8 +24,9 @@ export function EvidencePage() {
   return <section className="page page-stack evidence-page">
     <ContextBar />
     <header className="page-heading">
+      <p className="eyebrow">EVIDENCE LIMITS</p>
       <h1>Intervention evidence &amp; limits</h1>
-      <p>Intervention-effect evidence is kept separate from descriptive burden and planning assumptions.</p>
+      <p>Check whether external study parameters are approved to drive pilot numbers—kept separate from national burden and your planning assumptions.</p>
     </header>
 
     <section className="evidence-availability" aria-labelledby="evidence-availability-title">

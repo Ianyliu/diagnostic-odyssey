@@ -103,13 +103,71 @@
 
 .planning-brief-page .brief-export-actions {
   display: grid;
-  gap: .5rem;
+  gap: .75rem;
 }
 
-.planning-brief-page .brief-export-actions .button {
-  width: 100%;
-  justify-content: center;
-  text-align: center;
+.planning-brief-page .brief-command-bar {
+  padding: 1rem 1.15rem;
+  border: 1px solid var(--brief-rule);
+  border-radius: var(--do-radius-card);
+  background: var(--do-surface);
+}
+
+.planning-brief-page .brief-command-primary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 10px 12px;
+}
+
+.planning-brief-page .brief-command-bar .button {
+  width: auto;
+}
+
+.planning-brief-page .brief-json-export {
+  display: grid;
+  gap: 4px;
+}
+
+.planning-brief-page .brief-command-meta {
+  display: grid;
+  gap: 6px;
+  border-top: 1px solid var(--brief-rule);
+  padding-top: 10px;
+}
+
+.planning-brief-page .brief-command-cue {
+  margin: 0;
+  color: var(--do-text-muted);
+  font-size: .8rem;
+  line-height: 1.45;
+}
+
+.planning-brief-page .brief-options-panel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 12px 24px;
+}
+
+.planning-brief-page .brief-options-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  align-items: center;
+}
+
+.planning-brief-page .brief-command-bar .workspace-disclosure {
+  border: 0;
+}
+
+.planning-brief-page .brief-command-bar .workspace-disclosure > summary {
+  padding: 6px 0;
+  font-size: .84rem;
+}
+
+.planning-brief-page .brief-command-bar .disclosure-content {
+  padding-bottom: 4px;
 }
 
 .planning-brief-page .brief-content {

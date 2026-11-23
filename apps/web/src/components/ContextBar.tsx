@@ -24,8 +24,8 @@ export function ContextBar() {
         ? "Unavailable"
         : "Loading";
 
-  return <WorkspaceDisclosure id="analytical-scope" className="scope-summary" title={<>{conditionLabel} <span className="scope-separator">/</span> National burden · {implementationContextLabel} context</>}
-    summary="Analytical scope & source versions">
+  return <WorkspaceDisclosure id="analytical-scope" className="scope-summary" title={<>Edition 01 · {conditionLabel} <span className="scope-separator">/</span> National burden · {implementationContextLabel} terrain</>}
+    summary="Scope &amp; source versions">
     <dl className="context-meta">
       <div><dt>Population</dt><dd>Adults {bundle.context.age_range}</dd></div>
       <div><dt>National burden</dt><dd>{bundle.context.geography_scope}</dd></div>

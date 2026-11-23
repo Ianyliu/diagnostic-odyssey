@@ -53,9 +53,9 @@ export function BriefExecutiveSummary({
   });
   return <section className="brief-executive-summary" aria-labelledby="brief-executive-title">
     <header className="brief-executive-header">
-      <p className="eyebrow">REVIEWED NATIONAL EVIDENCE · PLANNING CONTEXT</p>
+      <p className="eyebrow">EXECUTIVE SUMMARY · EDITION 01</p>
       <h2 id="brief-executive-title">Executive summary</h2>
-      <p>National burden, West Virginia implementation context and analyst planning inputs have different meanings. Neither state indicators nor assumptions recalibrate the national estimates.</p>
+      <p>National burden, West Virginia local terrain, and pilot assumptions serve distinct roles and are never blended into one number.</p>
     </header>
     <div className="brief-executive-grid">
       {highlights.map(({key, title, meaning, finding}) => <article className="brief-executive-finding" key={key}>
@@ -68,10 +68,10 @@ export function BriefExecutiveSummary({
     </div>
     {highlights.length !== HEADLINES.length && <p role="status" className="subtle">One or more national headlines cannot be verified against this reviewed Brief and have been withheld, not imputed. Consult the original evidence records.</p>}
     <div className="brief-executive-roles">
-      <div><strong>West Virginia implementation context</strong><p>{brief.local_context.length} reviewed records included in JSON ({checkboxIncludedCount} from current checkboxes{pilotOnlyCount ? "; 1 extra via Use in Pilot" : ""}). HRSA/Census access indicators are not West Virginia Long COVID prevalence or costs.</p></div>
-      <div><strong>Applied Pilot assumptions</strong><p>{brief.scenario ? "Deterministic planning arithmetic from applied inputs; no effect or savings inferred." : "No validated applied scenario."} Defaults are assumptions, not observed evidence.</p></div>
-      <div><strong>Operational data requests</strong><p>{brief.data_requests.length} current requests included; {staleRequestCount} selected stale requests excluded until refreshed. New requests start included but may be deselected.</p></div>
+      <div><strong>West Virginia local terrain</strong><p>{brief.local_context.length} reviewed indicators included in JSON ({checkboxIncludedCount} from checkboxes{pilotOnlyCount ? "; 1 extra via Use in Pilot" : ""}). HRSA/ACS context is not state Long COVID prevalence or cost.</p></div>
+      <div><strong>Applied Pilot assumptions</strong><p>{brief.scenario ? "Deterministic planning math from your inputs—not predicted effects or savings." : "No validated applied scenario."} Defaults are planning assumptions, not observed evidence.</p></div>
+      <div><strong>Open data requests</strong><p>{brief.data_requests.length} current requests included; {staleRequestCount} stale requests excluded until refreshed. New requests start included and can be deselected.</p></div>
     </div>
-    <p className="brief-executive-boundary">The national figures are descriptive, not attributable to Long COVID or diagnostic delay. ESAQ and PSAQ have their own outcome-specific respondent universes. Screening is not diagnosis; no causal intervention-effect, savings or ROI claim follows.</p>
+    <p className="brief-executive-boundary">National figures are descriptive all-cause estimates—not attributable to Long COVID or diagnostic delay. ESAQ and PSAQ use outcome-specific universes; screening is not diagnosis, and no savings or ROI claim follows.</p>
   </section>;
 }

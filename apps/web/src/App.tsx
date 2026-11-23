@@ -14,7 +14,9 @@ import { EvidencePage } from "./pages/EvidencePage";
 import { DataRequestsPage } from "./pages/DataRequestsPage";
 import { BriefPage } from "./pages/BriefPage";
 
-// Illustrative concept is available by default; explicit build-time "off" excludes its route and chunk.
+// Strategy AI Studio (Prompt Studio + Explore) is available by default.
+// The explicit VITE_FUTURE_AI_EXPERIENCE_DEMO=off release switch removes its route/chunk.
+// Only Gemini execution is separately protected by the Preview-only build flag.
 const FutureAIExperiencePage = import.meta.env.VITE_FUTURE_AI_EXPERIENCE_DEMO !== "off"
   ? lazy(() => import("./concept/FutureAIExperiencePage")) : null;
 
@@ -36,7 +38,10 @@ export function App() {
       <Route path="brief" element={<BriefPage conceptAvailable={FutureAIExperiencePage !== null}
         showFutureConcept={showFutureConcept} onFutureConceptChange={setShowFutureConcept} />} />
       <Route path="concept/future-ai" element={FutureAIExperiencePage && showFutureConcept
-        ? <Suspense fallback={<p className="page" role="status">Opening concept workspace…</p>}><FutureAIExperiencePage onHide={() => setShowFutureConcept(false)} /></Suspense>
+        ? <Suspense fallback={<p className="page" role="status">Opening Strategy AI Studio…</p>}><FutureAIExperiencePage onHide={() => setShowFutureConcept(false)} /></Suspense>
+        : <Navigate to="/brief" replace />} />
+      <Route path="advisor" element={FutureAIExperiencePage && showFutureConcept
+        ? <Suspense fallback={<p className="page" role="status">Opening Strategy AI Studio…</p>}><FutureAIExperiencePage onHide={() => setShowFutureConcept(false)} /></Suspense>
         : <Navigate to="/brief" replace />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Route>

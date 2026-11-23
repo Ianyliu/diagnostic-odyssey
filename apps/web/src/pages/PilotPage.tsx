@@ -31,8 +31,10 @@ import { getPilotFragmentTargetId } from "../data/pilotFragmentScroll";
 import { formatLocalContextValue } from "../data/formatLocalContextValue";
 import { formatPublishedLocalContextUncertainty } from "../data/localContextPresentation";
 import {
+  PILOT_STRATEGY_PRESETS,
   PLANNING_DEFAULTS_DESCRIPTION,
-  PLANNING_DEFAULTS_LABEL
+  PLANNING_DEFAULTS_LABEL,
+  type PilotStrategyPreset
 } from "../data/planningScenarioDefaults";
 import { getPathwayBoundaryPresentation } from "../data/pathwayBoundary";
 import "./PilotPage.css";
@@ -61,6 +63,56 @@ const assumptionGroups: ReadonlyArray<{
   }
 ];
 
+interface SliderSpec {
+  min: number;
+  max: number;
+  step: number;
+}
+
+function sliderSpecForField(field: PilotNumericField, scenario: Scenario): SliderSpec | null {
+  switch (field) {
+    case "reach":
+      return {min: 0, max: 100, step: 1};
+    case "capacity":
+      return {
+        min: 0,
+        max: Math.max(10000, Math.ceil(scenario.eligible_population / 500) * 500),
+        step: 50
+      };
+    case "alternative_window_months":
+      return {
+        min: 0,
+        max: Math.max(1, Math.round(scenario.baseline_window_months)),
+        step: 1
+      };
+    case "horizon_months":
+      return {min: 1, max: 36, step: 1};
+    default:
+      return null;
+  }
+}
+
+function sliderValueForField(field: PilotNumericField, raw: string, scenario: Scenario, spec: SliderSpec): number {
+  const parsed = Number(raw.trim());
+  const fallback = field === "reach" ? scenario.reach * 100 : scenario[field];
+  const candidate = raw.trim() !== "" && Number.isFinite(parsed) ? parsed : fallback;
+  return Math.min(spec.max, Math.max(spec.min, candidate));
+}
+
+function matchesPreset(scenario: Scenario, preset: PilotStrategyPreset): boolean {
+  const v = preset.values;
+  return (
+    scenario.eligible_population === v.eligible_population &&
+    scenario.reach === v.reach &&
+    scenario.capacity === v.capacity &&
+    scenario.baseline_window_months === v.baseline_window_months &&
+    scenario.alternative_window_months === v.alternative_window_months &&
+    scenario.horizon_months === v.horizon_months &&
+    scenario.fixed_cost === v.fixed_cost &&
+    scenario.per_participant_cost === v.per_participant_cost
+  );
+}
+
 export function PilotPage() {
   const {scenario, scenarioResult} = useArtifact();
   const location = useLocation();
@@ -76,7 +128,7 @@ export function PilotPage() {
     return <section className="page page-stack">
       <ContextBar />
       <header className="page-heading">
-        <p className="eyebrow">PILOT PLANNER</p>
+        <p className="eyebrow">STRATEGY LAB · PILOT PLANNER</p>
         <h1>Scope a feasible pilot</h1>
         <p>Planning assumptions are currently unavailable or invalid. Reviewed national burden remains available; no causal effect or savings estimate is inferred.</p>
       </header>
@@ -100,6 +152,7 @@ function PilotPlannerWorkspace({
   const {
     bundle,
     setScenario,
+    applyScenarioPreset,
     pilotInputDraft,
     setPilotInputDraft,
     analystDataRequests,
@@ -152,7 +205,11 @@ function PilotPlannerWorkspace({
   return <section className="page page-stack pilot-page">
     <ContextBar />
     <div className="heading-row">
-      <header className="page-heading"><p className="eyebrow">PILOT PLANNER</p><h1>Scope a feasible pilot</h1><p>Transparent recognition/navigation arithmetic from analyst-supplied assumptions. This is not a prediction or causal ROI estimate.</p></header>
+      <header className="page-heading">
+        <p className="eyebrow">STRATEGY LAB · PILOT PLANNER</p>
+        <h1>Scope a feasible pilot</h1>
+        <p>Test how reach, capacity, timing, and budget fit together using your planning assumptions. These figures are planning math—not a prediction or causal ROI estimate.</p>
+      </header>
       <div className="caution cool"><strong>Plan · Test · Learn</strong><span>Every scenario names the pathway step and mechanism it is allowed to change.</span></div>
     </div>
     <nav className="pilot-section-nav" aria-label="Pilot planner sections">
@@ -182,12 +239,14 @@ function PilotPlannerWorkspace({
         </WorkspaceDisclosure>
         <dl className="pilot-headlines" aria-label="Four applied planning quantities">
           {[
-            ["Participants served within capacity", scenarioResult.reached_participants, false],
-            ["Capacity gap", scenarioResult.capacity_gap, false],
-            ["Person-month exposure difference", scenarioResult.difference_person_months, false],
-            ["Program-resource requirement", scenarioResult.program_resource_requirement, true]
-          ].map(([label, value, isCurrency]) => <div key={String(label)} className={Math.abs(Number(value)) >= 1e12 ? "pilot-headline-scientific" : ""}>
-            <dt>{label}</dt><dd className={Math.abs(Number(value)) >= 1e12 ? "scientific-value" : ""}>{isCurrency ? formatPlanningCurrency(Number(value)) : formatPlanningNumber(Number(value), resultNumber)}</dd>
+            ["Participants served within capacity", scenarioResult.reached_participants, false, "People served up to your capacity limit"],
+            ["Capacity gap", scenarioResult.capacity_gap, false, "Intended participants beyond current capacity"],
+            ["Person-month exposure difference", scenarioResult.difference_person_months, false, "People reached × months of faster recognition"],
+            ["Program-resource requirement", scenarioResult.program_resource_requirement, true, "Estimated program budget — not savings or ROI"]
+          ].map(([label, value, isCurrency, hint]) => <div key={String(label)} className={Math.abs(Number(value)) >= 1e12 ? "pilot-headline-scientific" : ""}>
+            <dt>{label}</dt>
+            <dd className={Math.abs(Number(value)) >= 1e12 ? "scientific-value" : ""}>{isCurrency ? formatPlanningCurrency(Number(value)) : formatPlanningNumber(Number(value), resultNumber)}</dd>
+            <small className="pilot-quantity-hint">{hint}</small>
           </div>)}
         </dl>
         <p className="visual-note">Participants and person-months are modeled planning quantities, not observed improvements or forecasts. Program resources are requirements, not savings or ROI.</p>
@@ -199,47 +258,88 @@ function PilotPlannerWorkspace({
         <SensitivityPreview scenario={scenario} paused={invalidDraft} />
       </article>
       <div className="pilot-input-column">
-      <form id="pilot-assumptions" className="card assumption-card" onSubmit={event => event.preventDefault()}>
-        <h2>Planning assumptions</h2>
-        <p className="subtle"><strong>{PLANNING_DEFAULTS_LABEL}</strong><br />{PLANNING_DEFAULTS_DESCRIPTION}</p>
-        {assumptionGroups.map((group, index) => <WorkspaceDisclosure id={`pilot-input-group-${index}`} key={group.title}
-          title={group.title} defaultOpen={index === 0}
-          forceOpen={group.fields.some(key => Boolean(evaluation.errors[key])) || Boolean(evaluation.formError)}
-          summary={<span className="pilot-group-values"><span>Applied values</span>{pilotInputFields.filter(field => group.fields.includes(field.key)).map(field =>
-            <span key={field.key}>{field.label}: <strong>{formatAppliedAssumption(scenario, field)}</strong></span>)}</span>}>
-          <fieldset className="pilot-assumption-group">
-          <legend>{group.title}</legend>
-          <p>{group.description}</p>
-          {pilotInputFields.filter(field => group.fields.includes(field.key)).map(field => {
-          const inputId = "pilot-" + field.key;
-          const helperId = inputId + "-helper";
-          const errorId = inputId + "-error";
-          const error = evaluation.errors[field.key];
-          const helper = error ? null : formatPilotInputHelper(field.key, draft[field.key]);
+        <section className="card pilot-presets" aria-labelledby="pilot-presets-title">
+          <div className="pilot-presets-head">
+            <p className="visual-kicker">QUICK STRATEGY PRESETS</p>
+            <h2 id="pilot-presets-title">Start from a sample program</h2>
+            <p className="subtle">Load a starting scenario in one click, then adjust any number or slider below.</p>
+          </div>
+          <div className="pilot-preset-list" role="group" aria-label="Strategy presets">
+            {PILOT_STRATEGY_PRESETS.map(preset => {
+              const active = matchesPreset(scenario, preset);
+              return (
+                <button
+                  key={preset.id}
+                  type="button"
+                  className="pilot-preset-button"
+                  aria-pressed={active}
+                  onClick={() => applyScenarioPreset(preset)}
+                >
+                  <strong>{preset.label}</strong>
+                  <small>{preset.summary}</small>
+                </button>
+              );
+            })}
+          </div>
+        </section>
 
-          return <div className="pilot-field" key={field.key}>
-            <label className="pilot-field-label" htmlFor={inputId}>{field.label}</label>
-            <div className="pilot-field-control">
-              <span className={"input-wrap" + (error ? " invalid" : "")}>
-                <input
-                  id={inputId}
-                  type="text"
-                  inputMode="decimal"
-                  value={draft[field.key]}
-                  onChange={event => updateDraft(field.key, event.target.value)}
-                  aria-invalid={Boolean(error)}
-                  aria-describedby={helperId + " " + errorId}
-                />
-                {field.suffix && <small aria-hidden="true">{field.suffix}</small>}
-              </span>
-              <span id={helperId} className="input-helper">{helper}</span>
-              <span id={errorId} className="field-error" aria-live="polite">{error ?? ""}</span>
-            </div>
-          </div>;
-        })}
-        </fieldset></WorkspaceDisclosure>)}
-        {evaluation.formError && <p className="field-error form-error" aria-live="polite">{evaluation.formError}</p>}
-      </form>
+        <form id="pilot-assumptions" className="card assumption-card" onSubmit={event => event.preventDefault()}>
+          <h2>Planning assumptions</h2>
+          <p className="subtle"><strong>{PLANNING_DEFAULTS_LABEL}</strong><br />{PLANNING_DEFAULTS_DESCRIPTION}</p>
+          {assumptionGroups.map((group, index) => <WorkspaceDisclosure id={`pilot-input-group-${index}`} key={group.title}
+            title={group.title} defaultOpen={index === 0}
+            forceOpen={group.fields.some(key => Boolean(evaluation.errors[key])) || Boolean(evaluation.formError)}
+            summary={<span className="pilot-group-values"><span>Applied values</span>{pilotInputFields.filter(field => group.fields.includes(field.key)).map(field =>
+              <span key={field.key}>{field.label}: <strong>{formatAppliedAssumption(scenario, field)}</strong></span>)}</span>}>
+            <fieldset className="pilot-assumption-group">
+              <legend>{group.title}</legend>
+              <p>{group.description}</p>
+              {pilotInputFields.filter(field => group.fields.includes(field.key)).map(field => {
+                const inputId = "pilot-" + field.key;
+                const helperId = inputId + "-helper";
+                const errorId = inputId + "-error";
+                const error = evaluation.errors[field.key];
+                const helper = error ? null : formatPilotInputHelper(field.key, draft[field.key]);
+                const sliderSpec = sliderSpecForField(field.key, scenario);
+
+                return <div className="pilot-field" key={field.key}>
+                  <label className="pilot-field-label" htmlFor={inputId}>{field.label}</label>
+                  <div className="pilot-field-control">
+                    <span className={"input-wrap" + (error ? " invalid" : "")}>
+                      <input
+                        id={inputId}
+                        type="text"
+                        inputMode="decimal"
+                        value={draft[field.key]}
+                        onChange={event => updateDraft(field.key, event.target.value)}
+                        aria-invalid={Boolean(error)}
+                        aria-describedby={helperId + " " + errorId}
+                      />
+                      {field.suffix && <small aria-hidden="true">{field.suffix}</small>}
+                    </span>
+                    {sliderSpec && (
+                      <input
+                        id={`${inputId}-slider`}
+                        className="pilot-range-slider"
+                        type="range"
+                        min={sliderSpec.min}
+                        max={sliderSpec.max}
+                        step={sliderSpec.step}
+                        value={sliderValueForField(field.key, draft[field.key], scenario, sliderSpec)}
+                        aria-label={`${field.label} slider`}
+                        aria-describedby={helperId}
+                        aria-valuetext={helper ?? undefined}
+                        onChange={event => updateDraft(field.key, event.target.value)}
+                      />
+                    )}
+                    <span id={helperId} className="input-helper">{helper}</span>
+                    <span id={errorId} className="field-error" aria-live="polite">{error ?? ""}</span>
+                  </div>
+                </div>;
+              })}
+            </fieldset></WorkspaceDisclosure>)}
+          {evaluation.formError && <p className="field-error form-error" aria-live="polite">{evaluation.formError}</p>}
+        </form>
         <section className="pathway-boundary" aria-labelledby="pilot-pathway-boundary-title">
           <div>
             <p className="visual-kicker">SCIENTIFIC BOUNDARY</p>
@@ -262,15 +362,15 @@ function PilotPlannerWorkspace({
         <h2>Decision visuals &amp; sensitivity</h2>
         <PilotDecisionVisuals scenario={scenario} result={scenarioResult} />
         <WorkspaceDisclosure id="pilot-all-results" title="All modeled quantities">
-        <dl className="result-list pilot-result-ledger">
-          <div className={Math.abs(scenarioResult.intended_reach) >= 1e12 ? "pilot-result-scientific" : undefined}><dt>Intended reach</dt><dd>{formatPlanningNumber(scenarioResult.intended_reach, resultNumber)}</dd></div>
-          <div className={Math.abs(scenarioResult.reached_participants) >= 1e12 ? "pilot-result-scientific" : undefined}><dt>Reached participants</dt><dd>{formatPlanningNumber(scenarioResult.reached_participants, resultNumber)}</dd></div>
-          <div className={Math.abs(scenarioResult.capacity_gap) >= 1e12 ? "pilot-result-scientific" : undefined}><dt>Capacity gap</dt><dd>{formatPlanningNumber(scenarioResult.capacity_gap, resultNumber)}</dd></div>
-          <div className={Math.abs(scenarioResult.baseline_person_months) >= 1e12 ? "pilot-result-scientific" : undefined}><dt>Baseline person-month exposure</dt><dd>{formatPlanningNumber(scenarioResult.baseline_person_months, resultNumber)}</dd></div>
-          <div className={Math.abs(scenarioResult.alternative_person_months) >= 1e12 ? "pilot-result-scientific" : undefined}><dt>Planning person-month exposure</dt><dd>{formatPlanningNumber(scenarioResult.alternative_person_months, resultNumber)}</dd></div>
-          <div className={Math.abs(scenarioResult.difference_person_months) >= 1e12 ? "pilot-result-scientific" : undefined}><dt>Difference in person-month exposure</dt><dd>{formatPlanningNumber(scenarioResult.difference_person_months, resultNumber)}</dd></div>
-          <div className={Math.abs(scenarioResult.program_resource_requirement) >= 1e12 ? "pilot-result-scientific" : undefined}><dt>Program-resource requirement</dt><dd>{formatPlanningCurrency(scenarioResult.program_resource_requirement)}</dd></div>
-        </dl>
+          <dl className="result-list pilot-result-ledger">
+            <div className={Math.abs(scenarioResult.intended_reach) >= 1e12 ? "pilot-result-scientific" : undefined}><dt>Intended reach</dt><dd>{formatPlanningNumber(scenarioResult.intended_reach, resultNumber)}</dd><small className="pilot-quantity-hint">Eligible population × reach %</small></div>
+            <div className={Math.abs(scenarioResult.reached_participants) >= 1e12 ? "pilot-result-scientific" : undefined}><dt>Reached participants</dt><dd>{formatPlanningNumber(scenarioResult.reached_participants, resultNumber)}</dd><small className="pilot-quantity-hint">Capped by program capacity</small></div>
+            <div className={Math.abs(scenarioResult.capacity_gap) >= 1e12 ? "pilot-result-scientific" : undefined}><dt>Capacity gap</dt><dd>{formatPlanningNumber(scenarioResult.capacity_gap, resultNumber)}</dd><small className="pilot-quantity-hint">Unmet demand above capacity</small></div>
+            <div className={Math.abs(scenarioResult.baseline_person_months) >= 1e12 ? "pilot-result-scientific" : undefined}><dt>Baseline person-month exposure</dt><dd>{formatPlanningNumber(scenarioResult.baseline_person_months, resultNumber)}</dd><small className="pilot-quantity-hint">Wait months under baseline window</small></div>
+            <div className={Math.abs(scenarioResult.alternative_person_months) >= 1e12 ? "pilot-result-scientific" : undefined}><dt>Planning person-month exposure</dt><dd>{formatPlanningNumber(scenarioResult.alternative_person_months, resultNumber)}</dd><small className="pilot-quantity-hint">Wait months under planning window</small></div>
+            <div className={Math.abs(scenarioResult.difference_person_months) >= 1e12 ? "pilot-result-scientific" : undefined}><dt>Difference in person-month exposure</dt><dd>{formatPlanningNumber(scenarioResult.difference_person_months, resultNumber)}</dd><small className="pilot-quantity-hint">Modeled wait-time reduction (not clinical effect)</small></div>
+            <div className={Math.abs(scenarioResult.program_resource_requirement) >= 1e12 ? "pilot-result-scientific" : undefined}><dt>Program-resource requirement</dt><dd>{formatPlanningCurrency(scenarioResult.program_resource_requirement)}</dd><small className="pilot-quantity-hint">Estimated program budget — not savings or ROI</small></div>
+          </dl>
         </WorkspaceDisclosure>
         <div className="sr-only" aria-live="polite" aria-atomic="true">{resultAnnouncement}</div>
         {invalidDraft ? <section id="sensitivity" className="sensitivity-paused-state" aria-labelledby="sensitivity-paused-title">
@@ -286,48 +386,48 @@ function PilotPlannerWorkspace({
       </article>
     </div>
 
-        <section id="pilot-context" className="pilot-local-context" aria-labelledby="pilot-local-context-title">
-          <div className="pilot-local-context-heading">
-            <div>
-              <p className="visual-kicker">ANALYST-SELECTED CONTEXT</p>
-              <h2 id="pilot-local-context-title">Local planning context</h2>
-            </div>
-            <Link className="text-button" to="/local-context">
-              {pilotLocalContext ? "Replace in Local Context" : "Review Local Context"}
-            </Link>
-          </div>
-          {pilotLocalContext ? <>
-            <div className="pilot-local-context-record">
-              <strong>{pilotLocalContext.label}</strong>
-              <span className="pilot-local-context-value">{formatLocalContextValue(pilotLocalContext)}</span>
-              <span>{pilotLocalContext.geography_name} ({pilotLocalContext.geography_type})</span>
-              <span><b>Source:</b> {pilotLocalContext.source_agency} · {pilotLocalContext.source_release_vintage}</span>
-              <span><b>Published uncertainty:</b> {formatPublishedLocalContextUncertainty(pilotLocalContext)}</span>
-              <span><b>Allowed interpretation:</b> {pilotLocalContext.allowed_interpretation}</span>
-            </div>
-            <div className="pilot-local-context-actions">
-              <button className="text-button" type="button" onClick={clearPilotLocalContext}>Remove from Pilot</button>
-            </div>
-          </> : <div className="empty-state compact">
-            <strong>No local implementation context is currently attached to this Pilot scenario.</strong>
-            <p>Absence of a selected record does not mean there is no implementation constraint.</p>
-          </div>}
-          <p className="subtle">
-            Reviewed local implementation context is for analyst judgment only. Attaching, replacing, or removing it does not alter reach, capacity, timing, cost, pathway, or mechanism parameters.
-          </p>
-        </section>
+    <section id="pilot-context" className="pilot-local-context" aria-labelledby="pilot-local-context-title">
+      <div className="pilot-local-context-heading">
+        <div>
+          <p className="visual-kicker">ANALYST-SELECTED CONTEXT</p>
+          <h2 id="pilot-local-context-title">Local planning context</h2>
+        </div>
+        <Link className="text-button" to="/local-context">
+          {pilotLocalContext ? "Replace in Local Context" : "Review Local Context"}
+        </Link>
+      </div>
+      {pilotLocalContext ? <>
+        <div className="pilot-local-context-record">
+          <strong>{pilotLocalContext.label}</strong>
+          <span className="pilot-local-context-value">{formatLocalContextValue(pilotLocalContext)}</span>
+          <span>{pilotLocalContext.geography_name} ({pilotLocalContext.geography_type})</span>
+          <span><b>Source:</b> {pilotLocalContext.source_agency} · {pilotLocalContext.source_release_vintage}</span>
+          <span><b>Published uncertainty:</b> {formatPublishedLocalContextUncertainty(pilotLocalContext)}</span>
+          <span><b>Allowed interpretation:</b> {pilotLocalContext.allowed_interpretation}</span>
+        </div>
+        <div className="pilot-local-context-actions">
+          <button className="text-button" type="button" onClick={clearPilotLocalContext}>Remove from Pilot</button>
+        </div>
+      </> : <div className="empty-state compact">
+        <strong>No local implementation context is currently attached to this Pilot scenario.</strong>
+        <p>Absence of a selected record does not mean there is no implementation constraint.</p>
+      </div>}
+      <p className="subtle">
+        Reviewed local implementation context is for analyst judgment only. Attaching, replacing, or removing it does not alter reach, capacity, timing, cost, pathway, or mechanism parameters.
+      </p>
+    </section>
 
-        <WorkspaceDisclosure id="pilot-decision-details" title="Follow the decision trace"><section id="pilot-trace" className="pilot-decision-trace" aria-labelledby="pilot-decision-trace-title">
-          <h2 id="pilot-decision-trace-title">Decision trace</h2>
-          <DecisionTrace
-            burdenEstimateCount={burdenEstimateCount}
-            pilotLocalContext={pilotLocalContext}
-            localContextStatus={localContextStatus}
-            scenario={scenario}
-            currentDataRequestCount={currentOperationalDataRequests.length}
-            evidence={bundle?.evidence ?? []}
-            dataRequestHref="/pilot#sensitivity"
-          />
-        </section></WorkspaceDisclosure>
+    <WorkspaceDisclosure id="pilot-decision-details" title="Follow the decision trace"><section id="pilot-trace" className="pilot-decision-trace" aria-labelledby="pilot-decision-trace-title">
+      <h2 id="pilot-decision-trace-title">Decision trace</h2>
+      <DecisionTrace
+        burdenEstimateCount={burdenEstimateCount}
+        pilotLocalContext={pilotLocalContext}
+        localContextStatus={localContextStatus}
+        scenario={scenario}
+        currentDataRequestCount={currentOperationalDataRequests.length}
+        evidence={bundle?.evidence ?? []}
+        dataRequestHref="/pilot#sensitivity"
+      />
+    </section></WorkspaceDisclosure>
   </section>;
 }

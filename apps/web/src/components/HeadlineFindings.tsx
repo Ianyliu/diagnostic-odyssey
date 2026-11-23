@@ -31,7 +31,7 @@ export function HeadlineFindings() {
         </small></dd>
       </div>;
     })}</dl>
-    <p className="headline-findings-note">Descriptive survey-weighted estimates for adults with current Long COVID. All-cause spending is not cost attributable to Long COVID, diagnostic delay or care navigation.</p>
-    <Link className="headline-findings-link" to="/burden">Explore all {reviewedCount} ordinary reviewed estimates and interpretation limits <span aria-hidden="true">→</span></Link>
+    <p className="headline-findings-note">Survey-weighted 2024 MEPS national averages for adults with current Long COVID. All-cause spending reflects total care—not costs caused by Long COVID, diagnostic delay, or care navigation.</p>
+    <Link className="headline-findings-link" to="/burden">Explore all {reviewedCount} reviewed estimates and limits <span aria-hidden="true">→</span></Link>
   </aside>;
 }

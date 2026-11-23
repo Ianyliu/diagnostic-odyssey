@@ -25,19 +25,19 @@ export function BurdenPage() {
     <ContextBar />
     <div className="heading-row">
       <header className="page-heading">
-        <p className="eyebrow">BURDEN</p>
-        <h1>Burden overview</h1>
-        <p>Reviewed national MEPS evidence makes economic, healthcare-work, and human burden visible without turning descriptive burden into attributable cost.</p>
+        <p className="eyebrow">COST &amp; BURDEN · EDITION 01</p>
+        <h1>Cost &amp; burden overview</h1>
+        <p>Reviewed national MEPS evidence across spending, care-navigation time, and distress—kept in separate units rather than blended into one score.</p>
       </header>
       <div className="caution">
         <strong>Gross burden is not attributable burden.</strong>
-        <span>Reviewed MEPS estimates are national and descriptive—not diagnostic-delay cost, local prevalence, preventable spending, or savings.</span>
+        <span>All-cause national figures—not diagnostic-delay cost, local prevalence, preventable spending, or savings.</span>
       </div>
     </div>
 
     <div className="uncertainty-note">
       <strong>Survey uncertainty</strong>
-      <p>Intervals shown are the reviewed 95% confidence intervals from the MEPS survey-weighted analysis.</p>
+      <p>Intervals shown are the reviewed 95% confidence intervals from the MEPS survey-weighted analysis—sampling uncertainty, not causal effects.</p>
       <details className="interval-disclosure">
         <summary>About these intervals</summary>
         <p>Confidence intervals come directly from the reviewed MEPS artifact; no interval is recomputed in the web application. Survey weighting and design are preserved in the reviewed artifact metadata. These intervals describe sampling uncertainty for the descriptive survey estimates; they do not make gross burden attributable or causal.</p>
@@ -105,6 +105,6 @@ export function BurdenPage() {
       <strong>Native units stay separate.</strong>
       <p>Administrative time, spending, screening measures, utilization, and access experience are not added into one opaque score. Out-of-pocket spending remains nested within total spending, and K6/PHQ-2 remain screening/distress measures rather than diagnoses.</p>
     </div>
-    <div className="workflow-next"><Link className="button" to="/local-context">Continue to Local context</Link><Link to="/evidence">Intervention evidence &amp; limits</Link></div>
+    <div className="workflow-next"><Link className="button" to="/local-context">Continue to Local Terrain</Link><Link to="/evidence">Evidence limits</Link></div>
   </section>;
 }

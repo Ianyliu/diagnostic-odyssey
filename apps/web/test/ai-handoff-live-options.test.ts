@@ -14,5 +14,8 @@ test("default research tasks and automatic goal/task refresh never bypass Brief 
  assert.match(source,/setSession\(\{\s*observed: JSON\.stringify\(\[source\.key, nextGoal, question, nextModules\]\)/);
  assert.match(source,/if \(current && brief\)/);
  assert.match(source,/transferEpoch\.current\+\+/);
- assert.doesNotMatch(source,/AiGeminiPanel|AI_GUIDANCE_ENABLED|GEMINI_API_KEY|AI_PREVIEW_TOKEN/);
+ // Stage 2 adds the Gemini panel but the manual handoff still never reads secrets.
+ assert.match(source,/\{stage2Preview && !inline && <AiGeminiPanel snapshot=/);
+ assert.match(source,/typeof __DO_GEMINI_STAGE2_PREVIEW__ === "boolean"/);
+ assert.doesNotMatch(source,/GEMINI_API_KEY|AI_PREVIEW_TOKEN/);
 });

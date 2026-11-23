@@ -24,7 +24,7 @@ import {
   selectPilotLocalContext,
   type PilotLocalContextSelectionState
 } from "./pilotLocalContextSelection";
-import { createPlanningScenarioDefaults } from "./planningScenarioDefaults";
+import { createPlanningScenarioDefaults, type PilotStrategyPreset } from "./planningScenarioDefaults";
 import { createPilotInputDraft, type PilotInputDraft } from "./pilotInputDraft";
 import { loadReviewedMepsArtifact } from "./reviewedArtifact";
 import { loadReviewedWvLocalContextArtifact } from "./reviewedLocalContext";
@@ -51,6 +51,7 @@ interface ArtifactState {
   scenario: Scenario | null;
   scenarioResult: ScenarioResult | null;
   setScenario: (scenario: Scenario) => void;
+  applyScenarioPreset: (preset: PilotStrategyPreset) => void;
   pilotInputDraft: PilotInputDraft | null;
   setPilotInputDraft: (draft: PilotInputDraft) => void;
   analystDataRequests: DataRequest[];
@@ -244,6 +245,17 @@ export function ArtifactProvider({children}: {children: ReactNode}) {
     setBriefDataRequestIds([]);
   };
 
+  const applyScenarioPreset = (preset: PilotStrategyPreset) => {
+    const base = scenario ?? createPlanningScenarioDefaults();
+    const next: Scenario = {
+      ...base,
+      ...preset.values,
+      assumption_refs: [...base.assumption_refs]
+    };
+    setScenario(next);
+    setPilotInputDraft(createPilotInputDraft(next));
+  };
+
   const attachAcquisitionHint = (requestId: string): boolean => {
     // Enrich a session copy only; reviewed ArtifactBundle objects are never modified.
     const request = analystDataRequests.find(item => item.request_id === requestId);
@@ -280,6 +292,7 @@ export function ArtifactProvider({children}: {children: ReactNode}) {
         scenario,
         scenarioResult,
         setScenario,
+        applyScenarioPreset,
         pilotInputDraft,
         setPilotInputDraft,
         analystDataRequests,
