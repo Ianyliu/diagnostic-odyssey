@@ -78,21 +78,82 @@ export function useOpeningMotion() {
   return { playing, replay, runId, reducedMotion, announcement };
 }
 
+type SchematicStageId = "burden" | "terrain" | "levers" | "brief";
+
 interface OpeningProvenanceProps {
   playing: boolean;
   runId: number;
   reducedMotion: boolean;
   announcement: string;
   onReplay: () => void;
+  reviewedCount?: number;
+  localIndicatorCount?: number | null;
+  eligiblePopulation?: number;
+  reachPercent?: number;
+  capacity?: number;
+  dataRequestCount?: number;
 }
 
-export function OpeningProvenance({ playing, runId, reducedMotion, announcement, onReplay }: OpeningProvenanceProps) {
+export function OpeningProvenance({
+  playing,
+  runId,
+  reducedMotion,
+  announcement,
+  onReplay,
+  reviewedCount = 21,
+  localIndicatorCount = 34,
+  eligiblePopulation = 12000,
+  reachPercent = 25,
+  capacity = 3000,
+  dataRequestCount = 0
+}: OpeningProvenanceProps) {
+  const [selectedStage, setSelectedStage] = useState<SchematicStageId>("burden");
+
+  const stages: ReadonlyArray<{
+    id: SchematicStageId;
+    code: string;
+    label: string;
+    fact: string;
+    detail: string;
+  }> = [
+    {
+      id: "burden",
+      code: "01",
+      label: "Hidden Burden",
+      fact: `${reviewedCount || "—"} reviewed national estimates (MEPS)`,
+      detail: "Descriptive all-cause spending, time, and screening distress carried by U.S. adults—kept separate from local prevalence and scenario inputs."
+    },
+    {
+      id: "terrain",
+      code: "02",
+      label: "Local Terrain",
+      fact: `${localIndicatorCount ?? "—"} reviewed access & shortage indicators`,
+      detail: "HRSA shortage designations and Census ACS indicators describe local implementation conditions without estimating state disease prevalence."
+    },
+    {
+      id: "levers",
+      code: "03",
+      label: "Intervention Levers",
+      fact: `${eligiblePopulation.toLocaleString("en-US")} eligible · ${reachPercent}% reach · ${capacity.toLocaleString("en-US")} capacity`,
+      detail: "Explicit analyst planning assumptions bound to a named pathway step and mechanism—never treated as observed effects or savings."
+    },
+    {
+      id: "brief",
+      code: "04",
+      label: "Action Brief",
+      fact: `${dataRequestCount} active data request${dataRequestCount === 1 ? "" : "s"} · auditable export`,
+      detail: "Documented decision state carrying each layer's provenance, interpretation boundaries, and open data gaps without blending quantities."
+    }
+  ];
+
+  const activeStage = stages.find(stage => stage.id === selectedStage) ?? stages[0]!;
+
   return <figure className={"overview-provenance" + (playing ? " is-playing" : "")} data-opening-state={playing ? "playing" : "complete"}>
     <div className="workspace-preview" data-replay-cycle={runId % 2}>
       <div className="preview-chrome">
         <span className="preview-brand-dot" aria-hidden="true" />
         <div className="preview-chrome-label">
-          <strong>Provenance circuit</strong>
+          <strong>Schematic provenance console</strong>
           <span>Evidence → documented decision</span>
         </div>
         <button type="button" className="preview-replay" onClick={onReplay}>
@@ -102,21 +163,44 @@ export function OpeningProvenance({ playing, runId, reducedMotion, announcement,
       {/* Only animated content remounts; the Replay control retains DOM identity and keyboard focus. */}
       <Fragment key={runId}>
       <div className="preview-progress" aria-hidden="true"><span /></div>
+      <div className="schematic-node-bar" role="group" aria-label="Interactive schematic stage inspector">
+        {stages.map(stage => (
+          <button
+            key={stage.id}
+            type="button"
+            className="schematic-node-tab"
+            aria-pressed={selectedStage === stage.id}
+            onClick={() => setSelectedStage(stage.id)}
+          >
+            <span className="schematic-node-code">{stage.code}</span>
+            <strong>{stage.label}</strong>
+          </button>
+        ))}
+      </div>
       <div className="preview-body">
         <div className="preview-lanes" role="group" aria-label="Evidence roles remain separate">
-          <div className="opening-lane lane-evidence">
+          <div
+            className={`opening-lane lane-evidence${selectedStage === "burden" ? " is-active" : ""}`}
+            onClick={() => setSelectedStage("burden")}
+          >
             <span className="lane-kicker">01 / Reviewed evidence</span>
             <strong>National burden</strong>
             <span className="lane-rule"><i /></span>
             <small>MEPS · estimate · uncertainty · source</small>
           </div>
-          <div className="opening-lane lane-context">
+          <div
+            className={`opening-lane lane-context${selectedStage === "terrain" ? " is-active" : ""}`}
+            onClick={() => setSelectedStage("terrain")}
+          >
             <span className="lane-kicker">02 / Local context</span>
             <strong>Implementation conditions</strong>
             <span className="lane-rule"><i /></span>
             <small>HRSA / ACS · selected record · provenance</small>
           </div>
-          <div className="opening-lane lane-assumption">
+          <div
+            className={`opening-lane lane-assumption${selectedStage === "levers" ? " is-active" : ""}`}
+            onClick={() => setSelectedStage("levers")}
+          >
             <span className="lane-kicker">03 / Analyst assumptions</span>
             <strong>Pilot scenario</strong>
             <span className="lane-rule"><i /></span>
@@ -124,11 +208,19 @@ export function OpeningProvenance({ playing, runId, reducedMotion, announcement,
           </div>
         </div>
         <div className="preview-routes" aria-hidden="true">
-          <span className="route-evidence" />
-          <span className="route-context" />
-          <span className="route-assumption" />
+          <svg className="preview-schematic-svg" viewBox="0 0 44 260" preserveAspectRatio="none">
+            <path className="trace-path trace-evidence" d="M 0 45 C 22 45, 22 72, 42 72" />
+            <circle className="trace-node trace-node-evidence" cx="40" cy="72" r="3" />
+            <path className="trace-path trace-context" d="M 0 130 L 42 130" />
+            <circle className="trace-node trace-node-context" cx="40" cy="130" r="3" />
+            <path className="trace-path trace-assumption" d="M 0 215 C 22 215, 22 188, 42 188" />
+            <circle className="trace-node trace-node-assumption" cx="40" cy="188" r="3" />
+          </svg>
         </div>
-        <div className="preview-output">
+        <div
+          className={`preview-output${selectedStage === "brief" ? " is-active" : ""}`}
+          onClick={() => setSelectedStage("brief")}
+        >
           <div className="preview-output-topline">
             <span>04 / Planning Brief</span>
             <i aria-hidden="true" />
@@ -142,6 +234,13 @@ export function OpeningProvenance({ playing, runId, reducedMotion, announcement,
             <li><span /> Unanswered data needs retained</li>
           </ul>
         </div>
+      </div>
+      <div className="preview-inspector" role="region" aria-live="polite" aria-label="Selected schematic stage details">
+        <div className="preview-inspector-head">
+          <span className="preview-inspector-kicker">{activeStage.code} · {activeStage.label}</span>
+          <span className="preview-inspector-fact">{activeStage.fact}</span>
+        </div>
+        <p>{activeStage.detail}</p>
       </div>
       <div className="preview-footer">
         <span>THREE DISTINCT ROLES</span>

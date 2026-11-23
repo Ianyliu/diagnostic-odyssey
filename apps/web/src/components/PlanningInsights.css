@@ -1,7 +1,7 @@
 .planning-insights { min-width: 0; scroll-margin-top: 6rem; }
 .insights-heading, .insight-section-heading, .insight-panel-heading, .insight-roles-heading { display: flex; align-items: start; justify-content: space-between; gap: 1rem; }
 .insights-heading { padding: .4rem 0 1.2rem; }
-.insights-heading h2 { margin: .2rem 0 .5rem; font-size: clamp(1.5rem, 2.8vw, 2.15rem); letter-spacing: -.035em; }
+.insights-heading h2 { margin: .2rem 0 .5rem; font-family: var(--do-font-display); font-size: clamp(1.5rem, 2.8vw, 2.15rem); letter-spacing: -.03em; }
 .planning-insights .visual-kicker, .intervention-gap .visual-kicker { margin: 0 0 .4rem; }
 .insight-caption { color: var(--do-text-muted); font-size: .82rem; line-height: 1.55; }
 .insights-heading .insight-caption { margin: 0; }

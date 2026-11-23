@@ -13,5 +13,5 @@
   var resolved = preference === "system" ? (systemDark ? "dark" : "light") : preference;
   document.documentElement.dataset.theme = resolved;
   document.documentElement.dataset.themePreference = preference;
-  document.querySelector('meta[name="theme-color"]').content = resolved === "dark" ? "#09131b" : "#f5f2eb";
+  document.querySelector('meta[name="theme-color"]').content = resolved === "dark" ? "#0a0e17" : "#f4f6fa";
 })();

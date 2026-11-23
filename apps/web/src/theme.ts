@@ -5,7 +5,7 @@ export type ResolvedTheme = "light" | "dark";
 
 /** Browser chrome follows the existing light/dark canvas colors. */
 export function getThemeColor(theme: ResolvedTheme): string {
-  return theme === "dark" ? "#09131b" : "#f5f2eb";
+  return theme === "dark" ? "#0a0e17" : "#f4f6fa";
 }
 
 export function getThemeStorage(): Storage | null {

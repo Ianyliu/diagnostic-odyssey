@@ -128,7 +128,7 @@ test("first-screen panel and all interpretation boundaries survive compact styli
   const panel = readFileSync(fileURLToPath(new URL("../src/pages/OpeningProvenance.tsx", import.meta.url)), "utf8");
   const css = readFileSync(fileURLToPath(new URL("../src/pages/OverviewPage.css", import.meta.url)), "utf8");
   assert.match(overview,/className="overview-hero-motion"/);
-  assert.equal((overview.match(/<OpeningProvenance /g)??[]).length,1);
+  assert.equal((overview.match(/<OpeningProvenance\b/g)??[]).length,1);
   assert.match(overview,/<HeadlineFindings \/>/);
   for(const label of ["Reviewed evidence","Local context","Analyst assumptions","Planning Brief"])
     assert.ok(panel.includes(label),label);
@@ -137,5 +137,5 @@ test("first-screen panel and all interpretation boundaries survive compact styli
   assert.match(css,/@keyframes circuit-route/);
   assert.match(css,/@keyframes workspace-unfold-replay/);
   assert.match(css,/@media \(prefers-reduced-motion: reduce\)/);
-  assert.match(css,/\.preview-output \{ display: grid;/);
+  assert.match(css,/\.preview-output\s*\{\s*position:\s*relative;\s*display:\s*grid;/);
 });

@@ -34,6 +34,6 @@ test("Overview keeps a single compact evidence-role explanation and one conceptu
  assert.match(source,/Different evidence, distinct purposes/);
  assert.match(source,/not local Long COVID prevalence/);
  assert.match(source,/not observed effects/);
- assert.equal(source.split("<OpeningProvenance ").length-1,1);
+ assert.equal((source.match(/<OpeningProvenance\b/g)??[]).length,1);
  assert.doesNotMatch(source,/overview-role-grid|roles\.map/);
 });

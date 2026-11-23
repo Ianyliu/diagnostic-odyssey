@@ -10,6 +10,7 @@
 .coverage-switcher-header h2 {
   margin: 4px 0 6px;
   color: var(--do-text);
+  font-family: var(--do-font-display);
   font-size: clamp(1.2rem, 2vw, 1.5rem);
 }
 
@@ -46,11 +47,13 @@
 
 .coverage-tab[aria-selected="true"] {
   border-color: var(--do-accent);
-  background: var(--do-selection-bg);
+  background: var(--do-reviewed-bg);
+  color: var(--do-text);
   box-shadow: inset 0 -3px 0 var(--do-accent);
 }
 
 .coverage-tab-kicker {
+  font-family: var(--do-font-mono);
   font-size: .7rem;
   font-weight: 700;
   letter-spacing: .06em;

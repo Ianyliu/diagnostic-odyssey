@@ -86,12 +86,37 @@ test("plain-language navigation, Strategy AI route, ThemeControl, and CSP-clean 
 
   for (const file of [
     "../src/components/CoverageSwitcher.tsx",
+    "../src/components/StrategyTeaserSandbox.tsx",
     "../src/components/AiHandoff.tsx",
     "../src/components/AppShell.tsx",
+    "../src/pages/OverviewPage.tsx",
+    "../src/pages/OpeningProvenance.tsx",
     "../src/pages/PilotPage.tsx",
     "../src/pages/BriefPage.tsx",
     "../src/concept/FutureAIExperiencePage.tsx"
   ]) {
     assert.doesNotMatch(readSource(file), /style=\{\{/, `${file} must not use inline style={{}}`);
+  }
+
+  const sandbox = readSource("../src/components/StrategyTeaserSandbox.tsx");
+  assert.match(sandbox, /calculateScenario/);
+  assert.match(sandbox, /type="range"/);
+  assert.match(sandbox, /Illustrative scenario math — not a forecast, observed improvement, savings, or ROI\./);
+  assert.match(sandbox, /Load into Strategy Lab/);
+
+  for (const asset of [
+    "../../../packages/ui/src/styles.css",
+    "../../../packages/ui/src/index.ts",
+    "../src/styles.css",
+    "../src/workspace.css",
+    "../src/pages/OverviewPage.css",
+    "../public/diagnostic-odyssey-mark.svg",
+    "../../../scripts/og/render-og-image.mjs"
+  ]) {
+    assert.doesNotMatch(
+      readSource(asset),
+      /#0f7476|#2a9d9f|#58c3bd|#276b54|#3f765f|#2c6b58/i,
+      `${asset} must not contain AI-Teal hex values`
+    );
   }
 });

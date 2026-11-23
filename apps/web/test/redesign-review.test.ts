@@ -6,16 +6,20 @@ import test from "node:test";
 const readSource = (path: string) =>
   readFileSync(fileURLToPath(new URL(path, import.meta.url)), "utf8");
 
-test("brand palette is navy and teal rather than a red primary theme", () => {
+test("brand palette is Architectural Blueprint cobalt and slate with zero AI-Teal", () => {
   const tokens = readSource("../../../packages/ui/src/styles.css");
-  assert.match(tokens, /--do-brand-navy:\s*#153552/);
-  assert.match(tokens, /--do-brand-teal:\s*#0f7476/);
-  assert.match(tokens, /--do-accent:\s*#0f7476/);
-  assert.match(tokens, /--do-canvas:\s*#f5f2eb/);
-  assert.doesNotMatch(tokens, /--do-accent:\s*#762f3c/);
-  assert.match(tokens, /:root\[data-theme="dark"\][\s\S]*--do-canvas:\s*#09131b/);
-  assert.match(tokens, /:root\[data-theme="dark"\][\s\S]*--do-surface:\s*#111d26/);
-  assert.match(tokens, /:root\[data-theme="dark"\][\s\S]*--do-chart-4:\s*#d2ad68/);
+  assert.match(tokens, /--do-brand-navy:\s*#0f172a/);
+  assert.match(tokens, /--do-accent:\s*#1e40af/);
+  assert.match(tokens, /--do-canvas:\s*#f4f6fa/);
+  assert.match(tokens, /--do-surface:\s*#ffffff/);
+  assert.match(tokens, /--do-font-display:\s*"Space Grotesk Variable"/);
+  assert.match(tokens, /--do-font-body:\s*"DM Sans Variable"/);
+  assert.match(tokens, /--do-font-mono:\s*"JetBrains Mono Variable"/);
+  assert.doesNotMatch(tokens, /#0f7476|#2a9d9f|#58c3bd|#276b54|#3f765f|#2c6b58/i);
+  assert.match(tokens, /:root\[data-theme="dark"\][\s\S]*--do-canvas:\s*#0a0e17/);
+  assert.match(tokens, /:root\[data-theme="dark"\][\s\S]*--do-surface:\s*#111827/);
+  assert.match(tokens, /:root\[data-theme="dark"\][\s\S]*--do-accent:\s*#6d9bff/);
+  assert.match(tokens, /:root\[data-theme="dark"\][\s\S]*--do-chart-4:\s*#a5b4fc/);
 });
 
 test("overview keeps the workflow visible without promotional filler", () => {
@@ -24,7 +28,8 @@ test("overview keeps the workflow visible without promotional filler", () => {
   assert.match(overview, /Evidence into planning/);
   assert.match(overview, /boundaries intact/);
   assert.match(overview, /overview-proof/);
-  assert.match(overview, /<OpeningProvenance playing=\{opening\.playing\}/);
+  assert.match(overview, /<OpeningProvenance[\s\S]*?playing=\{opening\.playing\}/);
+  assert.match(overview, /<StrategyTeaserSandbox \/>/);
   assert.match(overview, /className="overview-hero-motion"/);
   assert.match(overview, /journey-grid/);
   assert.doesNotMatch(overview, /<DecisionStateRail/);
@@ -32,14 +37,14 @@ test("overview keeps the workflow visible without promotional filler", () => {
   assert.doesNotMatch(overview, /overview-final-cta/);
   assert.match(css, /radial-gradient/);
   assert.match(css, /workspace-preview/);
-  assert.match(css, /\.overview-destinations\s*\{[^}]*background:\s*color-mix\(in srgb, var\(--do-assumption-bg\) 35%, var\(--do-canvas\)\)/);
+  assert.match(css, /\.overview-destinations\s*\{[^}]*background:\s*transparent/);
   assert.doesNotMatch(css, /linear-gradient\(135deg, #153552, #102a3d 72%\)/);
   assert.match(css, /@media \(prefers-reduced-motion: reduce\)/);
 });
 
 test("narrow Overview uses valid single-column evidence and workflow grids", () => {
   const css = readSource("../src/pages/OverviewPage.css");
-  const narrow = css.match(/@media \(max-width: 720px\) \{([\s\S]*?)\n\}\n\n@media \(max-width: 440px\)/)?.[1];
+  const narrow = css.match(/@media \(max-width: 720px\) \{([\s\S]*?)\n\}/)?.[1];
   assert.ok(narrow, "720px mobile styles must exist");
   assert.match(narrow, /\.overview-role-grid,\s*\.overview-page \.journey-grid\s*\{\s*grid-template-columns:\s*minmax\(0, 1fr\)/);
   assert.doesNotMatch(narrow, /\.overview-page \.journey-grid,\s*\.overview-role-card/);
@@ -53,6 +58,8 @@ test("overview visualization preserves separate evidence lanes through the plann
   assert.match(source, /National estimates, local context, and analyst assumptions stay separate in the Planning Brief/);
   assert.match(source, /not a combined scientific score/);
   assert.match(source, /Replay animation/);
+  assert.match(source, /schematic-node-bar/);
+  assert.match(source, /preview-inspector/);
   assert.doesNotMatch(source, /opening-junction/);
 });
 
@@ -100,18 +107,15 @@ test("Planning Brief print repeats product provenance and moves decision state o
   assert.match(brief, /brief-print-decision-state/);
   assert.match(brief, /<h2>Decision state<\/h2>/);
   assert.match(css, /\.planning-brief-page \.brief-aside\s*\{\s*display:\s*none !important/s);
-  // Real @page margin boxes reserve document space instead of overlaying
-  // paragraph text; dynamic artifact version and timestamp remain in provenance.
   assert.match(css, /@bottom-left\s*\{\s*content:\s*"Diagnostic Odyssey"/s);
   assert.match(css, /@bottom-right\s*\{\s*content:\s*"Page "\s*counter\(page\)/s);
   assert.match(css, /\.planning-brief-page \.brief-print-footer\s*\{\s*display:\s*none !important/s);
   assert.match(css, /\.brief-burden-table-wrap\s*\{[^}]*position:\s*relative/s);
 });
 
-
-test("workflow cards use restrained semantic variety instead of one teal treatment", () => {
+test("workflow cards use restrained Architectural Blueprint accents", () => {
   const css = readSource("../src/pages/OverviewPage.css");
-  for (const accent of ["#3f765f", "#3e6f91", "#806326", "#327472", "#606c7e", "#153552"]) {
+  for (const accent of ["#1e40af", "#334155", "#92400e", "#1e3a8a", "#475569", "#0f172a"]) {
     assert.ok(css.includes(accent), accent);
   }
   assert.match(css, /journey-card:nth-child\(1\)/);
@@ -119,10 +123,10 @@ test("workflow cards use restrained semantic variety instead of one teal treatme
   assert.match(css, /--journey-accent/);
 });
 
-test("dark overview keeps teal as emphasis instead of the dominant field color", () => {
+test("dark overview keeps Blueprint Cobalt as emphasis instead of the dominant field color", () => {
   const css = readSource("../src/pages/OverviewPage.css");
-  assert.match(css, /:root\[data-theme="dark"\] \.overview-hero\s*\{[\s\S]*linear-gradient\(145deg, #101d27 0%, #09131b 66%, #0d1821 100%\)/);
-  assert.match(css, /rgba\(88, 195, 189, \.055\)/);
+  assert.match(css, /:root\[data-theme="dark"\] \.overview-hero\s*\{[\s\S]*linear-gradient\(155deg, #111827 0%, #0a0e17 64%, #0f172a 100%\)/);
+  assert.match(css, /rgba\(109, 155, 255, \.09\)/);
   assert.match(css, /\.overview-hero h1 em\s*\{[^}]*color:\s*var\(--do-accent\)/s);
-  assert.match(css, /:root\[data-theme="dark"\] \.overview-lede\s*\{[^}]*color:\s*#c1c9cd/s);
+  assert.match(css, /:root\[data-theme="dark"\] \.workspace-preview\s*\{[^}]*background:\s*#111827/s);
 });

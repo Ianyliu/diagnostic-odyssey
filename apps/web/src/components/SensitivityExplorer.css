@@ -86,8 +86,8 @@
 
 .sensitivity-row.current {
   margin-inline: 0;
-  background: var(--do-selection-surface);
-  box-shadow: inset 3px 0 var(--do-selection-border);
+  background: var(--do-reviewed-bg);
+  box-shadow: inset 3px 0 var(--do-accent);
 }
 
 .sensitivity-input {

@@ -18,8 +18,9 @@
 .interval-figure .visual-kicker {
   margin: 0;
   color: var(--do-accent);
+  font-family: var(--do-font-mono);
   font-size: 0.7rem;
-  font-weight: 750;
+  font-weight: 700;
   letter-spacing: 0.1em;
 }
 

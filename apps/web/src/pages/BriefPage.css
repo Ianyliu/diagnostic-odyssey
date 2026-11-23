@@ -414,9 +414,9 @@
   /* Page-margin content stays outside the printable body. A fixed-position
      footer overlaps long tables or clips when shifted into the page margin. */
   @page {
-    @bottom-left { content: "Diagnostic Odyssey"; font: 6.8pt sans-serif; color: #4b5750; }
-    @bottom-center { content: "Reviewed artifact · see Brief provenance"; font: 6.8pt sans-serif; color: #4b5750; }
-    @bottom-right { content: "Page " counter(page) " of " counter(pages); font: 6.8pt sans-serif; color: #4b5750; }
+    @bottom-left { content: "Diagnostic Odyssey"; font: 6.8pt sans-serif; color: #475569; }
+    @bottom-center { content: "Reviewed artifact · see Brief provenance"; font: 6.8pt sans-serif; color: #475569; }
+    @bottom-right { content: "Page " counter(page) " of " counter(pages); font: 6.8pt sans-serif; color: #475569; }
   }
   .planning-brief-page {
     display: block; /* screen grid gaps and bottom padding can create a footer-only final page */
@@ -796,8 +796,8 @@
 }
 @media print {
   .planning-brief-page .brief-executive-summary {
-    display: block !important; color: #242a2d; background: #fff;
-    border: 0; border-top: 1pt solid #9da39c; border-radius: 0;
+    display: block !important; color: #0f172a; background: #fff;
+    border: 0; border-top: 1pt solid #94a3b8; border-radius: 0;
     padding: 5pt 0 7pt; margin: 0 0 5pt;
     font-size: 8pt; line-height: 1.32;
   }
