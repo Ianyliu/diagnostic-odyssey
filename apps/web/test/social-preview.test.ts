@@ -30,7 +30,7 @@ test("social artwork alt is literal, matching across OpenGraph and Twitter",()=>
  };
  const og=get("property","og:image:alt"),twitter=get("name","twitter:image:alt");
  assert.equal(og,twitter);
- assert.match(og,/Long COVID goes beyond the bill/);
+ assert.match(og,/Health-cost strategy goes beyond the bill/);
  for (const label of ["reviewed national burden","local implementation","transparent pilot plans"]) assert.match(og,new RegExp(label,"i"));
  assert.match(og,/all-cause burden is not attributable cost/i);
  assert.doesNotMatch(og,/\b(?:confidence intervals?|\d+%|CI)\b/i);

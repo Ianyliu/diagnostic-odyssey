@@ -16,10 +16,11 @@
 
 .ledger-index-heading {
   margin: 0 0 0.5rem;
-  color: var(--do-text-muted);
-  font-size: 0.75rem;
-  font-weight: 750;
-  letter-spacing: 0.08em;
+  color: var(--do-signal);
+  font-family: var(--do-font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.09em;
   text-transform: uppercase;
 }
 
@@ -38,7 +39,7 @@
 
 .ledger-section-nav a:hover,
 .ledger-section-nav a:focus-visible {
-  border-left-color: var(--do-accent);
+  border-left-color: var(--do-signal);
   color: var(--do-text);
   background: var(--do-surface);
 }
@@ -71,7 +72,7 @@
 .domain-ledger-page .burden-domain-header > div { min-width: min(100%, 20rem); flex: 1 1 20rem; }
 
 .burden-ledger-page .burden-domain-header h2,
-.domain-ledger-page .burden-domain-header h2 { margin: 0 0 0.2rem; color: var(--do-text); }
+.domain-ledger-page .burden-domain-header h2 { margin: 0 0 0.2rem; color: var(--do-text); font-family: var(--do-font-display); font-weight: 400; font-size: clamp(1.35rem, 2vw, 1.65rem); }
 
 .ledger-evidence-state {
   display: inline-flex;
@@ -186,7 +187,7 @@
 .local-ledger-page .ledger-record-universe { color: var(--do-text-muted); font-size: 0.8rem; }
 .local-ledger-page .ledger-row-selected { background: var(--do-selection-bg); }
 .local-ledger-page .ledger-indicator-row { transition: background-color var(--do-motion-short) ease-out; }
-.local-ledger-page .ledger-row-pilot { box-shadow: inset 3px 0 var(--do-selection-text); }
+.local-ledger-page .ledger-row-pilot { box-shadow: inset 3px 0 var(--do-signal); }
 
 .local-ledger-page .selection-control {
   display: inline-flex;
@@ -204,11 +205,11 @@
 .local-ledger-page .ledger-pilot-selection {
   width: fit-content;
   padding: 0.2rem 0.45rem;
-  border-left: 2px solid var(--do-selection-text);
-  color: var(--do-selection-text);
+  border-left: 2px solid var(--do-signal);
+  color: var(--do-text);
   background: var(--do-selection-bg);
   font-size: 0.76rem;
-  font-weight: 750;
+  font-weight: 700;
 }
 
 .local-ledger-page .ledger-record-value {

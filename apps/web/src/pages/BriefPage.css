@@ -64,7 +64,7 @@
 
 .planning-brief-page .brief-contents a:hover,
 .planning-brief-page .brief-contents a:focus-visible {
-  border-left-color: var(--do-accent);
+  border-left-color: var(--do-signal);
   color: var(--do-text);
   text-decoration: underline;
 }
@@ -192,8 +192,10 @@
 
 .planning-brief-page .brief-content h2 {
   margin: 0 0 .75rem;
-  font-size: clamp(1.24rem, 2vw, 1.5rem);
-  line-height: 1.25;
+  font-family: var(--do-font-display);
+  font-size: clamp(1.38rem, 2.2vw, 1.72rem);
+  font-weight: 400;
+  line-height: 1.2;
 }
 
 .planning-brief-page .brief-content p {
@@ -279,7 +281,7 @@
   gap: 0 1.4rem;
   margin: 1rem 0;
   padding: .55rem 1rem;
-  border-left: 3px solid var(--do-accent);
+  border-left: 3px solid var(--do-signal);
   background: var(--do-surface-elevated);
 }
 
@@ -414,9 +416,9 @@
   /* Page-margin content stays outside the printable body. A fixed-position
      footer overlaps long tables or clips when shifted into the page margin. */
   @page {
-    @bottom-left { content: "Diagnostic Odyssey"; font: 6.8pt sans-serif; color: #4b5750; }
-    @bottom-center { content: "Reviewed artifact · see Brief provenance"; font: 6.8pt sans-serif; color: #4b5750; }
-    @bottom-right { content: "Page " counter(page) " of " counter(pages); font: 6.8pt sans-serif; color: #4b5750; }
+    @bottom-left { content: "Diagnostic Odyssey"; font: 6.8pt sans-serif; color: #57585f; }
+    @bottom-center { content: "Reviewed artifact · see Brief provenance"; font: 6.8pt sans-serif; color: #57585f; }
+    @bottom-right { content: "Page " counter(page) " of " counter(pages); font: 6.8pt sans-serif; color: #57585f; }
   }
   .planning-brief-page {
     display: block; /* screen grid gaps and bottom padding can create a footer-only final page */
@@ -772,13 +774,13 @@
    of Planning Insights preview and its opt-in extra print pages. */
 .planning-brief-page .brief-executive-summary {
   border: 1px solid var(--do-border);
-  border-top: 3px solid var(--do-reviewed-border);
+  border-top: 2px solid var(--do-signal);
   padding: clamp(1rem, 2vw, 1.4rem);
   background: var(--do-surface);
   border-radius: var(--do-radius-card);
   min-width: 0;
 }
-.planning-brief-page .brief-executive-header h2 { font-size: 1.28rem; margin: .15rem 0 .45rem; }
+.planning-brief-page .brief-executive-header h2 { font-family: var(--do-font-display); font-size: 1.55rem; font-weight: 400; margin: .15rem 0 .45rem; }
 .planning-brief-page .brief-executive-header p:last-child { font-size: .88rem; line-height: 1.5; max-width: 75ch; }
 .planning-brief-page .brief-executive-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .8rem 1.4rem; }
 .planning-brief-page .brief-executive-finding { min-width: 0; border-top: 1px solid var(--do-border); padding-top: .65rem; overflow-wrap: anywhere; }

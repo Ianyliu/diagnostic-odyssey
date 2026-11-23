@@ -32,11 +32,10 @@ export function OverviewPage() {
   return (
     <section className={"page page-stack overview-page" + (opening.playing ? " is-opening" : "")}>
       <section className="overview-hero" aria-labelledby="overview-title">
-        <div className="overview-hero-grid" aria-hidden="true" />
         <div className="overview-hero-intro">
           <p className="overview-kicker">Evidence into planning, with boundaries intact.</p>
           <h1 id="overview-title">
-            Long COVID&rsquo;s burden
+            Health-cost strategy
             <span>goes beyond the bill.</span>
           </h1>
         </div>
@@ -45,11 +44,11 @@ export function OverviewPage() {
         </div>
         <div className="overview-hero-details">
           <p className="overview-lede">
-            <strong className="overview-audience">For state health departments and Medicaid programs scoping Long COVID care-navigation pilots.</strong> Diagnostic Odyssey keeps reviewed national burden, local implementation context, and analyst assumptions visibly separate—then carries their provenance into one workflow.
+            <strong className="overview-audience">For state health departments and Medicaid programs scoping care-navigation pilots.</strong> Diagnostic Odyssey keeps reviewed national burden, local implementation context, and analyst assumptions visibly separate—then carries their provenance into one auditable workflow.
           </p>
           <div className="overview-hero-actions" role="group" aria-label="Start exploring Diagnostic Odyssey">
             <Link className="button overview-primary-cta" to="/burden">Explore reviewed burden</Link>
-            <Link className="overview-secondary-cta" to="/pilot">Open Pilot planner</Link>
+            <Link className="overview-secondary-cta" to="/pilot">Open Strategy Lab</Link>
             {planningInsightsEnabled && <Link className="overview-tertiary-cta" to="/brief#planning-insights">See planning insights <span aria-hidden="true">→</span></Link>}
           </div>
           <dl className="overview-proof" aria-label="Current workspace evidence">
@@ -62,9 +61,10 @@ export function OverviewPage() {
               <dd>reviewed local-context indicators</dd>
             </div>
           </dl>
-          <p className="overview-source-note">Grounded in <strong>MEPS</strong>, <strong>HRSA</strong> and <strong>ACS</strong> · source boundaries stay visible.</p>
+          <p className="overview-source-note">Edition 01 (Long COVID) · Grounded in <strong>MEPS</strong>, <strong>HRSA</strong> &amp; <strong>ACS</strong> · source boundaries stay visible.</p>
         </div>
       </section>
+
       <HeadlineFindings />
       <CoverageSwitcher />
 
@@ -74,7 +74,7 @@ export function OverviewPage() {
           <h2 id="overview-value-title">Different evidence, distinct purposes.</h2>
           <p>MEPS describes national burden; HRSA and ACS describe local implementation context, not local Long COVID prevalence; analyst inputs are planning assumptions, not observed effects. The three are never blended into one estimate.</p>
         </div>
-        <p className="overview-value-echo">The opening provenance circuit connects each evidence role to a documented planning artifact—not to a pooled estimate or invented effect.</p>
+        <p className="overview-value-echo">Each layer in the strategy dossier maps to a documented planning artifact—never to a pooled estimate or invented effect.</p>
       </section>
 
       <nav className="overview-destinations" aria-label="Workspace navigation">
@@ -95,7 +95,6 @@ export function OverviewPage() {
         </div>
         <p className="overview-workflow-note">Within your pilot: <Link to="/pilot#sensitivity">test sensitivity</Link> → <Link to="/data-requests">capture data needs</Link> → review your brief. <Link to="/evidence">Intervention evidence &amp; limits</Link> stays separate from descriptive burden.</p>
       </nav>
-
     </section>
   );
 }

@@ -34,8 +34,8 @@
 
 .pilot-section-nav a:hover,
 .pilot-section-nav a:focus-visible {
-  color: var(--do-accent);
-  border-bottom-color: var(--do-accent);
+  color: var(--do-text);
+  border-bottom-color: var(--do-signal);
 }
 
 .pilot-page .pilot-grid {
@@ -351,9 +351,9 @@
 .sensitivity-preview li { display: grid; grid-template-columns: minmax(0, 1fr) minmax(24px, 1fr) auto; align-items: center; gap: 8px; font-size: .78rem; }
 .sensitivity-preview li > * { min-width: 0; overflow-wrap: anywhere; }
 .preview-gap-track { height: 6px; background: var(--do-surface-elevated); }
-.preview-gap-track > span { display: block; height: 100%; background: var(--do-assumption-text); }
+.preview-gap-track > span { display: block; height: 100%; background: var(--do-signal); }
 .pilot-request-loop { font-size: .88rem; line-height: 1.7; }
-.pilot-page .result-card > h2 { font-size: 1.35rem; }
+.pilot-page .result-card > h2 { font-family: var(--do-font-display); font-size: 1.55rem; font-weight: 400; }
 @media (max-width: 640px) {
  .pilot-headlines { grid-template-columns: minmax(0, 1fr); gap: 10px; }
  .pilot-headlines dd { font-size: clamp(1rem, 8cqi, 1.5rem); }
@@ -392,22 +392,22 @@
   cursor: pointer;
   transition: border-color var(--do-motion-short), background var(--do-motion-short);
 }
-.pilot-preset-button:hover { border-color: var(--do-accent); }
+.pilot-preset-button:hover { border-color: var(--do-signal); }
 .pilot-preset-button[aria-pressed="true"] {
-  border-color: var(--do-accent);
+  border-color: var(--do-signal);
   background: var(--do-selection-bg);
-  color: var(--do-selection-text);
-  box-shadow: inset 3px 0 0 var(--do-accent);
+  color: var(--do-text);
+  box-shadow: inset 3px 0 0 var(--do-signal);
 }
 .pilot-preset-button strong { font-size: .88rem; }
 .pilot-preset-button small { color: var(--do-text-muted); font-size: .75rem; line-height: 1.35; }
-.pilot-preset-button[aria-pressed="true"] small { color: var(--do-selection-text); }
+.pilot-preset-button[aria-pressed="true"] small { color: var(--do-text-muted); }
 
 .pilot-range-slider {
   width: 100%;
   min-height: 28px;
   margin: 4px 0 0;
-  accent-color: var(--do-accent);
+  accent-color: var(--do-signal);
   cursor: pointer;
 }
 .pilot-quantity-hint {

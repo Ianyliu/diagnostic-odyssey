@@ -103,7 +103,7 @@ test("opening uses session storage and remains decorative", () => {
   assert.match(source, /sessionStorageOrNull/);
   assert.match(motionSource, /window\.sessionStorage/);
   assert.doesNotMatch(source, /localStorage/);
-  assert.match(source, /className="preview-lanes" role="group" aria-label="Evidence roles remain separate"/);
+  assert.match(source, /className="dossier-tabs" role="tablist" aria-label="Evidence roles remain separate"/);
   assert.match(source, /Reviewed evidence/);
   assert.match(source, /Local context/);
   assert.match(source, /Analyst assumptions/);
@@ -112,8 +112,8 @@ test("opening uses session storage and remains decorative", () => {
   assert.match(source, /keydown/);
   assert.match(source, /prefers-reduced-motion: reduce/);
   assert.match(source, /<Fragment key=\{runId\}>/);
-  assert.match(source, /className="workspace-preview" data-replay-cycle=\{runId % 2\}/);
-  assert.doesNotMatch(source, /className="workspace-preview" key=\{runId\}/);
+  assert.match(source, /className="strategy-dossier" data-replay-cycle=\{runId % 2\}/);
+  assert.doesNotMatch(source, /className="strategy-dossier" key=\{runId\}/);
 });
 
 test("manual replay is independent of the once-per-session flag", async () => {
@@ -127,15 +127,17 @@ test("first-screen panel and all interpretation boundaries survive compact styli
   const overview = readFileSync(fileURLToPath(new URL("../src/pages/OverviewPage.tsx", import.meta.url)), "utf8");
   const panel = readFileSync(fileURLToPath(new URL("../src/pages/OpeningProvenance.tsx", import.meta.url)), "utf8");
   const css = readFileSync(fileURLToPath(new URL("../src/pages/OverviewPage.css", import.meta.url)), "utf8");
+  const motionCss = readFileSync(fileURLToPath(new URL("../src/motion.css", import.meta.url)), "utf8");
   assert.match(overview,/className="overview-hero-motion"/);
   assert.equal((overview.match(/<OpeningProvenance /g)??[]).length,1);
   assert.match(overview,/<HeadlineFindings \/>/);
-  for(const label of ["Reviewed evidence","Local context","Analyst assumptions","Planning Brief"])
+  for(const label of ["Reviewed evidence","Local context","Analyst assumptions","Planning Brief","Burden","Terrain","Strategy","Brief"])
     assert.ok(panel.includes(label),label);
-  for(const label of ["Replay animation","visibilitychange","pagehide","not a combined scientific score"])
+  for(const label of ["Replay sequence","visibilitychange","pagehide","not a combined scientific score"])
     assert.ok(panel.includes(label),label);
-  assert.match(css,/@keyframes circuit-route/);
-  assert.match(css,/@keyframes workspace-unfold-replay/);
+  assert.match(css,/\.strategy-dossier\s*\{/);
+  assert.match(css,/\.dossier-tabs\s*\{/);
+  assert.match(motionCss,/@keyframes monograph-enter/);
   assert.match(css,/@media \(prefers-reduced-motion: reduce\)/);
-  assert.match(css,/\.preview-output \{ display: grid;/);
+  assert.match(motionCss,/@media \(prefers-reduced-motion: reduce\)/);
 });

@@ -11,16 +11,19 @@
     "test": "node --experimental-strip-types --test test/*.test.ts"
   },
   "dependencies": {
+    "@diagnostic-odyssey/acquisition-hints": "*",
     "@diagnostic-odyssey/brief-core": "*",
     "@diagnostic-odyssey/condition-adapters": "*",
     "@diagnostic-odyssey/contracts": "*",
     "@diagnostic-odyssey/evidence-core": "*",
     "@diagnostic-odyssey/scenario-engine": "*",
     "@diagnostic-odyssey/ui": "*",
+    "@fontsource-variable/inter": "^5.3.0",
+    "@fontsource/ibm-plex-mono": "^5.3.0",
+    "@fontsource/instrument-serif": "^5.3.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^6.30.6",
-    "@diagnostic-odyssey/acquisition-hints": "*"
+    "react-router-dom": "^6.30.6"
   },
   "devDependencies": {
     "@types/react": "^18.3.11",

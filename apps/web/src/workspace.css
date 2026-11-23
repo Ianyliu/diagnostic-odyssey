@@ -77,40 +77,41 @@ textarea {
   flex: 0 0 38px;
   place-items: center;
   overflow: hidden;
-  border: 1px solid color-mix(in srgb, var(--do-brand-teal) 35%, var(--do-border));
+  border: 1px solid color-mix(in srgb, var(--do-signal) 45%, var(--do-border));
   border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 6px 18px color-mix(in srgb, var(--do-brand-navy) 12%, transparent);
+  background: var(--do-surface-elevated);
 }
 
 .brand-mark img {
   display: block;
-  width: 42px;
-  height: 42px;
+  width: 40px;
+  height: 40px;
   max-width: none;
   object-fit: cover;
 }
 
 .brand-copy {
   display: grid;
-  gap: 1px;
+  gap: 2px;
   min-width: 0;
 }
 
 .brand-copy strong {
-  color: var(--do-brand-navy);
-  font-size: 1.03rem;
-  font-weight: 780;
-  letter-spacing: -.025em;
-  line-height: 1.08;
+  color: var(--do-text);
+  font-family: var(--do-font-display);
+  font-size: 1.24rem;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.05;
 }
 
 .brand-copy span {
   color: var(--do-text-muted);
-  font-size: .62rem;
-  font-weight: 720;
-  letter-spacing: .09em;
-  line-height: 1.25;
+  font-family: var(--do-font-mono);
+  font-size: 0.58rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  line-height: 1.2;
   text-transform: uppercase;
 }
 
@@ -150,13 +151,13 @@ textarea {
 
 .primary-nav a:hover,
 .primary-nav a:focus-visible {
-  color: var(--do-accent);
+  color: var(--do-text);
 }
 
 .primary-nav a.active {
   color: var(--do-text);
-  border-bottom-color: var(--do-accent);
-  font-weight: 750;
+  border-bottom-color: var(--do-signal);
+  font-weight: 700;
 }
 
 .header-controls {
@@ -432,7 +433,7 @@ footer {
   .button { min-height: 44px; align-items: center; justify-content: center; gap: 8px; }
   .button.secondary { border-color: var(--do-control-border); color: var(--do-text); }
   .button:disabled { cursor: not-allowed; opacity: .6; }
-  .primary-nav a.active { background: color-mix(in srgb, var(--do-selection-bg) 55%, transparent); border-radius: 6px 6px 0 0; }
+  .primary-nav a.active { background: transparent; border-radius: 0; }
   .input-wrap:focus-within { border-color: var(--do-focus); background: var(--do-surface-elevated); }
   .planning-brief-page .brief-contents a { min-height: 40px; display: flex; align-items: center; }
   .planning-brief-page .brief-content { box-shadow: var(--do-shadow-soft); }
@@ -446,10 +447,10 @@ footer {
 .error-boundary-fallback h1 {
   color: var(--do-text);
   font-family: var(--do-font-display);
-  font-weight: 600;
-  font-size: clamp(2rem, 3.3vw, 2.8rem);
-  line-height: 1.12;
-  letter-spacing: -.025em;
+  font-weight: 400;
+  font-size: clamp(2.15rem, 3.6vw, 3.05rem);
+  line-height: 1.08;
+  letter-spacing: -0.015em;
   text-wrap: balance;
 }
 
@@ -457,15 +458,17 @@ footer {
   color: var(--do-text-muted);
   max-width: 72ch;
   font-size: 1rem;
-  line-height: 1.55;
+  line-height: 1.58;
 }
 
 .eyebrow,
 .visual-kicker,
 .decision-state-card .visual-kicker {
-  color: var(--do-accent) !important;
-  font-size: .76rem !important;
-  letter-spacing: .11em;
+  color: var(--do-signal) !important;
+  font-family: var(--do-font-mono);
+  font-size: 0.72rem !important;
+  font-weight: 600;
+  letter-spacing: 0.11em;
   line-height: 1.3;
 }
 
@@ -646,9 +649,19 @@ footer {
 }
 
 .button.secondary {
-  color: var(--do-accent);
+  color: var(--do-text);
   background: var(--do-surface);
-  border-color: var(--do-accent);
+  border-color: var(--do-control-border);
+}
+
+.button:hover:not(:disabled) {
+  opacity: 0.92;
+}
+
+.button.secondary:hover:not(:disabled) {
+  border-color: var(--do-signal);
+  color: var(--do-signal);
+  opacity: 1;
 }
 
 .button:hover,
@@ -669,14 +682,19 @@ button:disabled {
   align-items: center;
   min-height: 44px;
   padding: 8px;
-  color: var(--do-accent);
+  color: var(--do-text);
   background: transparent;
   border: 0;
-  font-weight: 700;
+  font-weight: 650;
   line-height: 1.25;
   text-decoration: underline;
-  text-underline-offset: .18em;
+  text-decoration-color: var(--do-signal);
+  text-underline-offset: .2em;
   cursor: pointer;
+}
+
+.text-button:hover {
+  color: var(--do-signal);
 }
 
 input,
@@ -685,7 +703,7 @@ textarea {
   color: var(--do-text);
   background: var(--do-surface-elevated);
   border-color: var(--do-control-border);
-  accent-color: var(--do-accent);
+  accent-color: var(--do-signal);
 }
 
 summary {
@@ -700,7 +718,11 @@ summary {
 }
 
 .technical-disclosure summary {
-  color: var(--do-accent);
+  color: var(--do-text);
+}
+
+.technical-disclosure summary:hover {
+  color: var(--do-signal);
 }
 
 .interpretation-guide {

@@ -42,7 +42,7 @@ export function CoverageSwitcher() {
     <section className="coverage-switcher" aria-labelledby="coverage-switcher-title">
       <div className="coverage-switcher-header">
         <div>
-          <p className="visual-kicker">PLATFORM COVERAGE CATALOG</p>
+          <p className="visual-kicker">EDITION INDEX · PLATFORM COVERAGE</p>
           <h2 id="coverage-switcher-title">What is live now — and what comes next</h2>
           <p className="subtle">
             Diagnostic Odyssey launches with Edition 01 (Long COVID · U.S. National &amp; West Virginia). Upcoming modules stay strictly unpopulated until independently reviewed.
@@ -67,7 +67,10 @@ export function CoverageSwitcher() {
               onClick={() => setActiveId(entry.id)}
               onKeyDown={event => onTabKeyDown(event, index)}
             >
-              <span className="coverage-tab-kicker">{entry.editionLabel}</span>
+              <span className="coverage-tab-meta">
+                <span className="coverage-tab-numeral">{String(index + 1).padStart(2, "0")}</span>
+                <span className="coverage-tab-kicker">{entry.editionLabel}</span>
+              </span>
               <strong>{entry.title}</strong>
               <span className={`coverage-badge ${entry.status === "live" ? "badge-live" : "badge-planned"}`}>
                 {entry.badgeLabel}

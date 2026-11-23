@@ -88,6 +88,8 @@ test("plain-language navigation, Strategy AI route, ThemeControl, and CSP-clean 
     "../src/components/CoverageSwitcher.tsx",
     "../src/components/AiHandoff.tsx",
     "../src/components/AppShell.tsx",
+    "../src/pages/OverviewPage.tsx",
+    "../src/pages/OpeningProvenance.tsx",
     "../src/pages/PilotPage.tsx",
     "../src/pages/BriefPage.tsx",
     "../src/concept/FutureAIExperiencePage.tsx"

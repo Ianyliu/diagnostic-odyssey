@@ -72,7 +72,7 @@ test("bootstrap retains storage, system, light/dark and fallback behavior", () =
       document: {documentElement: {dataset}, querySelector: () => meta}
     });
     assert.deepEqual({theme:dataset.theme, preference:dataset.themePreference, color:meta.content},
-      {theme:entry.expected, preference:entry.preference, color:entry.expected === "dark" ? "#09131b" : "#f5f2eb"});
+      {theme:entry.expected, preference:entry.preference, color:entry.expected === "dark" ? "#0e0f11" : "#f5f4ef"});
   }
   const dataset: Record<string,string> = {};
   const meta={content:""};
@@ -83,7 +83,7 @@ test("bootstrap retains storage, system, light/dark and fallback behavior", () =
   });
   assert.equal(dataset.theme,"light");
   assert.equal(dataset.themePreference,"system");
-  assert.equal(meta.content,"#f5f2eb");
+  assert.equal(meta.content,"#f5f4ef");
 });
 test("fail closed on missing headers, policy weakening, and route gaps", () => {
   const mutate = (change: (copy: any, values: Map<string, any>) => void) => {

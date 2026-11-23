@@ -28,7 +28,7 @@
   top: 3px;
   height: 6px;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--do-brand-teal) 52%, var(--do-chart-1));
+  background: color-mix(in srgb, var(--do-signal) 38%, var(--do-chart-3));
 }
 
 .metric-visual-point {
@@ -38,8 +38,8 @@
   height: 10px;
   border: 2px solid var(--do-surface);
   border-radius: 50%;
-  background: var(--do-brand-teal);
-  box-shadow: 0 0 0 1px var(--do-brand-navy);
+  background: var(--do-signal);
+  box-shadow: 0 0 0 1px var(--do-text);
   transform: translate(-50%, -50%);
 }
 
@@ -55,7 +55,7 @@
 
 .metric-visual-axis span { white-space: nowrap; }
 .metric-visual-interval.is-range { top: 1px; height: 10px; box-sizing: border-box;
-  border: 2px solid color-mix(in srgb, var(--do-brand-teal) 70%, var(--do-chart-1));
+  border: 2px solid var(--do-signal);
   background: transparent; }
 
 .metric-visual-meta {

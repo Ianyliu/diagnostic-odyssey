@@ -6,7 +6,7 @@
 .app-shell .header-actions .theme-control select { min-height: 40px; padding: 6px 26px 6px 8px; font-size: .78rem; }
 .app-shell .primary-nav { display: flex; grid-column: 2; grid-row: 1; justify-content: center; flex-wrap: nowrap; margin: 0; padding: 0; border: 0; }
 .app-shell .primary-nav a { display: inline-flex; gap: 7px; padding: 10px; font-size: .82rem; white-space: nowrap; }
-.stage-number { color: var(--do-text-muted); font-size: .72rem; }
+.stage-number { color: var(--do-signal); font-family: var(--do-font-mono); font-size: .72rem; font-weight: 600; }
 .stage-short { display: none; }
 .app-shell .header-controls { grid-column: 1 / -1; grid-row: 2; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; border-top: 1px solid var(--do-border); padding-top: 12px; }
 .app-shell .header-controls[hidden] { display: none; }
@@ -32,7 +32,7 @@
     background: var(--do-surface); border-top: 1px solid var(--do-border); animation: none;
   }
   .app-shell .primary-nav a { display: grid; justify-content: center; justify-items: center; gap: 0; padding: 4px; min-height: 52px; border-bottom: 0; border-radius: 6px; text-align: center; }
-  .app-shell .primary-nav a.active { background: var(--do-selection-bg); color: var(--do-selection-text); }
+  .app-shell .primary-nav a.active { background: var(--do-selection-bg); color: var(--do-text); border-top: 2px solid var(--do-signal); }
   .primary-nav .stage-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   .stage-short { display: inline; font-size: .78rem; font-weight: 650; }
   .stage-number { font-size: .66rem; }
