@@ -1,6 +1,6 @@
 # Stage 2 Gemini — reviewed-evidence Preview operator acceptance
 
-**Status: DRAFT, no Production release authorization.** Stacked on PR #137 and linked to Issue #138. The previous `/api/ai-preview` synthetic smoke route remains unchanged.
+**Status: DRAFT, no Production release authorization.** The legacy `/api/ai-preview` synthetic route is **permanently retired (`404` fail-closed)**; protected preview guidance runs exclusively through `/api/ai-guidance`.
 
 ## Enable on a protected, isolated Vercel Preview only
 
@@ -10,10 +10,11 @@
    - `AI_GUIDANCE_ENABLED=on`
    - `AI_PREVIEW_TOKEN` (32+ char operator bearer token, Secret)
    - `AI_CHALLENGE_SECRET` (dedicated 32+ char HMAC signing secret, **distinct from `AI_PREVIEW_TOKEN`**, Secret; missing/short/equal secret fails closed with `503 challenge_secret_not_configured`)
-   - `KV_REST_API_URL` + `KV_REST_API_TOKEN` (or `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN`) for distributed serverless rate limiting (`429`) and atomic `SET EX NX` single-use challenge replay protection (`409`); fails closed (`503`) when `VERCEL=1` and unconfigured or unreachable
+   - Either `KV_REST_API_URL` + `KV_REST_API_TOKEN` **or** `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` (half-configured pairs or conflicting dual pairs fail closed with `503`). Powers atomic Redis `EVAL` distributed serverless rate limiting (`429`) and atomic `SET EX NX` single-use challenge replay protection (`409`), failing closed (`503`) on incomplete/error store responses or when `VERCEL=1` lacks durable store config.
    - `GEMINI_API_KEY` (Secret) and `GEMINI_MODEL=gemini-3.5-flash-lite` or `gemini-2.5-flash-lite`
    Never use a `VITE_*` prefix for any secret.
-3. **No `VITE_GEMINI_STAGE2_PREVIEW` variable is needed.** The Vite build embeds `__DO_GEMINI_STAGE2_PREVIEW__` strictly when `VERCEL_ENV=preview`, `AI_PREVIEW_ENABLED=on`, **and** `AI_GUIDANCE_ENABLED=on`. Production builds always omit the optional Gemini UI, and backend endpoints return `404` outside Preview.
+3. **Origin & validation controls:** `POST /api/ai-guidance` requires a matching same-origin `Origin` header (`403 origin_denied` when missing or mismatched); `GET /api/ai-guidance` validates `Origin` if present and permits token-authenticated CLI probes without `Origin`. Gemini `usageMetadata` token counts are strictly validated as safe non-negative integers (`502 provider_invalid_output` on malformed types).
+4. **Strategy AI Studio modes (`Prompt Studio`, `Illustrative exploration`, `Authenticated preview guidance`):** `VITE_FUTURE_AI_EXPERIENCE_DEMO` controls the public route visibility (`on` by default, `off` omits the studio chunk); the Vite build embeds `__DO_GEMINI_STAGE2_PREVIEW__` strictly when `VERCEL_ENV=preview`, `AI_PREVIEW_ENABLED=on`, **and** `AI_GUIDANCE_ENABLED=on`. Production builds always omit Authenticated preview guidance and `/api/ai-guidance` returns `404` outside Preview.
 4. Redeploy an immutable Preview at the exact feature HEAD; confirm `GET /api/ai-guidance` without bearer returns `401`, and `POST` with operator bearer fails closed for invalid selections. Prompt Studio remains 100% usable without Gemini or preview credentials.
 5. Open `/brief` on that protected Preview, select reviewed MEPS and WV indicators, open **Analyze with AI**, regenerate the frozen preview, paste the operator's secret into the ephemeral password box, affirm explicit consent and choose **Analyze with Gemini**. The token stays only in React component memory and is not saved, emailed, embedded into links, exported or logged by application code.
 6. Observe two same-origin requests: `prepare` returns a short-lived signed digest of versioned selections; `analyze` uses the same selection and signed challenge. Only the second calls Gemini. Compare all reported numbers with the reviewed source artifacts and check pending-only requests, mandatory warnings and `insufficient_evidence` for interventions.

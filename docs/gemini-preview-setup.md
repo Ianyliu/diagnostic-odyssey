@@ -1,34 +1,11 @@
-# Synthetic Gemini Vercel preview
+# Retired Preview endpoint & Strategy AI Studio modes
 
-Development-only serverless function: `POST /api/ai-preview`. It runs a fixed server-owned synthetic test using the existing `planning-guidance` validator. There is no connection to real Planning Briefs and no production AI activation.
+`/api/ai-preview` is **permanently retired** and returns HTTP `404` (`{ "error": "not_found" }`) with `Cache-Control: no-store` in every deployment environment, making zero external model or KV calls.
 
-## Required Vercel configuration
+All authenticated Preview-only Gemini execution now routes exclusively through **`/api/ai-guidance`** under the **Strategy AI Studio** modes:
 
-Deploy the draft PR branch as a **Preview** deployment in an isolated Vercel development project or protected preview. Project Root Directory must be `apps/web`.
+- **Prompt Studio**: local manual six-goal handoff builder + canonical JSON companion (works in public production builds with zero API calls).
+- **Illustrative exploration**: non-admitted four-lens exploratory walkthroughs anchored to the current Brief.
+- **Authenticated preview guidance** (`POST /api/ai-guidance`): protected `VERCEL_ENV=preview` operator-credential lane using signed HMAC challenges (`AI_CHALLENGE_SECRET` distinct from `AI_PREVIEW_TOKEN`), mandatory same-origin `Origin` on `POST`, atomic Redis `EVAL` rate limiting (`12` requests / `300 s`), and single-use `SET EX NX` challenge consumption.
 
-Under **Vercel Settings -> Environment Variables**, set **Preview only**:
-
-- `GEMINI_API_KEY`: Google AI Studio key (Secret).
-- `AI_PREVIEW_TOKEN`: separate 32+ byte random operator bearer token generated privately with `openssl rand -hex 32` (Secret).
-- `KV_REST_API_URL` and `KV_REST_API_TOKEN` (or `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`): durable serverless Redis/KV store for distributed rate limiting (`503` fail-closed when missing on `VERCEL=1`).
-- `AI_PREVIEW_ENABLED`: `on` (absent/off by default).
-- `GEMINI_MODEL`: `gemini-3.5-flash-lite` or `gemini-2.5-flash-lite` (optional).
-
-Do not enable a Production feature flag, set any key in a `VITE_*` variable, or commit secrets. Redeploy the Preview after changing environment variables. Existing Production deployments (`VERCEL_ENV !== "preview"`) always return `404` for this endpoint.
-
-## Smoke test (private Terminal)
-
-Store `AI_PREVIEW_TOKEN` in the local shell without echoing it into terminal history, then run:
-
-    curl --fail-with-body -X POST \
-      -H "Authorization: Bearer $AI_PREVIEW_TOKEN" \
-      https://<exact-reviewed-preview-host>.vercel.app/api/ai-preview
-
-Expected: JSON with `mode=synthetic_only` and a validated model-generated candidate bound to the synthetic fixture. An invalid model response returns HTTP `502` with a generic error code. `GET` requests return `405`.
-
-## Security controls
-
-- Same-origin check (`403`), streaming empty-body enforcement (`400`), streaming 32 KB provider response cap (`502`), and 8 s request abort propagation.
-- Dedicated `VERCEL_ENV=preview` + `AI_PREVIEW_ENABLED=on` gate (`404` otherwise).
-- Distributed serverless rate limiting (12 requests per 300 s window per bearer digest) failing closed (`503`) if Vercel KV/Upstash is unconfigured or unavailable.
-- Keep Google AI Studio auto-reload off; apply a spending cap in Google AI Studio.
+See [stage2-gemini-reviewed-preview.md](operations/stage2-gemini-reviewed-preview.md) for the complete Preview setup and operator acceptance procedure.

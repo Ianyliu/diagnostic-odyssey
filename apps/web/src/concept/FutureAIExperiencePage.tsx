@@ -110,7 +110,7 @@ export default function FutureAIExperiencePage({ onHide }: { onHide: () => void 
               onKeyDown={event => moveWorkflowTab(event, "gemini")}
               onClick={() => setWorkflow("gemini")}
             >
-              Live Gemini Advisor
+              Authenticated preview guidance
             </button>
           </div>}
 
@@ -140,7 +140,10 @@ export default function FutureAIExperiencePage({ onHide }: { onHide: () => void 
           </div>}
       </section>
 
-      <div className="fc-goal-selector" role="tablist" aria-label="Interactive lenses">
+      <p className="micro-caption fc-explore-mode">
+        <strong>Illustrative exploration:</strong> non-admitted examples anchored to your Planning Brief; select a lens below.
+      </p>
+      <div className="fc-goal-selector" role="tablist" aria-label="Illustrative exploration lenses">
         {goals.map((item, i) => (
           <button
             role="tab"

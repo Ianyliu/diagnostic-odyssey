@@ -102,7 +102,7 @@ export function AiGeminiPanel({snapshot,sourceKey,onValidated}:{snapshot:AiHando
   const selected=shown?.key===key?shown.data:null;
   const byId=new Map(selected?.selected_evidence.national.map(row=>[row.id,row])??[]);
   return <section className="ai-gemini-panel" aria-labelledby="ai-gemini-title">
-    <h3 id="ai-gemini-title">Analyze with Gemini <span className="ai-gemini-tag">Protected Preview only</span></h3>
+    <h3 id="ai-gemini-title">Authenticated preview guidance · Analyze with Gemini <span className="ai-gemini-tag">Protected Preview only</span></h3>
     <p>This separate, optional action uses only the selected reviewed 2024 MEPS IDs and West Virginia context IDs from the frozen Brief.
       The server verifies its own artifact bytes and supplies all numbers and warnings; Gemini can only choose candidate IDs.</p>
     <p><strong>Not sent:</strong> your optional question, patient information, numerical values from the browser, scenarios, analyst-authored data requests, or intervention claims.

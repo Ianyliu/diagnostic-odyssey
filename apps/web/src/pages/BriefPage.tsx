@@ -261,8 +261,8 @@ export function BriefPage({
               )}
               <small className="subtle brief-concept-note">
                 {previewGeminiEnabled
-                  ? "Live Gemini Advisor (authenticated Preview) active alongside deterministic Prompt Studio."
-                  : "No on-site Gemini model calls run in public builds; Prompt Studio works locally."}
+                  ? "Authenticated preview guidance (Live Gemini Advisor (authenticated Preview)) active alongside Prompt Studio and Illustrative exploration."
+                  : "No on-site Gemini model calls run in public builds; Prompt Studio and Illustrative exploration work locally."}
               </small>
             </div>
           )}

@@ -399,6 +399,10 @@ function createMemoryStateStore():PreviewStateStore {
   }
  };
 }
+function isPlainObject(value:unknown):value is Record<string,unknown>{
+ return typeof value==="object"&&value!==null&&!Array.isArray(value);
+}
+const rateLimitLua="local c = redis.call('INCR', KEYS[1]); if c == 1 or redis.call('TTL', KEYS[1]) < 0 then redis.call('EXPIRE', KEYS[1], tonumber(ARGV[1])) end; return c";
 function createKvStateStore(url:string,token:string):PreviewStateStore {
  const base=url.replace(/\/+$/,"");
  const kvPost=async(path:string,body?:unknown)=>{
@@ -406,32 +410,41 @@ function createKvStateStore(url:string,token:string):PreviewStateStore {
    headers:{"Authorization":"Bearer "+token,...(body!==undefined?{"Content-Type":"application/json"}:{})},
    signal:AbortSignal.timeout(2500),...(body!==undefined?{body:JSON.stringify(body)}:{})});
   if(!r.ok)throw Error("kv_http_error");
-  return await r.json() as any;
+  return await r.json() as unknown;
  };
  return {
   async consumeChallenge(key:string,ttlSeconds:number){
    const out=await kvPost("",["SET",key,"1","EX",String(ttlSeconds),"NX"]);
-   if(out?.result==="OK")return "consumed";
-   if(out?.result===null)return "replay";
+   if(!isPlainObject(out)||"error" in out)throw Error("kv_unexpected_set");
+   if(out.result==="OK")return "consumed";
+   if(out.result===null)return "replay";
    throw Error("kv_unexpected_set");
   },
   async incrementRateLimit(key:string,windowSeconds:number,limit:number){
-   const out=await kvPost("/pipeline",[["INCR",key],["EXPIRE",key,String(windowSeconds),"NX"]]);
-   const count=Array.isArray(out)?Number(out[0]?.result):NaN;
-   if(!Number.isFinite(count))throw Error("kv_unexpected_incr");
-   return count<=limit;
+   const out=await kvPost("",["EVAL",rateLimitLua,"1",key,String(windowSeconds)]);
+   if(!isPlainObject(out)||"error" in out)throw Error("kv_unexpected_incr");
+   if(typeof out.result!=="number"||!Number.isSafeInteger(out.result)||out.result<1)throw Error("kv_unexpected_incr");
+   return out.result<=limit;
   }
  };
 }
 function resolveStateStore(env:Environment,override?:PreviewStateStore):{ok:true;store:PreviewStateStore}|{ok:false}{
  if(override)return {ok:true,store:override};
- const rawUrl=env.KV_REST_API_URL||env.UPSTASH_REDIS_REST_URL;
- const rawToken=env.KV_REST_API_TOKEN||env.UPSTASH_REDIS_REST_TOKEN;
+ const kvUrl=env.KV_REST_API_URL?.trim()||"";
+ const kvToken=env.KV_REST_API_TOKEN?.trim()||"";
+ const upUrl=env.UPSTASH_REDIS_REST_URL?.trim()||"";
+ const upToken=env.UPSTASH_REDIS_REST_TOKEN?.trim()||"";
+ if(Boolean(kvUrl)!==Boolean(kvToken)||Boolean(upUrl)!==Boolean(upToken))return {ok:false};
+ const hasKv=Boolean(kvUrl&&kvToken);
+ const hasUp=Boolean(upUrl&&upToken);
+ if(hasKv&&hasUp&&(kvUrl!==upUrl||kvToken!==upToken))return {ok:false};
+ const rawUrl=hasKv?kvUrl:upUrl;
+ const rawToken=hasKv?kvToken:upToken;
  if(rawUrl||rawToken){
   try{
-   const parsed=new URL(rawUrl??"");
-   if(parsed.protocol!=="https:"||!rawToken||rawToken.length<16)return {ok:false};
-   return {ok:true,store:createKvStateStore(rawUrl!,rawToken)};
+   const parsed=new URL(rawUrl);
+   if(parsed.protocol!=="https:"||rawToken.length<16)return {ok:false};
+   return {ok:true,store:createKvStateStore(rawUrl,rawToken)};
   }catch{return {ok:false}}
  }
  if(env.VERCEL==="1")return {ok:false};
@@ -576,6 +589,11 @@ async function boundedProviderJson(response:Response):Promise<any>{
  const all=new Uint8Array(length);let offset=0;for(const part of chunks){all.set(part,offset);offset+=part.length}
  return JSON.parse(new TextDecoder("utf-8",{fatal:true}).decode(all));
 }
+function optionalNonNegativeInt(value:unknown,label:string):number|null{
+ if(value===undefined||value===null)return null;
+ if(typeof value!=="number"||!Number.isSafeInteger(value)||value<0)throw Error(label);
+ return value;
+}
 /** Protected Preview-only; no arbitrary Brief JSON, scenario results, or client-owned values. */
 export async function handleReviewedGuidance(request:Request,
  env:Environment=process.env,providerFetch:typeof fetch=fetch,stateStore?:PreviewStateStore):Promise<Response>{
@@ -584,9 +602,13 @@ export async function handleReviewedGuidance(request:Request,
  if(request.method!=="POST"&&request.method!=="GET")return jsonResponse(405,{error:"method_not_allowed"});
  if(!env.AI_PREVIEW_TOKEN||!verifyOperator(request.headers.get("authorization"),env.AI_PREVIEW_TOKEN))
   return jsonResponse(401,{error:"unauthorized"});
- if(request.method==="GET")return jsonResponse(200,{mode:"reviewed_evidence_preview",status:"enabled"});
+ const expectedOrigin=new URL(request.url).origin;
  const origin=request.headers.get("origin");
- if(origin&&origin!==new URL(request.url).origin)return jsonResponse(403,{error:"origin_denied"});
+ if(request.method==="GET"){
+  if(origin&&origin!==expectedOrigin)return jsonResponse(403,{error:"origin_denied"});
+  return jsonResponse(200,{mode:"reviewed_evidence_preview",status:"enabled"});
+ }
+ if(!origin||origin!==expectedOrigin)return jsonResponse(403,{error:"origin_denied"});
  let wire:unknown;
  try{wire=await boundedJson(request)}catch{return jsonResponse(400,{error:"invalid_request"})}
  let frame:Record<string,unknown>,selection:BriefSelection;
@@ -644,7 +666,16 @@ export async function handleReviewedGuidance(request:Request,
  if(!response.ok)return jsonResponse(502,{error:"provider_rejected_request"});
  try{
   const body=await boundedProviderJson(response);
-  const raw=body.candidates?.[0]?.content?.parts?.[0]?.text;
+  if(!isPlainObject(body)||!Array.isArray(body.candidates))throw Error("bad envelope");
+  let promptTokens:number|null=null;
+  let outputTokens:number|null=null;
+  if(body.usageMetadata!==undefined&&body.usageMetadata!==null){
+   if(!isPlainObject(body.usageMetadata))throw Error("bad usageMetadata");
+   promptTokens=optionalNonNegativeInt(body.usageMetadata.promptTokenCount,"bad promptTokenCount");
+   outputTokens=optionalNonNegativeInt(body.usageMetadata.candidatesTokenCount,"bad candidatesTokenCount");
+  }
+  const first=body.candidates[0] as {content?:{parts?:Array<{text?:unknown}>}}|undefined;
+  const raw=first?.content?.parts?.[0]?.text;
   if(typeof raw!=="string"||raw.length>8192)throw Error("bad candidate");
   const candidate:unknown=JSON.parse(raw);
   assertCandidate(candidate);
@@ -657,8 +688,7 @@ export async function handleReviewedGuidance(request:Request,
     local_release_sha256:selection.local_ids.length?localSha:null},
    selected_evidence:visibleEvidence(selection),
    excluded:{scenarios:true,analyst_requests:true,intervention_admission:true},
-   usage:{prompt_tokens:body.usageMetadata?.promptTokenCount??null,
-    output_tokens:body.usageMetadata?.candidatesTokenCount??null},result});
+   usage:{prompt_tokens:promptTokens,output_tokens:outputTokens},result});
  }catch{return jsonResponse(502,{error:"provider_invalid_output"})}
 }
 export default {fetch(request:Request){return handleReviewedGuidance(request);}};

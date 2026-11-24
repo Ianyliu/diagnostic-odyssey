@@ -103,7 +103,7 @@ test("forged numbers, unknown IDs, mismatched versions and stale snapshots rejec
  ]){
   assert.equal((await handleReviewedGuidance(request("prepare",forged),env,mock)).status,422);
  }
- assert.equal((await handleReviewedGuidance(new Request(url,{method:"POST",headers:{Authorization:"Bearer "+token},body:"{not-json"}),env,mock)).status,400);
+ assert.equal((await handleReviewedGuidance(new Request(url,{method:"POST",headers:{Authorization:"Bearer "+token,Origin:"https://protected.example.vercel.app"},body:"{not-json"}),env,mock)).status,400);
 });
 test("challenge bound to exact selections; expired, tampered and wrong origins fail",async()=>{
  const s=selected(),challenge=await prepare(s);
@@ -112,7 +112,7 @@ test("challenge bound to exact selections; expired, tampered and wrong origins f
  assert.equal((await handleReviewedGuidance(request("analyze",s,challenge.slice(0,-1)+(challenge.endsWith("0")?"1":"0")),env,mock)).status,409);
  const wrongOrigin=new Request(url,{method:"POST",headers:{"Authorization":"Bearer "+token,"Origin":"https://attacker.invalid"},body:JSON.stringify({action:"analyze",consent:true,selection:s,challenge})});
  assert.equal((await handleReviewedGuidance(wrongOrigin,env,mock)).status,403);
- const noConsent=new Request(url,{method:"POST",headers:{Authorization:"Bearer "+token},body:JSON.stringify({action:"prepare",consent:false,selection:s,challenge:null})});
+ const noConsent=new Request(url,{method:"POST",headers:{Authorization:"Bearer "+token,Origin:"https://protected.example.vercel.app"},body:JSON.stringify({action:"prepare",consent:false,selection:s,challenge:null})});
  assert.equal((await handleReviewedGuidance(noConsent,env,mock)).status,422);
 });
 test("invalid provider candidates, rejected requests and secret leakage fail closed",async()=>{
@@ -192,4 +192,80 @@ test("challenge secret separation, VERCEL distributed store fail-closed, and cro
  }
  const throttled=await handleReviewedGuidance(request("prepare",s),env,rejected,distributedStore);
  assert.equal(throttled.status,429);
+});
+test("hardened origin, KV pair ambiguity, atomic EVAL validation, and usageMetadata fail closed with 0 provider calls",async()=>{
+ let calls=0;
+ const reject=(async()=>{calls++;throw Error("must not call Gemini");}) as typeof fetch;
+ const s=selected();
+ // Missing Origin on POST is denied; wrong Origin on GET is denied; GET without Origin is permitted for operator probe
+ const postNoOrigin=new Request(url,{method:"POST",headers:{Authorization:"Bearer "+token,"Content-Type":"application/json"},body:JSON.stringify({action:"prepare",selection:s,consent:true,challenge:null})});
+ assert.equal((await handleReviewedGuidance(postNoOrigin,env,reject)).status,403);
+ const getWrongOrigin=new Request(url,{method:"GET",headers:{Authorization:"Bearer "+token,Origin:"https://attacker.invalid"}});
+ assert.equal((await handleReviewedGuidance(getWrongOrigin,env,reject)).status,403);
+ const getOk=new Request(url,{method:"GET",headers:{Authorization:"Bearer "+token}});
+ assert.equal((await handleReviewedGuidance(getOk,env,reject)).status,200);
+ // Half-configured and conflicting KV / Upstash pairs fail closed 503
+ for(const badStoreEnv of [
+  {...env,KV_REST_API_URL:"https://kv.invalid"},
+  {...env,KV_REST_API_TOKEN:"token-at-least-16-chars"},
+  {...env,UPSTASH_REDIS_REST_URL:"https://upstash.invalid"},
+  {...env,KV_REST_API_URL:"https://kv.invalid",KV_REST_API_TOKEN:"kv-token-16-chars",UPSTASH_REDIS_REST_URL:"https://other.invalid",UPSTASH_REDIS_REST_TOKEN:"up-token-16-chars"}
+ ]){
+  assert.equal((await handleReviewedGuidance(request("prepare",s),badStoreEnv,reject)).status,503);
+ }
+ // Atomic EVAL rate limit and strict KV JSON validation fail closed 503 on malformed/error responses
+ const kvEnv={...env,KV_REST_API_URL:"https://kv.example.invalid",KV_REST_API_TOKEN:"kv-token-16-characters"};
+ for(const kvReply of [
+  {error:"ERR expiry failed"},
+  [{result:1}],
+  {result:0},
+  {result:"1"},
+  {result:1.5}
+ ]){
+  const kvMock=(async(target:RequestInfo|URL,init?:RequestInit)=>{
+   if(String(target).startsWith("https://kv.example.invalid")){
+    const cmd=JSON.parse(String(init?.body));
+    assert.equal(cmd[0],"EVAL");
+    return Response.json(kvReply);
+   }
+   calls++;
+   throw Error("provider must not be called");
+  }) as typeof fetch;
+  assert.equal((await handleReviewedGuidance(request("prepare",s),kvEnv,kvMock)).status,503);
+ }
+ // Strict usageMetadata validation rejects non-integer or hostile usage objects with 502; null fields remain valid
+ const isolatedChallenges=new Set<string>();
+ const isolatedStore={
+  async consumeChallenge(k:string){if(isolatedChallenges.has(k))return "replay" as const;isolatedChallenges.add(k);return "consumed" as const},
+  async incrementRateLimit(){return true}
+ };
+ for(const badUsage of [
+  "not-an-object",
+  [],
+  {promptTokenCount:"10",candidatesTokenCount:5},
+  {promptTokenCount:-1,candidatesTokenCount:5},
+  {promptTokenCount:1.5,candidatesTokenCount:5},
+  {promptTokenCount:10,candidatesTokenCount:{}}
+ ]){
+  const prepRes=await handleReviewedGuidance(request("prepare",s),env,reject,isolatedStore);
+  assert.equal(prepRes.status,200);
+  const {challenge:ch}=await prepRes.json() as {challenge:string};
+  const badProvider=(async(_u:RequestInfo|URL,init?:RequestInit)=>{
+   const egress=JSON.parse(JSON.parse(String(init?.body)).contents[0].parts[0].text);
+   return Response.json({candidates:[{content:{parts:[{text:JSON.stringify({schema_version:"pg.v1",snapshot_fingerprint:egress.snapshot_fingerprint,finding_ids:[],options:[],requests:[]})}]}}],usageMetadata:badUsage});
+  }) as typeof fetch;
+  const res=await handleReviewedGuidance(request("analyze",s,ch),env,badProvider,isolatedStore);
+  assert.equal(res.status,502);
+  assert.deepEqual(await res.json(),{error:"provider_invalid_output"});
+ }
+ const nullUsagePrep=await handleReviewedGuidance(request("prepare",s),env,reject,isolatedStore);
+ const {challenge:nullUsageCh}=await nullUsagePrep.json() as {challenge:string};
+ const nullUsageProvider=(async(_u:RequestInfo|URL,init?:RequestInit)=>{
+  const egress=JSON.parse(JSON.parse(String(init?.body)).contents[0].parts[0].text);
+  return Response.json({candidates:[{content:{parts:[{text:JSON.stringify({schema_version:"pg.v1",snapshot_fingerprint:egress.snapshot_fingerprint,finding_ids:[],options:[],requests:[]})}]}}],usageMetadata:{promptTokenCount:10,candidatesTokenCount:null}});
+ }) as typeof fetch;
+ const nullUsageRes=await handleReviewedGuidance(request("analyze",s,nullUsageCh),env,nullUsageProvider,isolatedStore);
+ assert.equal(nullUsageRes.status,200);
+ assert.deepEqual(((await nullUsageRes.json()) as {usage:{prompt_tokens:number|null;output_tokens:number|null}}).usage,{prompt_tokens:10,output_tokens:null});
+ assert.equal(calls,0);
 });

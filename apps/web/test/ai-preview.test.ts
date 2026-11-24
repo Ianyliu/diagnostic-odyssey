@@ -1,98 +1,104 @@
 import {test} from "node:test";
 import assert from "node:assert/strict";
 import {handleSyntheticPreview} from "../api/ai-preview.ts";
+import {projectEgress,bindCandidate,assertOutput} from "@diagnostic-odyssey/planning-guidance";
+import type {PlanningGuidanceInputV1} from "@diagnostic-odyssey/planning-guidance";
 
-const token="abcdefghijklmnopqrstuvwxyz0123456789abcdefgh";
-const key="SENTINEL_GEMINI_API_KEY";
-const env={VERCEL_ENV:"preview",AI_PREVIEW_ENABLED:"on",AI_PREVIEW_TOKEN:token,
- GEMINI_API_KEY:key,GEMINI_MODEL:"gemini-3.5-flash-lite"};
-const url="https://example.vercel.app/api/ai-preview";
-const req=(t=token,body?:string)=>new Request(url,{method:"POST",
- headers:{"Authorization":"Bearer "+t},...(body?{body}:{})});
-
-test("disabled and unauthenticated calls do not reach Gemini",async()=>{
- let count=0;
- const network=(async()=>{count++;throw Error("must not call");}) as typeof fetch;
- for(const [request,values,status] of [
-  [req(),{...env,VERCEL_ENV:"production"},404],
-  [req(),{...env,AI_PREVIEW_ENABLED:"off"},404],
-  [req("incorrect"),env,401],
-  [req(token,"untrusted-data"),env,400]
- ] as const){
-  const result=await handleSyntheticPreview(request,values,network);
-  assert.equal(result.status,status);
- }
- assert.equal(count,0);
-});
-
-test("valid synthetic candidate is bound to trusted input and preserves warnings",async()=>{
+test("retired /api/ai-preview always fails closed with 404 no-store and zero network calls",async()=>{
+ const savedFetch=globalThis.fetch;
  let calls=0;
- const network=(async(url:RequestInfo|URL,init?:RequestInit)=>{
-  calls++;
-  assert.equal(String(url).includes(key),false);
-  assert.equal(new Headers(init?.headers).get("x-goog-api-key"),key);
-  const body=JSON.parse(String(init?.body));
-  const egress=JSON.parse(body.contents[0].parts[0].text);
-  assert.equal("value" in egress,false);
-  assert.deepEqual(egress.references,[]);
-  assert.deepEqual(egress.hint_ids,[]);
-  return Response.json({candidates:[{content:{parts:[{text:JSON.stringify({
-   schema_version:"pg.v1",snapshot_fingerprint:egress.snapshot_fingerprint,
-   finding_ids:["finding_synthetic_1"],options:[],
-   requests:[{template_id:"template_synthetic_1",gap_id:"gap_synthetic_1",hint_id:null}]
-  })}]}}],usageMetadata:{promptTokenCount:75,candidatesTokenCount:60}});
- }) as typeof fetch;
- const response=await handleSyntheticPreview(req(),env,network);
- assert.equal(response.status,200);
- const text=await response.text();
- assert.equal(text.includes(key),false);
- const output=JSON.parse(text);
- assert.equal(output.mode,"synthetic_only");
- assert.equal(output.result.supported_findings[0].value,10);
- assert.equal(output.result.sections.interventions,"insufficient_evidence");
- assert.equal(output.result.draft_requests[0].disposition,"pending");
- assert.deepEqual(output.result.warnings,[{id:"warning_synthetic_1",code:"synthetic_not_evidence"}]);
- assert.equal(calls,1);
+ globalThis.fetch=(async()=>{calls++;throw Error("must not call network");}) as typeof fetch;
+ try{
+  const response=await handleSyntheticPreview();
+  assert.equal(response.status,404);
+  assert.equal(response.headers.get("cache-control"),"no-store");
+  assert.deepEqual(await response.json(),{error:"not_found"});
+  const viaFetch=await (await import("../api/ai-preview.ts")).default.fetch();
+  assert.equal(viaFetch.status,404);
+  assert.deepEqual(await viaFetch.json(),{error:"not_found"});
+  assert.equal(calls,0);
+ }finally{
+  globalThis.fetch=savedFetch;
+ }
 });
 
-test("hallucinated ID and provider failures fail closed without secrets",async()=>{
- const invalid=(async(_url:RequestInfo|URL,init?:RequestInit)=>{
-  const e=JSON.parse(JSON.parse(String(init?.body)).contents[0].parts[0].text);
-  return Response.json({candidates:[{content:{parts:[{text:JSON.stringify({
-   schema_version:"pg.v1",snapshot_fingerprint:e.snapshot_fingerprint,
-   finding_ids:["nonexistent"],options:[],requests:[]
-  })}]}}]});
- }) as typeof fetch;
- const forged=await handleSyntheticPreview(req(),env,invalid);
- assert.equal(forged.status,502);
- assert.deepEqual(await forged.json(),{error:"provider_invalid_output"});
- const reject=(async()=>new Response("secret: "+key,{status:401})) as typeof fetch;
- const denied=await handleSyntheticPreview(req(),env,reject);
- assert.equal(denied.status,502);
- assert.equal((await denied.text()).includes(key),false);
- const malformed=(async()=>Response.json({candidates:[{content:{parts:[{text:"{bad-json"}]}}]})) as typeof fetch;
- assert.equal((await handleSyntheticPreview(req(),env,malformed)).status,502);
-});
-test("ai-preview enforces origin, distributed rate limit, and fails closed when VERCEL lacks KV",async()=>{
- const reject=(async()=>{throw Error("must not call Gemini")}) as typeof fetch;
- const wrongOrigin=new Request(url,{method:"POST",headers:{"Authorization":"Bearer "+token,"Origin":"https://attacker.invalid"}});
- assert.equal((await handleSyntheticPreview(wrongOrigin,env,reject)).status,403);
- const noKv=await handleSyntheticPreview(req(),{...env,VERCEL:"1"},reject);
- assert.equal(noKv.status,503);
- assert.deepEqual(await noKv.json(),{error:"distributed_store_not_configured"});
- const counts=new Map<string,number>();
- const distributedStore={
-  async incrementRateLimit(k:string,_w:number,lim:number){const n=(counts.get(k)??0)+1;counts.set(k,n);return n<=lim}
+test("offline synthetic planning-guidance binding remains valid without provider execution",()=>{
+ const shaZero="0".repeat(64);
+ const input:PlanningGuidanceInputV1={
+  schema_version:"pg.v1",
+  captured_at:"2026-10-25T15:00:00Z",
+  versions:{
+   national_release_id:"meps-synthetic-v1",
+   national_release_sha256:shaZero,
+   brief_version:"brief-synthetic-v1",
+   brief_content_sha256:shaZero,
+   scenario_revision:"scen-synthetic-v1",
+   scenario_content_sha256:shaZero,
+   local_release_id:null,
+   local_release_sha256:null,
+   request_policy_id:"req-policy-v1",
+   request_policy_sha256:shaZero
+  },
+  context:{
+   condition_id:"long_covid",
+   cohort_id:"synthetic_cohort",
+   population_id:"adults_18_64",
+   setting_id:"national_outpatient",
+   payer_id:"all_payers",
+   geography_id:"us_national",
+   pathway_step_id:"recognition_to_referral",
+   mechanism_id:"navigation_support"
+  },
+  national_estimate_count:21,
+  national_findings:[{
+   id:"finding_synthetic_1",
+   source_id:"synthetic_meps",
+   value:10,
+   unit_code:"USD_per_person_year",
+   role:"national_reviewed",
+   estimate_id:"finding_synthetic_1",
+   uncertainty_kind:"confidence_interval",
+   lower:8,
+   upper:12
+  }],
+  selected_local_context:[],
+  scenario_assumptions:[],
+  deterministic_results:[],
+  warnings:[{id:"warning_synthetic_1",code:"synthetic_not_evidence"}],
+  gaps:[{id:"gap_synthetic_1",pathway_step_id:"recognition_to_referral",mechanism_id:"navigation_support"}],
+  request_templates:[{
+   id:"template_synthetic_1",
+   gap_id:"gap_synthetic_1",
+   field_codes:["f1"],
+   owner_code:"owner_to_confirm",
+   granularity_code:"aggregate",
+   window_code:"monthly",
+   privacy_code:"aggregate_only"
+  }],
+  narrative_admission:{
+   release_sha256:null,
+   review_sha256:null,
+   applicability_sha256:null,
+   applicability_policy_version:null,
+   applicability_policy_sha256:null,
+   references:[]
+  },
+  hint_admission:{
+   release_sha256:null,
+   policy_sha256:null,
+   hints:[]
+  }
  };
- let okCalls=0;
- const okNet=(async(_u:RequestInfo|URL,init?:RequestInit)=>{
-  okCalls++;
-  const e=JSON.parse(JSON.parse(String(init?.body)).contents[0].parts[0].text);
-  return Response.json({candidates:[{content:{parts:[{text:JSON.stringify({schema_version:"pg.v1",snapshot_fingerprint:e.snapshot_fingerprint,finding_ids:[],options:[],requests:[]})}]}}]});
- }) as typeof fetch;
- for(let i=0;i<12;i++){
-  assert.equal((await handleSyntheticPreview(req(),env,okNet,distributedStore)).status,200);
- }
- assert.equal((await handleSyntheticPreview(req(),env,reject,distributedStore)).status,429);
- assert.equal(okCalls,12);
+ const egress=projectEgress(input);
+ const bound=bindCandidate(input,undefined,{
+  schema_version:"pg.v1",
+  snapshot_fingerprint:egress.snapshot_fingerprint,
+  finding_ids:["finding_synthetic_1"],
+  options:[],
+  requests:[{template_id:"template_synthetic_1",gap_id:"gap_synthetic_1",hint_id:null}]
+ },"synth_1","2026-10-25T15:00:00Z",egress.snapshot_fingerprint);
+ assertOutput(bound,input);
+ assert.equal(bound.supported_findings[0]?.value,10);
+ assert.equal(bound.sections.interventions,"insufficient_evidence");
+ assert.equal(bound.draft_requests[0]?.disposition,"pending");
 });

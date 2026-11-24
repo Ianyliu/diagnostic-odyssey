@@ -466,9 +466,9 @@ function PilotPlannerWorkspace({
               <Link className="text-button" to="/data-requests">Review requests →</Link>
             </div>
             {advisorAvailable && <div className="atlas-inspector-ai">
-              <h3>Prompt Studio</h3>
-              <p>Explore the available evidence and implementation questions. AI output does not set scenario parameters or establish effectiveness.</p>
-              <Link className="button secondary" to="/advisor">Open Prompt Studio →</Link>
+              <h3>Strategy AI Studio</h3>
+              <p>Prompt Studio, Illustrative exploration, and gated preview guidance. AI output does not set scenario parameters or establish effectiveness.</p>
+              <Link className="button secondary" to="/advisor">Open Strategy AI Studio →</Link>
             </div>}
           </aside>
         )}
