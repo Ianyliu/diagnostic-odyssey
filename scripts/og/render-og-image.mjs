@@ -90,21 +90,21 @@ function constrainedText(x,y,v,scale,max,hex){
  if(s.length*6*scale>max)throw Error("Preview text overflow: "+v);
  text(x,y,s,scale,hex);
 }
-rect(0,0,W,H,"#0d1622");rect(0,0,16,H,"#c8923b");
-rect(565,48,590,520,"#f9f7f3");rect(565,48,590,8,"#c25a3c");
-text(54,66,"DIAGNOSTIC ODYSSEY",4,"#f9f7f3");
-rect(54,135,442,3,"#c8923b");
-text(54,190,"LOWER THE",6,"#f9f7f3");
-text(54,260,"HIDDEN COST",6,"#f9f7f3");
-text(54,330,"OF CARE.",6,"#c8923b");
-text(54,452,"ATELIER ATLAS EDITION 01",3,"#8bb8dc");
-text(54,500,"EVIDENCE AND PLANNING SEPARATE",2,"#9eb0c3");
+rect(0,0,W,H,"#101b32");rect(0,0,16,H,"#3157d5");
+rect(565,48,590,520,"#f5f7fc");rect(565,48,590,8,"#7154d8");
+text(54,66,"DIAGNOSTIC ODYSSEY",4,"#f5f7ff");
+rect(54,135,442,3,"#7154d8");
+text(54,190,"LONG COVID",6,"#f5f7ff");
+text(54,260,"GOES BEYOND",6,"#f5f7ff");
+text(54,330,"THE BILL.",6,"#b8c9ff");
+text(54,440,"STRATEGIC ATLAS EDITION 01",3,"#c1b5ff");
+text(54,492,"SEE THE BURDEN. FIND THE LEVERAGE.",2,"#9eb0c3");
 items.forEach((item,i)=>{
  const y=101+i*145;
- if(i>0)rect(595,y-21,526,2,"#e3ded4");
- constrainedText(596,y,item.title,3,525,"#0d1622");
- constrainedText(596,y+40,item.detail,2,525,"#2e5373");
- constrainedText(596,y+73,item.foot,2,525,"#525f6e");
+ if(i>0)rect(595,y-21,526,2,"#d8e0ee");
+ constrainedText(596,y,item.title,3,525,"#101b32");
+ constrainedText(596,y+40,item.detail,2,525,"#2457a6");
+ constrainedText(596,y+73,item.foot,2,525,"#4b596d");
 });
 text(55,592,"ALL-CAUSE BURDEN IS NOT ATTRIBUTABLE COST",2,"#9eb0c3");
 // Pure Node PNG writer: RGBA scanlines + zlib + correctly checksummed PNG chunks.
