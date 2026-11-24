@@ -99,7 +99,7 @@ export function OverviewPage({ advisorAvailable = false }: { advisorAvailable?: 
               <span className="atlas-lens-kicker">AHRQ MEPS · U.S. National</span>
               <strong className="atlas-lens-figure">{reviewedCount || "—"}</strong>
               <h3>Reviewed burden measures</h3>
-              <p>Medical spending, administrative time, health-status limitations, and work loss with survey uncertainty.</p>
+              <p>Medical spending, administrative time, health-status limitations, and psychological distress across 3 populated domains (work-loss measures remain unavailable).</p>
               <span className="atlas-lens-link">Open 01 Burden ↗</span>
             </Link>
 
@@ -111,7 +111,7 @@ export function OverviewPage({ advisorAvailable = false }: { advisorAvailable?: 
               <span className="atlas-lens-kicker">HRSA &amp; Census ACS · West Virginia</span>
               <strong className="atlas-lens-figure">{localIndicatorCount ?? "—"}</strong>
               <h3>Local terrain indicators</h3>
-              <p>Care supply, broadband, and transit conditions across county geography—not local Long COVID prevalence.</p>
+              <p>Statewide West Virginia care supply, broadband, and transit conditions (no county-level data)—not local Long COVID prevalence.</p>
               <span className="atlas-lens-link">Open 02 Local context ↗</span>
             </Link>
           </div>

@@ -167,6 +167,28 @@ for (const [device, viewport] of Object.entries({
       return details;
     });
 await check(
+  "overview and burden inventory claims match 21 national and 34 statewide WV measures (SA-02)",
+  async () => {
+    const context = await browser.newContext({ reducedMotion: "reduce" });
+    const page = await context.newPage();
+    page.setDefaultTimeout(5000);
+    await ready(page, "/");
+    const homeText = await page.locator("main").innerText();
+    assert.ok(homeText.includes("21"), "Overview must display 21 reviewed burden measures");
+    assert.ok(homeText.includes("34"), "Overview must display 34 local terrain indicators");
+    assert.match(homeText, /work-loss measures remain unavailable/i);
+    assert.match(homeText, /statewide West Virginia/i);
+    assert.doesNotMatch(homeText, /across county geography|and work loss/i);
+    await ready(page, "/burden");
+    const burdenText = await page.locator("main").innerText();
+    assert.ok(burdenText.includes("Admin & Care Time"), "Burden tabs must label Admin & Care Time");
+    assert.ok(!burdenText.includes("Work & Time"), "Burden tabs must not imply work-loss availability");
+    assert.ok(burdenText.includes("Work & function (unavailable)"), "Burden links must clarify Work & function gap");
+    await context.close();
+    return { homeChecked: true, burdenChecked: true };
+  },
+);
+await check(
   "history, keyboard skip link, mobile menu and anchor focus",
   async () => {
     const context = await browser.newContext({ reducedMotion: "reduce" });

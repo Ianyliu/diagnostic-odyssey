@@ -32,8 +32,8 @@ export const COVERAGE_CATALOG: readonly CoverageCatalogEntry[] = Object.freeze([
     conditionLabel: `${longCovidAdapter.label} (Adults ${longCovidAdapter.supported_age_ranges.join(", ")})`,
     geographyLabel: "U.S. National (2024 MEPS) + West Virginia (HRSA & 2024 ACS)",
     sourceHighlights: Object.freeze([
-      "Long COVID · U.S. National 2024 MEPS · 21 reviewed measures",
-      "West Virginia · State HRSA & 2024 ACS · 34 access & shortage indicators"
+      "Long COVID · U.S. National 2024 MEPS · 21 reviewed measures (13 economic/healthcare, 4 administrative, 4 mental-health; work & function unavailable)",
+      "West Virginia · Statewide HRSA & 2024 ACS · 34 access & shortage indicators (no county data)"
     ]),
     plannedScope: "Active reference edition covering national descriptive burden, West Virginia local access terrain, deterministic pilot planning, and Strategy AI Studio.",
     whyNotBorrowed: "National MEPS burden, West Virginia HRSA/ACS indicators, and pilot planning assumptions remain strictly separate layers and are never blended into one score.",

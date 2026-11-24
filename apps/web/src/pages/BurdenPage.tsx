@@ -19,13 +19,13 @@ type DomainTab = "all" | "economic-healthcare" | "healthcare-work-admin" | "ment
 const TABS: ReadonlyArray<{ id: DomainTab; label: string }> = [
   { id: "all", label: "All" },
   { id: "economic-healthcare", label: "Medical" },
-  { id: "healthcare-work-admin", label: "Work & Time" },
+  { id: "healthcare-work-admin", label: "Admin & Care Time" },
   { id: "mental-human", label: "Mental & Human" }
 ];
 
 const SUB_ROUTES: ReadonlyArray<{ to: string; label: string }> = [
   { to: "/burden/medical", label: "Medical costs ledger" },
-  { to: "/burden/work", label: "Work & disability" },
+  { to: "/burden/work", label: "Work & function (unavailable)" },
   { to: "/burden/admin", label: "Administrative time" },
   { to: "/burden/human", label: "Quality of life & distress" }
 ];

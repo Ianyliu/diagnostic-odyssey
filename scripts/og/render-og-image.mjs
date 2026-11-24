@@ -15,7 +15,7 @@ const root = fileURLToPath(new URL("../../", import.meta.url));
    break a website build or leave stale numerical social metadata behind. */
 const items = [
  {title:"REVIEWED NATIONAL BURDEN",detail:"MEPS - SPENDING / TIME / DISTRESS",foot:"DESCRIPTIVE SURVEY EVIDENCE"},
- {title:"LOCAL IMPLEMENTATION",detail:"HRSA + CENSUS ACS CONTEXT",foot:"NOT LOCAL DISEASE PREVALENCE"},
+ {title:"LOCAL IMPLEMENTATION",detail:"WV HRSA + CENSUS ACS (STATEWIDE)",foot:"NOT LOCAL DISEASE PREVALENCE"},
  {title:"TRANSPARENT PILOT PLANS",detail:"ANALYST ASSUMPTIONS STAY SEPARATE",foot:"NO CAUSAL SAVINGS OR ROI"}
 ];
 const W=1200,H=630,pixels=new Uint8Array(W*H*4);
