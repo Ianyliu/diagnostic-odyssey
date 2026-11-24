@@ -65,6 +65,8 @@ for (const width of [320, 390, 768, 1024, 1440]) for (const theme of ["light", "
     assert.ok(geometry.some(item => item.text === "6 mo"));
     await assertNoPageOverflow(page, `pilot-${label}`);
     await page.screenshot({path: `${output}/pilot-${label}.png`, fullPage: true});
+    const moreBtn = page.getByRole("button", {name: /More parameters|Hide base parameters/i});
+    if (await moreBtn.count() && await moreBtn.getAttribute("aria-expanded") !== "true") await moreBtn.click();
     await page.locator("#pilot-fixed_cost").fill(String(Number.MAX_VALUE));
     await page.locator(".atlas-studio-output").screenshot({path: `${output}/pilot-max-${label}.png`});
     await assertNoPageOverflow(page, `pilot-max-${label}`);

@@ -86,7 +86,7 @@ for (const width of [390, 1440]) for (const theme of ["light", "dark"]) {
     assert.doesNotMatch(await card.innerText(), /FHIR|USCDI|CMS mapping/);
     assert.match(await page.locator(".page-heading").innerText(), /not that its source data is up to date/);
     await page.screenshot({path: `${output}/request-${width}-${theme}.png`, fullPage: true});
-    const inputs = card.getByText("Exact applied Pilot assumptions", {exact: true});
+    const inputs = card.getByText("Exact applied Strategy Lab assumptions", {exact: true});
     await inputs.focus();
     await focusedControlIsVisible(page);
     await page.keyboard.press("Enter");
@@ -132,7 +132,7 @@ for (const width of [390, 1440]) for (const theme of ["light", "dark"]) {
     await page.locator("#pilot-capacity").fill("2000");
     await navigateWorkspace(page, "Data requests");
     assert.match(await card.innerText(), /Stale for applied scenario/);
-    assert.match(await card.innerText(), /earlier assumptions/);
+    assert.match(await card.innerText(), /earlier assumptions/i);
     assert.match(await card.innerText(), /3,000 participants/);
     assert.equal(await card.locator(".request-applied-inputs").count(), 0);
     assert.equal(await choice.isChecked(), true);
@@ -174,7 +174,7 @@ await run("invalid draft pauses creation and preserves the last applied request"
   assert.equal(await page.getByText("Sensitivity analysis paused", {exact: true}).count(), 1);
   await navigateWorkspace(page, "Data requests");
   assert.match(await page.locator(".data-request-sheet").innerText(), /Current for applied scenario/);
-  await page.getByText("Exact applied Pilot assumptions", {exact: true}).click();
+  await page.getByText("Exact applied Strategy Lab assumptions", {exact: true}).click();
   assert.match(await page.locator(".request-applied-inputs").innerText(), /3,000/);
   return {draftNotApplied: true, appliedRequestUnchanged: true};
 });

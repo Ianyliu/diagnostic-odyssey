@@ -20,14 +20,14 @@ for (const mode of ["normal", "keyboard", "reduced", "deep-link"]) {
       }).observe({type: "layout-shift", buffered: true});
     });
     await page.goto(base + (mode === "deep-link" ? "/?review=1" : "/"));
-    await page.locator(".overview-proof").waitFor();
+    await page.locator(".atlas-journey").waitFor();
     if (mode === "normal" || mode === "keyboard") {
       assert.equal(await page.locator(".overview-page.is-opening").count(), 1);
       const animated = await page.evaluate(() => document.getAnimations().map(animation => ({
         name: animation.animationName, frames: animation.effect.getKeyframes()
       })));
-      assert.ok(animated.some(animation => animation.name === "workspace-reveal"));
-      assert.ok(animated.some(animation => animation.name === "workspace-unfold"));
+      assert.ok(animated.some(animation => animation.name === "atlas-trace"));
+      assert.ok(animated.some(animation => animation.name === "atlas-rise"));
       await page.screenshot({path: `${output}/${mode}-opening.png`, animations: "allow"});
       if (mode === "keyboard") {
         await page.keyboard.press("Tab");
@@ -39,11 +39,11 @@ for (const mode of ["normal", "keyboard", "reduced", "deep-link"]) {
       openingLayoutShift = await page.evaluate(() => window.auditShifts.reduce((sum, value) => sum + value, 0));
       assert.ok(openingLayoutShift < .01, `opening moved the layout: ${openingLayoutShift}`);
       await page.reload();
-      await page.locator(".overview-proof").waitFor();
+      await page.locator(".atlas-journey").waitFor();
       assert.equal(await page.locator(".overview-page.is-opening").count(), 0, "opening runs once per session");
     } else {
       assert.equal(await page.locator(".overview-page.is-opening").count(), 0);
-      assert.equal(await page.evaluate(() => document.getAnimations().filter(a => a.animationName?.startsWith("workspace-")).length), 0);
+      assert.equal(await page.evaluate(() => document.getAnimations().filter(a => a.animationName === "atlas-trace" || a.animationName === "atlas-rise").length), 0);
     }
     const layoutShift = await page.evaluate(() => window.auditShifts.reduce((sum, value) => sum + value, 0));
     assert.ok(layoutShift < .01, `unexpected layout movement: ${layoutShift}`);

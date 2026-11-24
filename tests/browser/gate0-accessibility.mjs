@@ -90,19 +90,22 @@ for (const mode of ["light", "dark", "system-light", "system-dark"]) for (const 
   await check(`C-01 390px ${mode} ${motion}`, async measurements => {
     const p = await page(390, mode.endsWith("dark") ? "dark" : "light", motion, !mode.startsWith("system"));
     await p.goto(`${base}/local-context`); await p.locator("main h1").waitFor();
-    const details = p.locator(".local-ledger-page .ledger-record-details");
-    const content = await details.allTextContents(); assert.ok(content.length > 0);
-    const summary = details.first().locator("summary");
-    await p.keyboard.press("Tab"); await summary.focus();
-    assert.equal(await summary.evaluate(e => e.matches(":focus-visible")), true);
-    measurements.focus = await summary.evaluate(e => ({ outline: getComputedStyle(e).outlineStyle, width: getComputedStyle(e).outlineWidth }));
+    const triggers = p.locator(".atlas-detail-trigger");
+    const count = await triggers.count(); assert.ok(count > 0);
+    const firstTrigger = triggers.first();
+    await p.keyboard.press("Tab"); await firstTrigger.focus();
+    assert.equal(await firstTrigger.evaluate(e => e.matches(":focus-visible")), true);
+    measurements.focus = await firstTrigger.evaluate(e => ({ outline: getComputedStyle(e).outlineStyle, width: getComputedStyle(e).outlineWidth }));
     assert.notEqual(measurements.focus.outline, "none"); assert.ok(parseFloat(measurements.focus.width) >= 2);
-    await p.keyboard.press("Space"); assert.equal(await details.first().getAttribute("open"), "");
-    await p.keyboard.press("Enter"); assert.equal(await details.first().getAttribute("open"), null);
-    await p.keyboard.press("Space"); assert.equal(await details.first().getAttribute("open"), "");
-    await p.locator("main details").evaluateAll(es => es.forEach(e => e.open = true));
-    assert.deepEqual(await details.allTextContents(), content, "Disclosure content must be unchanged");
-    measurements.content = content;
+    const drawer = p.locator("dialog.atlas-drawer");
+    await p.keyboard.press("Enter"); await drawer.waitFor({ state: "visible" });
+    const drawerContent = await drawer.locator(".atlas-drawer-list dd").allTextContents();
+    assert.ok(drawerContent.length > 0);
+    await p.keyboard.press("Escape"); await drawer.waitFor({ state: "hidden" });
+    await p.keyboard.press("Space"); await drawer.waitFor({ state: "visible" });
+    assert.deepEqual(await drawer.locator(".atlas-drawer-list dd").allTextContents(), drawerContent, "Provenance disclosure content must be unchanged");
+    measurements.content = drawerContent;
+    await p.keyboard.press("Escape"); await drawer.waitFor({ state: "hidden" });
     measurements.viewport = await p.evaluate(() => ({ clientWidth: document.documentElement.clientWidth, scrollWidth: document.documentElement.scrollWidth }));
     await p.screenshot({ path: `${output}/reflow-${mode}-${motion}.png`, fullPage: true });
     await p.addScriptTag({ content: axe.source });
@@ -119,7 +122,7 @@ for (const mode of ["light", "dark", "system-light", "system-dark"]) for (const 
 for (const width of [1440, 768, 390]) for (const theme of ["light", "dark"]) {
   await check(`C-02 ${width}px ${theme}`, async measurements => {
     const p = await page(width, theme, "reduce"); await p.goto(`${base}/`); await p.locator("main h1").waitFor();
-    const caption = p.locator(".overview-provenance figcaption");
+    const caption = p.locator(".atlas-hero-provenance");
     measurements.style = await caption.evaluate(e => {
       const s = getComputedStyle(e); const ancestors = [];
       for (let node = e; node; node = node.parentElement) ancestors.push(getComputedStyle(node).opacity);

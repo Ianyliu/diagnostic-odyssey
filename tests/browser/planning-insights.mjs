@@ -123,6 +123,8 @@ await run("current state, local selection, requests and canonical JSON isolation
 for (const width of [1440, 820, 390, 360]) await run(`huge finite scenario presentation stays readable at ${width}px`, async () => {
   const {page} = await session(width, "dark");
   await navigate(page, "Pilot planner");
+  const moreBtn = page.getByRole("button", {name: /More parameters|Hide base parameters/i});
+  if (await moreBtn.count() && await moreBtn.getAttribute("aria-expanded") !== "true") await moreBtn.click();
   await page.locator("#pilot-fixed_cost").fill(String(Number.MAX_VALUE));
   await navigate(page, "Planning brief");
   await page.screenshot({path: `${output}/insights-extreme-${width}-dark.png`, fullPage: true});

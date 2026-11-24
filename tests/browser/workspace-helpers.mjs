@@ -22,7 +22,7 @@ export async function navigateWorkspace(page, name) {
               ? "Evidence limits"
               : name;
   const primary = page.getByRole("navigation", {name: "Primary navigation"}).getByRole("link", {name: labelPattern, exact: true});
-  if (await primary.count()) await primary.click();
+  if (await primary.isVisible()) await primary.click();
   else {
     const toggle = page.getByRole("button", {name: "Menu", exact: true});
     if (await toggle.count() && await toggle.isVisible()) await toggle.click();

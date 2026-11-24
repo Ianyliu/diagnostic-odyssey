@@ -36,11 +36,11 @@ try {
   await page.locator("#pilot-capacity").fill("2000");
   await capture("stale");
   await navigateWorkspace(page, "Data requests");
-  await page.getByRole("checkbox", {name: /Include in Planning Brief/}).uncheck();
+  await page.getByRole("checkbox", {name: /Include in (?:Planning )?Brief/}).uncheck();
   await page.getByRole("button", {name: "Refresh data request", exact: true}).click();
   await capture("refreshed-unselected");
   await navigateWorkspace(page, "Data requests");
-  await page.getByRole("checkbox", {name: /Include in Planning Brief/}).check();
+  await page.getByRole("checkbox", {name: /Include in (?:Planning )?Brief/}).check();
   await capture("refreshed-selected");
   await navigateWorkspace(page, "Data requests");
   await prepareWorkspace(page);

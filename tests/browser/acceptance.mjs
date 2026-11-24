@@ -424,7 +424,7 @@ await check("appearance persistence and reduced motion opening", async () => {
   page.setDefaultTimeout(5000);
   await ready(page);
   assert.equal(
-    await page.locator(".overview-provenance.is-playing").count(),
+    await page.locator(".overview-page.is-opening").count(),
     0,
   );
   await setAppearance(page, "dark");
@@ -530,6 +530,11 @@ await check("browser theme color follows bootstrap, explicit preferences, system
   await context.close();
 });
 
+async function ensureExtraParamsOpen(page) {
+  const btn = page.getByRole("button", { name: /More parameters|Hide base parameters/i });
+  if (await btn.count() && await btn.getAttribute("aria-expanded") !== "true") await btn.click();
+}
+
 await check(
   "invalid numeric drafts preserve last applied scenario and JSON",
   async () => {
@@ -546,6 +551,7 @@ await check(
     const tiny = await exportBrief(page, "invalid-tiny-draft");
     assert.equal(tiny.scenario.input.reach, 0.25);
     await navigate(page, "Pilot planner");
+    await ensureExtraParamsOpen(page);
     await page.locator("#pilot-fixed_cost").fill("1e308");
     await page.locator("#pilot-per_participant_cost").fill("1e308");
     await page.getByText("Draft not applied", { exact: true }).waitFor();
@@ -605,6 +611,7 @@ await check("extreme finite scenario layout and invalid sensitivity remain usabl
         }
         return tokens;
       };
+      await ensureExtraParamsOpen(page);
       await page.locator("#pilot-fixed_cost").fill("1e308");
       assert.equal(await page.locator("#pilot-fixed_cost").getAttribute("aria-invalid"), "false");
       const assertResourceToken = async (fixedCost) => {
@@ -637,6 +644,7 @@ await check("extreme finite scenario layout and invalid sensitivity remain usabl
       assert.equal(brief.scenario.input.fixed_cost, 1e308);
       assert.equal(brief.scenario.result.fixed_program_cost, 1e308);
       await navigate(page, "Pilot planner");
+      await ensureExtraParamsOpen(page);
       await page.locator("#pilot-fixed_cost").fill(String(Number.MAX_VALUE));
       assert.equal(await page.locator("#pilot-fixed_cost").getAttribute("aria-invalid"), "false");
       const maxScientificToken = await assertResourceToken("Number.MAX_VALUE");
@@ -653,6 +661,7 @@ await check("extreme finite scenario layout and invalid sensitivity remain usabl
       assert.equal(maxBrief.scenario.result.fixed_program_cost, Number.MAX_VALUE);
       layouts.push({ width, theme, scientificToken, scientificLedgerTokens, scientificBriefTokens, maxScientificToken, maxLedgerTokens, maxBriefTokens, maxLayout, maxBriefLayout });
       await navigate(page, "Pilot planner");
+      await ensureExtraParamsOpen(page);
       await page.locator("#pilot-fixed_cost").fill("1e308");
       await page.locator("#pilot-capacity").fill(String(Number.MAX_VALUE));
       assert.equal(await page.locator("#pilot-capacity").getAttribute("aria-invalid"), "false");
@@ -666,6 +675,7 @@ await check("extreme finite scenario layout and invalid sensitivity remain usabl
       assert.equal(capacityBrief.scenario.input.capacity, Number.MAX_VALUE);
       assert.equal(capacityBrief.scenario.result.reached_participants, 3000);
       await navigate(page, "Pilot planner");
+      await ensureExtraParamsOpen(page);
       for (const [key, value] of Object.entries({ fixed_cost: "0", per_participant_cost: "0", baseline_window_months: "0", alternative_window_months: "0", horizon_months: "0", reach: "100", eligible_population: String(Number.MAX_VALUE) })) {
         await page.locator(`#pilot-${key}`).fill(value);
       }
@@ -838,17 +848,17 @@ await check(
     page.setDefaultTimeout(5000);
     await ready(page);
     assert.equal(
-      await page.locator(".overview-provenance.is-playing").count(),
+      await page.locator(".overview-page.is-opening").count(),
       1,
     );
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.waitForFunction(
-      () => !document.querySelector(".overview-provenance.is-playing"),
+      () => !document.querySelector(".overview-page.is-opening"),
     );
     await page.reload();
     await page.locator("main h1").waitFor(); await prepareWorkspace(page);
     assert.equal(
-      await page.locator(".overview-provenance.is-playing").count(),
+      await page.locator(".overview-page.is-opening").count(),
       0,
     );
     await context.close();
@@ -971,9 +981,7 @@ await check(
     });
     await tabTo(page, create);
     await page.keyboard.press("Enter");
-    await tabTo(page, page.getByRole("button", {name: "Menu", exact: true}), true);
-    await page.keyboard.press("Enter");
-    await tabTo(page, page.getByRole("navigation", {name: "Supporting navigation"}).getByRole("link", {name: "Data requests", exact: true}));
+    await tabTo(page, nav.getByRole("link", {name: "Data requests", exact: true}), true);
     await page.keyboard.press("Enter");
     await page
       .getByRole("heading", {
