@@ -27,6 +27,7 @@ import { getPilotFragmentTargetId } from "../data/pilotFragmentScroll";
 import { formatLocalContextValue } from "../data/formatLocalContextValue";
 import { formatPublishedLocalContextUncertainty } from "../data/localContextPresentation";
 import { PILOT_STRATEGY_PRESETS, type PilotStrategyPreset } from "../data/planningScenarioDefaults";
+import { buildScenarioComparisonRows, presetMatchesScenario } from "../data/scenarioComparison";
 import { getPathwayBoundaryPresentation } from "../data/pathwayBoundary";
 import { formatAppliedAssumption } from "./briefAssumptions";
 import "./PilotPage.css";
@@ -59,24 +60,21 @@ function renderPlanningText(text: string) {
   return isScientificNotationText(text) ? <span className="scientific-value">{text}</span> : text;
 }
 
-type BottomTab = "sensitivity" | "quantities" | "context";
+type BottomTab = "sensitivity" | "compare" | "quantities" | "context";
 const BOTTOM_TABS: readonly { id: BottomTab; label: string }[] = [
   { id: "sensitivity", label: "Sensitivity" },
+  { id: "compare", label: "Compare Strategies" },
   { id: "quantities", label: "All Quantities" },
   { id: "context", label: "Context & Requests" }
 ];
 
-function presetMatchesScenario(preset: PilotStrategyPreset, scenario: Scenario): boolean {
-  return (
-    scenario.eligible_population === preset.values.eligible_population &&
-    scenario.reach === preset.values.reach &&
-    scenario.capacity === preset.values.capacity &&
-    scenario.baseline_window_months === preset.values.baseline_window_months &&
-    scenario.alternative_window_months === preset.values.alternative_window_months &&
-    scenario.horizon_months === preset.values.horizon_months &&
-    scenario.fixed_cost === preset.values.fixed_cost &&
-    scenario.per_participant_cost === preset.values.per_participant_cost
-  );
+function formatSignedDelta(value: number | null, isCurrency = false): string | null {
+  if (value === null || value === 0 || !Number.isFinite(value)) return null;
+  const sign = value > 0 ? "+" : "−";
+  const absText = isCurrency
+    ? formatPlanningCurrency(Math.abs(value))
+    : formatPlanningNumber(Math.abs(value), resultNumber);
+  return `${sign}${absText}`;
 }
 
 export function PilotPage({ advisorAvailable = false }: { advisorAvailable?: boolean }) {
@@ -518,6 +516,113 @@ function PilotPlannerWorkspace({
               />
             )
           )}
+
+          {bottomTab === "compare" && (() => {
+            const rows = buildScenarioComparisonRows(scenario);
+            return (
+              <section id="pilot-compare" className="atlas-compare-panel" aria-labelledby="compare-strategies-title">
+                <div className="atlas-compare-head">
+                  <div>
+                    <p className="visual-kicker">MULTI-SCENARIO COMPARISON</p>
+                    <h3 id="compare-strategies-title">Compare candidate strategies deterministically</h3>
+                  </div>
+                </div>
+                <p className="micro-caption">
+                  Arithmetic comparison across presets and current inputs via the canonical engine. Not observed evidence, effectiveness rankings, or ROI.
+                </p>
+                <div
+                  className="comparison-table-wrap"
+                  role="region"
+                  aria-labelledby="compare-strategies-title"
+                  tabIndex={0}
+                >
+                  <table className="comparison-table">
+                    <caption className="sr-only">
+                      Deterministic scenario comparison across Strategy Lab presets and current active inputs
+                    </caption>
+                    <thead>
+                      <tr>
+                        <th scope="col">Strategy</th>
+                        <th scope="col">Reach</th>
+                        <th scope="col">Capacity</th>
+                        <th scope="col">Served</th>
+                        <th scope="col">Capacity gap</th>
+                        <th scope="col">Exposure diff.</th>
+                        <th scope="col">Resources</th>
+                        <th scope="col">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {rows.map(row => {
+                        const res = row.result;
+                        const dReached = formatSignedDelta(row.deltaReached);
+                        const dGap = formatSignedDelta(row.deltaGap);
+                        const dExp = formatSignedDelta(row.deltaExposure);
+                        const dCost = formatSignedDelta(row.deltaCost, true);
+                        return (
+                          <tr key={row.id} className={row.isCurrent ? "is-active-row" : undefined}>
+                            <th scope="row">
+                              <span className="comparison-strategy-name">{row.label}</span>
+                              {row.isCurrent && <span className="status status-selection">Active</span>}
+                              <small>{row.summary}</small>
+                            </th>
+                            <td>{Math.round(row.scenario.reach * 100)}%</td>
+                            <td>{renderPlanningText(formatPlanningNumber(row.scenario.capacity, resultNumber))}</td>
+                            <td>
+                              {res ? (
+                                <>
+                                  {renderPlanningText(formatPlanningNumber(res.reached_participants, resultNumber))}
+                                  {dReached && <small className="comparison-delta">{dReached}</small>}
+                                </>
+                              ) : "Invalid"}
+                            </td>
+                            <td>
+                              {res ? (
+                                <>
+                                  {renderPlanningText(formatPlanningNumber(res.capacity_gap, resultNumber))}
+                                  {dGap && <small className="comparison-delta">{dGap}</small>}
+                                </>
+                              ) : "Invalid"}
+                            </td>
+                            <td>
+                              {res ? (
+                                <>
+                                  {renderPlanningText(formatPlanningNumber(res.difference_person_months, resultNumber))} pm
+                                  {dExp && <small className="comparison-delta">{dExp} pm</small>}
+                                </>
+                              ) : "Invalid"}
+                            </td>
+                            <td>
+                              {res ? (
+                                <>
+                                  {renderPlanningText(formatPlanningCurrency(res.program_resource_requirement))}
+                                  {dCost && <small className="comparison-delta">{dCost}</small>}
+                                </>
+                              ) : "Invalid"}
+                            </td>
+                            <td>
+                              {row.preset ? (
+                                <button
+                                  type="button"
+                                  className="button secondary comparison-load-btn"
+                                  disabled={row.isCurrent}
+                                  onClick={() => applyPreset(row.preset!)}
+                                >
+                                  {row.isCurrent ? "Active" : "Load preset"}
+                                </button>
+                              ) : (
+                                <span className="subtle">Applied</span>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+            );
+          })()}
 
           {bottomTab === "quantities" && (
             <div className="atlas-quantities-panel">

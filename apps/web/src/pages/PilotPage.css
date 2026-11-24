@@ -348,6 +348,61 @@
 
 /* Contextual decision inspector */
 .atlas-decision-inspector { display: grid; gap: 14px; min-width: 0; align-self: start; }
+
+/* Multi-scenario comparison responsive table */
+.atlas-compare-panel { display: grid; gap: 12px; min-width: 0; max-width: 100%; }
+.atlas-compare-panel h3 { margin: 4px 0 0; font-size: 1.05rem; }
+.comparison-table-wrap {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--do-border);
+  border-radius: 12px;
+  background: var(--do-canvas);
+}
+.comparison-table {
+  width: 100%;
+  min-width: 680px;
+  border-collapse: collapse;
+  font-size: 0.84rem;
+}
+.comparison-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--do-surface-elevated);
+  color: var(--do-text);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--do-border);
+}
+.comparison-table tbody th,
+.comparison-table tbody td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--do-border);
+  text-align: left;
+  vertical-align: top;
+  font-variant-numeric: tabular-nums;
+}
+.comparison-table tbody th { min-width: 190px; }
+.comparison-table tbody th small,
+.comparison-delta {
+  display: block;
+  margin-top: 2px;
+  color: var(--do-text-muted);
+  font-size: 0.74rem;
+  font-weight: 500;
+}
+.comparison-strategy-name { font-weight: 650; color: var(--do-text); margin-right: 8px; }
+.comparison-table tbody tr.is-active-row {
+  background: var(--do-assumption-bg);
+}
+.comparison-table tbody tr:last-child th,
+.comparison-table tbody tr:last-child td { border-bottom: 0; }
+.comparison-load-btn { min-height: 34px; padding: 6px 12px; font-size: 0.78rem; white-space: nowrap; }
 .atlas-decision-inspector h2 { margin: 4px 0 6px; font-family: var(--do-font-display); font-size: 1.45rem; font-weight: 500; }
 .atlas-decision-inspector h3 { font-size: .87rem; margin: 0 0 6px; }
 .atlas-decision-inspector p { font-size: .82rem; line-height: 1.55; margin: 0 0 8px; overflow-wrap: anywhere; }
