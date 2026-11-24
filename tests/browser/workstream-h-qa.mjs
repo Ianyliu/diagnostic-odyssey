@@ -164,6 +164,8 @@ try {
     const {page, context} = await setup("default");
     try {
       await nav(page, "Pilot planner");
+      const moreParams = page.getByRole("button", {name: /More parameters/});
+      if (await moreParams.count()) await moreParams.click();
       await page.locator("#pilot-fixed_cost").fill(String(Number.MAX_VALUE));
       await nav(page, "Planning brief");
       const extreme = JSON.parse(await jsonBytes(page));
