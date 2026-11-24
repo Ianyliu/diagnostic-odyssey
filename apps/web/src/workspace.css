@@ -362,3 +362,18 @@ html {
 /* AI is its own semantic color, not evidence or scenario assumptions. */
 .header-ai-pill { color: var(--do-ai-text); border-color: var(--do-ai-border); background: var(--do-ai-bg); }
 .header-ai-pill:hover, .header-ai-pill.active { color: var(--do-ai-text); border-color: var(--do-ai-text); background: var(--do-ai-bg); }
+
+/* Cupertino-like compact, accessible controls, with the optional companion visible. */
+.primary-nav a { display: inline-flex; align-items: center; justify-content: center; gap: 5px; min-height: 44px; white-space: nowrap; padding-inline: 9px; }
+.atlas-stage-number { font-family: var(--do-font-mono); font-size: .66rem; color: var(--do-text-muted); }
+.primary-nav a.active .atlas-stage-number { color: var(--do-accent); }
+.primary-nav .atlas-requests-link { border: 1px dashed var(--do-border); }
+.primary-nav .atlas-requests-link.active { border-color: var(--do-accent); background: var(--do-selection-bg); color: var(--do-selection-text); }
+.header-ai-pill, .edition-trigger, .menu-toggle { min-height: 44px; }
+.theme-icon-toggle { min-width: 44px; min-height: 44px; }
+@media (min-width: 821px) and (max-width: 1120px) {
+  .header-inner { height: auto; min-height: var(--do-shell-height); grid-template-columns: minmax(0, 1fr) auto; padding-block: 6px; gap: 5px 12px; }
+  .primary-nav { grid-column: 1 / -1; grid-row: 2; justify-content: flex-start; flex-wrap: wrap; }
+  .header-controls { grid-column: 2; grid-row: 1; }
+}
+@media (max-width: 820px) { .primary-nav.open .atlas-requests-link { grid-column: 1 / -1; } }

@@ -18,7 +18,7 @@ function heroFigure(estimate: Estimate): string {
   return formatEstimateValue(estimate);
 }
 
-export function OverviewPage() {
+export function OverviewPage({ advisorAvailable = false }: { advisorAvailable?: boolean }) {
   const opening = useOpeningMotion();
   const [editionOpen, setEditionOpen] = useState(false);
   const { bundle, localContext, localContextStatus } = useArtifact();
@@ -54,9 +54,9 @@ export function OverviewPage() {
               <Link className="atlas-ghost-cta" to="/pilot">
                 Open Strategy Lab
               </Link>
-              <Link className="atlas-ghost-cta" to="/advisor">
+              {advisorAvailable && <Link className="atlas-ghost-cta" to="/advisor">
                 Strategy AI
-              </Link>
+              </Link>}
             </div>
           </div>
 

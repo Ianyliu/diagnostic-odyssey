@@ -12,7 +12,7 @@ declare const __DO_BUILD_PROVENANCE__: BuildProvenance;
 
 const savedScroll = new Map<string, number>();
 
-export function AppShell() {
+export function AppShell({ advisorAvailable = false }: { advisorAvailable?: boolean }) {
   const location = useLocation();
   const navigationType = useNavigationType();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -117,21 +117,22 @@ export function AppShell() {
             aria-label="Primary navigation"
             className={"primary-nav" + (menuOpen ? " open" : "")}
           >
-            {workspaceStages.map(({ to, label }) => (
+            {workspaceStages.map(({ to, label }, index) => (
               <NavLink key={to} to={to} className={activeStage === to ? "active" : ""}>
-                {label}
+                <span className="atlas-stage-number" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span> {label}
               </NavLink>
             ))}
+            <NavLink to="/data-requests" end className="atlas-requests-link">Data requests</NavLink>
           </nav>
 
           <div id="workspace-tools" className={"header-controls" + (menuOpen ? " open" : "")}>
-            <Link
+            {advisorAvailable && <Link
               to="/advisor"
               className={"header-ai-pill" + (advisorActive ? " active" : "")}
               aria-label="Strategy AI Studio"
             >
               AI
-            </Link>
+            </Link>}
             <button
               type="button"
               className="edition-trigger"
@@ -168,7 +169,7 @@ export function AppShell() {
           <nav className="footer-links" aria-label="Supporting navigation">
             <Link to="/evidence">Evidence</Link>
             <Link to="/data-requests">Data Requests</Link>
-            <Link to="/advisor">Strategy AI</Link>
+            {advisorAvailable && <Link to="/advisor">Strategy AI</Link>}
           </nav>
           <small className="source-revision" aria-label="Application source revision">
             {buildIdentity.url ? (

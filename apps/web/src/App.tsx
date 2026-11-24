@@ -20,13 +20,14 @@ const FutureAIExperiencePage = import.meta.env.VITE_FUTURE_AI_EXPERIENCE_DEMO !=
 
 export function App() {
   const [showFutureConcept, setShowFutureConcept] = useState(FutureAIExperiencePage !== null);
+  const advisorAvailable = FutureAIExperiencePage !== null && showFutureConcept;
   return (
     <ErrorBoundary>
       <ArtifactProvider>
         <ArtifactState>
           <Routes>
-            <Route element={<AppShell />}>
-              <Route index element={<OverviewPage />} />
+            <Route element={<AppShell advisorAvailable={advisorAvailable} />}>
+              <Route index element={<OverviewPage advisorAvailable={advisorAvailable} />} />
               <Route path="burden" element={<BurdenPage />} />
               <Route path="burden/medical" element={<MedicalBurdenPage />} />
               <Route path="burden/work" element={<DomainPage domainId="work-function" title="Work and function" description="Standalone route reserved for released work/function measures; no proxy borrowing." />} />
