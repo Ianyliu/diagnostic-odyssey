@@ -7,7 +7,6 @@ import {
   EstimateProvenanceDetails
 } from "../components/BurdenMeasureList";
 import { DetailDrawer } from "../components/DetailDrawer";
-import { IntervalWhiskerPlot } from "../components/IntervalWhiskerPlot";
 import { useArtifact } from "../data/ArtifactContext";
 import { formatEstimateInterval, formatEstimateValue } from "../data/formatEstimateValue";
 import { selectHeadlineFindings } from "../data/headlineFindings";
@@ -142,10 +141,6 @@ export function BurdenPage() {
         <div className="burden-domain-stack">
           {visibleDomains.map(domain => {
             const reviewed = domain.measures.length > 0 && domain.measures.every(canExportEstimate);
-            const administrativeHourMeasures = domain.domain_id === "healthcare-work-admin"
-              ? domain.measures.filter(estimate => estimate.unit === "hours/person/year")
-              : [];
-
             return (
               <article
                 className="card domain-card ledger-panel"
@@ -171,12 +166,10 @@ export function BurdenPage() {
                   </p>
                 )}
 
-                {administrativeHourMeasures.length > 1 && (
-                  <IntervalWhiskerPlot
-                    estimates={administrativeHourMeasures}
-                    title="Healthcare-work hours per year"
-                    description="ESAQ annualized hours across comparable measures."
-                  />
+                {domain.domain_id === "healthcare-work-admin" && (
+                  <p className="micro-caption domain-limitations">
+                    Each time estimate describes the respondents eligible for that question. Read it within that population.
+                  </p>
                 )}
 
                 <BurdenMeasureList estimates={domain.measures} />

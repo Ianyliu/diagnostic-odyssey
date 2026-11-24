@@ -84,6 +84,9 @@ export function getBurdenScaleDomain(
     return { min: 0, max: fixedScore.max, note: fixedScore.label };
   }
 
+  // ESAQ questions have outcome-specific respondents and top-code rules.
+  if (estimate.unit === "hours/person/year") return null;
+
   const familyKey = `${estimate.unit}::${normalizedDenominatorFamily(estimate.denominator)}`;
   const peers = allEstimates.filter(
     candidate =>

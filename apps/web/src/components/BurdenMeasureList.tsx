@@ -199,7 +199,10 @@ export function BurdenMeasureList({
                 )}
                 {reviewed && estimate.distribution_summary && (
                   <small className="metric-skew-note">
-                    Right-skewed distribution: high-spending or high-time outliers pull the survey mean above the median and IQR (25th–75th percentile); the IQR shows typical spread, not a sampling CI.
+                    {estimate.value !== null && estimate.value >= estimate.distribution_summary.p25 && estimate.value <= estimate.distribution_summary.p75
+                      ? "The survey mean falls within the interquartile range."
+                      : "The survey mean falls outside the interquartile range."}{" "}
+                    The 25th–75th percentile range describes the middle half of responses. The confidence interval describes sampling uncertainty in the mean.
                   </small>
                 )}
                 {!reviewed && (

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { canExportEstimate, type ArtifactBundle, type Estimate } from "@diagnostic-odyssey/contracts";
+import { canDisplayDistributionSummary, canExportEstimate, type ArtifactBundle, type Estimate } from "@diagnostic-odyssey/contracts";
 import { formatEstimateInterval, formatEstimateValue } from "../data/formatEstimateValue";
 import "./LandingBurdenStrata.css";
 
@@ -7,74 +7,85 @@ interface StrataBeat {
   readonly id: "1" | "2" | "3";
   readonly eyebrow: string;
   readonly figure: string;
-  readonly interval: string | null;
+  readonly graphic: StrataGraphic | null;
   readonly headline: string;
   readonly summary: string;
   readonly surveyLayer: string;
   readonly surveySublabel: string;
-  readonly scaleMinLabel: string;
-  readonly scaleMaxLabel: string;
-  readonly lowRatio: number;
-  readonly highRatio: number;
-  readonly pointRatio: number;
   readonly strataClass: "is-spending" | "is-admin" | "is-distress";
 }
 
+interface StrataGraphic {
+  readonly minLabel: string;
+  readonly maxLabel: string;
+  readonly interval: string | null;
+  readonly bounds: readonly [number, number] | null;
+  readonly point: number;
+}
+
+function validNonnegativeValue(value: unknown, unit: string): value is number {
+  return typeof value === "number" && Number.isFinite(value) && value >= 0
+    && (unit !== "proportion" || value <= 1);
+}
+
 function getExportableMap(bundle: ArtifactBundle | null): Map<string, Estimate> {
-  if (!bundle) return new Map();
-  const entries = bundle.burden_domains
+  const entries = (bundle?.burden_domains ?? [])
     .flatMap(domain => domain.measures)
-    .filter(canExportEstimate)
+    .filter(estimate => canExportEstimate(estimate) && validNonnegativeValue(estimate.value, estimate.unit))
     .map(estimate => [estimate.estimate_id, estimate] as const);
   return new Map(entries);
 }
 
 function formatHourFigure(estimate: Estimate | undefined): string {
-  if (!estimate || typeof estimate.value !== "number") return "—";
+  if (!estimate || typeof estimate.value !== "number") return "Estimate unavailable";
   return `${estimate.value.toLocaleString("en-US", { maximumFractionDigits: 1 })} hrs`;
-}
-
-function ratio(value: number | null | undefined, max: number): number {
-  if (typeof value !== "number" || !Number.isFinite(value) || max <= 0) return 0;
-  return Math.max(0, Math.min(1, value / max));
-}
-
-function niceScaleMax(estimate: Estimate | undefined, step: number, floor: number): number {
-  const high = typeof estimate?.interval_high === "number"
-    ? estimate.interval_high
-    : typeof estimate?.value === "number"
-      ? estimate.value
-      : floor;
-  return Math.max(floor, Math.ceil(high / step) * step);
 }
 
 const SVG_W = 360;
 
-function WhiskerSvg({
-  beat,
-  label
-}: {
-  beat: Pick<StrataBeat, "lowRatio" | "highRatio" | "pointRatio" | "figure" | "interval">;
-  label: string;
-}) {
-  const x1 = Math.round(beat.lowRatio * SVG_W);
-  const x2 = Math.round(beat.highRatio * SVG_W);
-  const cx = Math.max(7, Math.min(SVG_W - 7, Math.round(beat.pointRatio * SVG_W)));
-  const span = Math.max(4, x2 - x1);
+function strataGraphic(
+  estimate: Estimate | undefined,
+  unit: string,
+  step: number,
+  minMax: number,
+  formatAxis: (value: number) => string
+): StrataGraphic | null {
+  if (!estimate || estimate.unit !== unit || !validNonnegativeValue(estimate.value, unit)) return null;
 
+  const { value, interval_low: low, interval_high: high } = estimate;
+  const hasInterval = validNonnegativeValue(low, unit) && validNonnegativeValue(high, unit)
+    && low <= value && value <= high && Boolean(estimate.interval_type?.trim());
+  const maximum = unit === "proportion" ? 1
+    : Math.max(minMax, Math.ceil((hasInterval ? high : value) / step) * step);
+  if (!Number.isFinite(maximum)) return null;
+  const position = (number: number) => (number / maximum) * SVG_W;
+
+  return {
+    minLabel: formatAxis(0),
+    maxLabel: formatAxis(maximum),
+    interval: hasInterval ? formatEstimateInterval(estimate) : null,
+    bounds: hasInterval ? [position(low), position(high)] : null,
+    point: position(value)
+  };
+}
+
+function WhiskerSvg({ graphic, figure, label }: { graphic: StrataGraphic; figure: string; label: string }) {
   return (
     <svg
       className="strata-whisker-svg"
-      viewBox={`0 0 ${SVG_W} 24`}
+      viewBox={`-6 0 ${SVG_W + 12} 24`}
       role="img"
-      aria-label={`${label}: ${beat.figure}${beat.interval ? `, ${beat.interval}` : ""}`}
+      aria-label={`${label}: ${figure}${graphic.interval ? `, ${graphic.interval}` : ""}`}
     >
       <rect x="0" y="9" width={SVG_W} height="6" rx="3" className="strata-whisker-track" />
       <line x1={SVG_W * 0.25} y1="4" x2={SVG_W * 0.25} y2="20" className="strata-whisker-tick" />
       <line x1={SVG_W * 0.5} y1="4" x2={SVG_W * 0.5} y2="20" className="strata-whisker-tick" />
       <line x1={SVG_W * 0.75} y1="4" x2={SVG_W * 0.75} y2="20" className="strata-whisker-tick" />
-      <rect x={x1} y="9" width={span} height="6" rx="3" className="strata-whisker-range" />
-      <circle cx={cx} cy="12" r="5.5" className="strata-whisker-point" />
+      {graphic.bounds && (graphic.bounds[0] === graphic.bounds[1]
+        ? <line x1={graphic.bounds[0]} x2={graphic.bounds[0]} y1="3" y2="21" className="strata-whisker-tick" />
+        : <rect x={graphic.bounds[0]} y="9" width={graphic.bounds[1] - graphic.bounds[0]} height="6" rx="3" className="strata-whisker-range" />
+      )}
+      <circle cx={graphic.point} cy="12" r="5.5" className="strata-whisker-point" />
     </svg>
   );
 }
@@ -82,7 +93,7 @@ function WhiskerSvg({
 /**
  * Chapters II & III: Three memorable reviewed national figures in separate survey layers,
  * accompanied on desktop by a signature sticky "Unfolding Evidence Strata" panel that
- * physically separates each cohort and native unit as the visitor scrolls.
+ * highlights each outcome and its native unit as the visitor scrolls.
  */
 export function LandingBurdenStrata({ bundle }: { bundle: ArtifactBundle | null }) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -105,69 +116,45 @@ export function LandingBurdenStrata({ bundle }: { bundle: ArtifactBundle | null 
   const phq2Pos = byId.get("meps24-phq2-screen-positive");
 
   const beats = useMemo<readonly StrataBeat[]>(() => {
-    const popVal = pop ? formatEstimateValue(pop) : "—";
-    const popCi = pop ? formatEstimateInterval(pop) : null;
-
-    const spendVal = spendTotal ? formatEstimateValue(spendTotal) : "—";
-    const spendCi = spendTotal ? formatEstimateInterval(spendTotal) : null;
-
-    const paperVal = formatHourFigure(paperwork);
-    const paperCi = paperwork ? formatEstimateInterval(paperwork) : null;
-
-    const k6Val = k6Serious ? formatEstimateValue(k6Serious) : "—";
-    const k6Ci = k6Serious ? formatEstimateInterval(k6Serious) : null;
-
-    const spendScaleMax = niceScaleMax(spendTotal, 25e9, 150e9);
-    const paperScaleMax = niceScaleMax(paperwork, 10, 50);
-    const k6ScaleMax = niceScaleMax(k6Serious, 0.05, 0.25);
+    const popScope = pop
+      ? `The national population estimate is ${formatEstimateValue(pop)} (${formatEstimateInterval(pop)}).`
+      : "";
+    const spending = strataGraphic(spendTotal, "USD/year", 25e9, 150e9, value => value === 0 ? "$0" : `$${value / 1e9}B`);
+    const admin = strataGraphic(paperwork, "hours/person/year", 10, 50, value => `${value} hrs`);
+    const distress = strataGraphic(k6Serious, "proportion", 1, 1, value => `${value * 100}%`);
 
     return [
       {
         id: "1",
         eyebrow: "01 · FINANCIAL SCALE",
-        figure: spendVal,
-        interval: spendCi,
+        figure: spending && spendTotal ? formatEstimateValue(spendTotal) : "Estimate unavailable",
+        graphic: spending,
         headline: "In annual gross all-cause medical spending.",
-        summary: `Across ${popVal} U.S. adults ages 18–64 (${popCi ?? "MEPS 2024"}) meeting the operational current Long COVID definition at their Round 3/1 interview. This is descriptive gross spending across all payers and all causes—never illness-attributable cost, avoidable spending, or potential savings.`,
-        surveyLayer: "MEPS 2024 Full-Year Cohort",
+        summary: `Calendar-year 2024 spending across all causes and payers for U.S. civilian noninstitutionalized adults ages 18–64 classified as operational-current Long COVID at their Round 3/1 interview, with valid annual spending data. ${popScope} This descriptive total cannot quantify spending attributable to illness, avoidable costs, or potential savings.`,
+        surveyLayer: "MEPS 2024 full-year spending",
         surveySublabel: "Adults ages 18–64 · USD/year across all payers",
-        scaleMinLabel: "$0",
-        scaleMaxLabel: `$${Math.round(spendScaleMax / 1e9)}B`,
-        lowRatio: ratio(spendTotal?.interval_low, spendScaleMax),
-        highRatio: ratio(spendTotal?.interval_high, spendScaleMax),
-        pointRatio: ratio(spendTotal?.value, spendScaleMax),
         strataClass: "is-spending"
       },
       {
         id: "2",
         eyebrow: "02 · PAPERWORK & NAVIGATION",
-        figure: paperVal,
-        interval: paperCi,
-        headline: "Annualized health care paperwork and navigation time per person.",
-        summary: "Measured in a later 2024 MEPS supplemental survey (ESAQ) among eligible respondents with valid paperwork time—reported strictly in native annualized hours per year. Supplement timing is later than the Round 3/1 status anchor.",
-        surveyLayer: "MEPS 2024 ESAQ Subsample",
-        surveySublabel: "Outcome-specific respondents · hours/person/year",
-        scaleMinLabel: "0 hrs",
-        scaleMaxLabel: `${paperScaleMax} hrs`,
-        lowRatio: ratio(paperwork?.interval_low, paperScaleMax),
-        highRatio: ratio(paperwork?.interval_high, paperScaleMax),
-        pointRatio: ratio(paperwork?.value, paperScaleMax),
+        figure: formatHourFigure(admin ? paperwork : undefined),
+        graphic: admin,
+        headline: "Survey-weighted mean annualized hours per person per year for health care paperwork and navigation.",
+        summary: "Eligible later MEPS ESAQ respondents, ages 18–64, with valid paperwork responses and positive survey weights, had been classified as operational-current Long COVID at the earlier 2024 Round 3/1 interview. The later supplement cannot establish continued current status.",
+        surveyLayer: "MEPS 2024 ESAQ respondents",
+        surveySublabel: "Survey-weighted annualized mean · hours/person/year",
         strataClass: "is-admin"
       },
       {
         id: "3",
         eyebrow: "03 · PSYCHOLOGICAL DISTRESS",
-        figure: k6Val,
-        interval: k6Ci,
+        figure: distress && k6Serious ? formatEstimateValue(k6Serious) : "Estimate unavailable",
+        graphic: distress,
         headline: "Met the K6 screening threshold for serious nonspecific distress.",
-        summary: "From the separate 2024 MEPS PSAQ supplement, which uses its own respondent sample and survey weights distinct from ESAQ and full-year spending. K6 ≥ 13 is a screening threshold, not a clinical psychiatric diagnosis.",
-        surveyLayer: "MEPS 2024 PSAQ Subsample",
-        surveySublabel: "Distinct survey weights · K6 ≥ 13 screen",
-        scaleMinLabel: "0%",
-        scaleMaxLabel: `${Math.round(k6ScaleMax * 100)}%`,
-        lowRatio: ratio(k6Serious?.interval_low, k6ScaleMax),
-        highRatio: ratio(k6Serious?.interval_high, k6ScaleMax),
-        pointRatio: ratio(k6Serious?.value, k6ScaleMax),
+        summary: "Eligible later MEPS PSAQ respondents, ages 18–64, with valid K6 scores and positive survey weights, had been classified as operational-current Long COVID at the earlier 2024 Round 3/1 interview. The later supplement cannot establish continued current status. A K6 score of 13 or higher indicates serious distress on a screening scale. Diagnosis requires clinical assessment.",
+        surveyLayer: "MEPS 2024 PSAQ respondents",
+        surveySublabel: "Weighted proportion · K6 ≥ 13 screen",
         strataClass: "is-distress"
       }
     ];
@@ -200,6 +187,10 @@ export function LandingBurdenStrata({ bundle }: { bundle: ArtifactBundle | null 
     return () => observer.disconnect();
   }, []);
 
+  const paperworkDistribution = beats[1]?.graphic && paperwork && canDisplayDistributionSummary(paperwork)
+    ? paperwork.distribution_summary
+    : undefined;
+
   return (
     <section
       id="story-burden"
@@ -211,10 +202,10 @@ export function LandingBurdenStrata({ bundle }: { bundle: ArtifactBundle | null 
         <div className="atlas-burden-intro" data-reveal="auto">
           <p className="eyebrow">01 · THE BURDEN IN THREE SEPARATE MEASURES</p>
           <h2 id="story-burden-title">
-            Each number lives in its own survey layer. <em>None are combined.</em>
+            Three measures describe <em>different dimensions of burden.</em>
           </h2>
           <p className="subtle">
-            Three reviewed AHRQ MEPS 2024 estimates capture distinct dimensions of burden—financial, administrative, and psychological—across separate respondent universes and native units.
+            These AHRQ MEPS 2024 estimates describe finances, administrative time, and distress. The outcome-specific respondent samples may overlap.
           </p>
         </div>
 
@@ -228,24 +219,32 @@ export function LandingBurdenStrata({ bundle }: { bundle: ArtifactBundle | null 
                 data-reveal="auto"
               >
                 <p className="atlas-beat-eyebrow">{beat.eyebrow}</p>
-                <strong className="atlas-beat-figure">{beat.figure}</strong>
-                {beat.interval && (
-                  <p className="atlas-beat-ci">{beat.interval}</p>
+                <strong className={`atlas-beat-figure${beat.graphic ? "" : " is-unavailable"}`}>{beat.figure}</strong>
+                {beat.graphic?.interval && (
+                  <p className="atlas-beat-ci">{beat.graphic.interval}</p>
                 )}
                 <h3>{beat.headline}</h3>
+                {beat.id === "2" && paperworkDistribution && (
+                  <p className="atlas-beat-summary">
+                    <strong>Survey-weighted median: {paperworkDistribution.p50} hours per person per year.</strong>{" "}
+                    The middle half reported {paperworkDistribution.p25}–{paperworkDistribution.p75} annualized hours.
+                    That range describes responses. The confidence interval describes sampling uncertainty around the mean.
+                  </p>
+                )}
                 <p className="atlas-beat-summary">{beat.summary}</p>
 
-                {/* Inline whisker for tablet/mobile where sticky panel collapses */}
-                <div className="atlas-beat-inline-whisker">
-                  <WhiskerSvg beat={beat} label={beat.headline} />
-                  <div className="atlas-beat-scale">
-                    <span>{beat.scaleMinLabel}</span>
-                    <span>{beat.surveyLayer}</span>
-                    <span>{beat.scaleMaxLabel}</span>
+                {beat.graphic && (
+                  <div className="atlas-beat-inline-whisker">
+                    <WhiskerSvg graphic={beat.graphic} figure={beat.figure} label={beat.headline} />
+                    <div className="atlas-beat-scale">
+                      <span>{beat.graphic.minLabel}</span>
+                      <span>{beat.surveyLayer}</span>
+                      <span>{beat.graphic.maxLabel}</span>
+                    </div>
                   </div>
-                </div>
+                )}
 
-                {beat.id === "1" && (spendMean || oopMean) && (
+                {beat.id === "1" && (spendMean || (beat.graphic && oopMean && oopTotal)) && (
                   <details className="strata-disclosure">
                     <summary>More spending context (nested &amp; per-person)</summary>
                     <ul>
@@ -255,7 +254,7 @@ export function LandingBurdenStrata({ bundle }: { bundle: ArtifactBundle | null 
                           <strong>{formatEstimateValue(spendMean)}</strong> ({formatEstimateInterval(spendMean)}).
                         </li>
                       )}
-                      {oopMean && oopTotal && (
+                      {beat.graphic && oopMean && oopTotal && (
                         <li>
                           Out-of-pocket component (nested inside the {beat.figure} total, never added):{" "}
                           <strong>{formatEstimateValue(oopMean)}</strong> per person ({formatEstimateValue(oopTotal)} total; {formatEstimateInterval(oopTotal)}).
@@ -267,7 +266,7 @@ export function LandingBurdenStrata({ bundle }: { bundle: ArtifactBundle | null 
 
                 {beat.id === "2" && (billsTime || visitsTime || priorAuth) && (
                   <details className="strata-disclosure">
-                    <summary>Other separate ESAQ measures (distinct respondent universes)</summary>
+                    <summary>Other questions about time and approvals</summary>
                     <ul>
                       {billsTime && (
                         <li>
@@ -289,7 +288,7 @@ export function LandingBurdenStrata({ bundle }: { bundle: ArtifactBundle | null 
                       )}
                     </ul>
                     <p className="strata-disclosure-note">
-                      Each ESAQ question reflects its own eligible respondent subset and top-code rules; annualized time measures are reported separately and never summed.
+                      Each ESAQ question has its own eligibility and top-code rules. Read each estimate in its respondent scope. The time estimates cannot be added or compared on hours alone.
                     </p>
                   </details>
                 )}
@@ -314,7 +313,7 @@ export function LandingBurdenStrata({ bundle }: { bundle: ArtifactBundle | null 
             ))}
           </div>
 
-          <aside className="atlas-strata-stage-col" aria-label="Separate survey layers comparison">
+          <aside className="atlas-strata-stage-col" aria-label="Outcome-specific survey estimates">
             <div className="atlas-strata-sticky" data-active-beat={activeBeat}>
               <div className="strata-stage-header">
                 <span className="strata-stage-kicker">EVIDENCE ARCHITECTURE</span>
@@ -334,20 +333,24 @@ export function LandingBurdenStrata({ bundle }: { bundle: ArtifactBundle | null 
                         <span className="strata-layer-cohort">{beat.surveyLayer}</span>
                         <small className="strata-layer-unit">{beat.surveySublabel}</small>
                       </div>
-                      <strong className="strata-layer-val">{beat.figure}</strong>
+                      <strong className={`strata-layer-val${beat.graphic ? "" : " is-unavailable"}`}>{beat.figure}</strong>
                     </div>
-                    <WhiskerSvg beat={beat} label={beat.surveyLayer} />
-                    <div className="strata-layer-foot">
-                      <span>{beat.scaleMinLabel}</span>
-                      <span>{beat.interval ?? "95% CI"}</span>
-                      <span>{beat.scaleMaxLabel}</span>
-                    </div>
+                    {beat.graphic && (
+                      <>
+                        <WhiskerSvg graphic={beat.graphic} figure={beat.figure} label={beat.surveyLayer} />
+                        <div className="strata-layer-foot">
+                          <span>{beat.graphic.minLabel}</span>
+                          <span>{beat.graphic.interval}</span>
+                          <span>{beat.graphic.maxLabel}</span>
+                        </div>
+                      </>
+                    )}
                   </div>
                 ))}
               </div>
 
               <p className="strata-stage-boundary">
-                Different cohorts · Native units preserved · Never combined into a single score
+                Outcome-specific samples may overlap. Read each estimate in its own units.
               </p>
             </div>
           </aside>

@@ -423,3 +423,12 @@
     opacity: 1 !important;
   }
 }
+
+.atlas-beat-figure.is-unavailable,
+.strata-layer-val.is-unavailable {
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 650;
+  line-height: 1.5;
+  white-space: normal;
+}
