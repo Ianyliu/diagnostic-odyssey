@@ -211,9 +211,13 @@
 .brief-applied-assumptions > div,
 .brief-output-list > div,
 .brief-scenario-trace > div {
+  container-type: inline-size;
+  min-width: 0;
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
-  gap: 10px;
+  align-items: baseline;
+  gap: 6px 10px;
 }
 
 .brief-applied-assumptions dt,
@@ -230,6 +234,17 @@
   font-family: var(--do-font-mono);
   font-size: 0.88rem;
   font-weight: 600;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.brief-scientific-value {
+  display: inline-block;
+  max-width: 100%;
+  white-space: nowrap;
+  font-family: var(--do-font-mono);
+  font-size: clamp(0.66rem, 3.2cqi, 0.88rem);
+  letter-spacing: -0.025em;
 }
 
 .brief-local-context-list { display: grid; gap: 12px; }
@@ -255,10 +270,24 @@
     @bottom-center { content: "Reviewed artifact · see Brief provenance"; font: 6.8pt sans-serif; color: #4a5568; }
     @bottom-right { content: "Page " counter(page) " of " counter(pages); font: 6.8pt sans-serif; color: #4a5568; }
   }
-  .atlas-memo-shell { width: 100%; max-width: none; gap: 10pt; }
+  .app-shell { display: block !important; min-height: 0 !important; }
+  .page.planning-brief-page, .atlas-memo-shell { display: block !important; width: 100%; max-width: none; padding: 0 !important; margin: 0 !important; }
   .brief-dock, .brief-print-controls, .brief-concept-strip, .brief-appendix-control { display: none !important; }
-  .atlas-memo-body { border: 0; padding: 0; box-shadow: none; gap: 14pt; }
-  .atlas-memo-body, .brief-burden-group { break-inside: auto; }
+  .atlas-memo-body { display: block !important; border: 0; padding: 0 !important; margin-bottom: 0 !important; box-shadow: none; }
+  .atlas-memo-body > section + section { margin-top: 8pt; padding-top: 8pt; }
+  .brief-burden-groups, .brief-burden-group { display: block !important; break-inside: auto; }
+  .brief-burden-group + .brief-burden-group { margin-top: 8pt; }
+  .brief-applied-assumptions,
+  .brief-output-list,
+  .brief-scenario-trace { padding: 7pt 10pt; margin: 5pt 0; gap: 4pt 12pt; }
+  .brief-decision-trace { margin-top: 7pt; padding-top: 7pt; }
+  .planning-brief-page.brief-include-context-appendix .brief-local-context-list { display: block !important; }
+  .planning-brief-page.brief-include-context-appendix .brief-local-context { padding: 7pt 0; font-size: 9pt; }
+  .brief-local-context-opening { break-inside: avoid; }
+  .brief-local-context-opening .card-title-row { flex-wrap: nowrap; align-items: baseline; }
+  .brief-local-context-opening .card-title-row > div > strong { font-size: 9pt; }
+  .brief-local-context-opening .card-title-row > div > strong,
+  .brief-local-context-opening .card-title-row > div > span { display: block; }
   .brief-executive-summary {
     display: block !important;
     color: #101b32 !important;

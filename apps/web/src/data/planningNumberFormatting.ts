@@ -12,6 +12,10 @@ function needsScientificNotation(value: number): boolean {
   return Math.abs(value) >= 1e12;
 }
 
+export function isScientificNotationText(text: string): boolean {
+  return /e[+-]\d+/i.test(text);
+}
+
 /** toExponential() without a precision argument preserves the number's round trip. */
 export function formatPlanningNumber(value: number, formatter = integer): string {
   return needsScientificNotation(value) ? value.toExponential() : formatter.format(value);

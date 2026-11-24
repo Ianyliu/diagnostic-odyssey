@@ -1,4 +1,4 @@
-import { formatPlanningCurrency, formatPlanningNumber } from "../data/planningNumberFormatting.ts";
+import { formatPlanningCurrency, formatPlanningNumber, isScientificNotationText } from "../data/planningNumberFormatting.ts";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { buildPlanningBrief, serializeBriefJson, type PlanningBrief } from "@diagnostic-odyssey/brief-core";
@@ -259,7 +259,7 @@ export function BriefPage({
               {showFutureConcept && (
                 <Link className="text-button" to="/advisor">Open Strategy AI Studio →</Link>
               )}
-              <small className="subtle">
+              <small className="subtle brief-concept-note">
                 {previewGeminiEnabled
                   ? "Live Gemini Advisor (authenticated Preview) active alongside deterministic Prompt Studio."
                   : "No on-site Gemini model calls run in public builds; Prompt Studio works locally."}
@@ -383,12 +383,15 @@ export function BriefPage({
             {brief.scenario && scenarioBoundary ? (
               <>
                 <dl className="brief-applied-assumptions" aria-label={`${pilotInputFields.length} applied planning assumptions`}>
-                  {pilotInputFields.map(field => (
-                    <div key={field.key}>
-                      <dt>{field.label}</dt>
-                      <dd>{formatAppliedAssumption(brief.scenario!.input, field)}</dd>
-                    </div>
-                  ))}
+                  {pilotInputFields.map(field => {
+                    const formatted = formatAppliedAssumption(brief.scenario!.input, field);
+                    return (
+                      <div key={field.key}>
+                        <dt>{field.label}</dt>
+                        <dd>{isScientificNotationText(formatted) ? <span className="brief-scientific-value">{formatted}</span> : formatted}</dd>
+                      </div>
+                    );
+                  })}
                 </dl>
                 <dl className="brief-scenario-trace">
                   <div><dt>Target step</dt><dd>{scenarioBoundary.pathwayStepLabel}</dd></div>
@@ -407,9 +410,18 @@ export function BriefPage({
               <h2>Scenario outputs</h2>
               <p className="micro-caption">Deterministic planning quantities from the applied assumptions above; not a forecast or savings.</p>
               <dl className="brief-output-list">
-                <div><dt>Participants within capacity</dt><dd>{formatPlanningNumber(brief.scenario.result.reached_participants, resultNumber)}</dd></div>
-                <div><dt>Person-month planning exposure difference</dt><dd>{formatPlanningNumber(brief.scenario.result.difference_person_months, resultNumber)} pm</dd></div>
-                <div><dt>Program-resource requirement</dt><dd>{formatPlanningCurrency(brief.scenario.result.program_resource_requirement)}</dd></div>
+                {(() => {
+                  const reached = formatPlanningNumber(brief.scenario.result.reached_participants, resultNumber);
+                  const diff = formatPlanningNumber(brief.scenario.result.difference_person_months, resultNumber);
+                  const res = formatPlanningCurrency(brief.scenario.result.program_resource_requirement);
+                  return (
+                    <>
+                      <div><dt>Participants within capacity</dt><dd>{isScientificNotationText(reached) ? <span className="brief-scientific-value">{reached}</span> : reached}</dd></div>
+                      <div><dt>Person-month planning exposure difference</dt><dd>{isScientificNotationText(diff) ? <span className="brief-scientific-value">{diff}</span> : diff} pm</dd></div>
+                      <div><dt>Program-resource requirement</dt><dd>{isScientificNotationText(res) ? <span className="brief-scientific-value">{res}</span> : res}</dd></div>
+                    </>
+                  );
+                })()}
               </dl>
               <section className="brief-decision-trace" aria-labelledby="brief-decision-trace-title">
                 <h3 id="brief-decision-trace-title">Decision trace</h3>
@@ -431,7 +443,7 @@ export function BriefPage({
             {brief.local_context.length > 0 && (
               <div className="brief-local-context-executive" aria-label="Local context print synopsis">
                 <p>
-                  <strong>{brief.local_context.length} reviewed West Virginia indicators included.</strong>{" "}
+                  <strong>{brief.local_context.length} reviewed context {brief.local_context.length === 1 ? "record" : "records"} included.</strong>{" "}
                   HRSA shortage designations and Census ACS indicators describe local access conditions—not local Long COVID prevalence or attributable costs.
                 </p>
                 <ul>
@@ -445,7 +457,7 @@ export function BriefPage({
             )}
             {brief.local_context.length > 0 ? (
               <div className="brief-local-context-list">
-                <h3 className="brief-context-appendix-heading">Included context records ({brief.local_context.length})</h3>
+                <h3 className="brief-context-appendix-heading">Detailed included context records ({brief.local_context.length})</h3>
                 {brief.local_context.map(record => (
                   <article className="brief-local-context" key={record.indicator_id}>
                     <div className="brief-local-context-opening">
@@ -486,7 +498,7 @@ export function BriefPage({
               <div className="empty-state">
                 <strong>
                   {localContextAvailable
-                    ? "Reviewed West Virginia state context is available, but no local context has been selected for this brief or used in Strategy Lab."
+                    ? "No local context has been selected for this brief or used in Strategy Lab; reviewed West Virginia state context is available."
                     : "No local context has been selected for this brief."}
                 </strong>
                 <p>

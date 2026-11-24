@@ -148,7 +148,7 @@ export function LocalContextPage() {
           <p>Local context unavailable; missing does not mean zero constraint.</p>
         </header>
         <div className="empty-state" role="alert">
-          <strong>Local indicators unavailable.</strong>
+          <strong>Reviewed local implementation context is unavailable.</strong>
           <p>{localContextError ?? "Reviewed local context could not be loaded."}</p>
         </div>
       </section>

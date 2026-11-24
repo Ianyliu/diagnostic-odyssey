@@ -126,7 +126,7 @@ test("stale selected sensitivity requests are excluded from Brief/export until r
   assert.match(context, /isDataRequestCurrentForScenario\(request, scenario\)/);
   assert.match(context, /\[availableDataRequests, briefDataRequestIds, scenario\]/);
   assert.match(sensitivity, /Refresh data request/);
-  assert.match(requests, /"Stale"/);
+  assert.match(requests, /"Stale for applied scenario"/);
   assert.match(requests, /refresh to include in Brief/);
   assert.match(requests, /createSensitivityDataRequest\(scenario, sensitivityField\)/);
   assert.match(brief, /withStaleSelectedDataRequestWarning/);

@@ -55,18 +55,18 @@
 .atlas-journey-stop-1 { left: 29.49%; top: 47.6923%; transform: translate(-50%, 52%); }
 .atlas-journey-stop-2 { left: 49.90%; top: 69.2308%; transform: translate(-50%, -148%); }
 .atlas-journey-stop-3 { left: 69.92%; top: 35.3846%; transform: translate(-50%, 52%); }
-.atlas-journey-stop-4 { left: 90.625%; top: 16.1538%; transform: translate(-62%, 54%); }
+.atlas-journey-stop-4 { left: 90.625%; top: 16.1538%; transform: translate(-80%, 54%); }
 
 .atlas-journey-stop-0:hover, .atlas-journey-stop-0:focus-visible { transform: translate(-45%, -158%); }
 .atlas-journey-stop-2:hover, .atlas-journey-stop-2:focus-visible { transform: translate(-50%, -158%); }
 .atlas-journey-stop-1:hover, .atlas-journey-stop-1:focus-visible,
 .atlas-journey-stop-3:hover, .atlas-journey-stop-3:focus-visible { transform: translate(-50%, 44%); }
-.atlas-journey-stop-4:hover, .atlas-journey-stop-4:focus-visible { transform: translate(-62%, 46%); }
+.atlas-journey-stop-4:hover, .atlas-journey-stop-4:focus-visible { transform: translate(-80%, 46%); }
 
 .atlas-journey-mobile { display: none; padding: 0; margin: 0; list-style: none; }
 
 @media (prefers-reduced-motion: no-preference) {
-  .atlas-journey-reveal { animation: atlas-trace 1.6s cubic-bezier(0.22, 1, 0.36, 1) both; }
+  .overview-page.is-opening .atlas-journey-reveal { animation: atlas-trace 1.6s cubic-bezier(0.22, 1, 0.36, 1) both; }
 }
 @keyframes atlas-trace { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
 

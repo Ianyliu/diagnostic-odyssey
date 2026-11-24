@@ -57,6 +57,11 @@
   [data-reveal] {
     animation: none !important;
     transition: none !important;
+  }
+
+  .overview-page :is(.atlas-hero-eyebrow, .atlas-hero-title, .atlas-hero-sub, .atlas-hero-ctas),
+  .atlas-lens-card:hover,
+  [data-reveal] {
     opacity: 1 !important;
     transform: none !important;
   }

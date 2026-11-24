@@ -1,6 +1,13 @@
 .sensitivity-visual {
   display: grid;
   gap: 12px;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.sensitivity-visual > * {
+  min-width: 0;
+  max-width: 100%;
 }
 
 .sensitivity-heading {
@@ -12,8 +19,10 @@
 }
 
 .sensitivity-heading h3 { margin: 4px 0 0; font-size: 1.05rem; }
-.sensitivity-control { display: grid; gap: 4px; font-size: 0.78rem; font-weight: 600; color: var(--do-text-muted); }
+.sensitivity-control { display: grid; gap: 4px; max-width: 100%; font-size: 0.78rem; font-weight: 600; color: var(--do-text-muted); }
 .sensitivity-control select {
+  width: 100%;
+  max-width: 100%;
   padding: 7px 12px;
   border-radius: 8px;
   border: 1px solid var(--do-control-border);
@@ -26,8 +35,8 @@
 
 .sensitivity-bars {
   display: grid;
-  grid-template-columns: max-content minmax(120px, 1fr) max-content;
-  gap: 8px 14px;
+  grid-template-columns: max-content minmax(48px, 1fr) max-content;
+  gap: 8px 10px;
   align-items: center;
 }
 

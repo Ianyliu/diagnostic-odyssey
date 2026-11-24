@@ -1,4 +1,4 @@
-import { formatPlanningCurrency, formatPlanningNumber } from "../data/planningNumberFormatting.ts";
+import { formatPlanningCurrency, formatPlanningNumber, isScientificNotationText } from "../data/planningNumberFormatting.ts";
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { Link, useLocation } from "react-router-dom";
 import type { Scenario, ScenarioResult } from "@diagnostic-odyssey/contracts";
@@ -54,6 +54,10 @@ const EXTRA_FIELDS: readonly PilotNumericField[] = [
   "horizon_months",
   "fixed_cost"
 ];
+
+function renderPlanningText(text: string) {
+  return isScientificNotationText(text) ? <span className="scientific-value">{text}</span> : text;
+}
 
 type BottomTab = "sensitivity" | "quantities" | "context";
 const BOTTOM_TABS: readonly { id: BottomTab; label: string }[] = [
@@ -302,7 +306,7 @@ function PilotPlannerWorkspace({
                 <div className="atlas-slider-row" key={spec.key}>
                   <div className="atlas-slider-head">
                     <label htmlFor={inputId}>{spec.shortLabel}</label>
-                    <div className={`atlas-slider-num${error ? " invalid" : ""}`}>
+                    <div className={`input-wrap atlas-slider-num${error ? " invalid" : ""}`}>
                       <input
                         id={inputId}
                         type="text"
@@ -359,7 +363,7 @@ function PilotPlannerWorkspace({
                   return (
                     <div className="atlas-extra-field" key={key}>
                       <label htmlFor={inputId}>{field.label}</label>
-                      <div className={`atlas-slider-num${error ? " invalid" : ""}`}>
+                      <div className={`input-wrap atlas-slider-num${error ? " invalid" : ""}`}>
                         <input
                           id={inputId}
                           type="text"
@@ -388,28 +392,28 @@ function PilotPlannerWorkspace({
         {/* Region 2: Applied Calculations & Visuals */}
         <article id="pilot-results" className="card atlas-studio-output">
           {invalidDraft && (
-            <div className="caution" role="status">
+            <div className="caution draft-not-applied" role="status">
               <strong>Draft not applied</strong>
               <span>Showing last valid planning assumptions.</span>
             </div>
           )}
 
-          <dl className="atlas-kpi-grid" aria-label="Four applied planning quantities">
+          <dl className="atlas-kpi-grid pilot-headlines" aria-label="Four applied planning quantities">
             <div className="atlas-kpi">
               <dt>Participants served</dt>
-              <dd>{formatPlanningNumber(scenarioResult.reached_participants, resultNumber)}</dd>
+              <dd>{renderPlanningText(formatPlanningNumber(scenarioResult.reached_participants, resultNumber))}</dd>
             </div>
             <div className={`atlas-kpi${scenarioResult.capacity_gap > 0 ? " is-gap" : ""}`}>
               <dt>Capacity gap</dt>
-              <dd>{formatPlanningNumber(scenarioResult.capacity_gap, resultNumber)}</dd>
+              <dd>{renderPlanningText(formatPlanningNumber(scenarioResult.capacity_gap, resultNumber))}</dd>
             </div>
             <div className="atlas-kpi">
               <dt>Exposure difference</dt>
-              <dd>{formatPlanningNumber(scenarioResult.difference_person_months, resultNumber)} pm</dd>
+              <dd>{renderPlanningText(formatPlanningNumber(scenarioResult.difference_person_months, resultNumber))} pm</dd>
             </div>
             <div className="atlas-kpi">
               <dt>Resource requirement</dt>
-              <dd>{formatPlanningCurrency(scenarioResult.program_resource_requirement)}</dd>
+              <dd>{renderPlanningText(formatPlanningCurrency(scenarioResult.program_resource_requirement))}</dd>
             </div>
           </dl>
 
@@ -517,14 +521,14 @@ function PilotPlannerWorkspace({
 
           {bottomTab === "quantities" && (
             <div className="atlas-quantities-panel">
-              <dl className="atlas-quantities-list">
-                <div><dt>Intended reach</dt><dd>{formatPlanningNumber(scenarioResult.intended_reach, resultNumber)}</dd></div>
-                <div><dt>Reached participants</dt><dd>{formatPlanningNumber(scenarioResult.reached_participants, resultNumber)}</dd></div>
-                <div><dt>Capacity gap</dt><dd>{formatPlanningNumber(scenarioResult.capacity_gap, resultNumber)}</dd></div>
-                <div><dt>Baseline person-months</dt><dd>{formatPlanningNumber(scenarioResult.baseline_person_months, resultNumber)}</dd></div>
-                <div><dt>Planning person-months</dt><dd>{formatPlanningNumber(scenarioResult.alternative_person_months, resultNumber)}</dd></div>
-                <div><dt>Difference in person-months</dt><dd>{formatPlanningNumber(scenarioResult.difference_person_months, resultNumber)}</dd></div>
-                <div><dt>Program-resource requirement</dt><dd>{formatPlanningCurrency(scenarioResult.program_resource_requirement)}</dd></div>
+              <dl className="atlas-quantities-list pilot-result-ledger">
+                <div><dt>Intended reach</dt><dd>{renderPlanningText(formatPlanningNumber(scenarioResult.intended_reach, resultNumber))}</dd></div>
+                <div><dt>Reached participants</dt><dd>{renderPlanningText(formatPlanningNumber(scenarioResult.reached_participants, resultNumber))}</dd></div>
+                <div><dt>Capacity gap</dt><dd>{renderPlanningText(formatPlanningNumber(scenarioResult.capacity_gap, resultNumber))}</dd></div>
+                <div><dt>Baseline person-months</dt><dd>{renderPlanningText(formatPlanningNumber(scenarioResult.baseline_person_months, resultNumber))}</dd></div>
+                <div><dt>Planning person-months</dt><dd>{renderPlanningText(formatPlanningNumber(scenarioResult.alternative_person_months, resultNumber))}</dd></div>
+                <div><dt>Difference in person-months</dt><dd>{renderPlanningText(formatPlanningNumber(scenarioResult.difference_person_months, resultNumber))}</dd></div>
+                <div><dt>Program-resource requirement</dt><dd>{renderPlanningText(formatPlanningCurrency(scenarioResult.program_resource_requirement))}</dd></div>
               </dl>
               <DecisionTrace
                 burdenEstimateCount={burdenEstimateCount}

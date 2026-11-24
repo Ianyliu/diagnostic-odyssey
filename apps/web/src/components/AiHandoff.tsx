@@ -170,13 +170,13 @@ function HandoffPanel({
     if (!mounted.current) return;
     setCopying(false);
     if (epoch !== transferEpoch.current) {
-      setTransferStatus("Source or options changed while copying; regenerate and copy again.");
+      setTransferStatus("The Brief or options changed while copying. Your clipboard may contain the older preview; regenerate and copy again.");
       return;
     }
     setTransferStatus(
       outcome === "copied"
         ? "Complete prompt copied to clipboard."
-        : "Clipboard unavailable; use Select complete prompt or Download Markdown."
+        : `${outcome === "insecure" ? "Automatic copying requires a secure browser context." : outcome === "unsupported" ? "This browser does not support clipboard copying." : "Clipboard access was denied or failed."} Use Select complete prompt, then your device’s Copy command, or download Markdown.`
     );
   };
 
@@ -185,7 +185,7 @@ function HandoffPanel({
     const epoch = transferEpoch.current;
     setOpenedProvider(provider);
     setCopying(true);
-    setTransferStatus(`Opening ${provider.label} and copying prompt…`);
+    setTransferStatus(`Attempting to open ${provider.label} and copy the complete prompt…`);
     const action = copyAndOpenAiProvider(
       snapshot.markdown,
       provider,
@@ -197,13 +197,16 @@ function HandoffPanel({
     if (!mounted.current) return;
     setCopying(false);
     if (epoch !== transferEpoch.current) {
-      setTransferStatus("Source changed while copying; regenerate before pasting.");
+      setTransferStatus("Source or options changed while copying. The clipboard may contain an older prompt; regenerate before pasting.");
       return;
     }
+    const launchNote = action.launch === "failed"
+      ? "The provider page could not be opened automatically. Use the fallback link below. "
+      : "If no provider tab opened, use the fallback link below. ";
     setTransferStatus(
-      outcome === "copied"
-        ? `Prompt copied. Paste manually into ${provider.label}.`
-        : "Clipboard copy unavailable; use Select complete prompt or Download Markdown."
+      launchNote + (outcome === "copied"
+        ? `Complete prompt copied. Paste it into ${provider.label} and submit only if you choose.`
+        : "Clipboard copy failed or is unavailable. Use Select complete prompt or Download Markdown, then paste manually.")
     );
   };
 
@@ -211,9 +214,9 @@ function HandoffPanel({
     if (!current || !snapshot) return;
     try {
       downloadAiHandoff(snapshot);
-      setTransferStatus("Markdown download requested.");
+      setTransferStatus("Markdown download requested with the complete preview text.");
     } catch {
-      setTransferStatus("Download could not start.");
+      setTransferStatus("The download could not start. Use Select complete prompt and your device’s Copy command.");
     }
   };
 
@@ -303,10 +306,10 @@ function HandoffPanel({
         <p className={current ? "ai-handoff-ready" : "ai-handoff-warning"} role="status">
           {problem ??
             (session.stale
-              ? "Options changed. Regenerate preview before copying."
+              ? "The Brief or options changed. Regenerate the preview before copying or downloading."
               : !snapshot
-                ? "Prompt could not be generated."
-                : "Preview current · Boundaries & guardrails attached.")}
+                ? "A prompt could not be generated. Review the source state and try again."
+                : "Preview is current. Copy and download use this exact text.")}
         </p>
 
         {payload && (
@@ -345,7 +348,7 @@ function HandoffPanel({
               if (!current) return;
               textRef.current?.focus();
               textRef.current?.select();
-              setTransferStatus("Complete prompt selected.");
+              setTransferStatus("Complete prompt selected. Use your device’s Copy command.");
             }}
           >
             Select complete prompt
@@ -386,7 +389,7 @@ function HandoffPanel({
           )}
         </div>
 
-        <details className="ai-handoff-research-area">
+        <details className="ai-handoff-research-area" open>
           <summary>Search published research</summary>
           <ul>
             {AI_PUBLIC_RESEARCH_LINKS.map(link => (
@@ -455,6 +458,9 @@ function HandoffPanel({
         <div>
           <p className="eyebrow">PLANNING BRIEF · PROMPT STUDIO</p>
           <h2 id="ai-handoff-title">Analyze with AI</h2>
+          <p id="ai-handoff-intro" className="ai-handoff-help">
+            Scope: Current Planning Brief · Manual handoff does not invoke an AI provider or consume model API tokens.
+          </p>
         </div>
         <button className="button secondary" type="button" onClick={onClose} aria-label="Close Analyze with AI">
           Close

@@ -132,7 +132,7 @@ export function DataRequestsPage() {
                     </div>
                     <div className="request-sheet-states" role="group" aria-label="Freshness and Brief selection">
                       <span className={`status ${stale ? "status-warning" : "status-neutral"}`}>
-                        {stale ? "Stale" : isAnalystRequest ? "Current" : "Template"}
+                        {stale ? "Stale for applied scenario" : isAnalystRequest ? "Current for applied scenario" : "Template"}
                       </span>
                       <span className={`status ${selected ? "status-selection" : "status-neutral"}`}>
                         {selected ? "In Brief" : "Excluded"}
