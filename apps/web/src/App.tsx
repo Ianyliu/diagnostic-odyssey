@@ -34,7 +34,7 @@ export function App() {
               <Route path="burden/admin" element={<DomainPage domainId="healthcare-work-admin" title="Administrative time" description="Healthcare paperwork, bills, and navigation hours." />} />
               <Route path="burden/human" element={<DomainPage domainId="mental-human" title="Human & distress measures" description="K6 and PHQ-2 remain screening measures, not diagnoses." />} />
               <Route path="local-context" element={<LocalContextPage />} />
-              <Route path="pilot" element={<PilotPage />} />
+              <Route path="pilot" element={<PilotPage advisorAvailable={advisorAvailable} />} />
               <Route path="evidence" element={<EvidencePage />} />
               <Route path="data-requests" element={<DataRequestsPage />} />
               <Route

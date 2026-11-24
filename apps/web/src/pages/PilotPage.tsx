@@ -58,7 +58,7 @@ const EXTRA_FIELDS: readonly PilotNumericField[] = [
 
 type BottomTab = "sensitivity" | "quantities" | "context";
 
-export function PilotPage() {
+export function PilotPage({ advisorAvailable = false }: { advisorAvailable?: boolean }) {
   const { scenario, scenarioResult } = useArtifact();
   const location = useLocation();
   const sensitivityReady = scenario !== null && scenarioResult !== null;
@@ -85,15 +85,17 @@ export function PilotPage() {
     );
   }
 
-  return <PilotPlannerWorkspace scenario={scenario} scenarioResult={scenarioResult} />;
+  return <PilotPlannerWorkspace scenario={scenario} scenarioResult={scenarioResult} advisorAvailable={advisorAvailable} />;
 }
 
 function PilotPlannerWorkspace({
   scenario,
-  scenarioResult
+  scenarioResult,
+  advisorAvailable
 }: {
   scenario: Scenario;
   scenarioResult: ScenarioResult;
+  advisorAvailable: boolean;
 }) {
   const {
     bundle,
@@ -335,6 +337,34 @@ function PilotPlannerWorkspace({
 
           <div className="sr-only" aria-live="polite" aria-atomic="true">{resultAnnouncement}</div>
         </article>
+        <aside className="card atlas-decision-inspector" aria-labelledby="pilot-inspector-title">
+          <header>
+            <p className="eyebrow">DECISION INTELLIGENCE</p>
+            <h2 id="pilot-inspector-title">What needs attention?</h2>
+            <p className="subtle">Rule-based checks on the applied scenario, not AI predictions.</p>
+          </header>
+          <div className="atlas-inspector-item">
+            <h3>Capacity</h3>
+            {invalidDraft ? <p>Resolve invalid inputs to update the assessment. The current results reflect the last valid scenario.</p>
+              : scenarioResult.capacity_gap > 0 ? <p><strong>{formatPlanningNumber(scenarioResult.capacity_gap, resultNumber)}</strong> intended participants exceed the assumed program capacity. Review reach and capacity together.</p>
+              : <p>The assumed capacity covers the intended reach. This is not evidence of real-world program feasibility.</p>}
+          </div>
+          <div className="atlas-inspector-item">
+            <h3>Implementation context</h3>
+            <p>{pilotLocalContext ? pilotLocalContext.label : "No local indicator attached."} Context informs interpretation; it never changes the arithmetic.</p>
+            <Link className="text-button" to="/local-context">Inspect local indicators →</Link>
+          </div>
+          <div className="atlas-inspector-item">
+            <h3>Information needs</h3>
+            <p>{currentOperationalDataRequests.length} current analyst-generated operational data request(s). Requests remain separate from evidence.</p>
+            <Link className="text-button" to="/data-requests">Review requests →</Link>
+          </div>
+          {advisorAvailable && <div className="atlas-inspector-ai">
+            <h3>Strategy AI Studio</h3>
+            <p>Explore the available evidence and implementation questions. AI output does not set scenario parameters or establish effectiveness.</p>
+            <Link className="button secondary" to="/advisor">Open advisor →</Link>
+          </div>}
+        </aside>
       </div>
 
       {/* Bottom Tabs: Sensitivity | All Quantities | Context & Requests */}
