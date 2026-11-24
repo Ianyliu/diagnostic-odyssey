@@ -6,23 +6,23 @@ import test from "node:test";
 const readSource = (path: string) =>
   readFileSync(fileURLToPath(new URL(path, import.meta.url)), "utf8");
 
-test("Atelier Atlas palette uses Midnight Ink, Warm Gallery Paper, Gold, Terracotta, and Steel Slate with zero AI-teal", () => {
+test("Strategic Atlas palette uses cool ink, cobalt and violet with zero earth-tone or AI-teal accents", () => {
   const tokens = readSource("../../../packages/ui/src/styles.css");
-  assert.match(tokens, /--do-brand-navy:\s*#0d1622/);
-  assert.match(tokens, /--do-canvas:\s*#f9f7f3/);
-  assert.match(tokens, /--do-gold:\s*#c8923b/);
-  assert.match(tokens, /--do-accent:\s*#c25a3c/);
-  assert.match(tokens, /--do-reviewed-text:\s*#2e5373/);
+  assert.match(tokens, /--do-brand-navy:\s*#101b32/);
+  assert.match(tokens, /--do-canvas:\s*#f5f7fc/);
+  assert.match(tokens, /--do-journey-accent:\s*#7154d8/);
+  assert.match(tokens, /--do-accent:\s*#3157d5/);
+  assert.match(tokens, /--do-reviewed-text:\s*#2457a6/);
   assert.match(tokens, /:root\[data-theme="dark"\][\s\S]*--do-canvas:\s*#0b1119/);
   assert.match(tokens, /:root\[data-theme="dark"\][\s\S]*--do-surface:\s*#131c27/);
-  assert.match(tokens, /:root\[data-theme="dark"\][\s\S]*--do-accent:\s*#e47b5c/);
-  assert.doesNotMatch(tokens, /#0f7476|#2a9d9f|#58c3bd|#276b54|#3f765f|#2c6b58/i);
+  assert.match(tokens, /:root\[data-theme="dark"\][\s\S]*--do-accent:\s*#91aaff/);
+  assert.doesNotMatch(tokens, /#0f7476|#2a9d9f|#58c3bd|#276b54|#3f765f|#2c6b58|#c25a3c|#c8923b|#dfab53|#e47b5c/i);
 });
 
 test("overview stays form-first with Midnight Ink bands, Two-Lens showcase, and zero inline styles", () => {
   const overview = readSource("../src/pages/OverviewPage.tsx");
   const css = readSource("../src/pages/OverviewPage.css");
-  assert.match(overview, /Lower the hidden cost of care\./);
+  assert.match(overview, /See the burden\. <em>Find the leverage\.<\/em>/);
   assert.match(overview, /atlas-hero-band/);
   assert.match(overview, /atlas-paper-band/);
   assert.match(overview, /atlas-closing-band/);
@@ -30,7 +30,7 @@ test("overview stays form-first with Midnight Ink bands, Two-Lens showcase, and 
   assert.match(overview, /atlas-paper-fan/);
   assert.doesNotMatch(overview, /style=\{\{/);
   assert.match(css, /radial-gradient/);
-  assert.doesNotMatch(css, /#0f7476|#2a9d9f|#58c3bd|#276b54|#3f765f|#2c6b58/i);
+  assert.doesNotMatch(css, /#0f7476|#2a9d9f|#58c3bd|#276b54|#3f765f|#2c6b58|#c25a3c|#c8923b|#dfab53|#e47b5c/i);
 });
 
 test("all quantitative burden and local-context rows expose SVG native-unit mini visuals without inline styles", () => {

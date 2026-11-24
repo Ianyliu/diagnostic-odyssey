@@ -1,11 +1,11 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { calculateScenario } from "@diagnostic-odyssey/scenario-engine";
-import type { Scenario } from "@diagnostic-odyssey/contracts";
 import { useArtifact } from "../data/ArtifactContext";
 import { createPilotInputDraft } from "../data/pilotInputDraft";
 import { formatPlanningCurrency, formatPlanningNumber } from "../data/planningNumberFormatting";
-import { createPlanningScenarioDefaults, PILOT_STRATEGY_PRESETS, type PilotStrategyPreset } from "../data/planningScenarioDefaults";
+import { PILOT_STRATEGY_PRESETS, type PilotStrategyPreset } from "../data/planningScenarioDefaults";
+import { createTeaserScenario } from "../data/strategyTeaser";
 import "./StrategyTeaserSandbox.css";
 
 const integer = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
@@ -30,16 +30,7 @@ export function StrategyTeaserSandbox() {
     [selectedPresetId, initialPreset]
   );
 
-  const previewScenario = useMemo<Scenario>(() => {
-    const base = createPlanningScenarioDefaults();
-    return {
-      ...base,
-      ...activePreset.values,
-      scenario_id: activePreset.id,
-      reach: reachPercent / 100,
-      assumption_refs: [...base.assumption_refs]
-    };
-  }, [activePreset, reachPercent]);
+  const previewScenario = useMemo(() => createTeaserScenario(activePreset, reachPercent), [activePreset, reachPercent]);
 
   const result = useMemo(() => calculateScenario(previewScenario), [previewScenario]);
 
