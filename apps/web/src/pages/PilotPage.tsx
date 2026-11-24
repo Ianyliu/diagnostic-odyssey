@@ -43,10 +43,10 @@ interface SliderSpec {
 }
 
 const SLIDERS: readonly SliderSpec[] = [
-  { key: "reach", shortLabel: "Reach", min: 0, max: 100, step: 1 },
-  { key: "capacity", shortLabel: "Capacity", min: 200, max: 8000, step: 100 },
-  { key: "alternative_window_months", shortLabel: "Speed (window)", min: 1, max: 12, step: 1 },
-  { key: "per_participant_cost", shortLabel: "Budget / person", min: 50, max: 1000, step: 25 }
+  { key: "reach", shortLabel: "Intended reach", min: 0, max: 100, step: 1 },
+  { key: "capacity", shortLabel: "Program capacity", min: 200, max: 8000, step: 100 },
+  { key: "alternative_window_months", shortLabel: "Planning recognition window", min: 1, max: 12, step: 1 },
+  { key: "per_participant_cost", shortLabel: "Cost per participant", min: 50, max: 1000, step: 25 }
 ];
 
 const EXTRA_FIELDS: readonly PilotNumericField[] = [
@@ -293,9 +293,14 @@ function PilotPlannerWorkspace({
               const error = evaluation.errors[spec.key];
               const helper = error ? null : formatPilotInputHelper(spec.key, draft[spec.key]);
               const numericVal = Number(draft[spec.key]);
-              const sliderVal = Number.isFinite(numericVal)
-                ? Math.min(spec.max, Math.max(spec.min, numericVal))
+              const appliedNumeric = spec.key === "reach" ? scenario.reach * 100 : scenario[spec.key];
+              const appliedSliderVal = Number.isFinite(appliedNumeric)
+                ? Math.min(spec.max, Math.max(spec.min, appliedNumeric))
                 : spec.min;
+              const sliderDecoupled = Boolean(error) || !Number.isFinite(numericVal);
+              const sliderVal = sliderDecoupled
+                ? appliedSliderVal
+                : Math.min(spec.max, Math.max(spec.min, numericVal));
               const describedBy = [helper ? helperId : null, error ? errorId : null]
                 .filter(Boolean)
                 .join(" ") || undefined;
@@ -321,7 +326,7 @@ function PilotPlannerWorkspace({
                   <input
                     id={rangeId}
                     type="range"
-                    className="atlas-range"
+                    className={`atlas-range${sliderDecoupled ? " is-decoupled" : ""}`}
                     min={spec.min}
                     max={spec.max}
                     step={spec.step}
@@ -330,6 +335,9 @@ function PilotPlannerWorkspace({
                     onChange={event => updateDraft(spec.key, event.target.value)}
                   />
                   {helper && <small id={helperId} className="subtle">{helper}</small>}
+                  {sliderDecoupled && (
+                    <small className="subtle">Slider reflects last applied scenario until draft is fixed.</small>
+                  )}
                   {error && <span id={errorId} className="field-error" aria-live="polite">{error}</span>}
                 </div>
               );
@@ -432,46 +440,65 @@ function PilotPlannerWorkspace({
         </article>
 
         {/* Region 3: Collapsible Contextual Decision Inspector */}
-        {inspectorOpen && (
-          <aside id="pilot-decision-inspector" className="card atlas-decision-inspector" aria-labelledby="pilot-inspector-title">
-            <header>
-              <p className="eyebrow">DECISION INTELLIGENCE</p>
-              <h2 id="pilot-inspector-title">What needs attention?</h2>
-              <p className="subtle">Rule-based checks on the applied scenario, not AI predictions.</p>
-            </header>
-            <div className="atlas-inspector-item">
-              <h3>Capacity</h3>
-              {invalidDraft ? <p>Resolve invalid inputs to update the assessment. The current results reflect the last valid scenario.</p>
-                : scenarioResult.capacity_gap > 0 ? <p><strong>{formatPlanningNumber(scenarioResult.capacity_gap, resultNumber)}</strong> intended participants exceed the assumed program capacity. Review reach and capacity together.</p>
-                : <p>The assumed capacity covers the intended reach. This is not evidence of real-world program feasibility.</p>}
-            </div>
-            <div className="atlas-inspector-item">
-              <h3>Implementation context</h3>
-              {pilotLocalContext ? (
-                <>
+        {inspectorOpen && (() => {
+          const roundedCap = Math.max(0, Math.round(scenario.capacity));
+          const unusedSlots = Math.max(0, roundedCap - scenarioResult.reached_participants);
+          const windowDelta = scenario.baseline_window_months - scenario.alternative_window_months;
+          return (
+            <aside id="pilot-decision-inspector" className="card atlas-decision-inspector" aria-labelledby="pilot-inspector-title">
+              <header>
+                <p className="eyebrow">DECISION INTELLIGENCE</p>
+                <h2 id="pilot-inspector-title">Scenario boundary &amp; gap checks</h2>
+                <p className="subtle">Rule-based checks on the applied scenario, not AI predictions or forecasts.</p>
+              </header>
+              <div className="atlas-inspector-item">
+                <h3>Capacity &amp; reach</h3>
+                {invalidDraft ? (
+                  <p>Draft inputs contain validation errors; cards and counts reflect the last valid scenario.</p>
+                ) : scenarioResult.capacity_gap > 0 ? (
+                  <p>
+                    <strong>{formatPlanningNumber(scenarioResult.capacity_gap, resultNumber)}</strong> intended participants exceed assumed capacity ({formatPlanningNumber(scenarioResult.intended_reach, resultNumber)} intended vs. {formatPlanningNumber(roundedCap, resultNumber)} effective slots).
+                  </p>
+                ) : (
+                  <p>
+                    Assumed capacity ({formatPlanningNumber(roundedCap, resultNumber)} effective slots) covers all {formatPlanningNumber(scenarioResult.intended_reach, resultNumber)} intended participants ({formatPlanningNumber(unusedSlots, resultNumber)} unused slots). Real-world staffing feasibility remains unverified.
+                  </p>
+                )}
+              </div>
+              <div className="atlas-inspector-item">
+                <h3>Window &amp; cost boundaries</h3>
+                <p>
+                  Recognition window assumption shifts {scenario.baseline_window_months} → {scenario.alternative_window_months} mo (−{windowDelta} mo; {formatPlanningNumber(scenarioResult.difference_person_months, resultNumber)} pm exposure difference). Resource split: {formatPlanningCurrency(scenarioResult.fixed_program_cost)} fixed + {formatPlanningCurrency(scenarioResult.variable_program_cost)} variable; capacity expansion cost is excluded.
+                </p>
+              </div>
+              <div className="atlas-inspector-item">
+                <h3>Implementation context</h3>
+                {pilotLocalContext ? (
                   <p>
                     <strong>{pilotLocalContext.label}:</strong>{" "}
                     <span className="pilot-local-context-value">{formatLocalContextValue(pilotLocalContext)}</span>{" "}
-                    — context informs interpretation; it never changes the arithmetic.
+                    — implementation context only; it never changes the arithmetic.
                   </p>
-                </>
-              ) : (
-                <p>No local indicator attached. Context informs interpretation; it never changes the arithmetic.</p>
-              )}
-              <Link className="text-button" to="/local-context">Inspect local indicators →</Link>
-            </div>
-            <div className="atlas-inspector-item">
-              <h3>Information needs</h3>
-              <p>{currentOperationalDataRequests.length} current analyst-generated operational data request(s). Requests remain separate from evidence.</p>
-              <Link className="text-button" to="/data-requests">Review requests →</Link>
-            </div>
-            {advisorAvailable && <div className="atlas-inspector-ai">
-              <h3>Strategy AI Studio</h3>
-              <p>Prompt Studio, Illustrative exploration, and gated preview guidance. AI output does not set scenario parameters or establish effectiveness.</p>
-              <Link className="button secondary" to="/advisor">Open Strategy AI Studio →</Link>
-            </div>}
-          </aside>
-        )}
+                ) : (
+                  <p>No local indicator attached. Context informs interpretation; it never changes the arithmetic.</p>
+                )}
+                <Link className="text-button" to="/local-context">Inspect local indicators →</Link>
+              </div>
+              <div className="atlas-inspector-item">
+                <h3>Information needs &amp; evidence</h3>
+                <p>
+                  {currentOperationalDataRequests.length} current analyst-generated operational data {currentOperationalDataRequests.length === 1 ? "request" : "requests"} ({bundle?.evidence.length ?? 0} approved intervention-effect records loaded). Requests remain separate from evidence.
+                </p>
+                <Link className="text-button" to="/data-requests">Review requests →</Link>
+              </div>
+              {advisorAvailable && <div className="atlas-inspector-ai">
+                <h3>Strategy AI Studio</h3>
+                <p>Prompt Studio, Illustrative exploration, and gated preview guidance. AI output does not set scenario parameters or establish effectiveness.</p>
+                <Link className="button secondary" to="/advisor">Open Strategy AI Studio →</Link>
+              </div>}
+            </aside>
+          );
+        })()}
       </div>
 
       {/* Bottom Tabs: Sensitivity | All Quantities | Context & Requests */}
@@ -529,6 +556,9 @@ function PilotPlannerWorkspace({
                 </div>
                 <p className="micro-caption">
                   Arithmetic comparison across presets and current inputs via the canonical engine. Not observed evidence, effectiveness rankings, or ROI.
+                </p>
+                <p className="micro-caption comparison-cap-note">
+                  When scenarios with different intended reach both exceed the same capacity cap, served participants is capped at capacity (reached = min(intended reach, capacity)), so participant counts and variable resource costs match until capacity increases.
                 </p>
                 <div
                   className="comparison-table-wrap"

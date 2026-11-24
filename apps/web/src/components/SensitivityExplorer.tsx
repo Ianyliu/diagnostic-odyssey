@@ -173,12 +173,12 @@ export function SensitivityExplorer({
       )}
       {!error && thresholdCurve ? (() => {
         const rawFormatter = new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 });
-        const padL = 44;
-        const padR = 16;
-        const padT = 16;
-        const padB = 26;
-        const plotW = 420 - padL - padR;
-        const plotH = 148 - padT - padB;
+        const padL = 58;
+        const padR = 24;
+        const padT = 18;
+        const padB = 32;
+        const plotW = 680 - padL - padR;
+        const plotH = 184 - padT - padB;
         const xAt = (cap: number) =>
           padL + (thresholdCurve.maxCapacity > 0 ? (cap / thresholdCurve.maxCapacity) * plotW : 0);
         const yAt = (val: number) =>
@@ -205,7 +205,7 @@ export function SensitivityExplorer({
             </div>
             <svg
               className="capacity-threshold-svg"
-              viewBox="0 0 420 148"
+              viewBox="0 0 680 184"
               role="img"
               aria-label={`Capacity sufficiency threshold curve. At ${formatPlanningNumber(thresholdCurve.currentCapacity, integer)} effective slots (raw input ${formatPlanningNumber(thresholdCurve.rawCurrentCapacity, rawFormatter)}), reached participants is ${formatPlanningNumber(thresholdCurve.currentReached, integer)} and capacity gap is ${formatPlanningNumber(thresholdCurve.currentGap, integer)}. Break-even occurs at ${formatPlanningNumber(thresholdCurve.breakEvenCapacity, integer)} effective slots.`}
             >
@@ -220,17 +220,17 @@ export function SensitivityExplorer({
               />
               <polyline points={gapPolyline} className="threshold-gap-path" />
               <polyline points={reachedPolyline} className="threshold-reached-path" />
-              <circle cx={activeX} cy={activeReachedY} r="4.5" className="threshold-current-dot" />
-              <text x={padL - 6} y={padT + 4} textAnchor="end" className="threshold-svg-label">
+              <circle cx={activeX} cy={activeReachedY} r="5" className="threshold-current-dot" />
+              <text x={padL - 8} y={padT + 4} textAnchor="end" className="threshold-svg-label">
                 {formatPlanningNumber(thresholdCurve.maxY, integer)}
               </text>
-              <text x={padL - 6} y={padT + plotH} textAnchor="end" className="threshold-svg-label">
+              <text x={padL - 8} y={padT + plotH} textAnchor="end" className="threshold-svg-label">
                 0
               </text>
-              <text x={padL} y={padT + plotH + 16} textAnchor="start" className="threshold-svg-label">
+              <text x={padL} y={padT + plotH + 18} textAnchor="start" className="threshold-svg-label">
                 0 effective slots
               </text>
-              <text x={padL + plotW} y={padT + plotH + 16} textAnchor="end" className="threshold-svg-label">
+              <text x={padL + plotW} y={padT + plotH + 18} textAnchor="end" className="threshold-svg-label">
                 {formatPlanningNumber(thresholdCurve.maxCapacity, integer)} effective slots
               </text>
             </svg>

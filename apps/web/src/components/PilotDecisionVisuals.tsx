@@ -166,7 +166,9 @@ export function PilotDecisionVisuals({
           <span><i className="legend-swatch fixed" aria-hidden="true" />Fixed {formatPlanningCurrency(result.fixed_program_cost, currency)}</span>
           <span><i className="legend-swatch variable" aria-hidden="true" />Variable {formatPlanningCurrency(result.variable_program_cost, currency)}</span>
         </div>
-        <p className="micro-caption">Planning math · Not savings or ROI.</p>
+        <p className="micro-caption">
+          The resource calculation includes fixed program costs and per-participant costs. It does not independently model the cost of increasing capacity.
+        </p>
       </section>
     </div>
   );

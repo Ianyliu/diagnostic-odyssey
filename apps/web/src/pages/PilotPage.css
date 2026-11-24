@@ -193,7 +193,17 @@
   cursor: pointer;
 }
 
-.atlas-more-params {
+.atlas-range.is-decoupled {
+  opacity: 0.65;
+  accent-color: var(--do-text-muted);
+}
+
+.comparison-cap-note {
+  padding: 8px 12px;
+  border-left: 2px solid var(--do-assumption-border);
+  background: var(--do-canvas);
+  border-radius: 0 8px 8px 0;
+}
   display: grid;
   gap: 10px;
   padding-top: 8px;
@@ -251,11 +261,12 @@
 .atlas-kpi dd {
   margin: 0;
   font-family: var(--do-font-display);
-  font-size: clamp(1.65rem, 2.8vw, 2.2rem);
+  font-size: clamp(1.08rem, 10.5cqi, 1.95rem);
   font-weight: 500;
   line-height: 1.05;
   color: var(--do-text);
-  overflow-wrap: anywhere;
+  white-space: nowrap;
+  overflow-wrap: normal;
 }
 
 .scientific-value {
