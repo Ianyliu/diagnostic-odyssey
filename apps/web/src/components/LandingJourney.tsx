@@ -6,28 +6,28 @@ import "./LandingJourney.css";
  * All destinations are real routes; SVG is decorative, links are HTML.
  */
 const waypoints = [
-  { label: "Costs", n: "01", to: "/burden", x: 96, y: 318, type: "evidence" },
-  { label: "Terrain", n: "02", to: "/local-context", x: 302, y: 210, type: "context" },
-  { label: "Simulate", n: "03", to: "/pilot", x: 511, y: 292, type: "assumption" },
-  { label: "Requests", n: "Optional", to: "/data-requests", x: 716, y: 168, type: "gap" },
-  { label: "Brief", n: "04", to: "/brief", x: 928, y: 108, type: "brief" }
+  { label: "Burden", n: "01", to: "/burden", x: 96, y: 198, type: "evidence" },
+  { label: "Terrain", n: "02", to: "/local-context", x: 302, y: 124, type: "context" },
+  { label: "Simulate", n: "03", to: "/pilot", x: 511, y: 180, type: "assumption" },
+  { label: "Data requests", n: "Optional", to: "/data-requests", x: 716, y: 92, type: "gap" },
+  { label: "Brief", n: "04", to: "/brief", x: 928, y: 42, type: "brief" }
 ] as const;
 
-const route = "M96 318 C 191 318 187 210 302 210 S 417 292 511 292 S 631 168 716 168 S 834 108 928 108";
+const route = "M96 198 C 191 198 187 124 302 124 S 417 180 511 180 S 631 92 716 92 S 834 42 928 42";
 
 export function LandingJourney() {
   return (
     <nav className="atlas-journey" aria-label="Explore the evidence-to-action pathway">
       <div className="atlas-journey-canvas">
-        <svg viewBox="0 0 1024 400" className="atlas-journey-path" aria-hidden="true">
+        <svg viewBox="0 0 1024 260" className="atlas-journey-path" aria-hidden="true">
           <defs>
             <pattern id="atlas-journey-hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-              <rect width="8" height="8" fill="#2d2312" />
-              <path d="M0 0V8" stroke="#c8923b" strokeWidth="2.5" />
+              <rect width="8" height="8" fill="#251d40" />
+              <path d="M0 0V8" stroke="#b8a5ff" strokeWidth="2.5" />
             </pattern>
           </defs>
-          <path d={route} fill="none" stroke="#3b4d63" strokeWidth="1.5" strokeDasharray="3 8" />
-          <path d={route} className="atlas-journey-reveal" fill="none" stroke="#c8923b" strokeOpacity="0.72" strokeWidth="2.2" strokeLinecap="round" />
+          <path d={route} fill="none" stroke="#556b92" strokeWidth="1.5" strokeDasharray="3 8" />
+          <path d={route} className="atlas-journey-reveal" fill="none" stroke="#b8a5ff" strokeOpacity="0.95" strokeWidth="2.2" strokeLinecap="round" />
           {waypoints.map(item => (
             <circle
               key={item.to}

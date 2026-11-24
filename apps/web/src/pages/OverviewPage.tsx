@@ -37,21 +37,21 @@ export function OverviewPage() {
       {/* Band 1: Full-bleed Midnight Ink Hero */}
       <section className="atlas-hero-band" aria-labelledby="overview-title">
         <div className="atlas-hero-grid" aria-hidden="true" />
-        <div className="atlas-band-inner">
+        <div className="atlas-band-inner atlas-first-screen">
           <div className="atlas-hero-header">
             <p className="atlas-hero-eyebrow">Edition 01 · Long COVID (U.S.) · West Virginia</p>
             <h1 id="overview-title" className="atlas-hero-title">
-              Lower the hidden cost of care.
+              See the burden. <em>Find the leverage.</em>
             </h1>
             <p className="atlas-hero-sub">
-              National burden, local access, and pilot math—kept strictly separate.
+              Understand the hidden burden of illness. Investigate local constraints and plan a feasible response with evidence and assumptions kept separate.
             </p>
             <div className="atlas-hero-ctas">
               <Link className="button" to="/burden">
-                Explore Costs <span aria-hidden="true">→</span>
+                Explore evidence <span aria-hidden="true">→</span>
               </Link>
               <Link className="atlas-ghost-cta" to="/pilot">
-                Open Simulator
+                Open Strategy Lab
               </Link>
               <Link className="atlas-ghost-cta" to="/advisor">
                 Strategy AI
@@ -78,7 +78,7 @@ export function OverviewPage() {
               <span className="atlas-lens-kicker">AHRQ MEPS · U.S. National</span>
               <strong className="atlas-lens-figure">{reviewedCount || "—"}</strong>
               <h3>Reviewed burden measures</h3>
-              <p>Spending, time, and distress with 95% intervals.</p>
+              <p>Spending, time, and distress; uncertainty displayed where available.</p>
               <span className="atlas-lens-link">Open Costs ↗</span>
             </Link>
 
