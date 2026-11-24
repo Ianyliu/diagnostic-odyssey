@@ -392,4 +392,5 @@
   .planning-brief-page.brief-include-context-appendix .brief-local-context-list { display: block !important; }
   .planning-brief-page .brief-burden-table { width: 100%; min-width: 0; table-layout: fixed; }
   .planning-brief-page .brief-burden-details::details-content { content-visibility: visible !important; }
+  .planning-brief-page .brief-burden-group:last-child .brief-burden-details { break-inside: avoid; }
 }
