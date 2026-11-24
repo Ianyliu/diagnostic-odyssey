@@ -43,7 +43,7 @@ export function StrategyTeaserSandbox() {
   const reachedWidth = Math.round((result.reached_participants / coverageScale) * SVG_WIDTH);
   const gapStart = gapWidthStart(reachedWidth, SVG_WIDTH);
   const gapWidth = result.capacity_gap > 0
-    ? Math.max(4, Math.min(SVG_WIDTH - gapStart, Math.round((result.capacity_gap / coverageScale) * SVG_WIDTH)))
+    ? Math.max(0, Math.min(SVG_WIDTH - gapStart, Math.max(4, Math.round((result.capacity_gap / coverageScale) * SVG_WIDTH))))
     : 0;
   const coveragePct = result.intended_reach > 0
     ? Math.round((result.reached_participants / result.intended_reach) * 100)
@@ -68,14 +68,38 @@ export function StrategyTeaserSandbox() {
     <section className="teaser-sandbox" aria-labelledby="teaser-sandbox-title" data-reveal="visible">
       <div className="teaser-sandbox-header">
         <div>
-          <p className="eyebrow">INTERACTIVE STRATEGY SANDBOX</p>
-          <h2 id="teaser-sandbox-title">Planning starts after the statistic.</h2>
+          <p className="eyebrow">03 · TEST ASSUMPTIONS</p>
+          <h2 id="teaser-sandbox-title">Dashboards stop at the statistic. <em>Planning starts after it.</em></h2>
           <p className="subtle">
             Try an illustrative program and adjust intended reach. Preview capacity and resources using the actual planning engine. Nothing is applied to your workspace until you choose to load the scenario.
           </p>
         </div>
         <span className="teaser-boundary-badge">SEPARATE PLANNING LAYER</span>
       </div>
+
+      <p className="teaser-live-sentence" aria-live="polite">
+        {result.intended_reach === 0 ? (
+          <>
+            With <strong>0%</strong> intended reach across{" "}
+            <strong>{formatPlanningNumber(previewScenario.eligible_population, integer)}</strong> eligible adults,
+            only the <strong>{formatPlanningCurrency(result.fixed_program_cost, currency)}</strong> fixed program setup applies.
+          </>
+        ) : result.capacity_gap > 0 ? (
+          <>
+            A pilot targeting{" "}
+            <strong>{formatPlanningNumber(result.intended_reach, integer)}</strong> people with capacity for{" "}
+            <strong>{formatPlanningNumber(previewScenario.capacity, integer)}</strong> leaves{" "}
+            <strong className="is-gap">{formatPlanningNumber(result.capacity_gap, integer)}</strong> outside capacity.
+          </>
+        ) : (
+          <>
+            A pilot targeting{" "}
+            <strong>{formatPlanningNumber(result.intended_reach, integer)}</strong> people fits within{" "}
+            <strong>{formatPlanningNumber(previewScenario.capacity, integer)}</strong> capacity, covering{" "}
+            <strong>100%</strong> of intended reach.
+          </>
+        )}
+      </p>
 
       <div className="teaser-sandbox-grid">
         <div className="teaser-controls">

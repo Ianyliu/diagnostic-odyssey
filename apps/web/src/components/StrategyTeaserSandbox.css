@@ -26,6 +26,33 @@
   letter-spacing: -0.025em;
 }
 
+.teaser-sandbox-header h2 em {
+  color: var(--do-text-muted);
+  font-style: italic;
+}
+
+.teaser-live-sentence {
+  margin: 0;
+  padding: 14px 18px;
+  border-radius: 14px;
+  border: 1px solid var(--do-assumption-border);
+  background: var(--do-assumption-bg);
+  font-family: var(--do-font-display);
+  font-size: clamp(1.12rem, 1.8vw, 1.38rem);
+  line-height: 1.42;
+  color: var(--do-text);
+}
+
+.teaser-live-sentence strong {
+  color: var(--do-assumption-text);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.teaser-live-sentence strong.is-gap {
+  color: var(--do-error-text);
+}
+
 .teaser-sandbox-header p {
   margin: 0;
   max-width: 68ch;
