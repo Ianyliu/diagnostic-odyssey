@@ -146,3 +146,73 @@
 .preview-gap-svg { width: 100%; height: 8px; display: block; }
 .preview-svg-track { fill: var(--do-chart-track); }
 .preview-svg-fill { fill: var(--do-chart-2); }
+
+/* Capacity sufficiency threshold curve (WS5) */
+.capacity-threshold-figure {
+  display: grid;
+  gap: 8px;
+  margin: 4px 0 0;
+  padding: 14px;
+  border: 1px solid var(--do-border);
+  border-radius: 12px;
+  background: var(--do-canvas);
+  min-width: 0;
+  max-width: 100%;
+}
+.threshold-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 0.84rem;
+}
+.threshold-header span {
+  font-family: var(--do-font-mono);
+  font-size: 0.78rem;
+  color: var(--do-text-muted);
+}
+.capacity-threshold-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 420 / 148;
+  overflow: visible;
+}
+.threshold-axis { stroke: var(--do-chart-grid); stroke-width: 1.25; }
+.threshold-breakeven-line { stroke: var(--do-chart-2); stroke-width: 1.5; stroke-dasharray: 4 3; }
+.threshold-reached-path { fill: none; stroke: var(--do-chart-1); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+.threshold-gap-path { fill: none; stroke: var(--do-chart-3); stroke-width: 2; stroke-dasharray: 5 3; stroke-linecap: round; stroke-linejoin: round; }
+.threshold-current-dot { fill: var(--do-accent); stroke: var(--do-canvas); stroke-width: 2; }
+.threshold-svg-label { fill: var(--do-text-muted); font-family: var(--do-font-mono); font-size: 10px; }
+.threshold-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  font-size: 0.76rem;
+  color: var(--do-text-muted);
+}
+.threshold-swatch {
+  display: inline-block;
+  width: 14px;
+  height: 3px;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+.threshold-swatch.is-reached { background: var(--do-chart-1); }
+.threshold-swatch.is-gap { border-top: 2px dashed var(--do-chart-3); height: 0; }
+.threshold-swatch.is-breakeven { border-top: 2px dashed var(--do-chart-2); height: 0; }
+.threshold-summary-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 8px;
+  margin: 8px 0 0;
+}
+.threshold-summary-list > div {
+  padding: 8px 10px;
+  border: 1px solid var(--do-border);
+  border-radius: 8px;
+  background: var(--do-surface);
+}
+.threshold-summary-list dt { font-size: 0.74rem; color: var(--do-text-muted); }
+.threshold-summary-list dd { margin: 2px 0 0; font-family: var(--do-font-mono); font-size: 0.8rem; font-weight: 600; color: var(--do-text); }
