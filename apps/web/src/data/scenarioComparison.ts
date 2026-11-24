@@ -18,6 +18,30 @@ export interface ScenarioComparisonRow {
   readonly deltaCost: number | null;
 }
 
+function cloneAndFreezeScenario(scenario: Scenario): Scenario {
+  return Object.freeze({
+    ...scenario,
+    assumption_refs: Object.freeze([...scenario.assumption_refs]) as string[]
+  });
+}
+
+function cloneAndFreezeResult(result: ScenarioResult | null): ScenarioResult | null {
+  if (result === null) return null;
+  return Object.freeze({
+    ...result,
+    ...(result.bounded_effect !== undefined
+      ? { bounded_effect: Object.freeze({ ...result.bounded_effect }) }
+      : {})
+  });
+}
+
+function cloneAndFreezePreset(preset: PilotStrategyPreset): PilotStrategyPreset {
+  return Object.freeze({
+    ...preset,
+    values: Object.freeze({ ...preset.values })
+  });
+}
+
 export function presetMatchesScenario(preset: PilotStrategyPreset, scenario: Scenario): boolean {
   return (
     scenario.eligible_population === preset.values.eligible_population &&
@@ -33,7 +57,7 @@ export function presetMatchesScenario(preset: PilotStrategyPreset, scenario: Sce
 
 function safeCalculate(scenario: Scenario): { result: ScenarioResult | null; error: string | null } {
   try {
-    return { result: calculateScenario(scenario), error: null };
+    return { result: cloneAndFreezeResult(calculateScenario(scenario)), error: null };
   } catch (err) {
     return {
       result: null,
@@ -48,28 +72,30 @@ function finiteDelta(candidate: number | undefined, baseline: number | undefined
   return Number.isFinite(diff) ? diff : null;
 }
 
-/** Build read-only deterministic comparison rows for Strategy Lab presets and active inputs. */
+/** Build deeply immutable deterministic comparison rows for Strategy Lab presets and active inputs. */
 export function buildScenarioComparisonRows(appliedScenario: Scenario): readonly ScenarioComparisonRow[] {
-  const appliedEval = safeCalculate(appliedScenario);
+  const frozenApplied = cloneAndFreezeScenario(appliedScenario);
+  const appliedEval = safeCalculate(frozenApplied);
   const appliedResult = appliedEval.result;
 
   const presetRows: ScenarioComparisonRow[] = PILOT_STRATEGY_PRESETS.map(preset => {
-    const candidateScenario: Scenario = {
-      ...appliedScenario,
-      ...preset.values,
-      scenario_id: preset.id
-    };
+    const frozenPreset = cloneAndFreezePreset(preset);
+    const candidateScenario = cloneAndFreezeScenario({
+      ...frozenApplied,
+      ...frozenPreset.values,
+      scenario_id: frozenPreset.id
+    });
     const evaluated = safeCalculate(candidateScenario);
-    const isCurrent = presetMatchesScenario(preset, appliedScenario);
+    const isCurrent = presetMatchesScenario(frozenPreset, frozenApplied);
     const res = evaluated.result;
 
-    return {
-      id: preset.id,
-      label: preset.label,
-      summary: preset.summary,
+    return Object.freeze({
+      id: frozenPreset.id,
+      label: frozenPreset.label,
+      summary: frozenPreset.summary,
       isPreset: true,
       isCurrent,
-      preset,
+      preset: frozenPreset,
       scenario: candidateScenario,
       result: res,
       error: evaluated.error,
@@ -77,28 +103,28 @@ export function buildScenarioComparisonRows(appliedScenario: Scenario): readonly
       deltaGap: isCurrent ? 0 : finiteDelta(res?.capacity_gap, appliedResult?.capacity_gap),
       deltaExposure: isCurrent ? 0 : finiteDelta(res?.difference_person_months, appliedResult?.difference_person_months),
       deltaCost: isCurrent ? 0 : finiteDelta(res?.program_resource_requirement, appliedResult?.program_resource_requirement)
-    };
+    });
   });
 
   if (presetRows.some(row => row.isCurrent)) {
-    return presetRows;
+    return Object.freeze(presetRows);
   }
 
-  const customRow: ScenarioComparisonRow = {
+  const customRow: ScenarioComparisonRow = Object.freeze({
     id: "current-applied",
     label: "Current Applied Scenario",
     summary: "Custom active Strategy Lab assumptions",
     isPreset: false,
     isCurrent: true,
     preset: null,
-    scenario: appliedScenario,
+    scenario: frozenApplied,
     result: appliedResult,
     error: appliedEval.error,
     deltaReached: appliedResult ? 0 : null,
     deltaGap: appliedResult ? 0 : null,
     deltaExposure: appliedResult ? 0 : null,
     deltaCost: appliedResult ? 0 : null
-  };
+  });
 
-  return [customRow, ...presetRows];
+  return Object.freeze([customRow, ...presetRows]);
 }

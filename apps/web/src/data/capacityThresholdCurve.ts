@@ -11,7 +11,10 @@ export interface CapacityThresholdPoint {
 
 export interface CapacityThresholdCurve {
   readonly intendedReach: number;
+  readonly rawCurrentCapacity: number;
   readonly currentCapacity: number;
+  readonly hasFractionalRounding: boolean;
+  readonly firstSufficientRawCapacity: number;
   readonly currentReached: number;
   readonly currentGap: number;
   readonly breakEvenCapacity: number;
@@ -20,43 +23,87 @@ export interface CapacityThresholdCurve {
   readonly points: readonly CapacityThresholdPoint[];
 }
 
+export type CapacityThresholdUnavailableReason =
+  | "invalid_scenario"
+  | "zero_span"
+  | "extreme_scale";
+
+export type CapacityThresholdCurveResult =
+  | { readonly status: "available"; readonly curve: CapacityThresholdCurve }
+  | {
+      readonly status: "unavailable";
+      readonly reason: CapacityThresholdUnavailableReason;
+      readonly message: string;
+    };
+
 const MAX_CURVE_SCALE = 1e12;
 
+export function effectiveCapacitySlots(rawCapacity: number): number {
+  return Math.max(0, Math.round(rawCapacity));
+}
+
+export function firstSufficientRawCapacity(breakEvenEffectiveSlots: number): number {
+  if (breakEvenEffectiveSlots <= 0) return 0;
+  return Math.max(0, breakEvenEffectiveSlots - 0.5);
+}
+
 /**
- * Build deterministic capacity-sufficiency curve points via canonical calculateScenario.
- * Returns null on invalid, zero-span, or extreme-scale inputs so extreme scenarios fail closed.
+ * Evaluate capacity-sufficiency curve state using effective integer slots matching
+ * `@diagnostic-odyssey/scenario-engine` (`Math.max(0, Math.round(capacity))`).
+ * Distinguishes invalid inputs, zero-span inputs, and extreme-scale bounds explicitly.
  */
-export function buildCapacityThresholdCurve(scenario: Scenario): CapacityThresholdCurve | null {
+export function buildCapacityThresholdCurveResult(scenario: Scenario): CapacityThresholdCurveResult {
   let baseline;
   try {
     baseline = calculateScenario(scenario);
-  } catch {
-    return null;
+  } catch (err) {
+    return {
+      status: "unavailable",
+      reason: "invalid_scenario",
+      message: err instanceof Error ? err.message : "Resolve invalid planning inputs to render the threshold curve."
+    };
   }
 
   const intendedReach = baseline.intended_reach;
-  const currentCapacity = scenario.capacity;
+  const rawCurrentCapacity = scenario.capacity;
+  const currentCapacity = effectiveCapacitySlots(rawCurrentCapacity);
 
   if (
     !Number.isFinite(intendedReach) ||
-    !Number.isFinite(currentCapacity) ||
+    !Number.isFinite(rawCurrentCapacity) ||
     intendedReach < 0 ||
-    currentCapacity < 0 ||
+    rawCurrentCapacity < 0 ||
     intendedReach > MAX_CURVE_SCALE ||
-    currentCapacity > MAX_CURVE_SCALE ||
-    (intendedReach === 0 && currentCapacity === 0)
+    rawCurrentCapacity > MAX_CURVE_SCALE
   ) {
-    return null;
+    return {
+      status: "unavailable",
+      reason: "extreme_scale",
+      message: "Threshold curve omitted above 1 trillion slots/participants to keep axis scaling exact; inspect headline scenario values directly."
+    };
+  }
+
+  if (intendedReach === 0 && rawCurrentCapacity === 0) {
+    return {
+      status: "unavailable",
+      reason: "zero_span",
+      message: "Threshold curve omitted when both intended reach and capacity are zero. Increase reach or capacity to plot a capacity span."
+    };
   }
 
   const breakEvenCapacity = intendedReach;
-  const maxCapacity = Math.max(
-    Math.round(breakEvenCapacity * 1.5),
-    Math.round(currentCapacity * 1.5),
-    100
-  );
+  const peakSlot = Math.max(breakEvenCapacity, currentCapacity);
+  const maxCapacity =
+    peakSlot <= 10
+      ? Math.max(peakSlot + 2, 4)
+      : Math.max(Math.round(breakEvenCapacity * 1.5), Math.round(currentCapacity * 1.5), 10);
+
   if (!Number.isFinite(maxCapacity) || maxCapacity <= 0 || maxCapacity > MAX_CURVE_SCALE) {
-    return null;
+    return {
+      status: "unavailable",
+      reason: "extreme_scale",
+      message: "Threshold span exceeds chart precision bounds; rely on exact headline scenario outputs."
+    };
   }
 
   const candidates = new Set<number>([
@@ -79,7 +126,11 @@ export function buildCapacityThresholdCurve(scenario: Scenario): CapacityThresho
     try {
       result = calculateScenario({ ...scenario, capacity: cap });
     } catch {
-      return null;
+      return {
+        status: "unavailable",
+        reason: "extreme_scale",
+        message: "Capacity sweep exceeded numeric limits on an evaluated slot point."
+      };
     }
     points.push({
       capacity: cap,
@@ -97,13 +148,24 @@ export function buildCapacityThresholdCurve(scenario: Scenario): CapacityThresho
   );
 
   return {
-    intendedReach,
-    currentCapacity,
-    currentReached: baseline.reached_participants,
-    currentGap: baseline.capacity_gap,
-    breakEvenCapacity,
-    maxCapacity,
-    maxY,
-    points
+    status: "available",
+    curve: {
+      intendedReach,
+      rawCurrentCapacity,
+      currentCapacity,
+      hasFractionalRounding: rawCurrentCapacity !== currentCapacity,
+      firstSufficientRawCapacity: firstSufficientRawCapacity(breakEvenCapacity),
+      currentReached: baseline.reached_participants,
+      currentGap: baseline.capacity_gap,
+      breakEvenCapacity,
+      maxCapacity,
+      maxY,
+      points
+    }
   };
+}
+
+export function buildCapacityThresholdCurve(scenario: Scenario): CapacityThresholdCurve | null {
+  const outcome = buildCapacityThresholdCurveResult(scenario);
+  return outcome.status === "available" ? outcome.curve : null;
 }

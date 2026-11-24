@@ -1,4 +1,4 @@
-import { formatPlanningCurrency, formatPlanningNumber, isScientificNotationText } from "../data/planningNumberFormatting.ts";
+import { formatPlanningCurrency, formatPlanningNumber, formatPlanningPercent, isScientificNotationText } from "../data/planningNumberFormatting.ts";
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { Link, useLocation } from "react-router-dom";
 import type { Scenario, ScenarioResult } from "@diagnostic-odyssey/contracts";
@@ -566,7 +566,7 @@ function PilotPlannerWorkspace({
                               {row.isCurrent && <span className="status status-selection">Active</span>}
                               <small>{row.summary}</small>
                             </th>
-                            <td>{Math.round(row.scenario.reach * 100)}%</td>
+                            <td>{formatPlanningPercent(row.scenario.reach)}</td>
                             <td>{renderPlanningText(formatPlanningNumber(row.scenario.capacity, resultNumber))}</td>
                             <td>
                               {res ? (

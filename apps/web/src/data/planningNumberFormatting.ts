@@ -25,3 +25,14 @@ export function formatPlanningCurrency(value: number, formatter = currency): str
   if (!needsScientificNotation(value)) return formatter.format(value);
   return `${value < 0 ? "-" : ""}$${Math.abs(value).toExponential()}`;
 }
+
+export function formatPlanningPercent(proportion: number): string {
+  if (!Number.isFinite(proportion)) {
+    throw new Error("Cannot display a non-finite percentage. Correct the planning inputs first.");
+  }
+  const pct = proportion * 100;
+  if (Math.abs(pct) > 0 && Math.abs(pct) < 0.01) {
+    return `${pct.toLocaleString("en-US", { maximumSignificantDigits: 4 })}%`;
+  }
+  return `${pct.toLocaleString("en-US", { maximumFractionDigits: 2 })}%`;
+}

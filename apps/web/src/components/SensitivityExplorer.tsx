@@ -1,5 +1,5 @@
 import { formatPlanningNumber } from "../data/planningNumberFormatting.ts";
-import { buildCapacityThresholdCurve } from "../data/capacityThresholdCurve.ts";
+import { buildCapacityThresholdCurveResult } from "../data/capacityThresholdCurve.ts";
 import "./SensitivityExplorer.css";
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
@@ -33,10 +33,11 @@ export function SensitivityExplorer({
   const [field, setField] = useState<SensitivityField>("capacity");
   const [requestAnnouncement, setRequestAnnouncement] = useState("");
   const { points, error } = useMemo(() => evaluateScenarioSensitivity(scenario, field), [scenario, field]);
-  const thresholdCurve = useMemo(
-    () => (field === "capacity" ? buildCapacityThresholdCurve(scenario) : null),
+  const thresholdResult = useMemo(
+    () => (field === "capacity" ? buildCapacityThresholdCurveResult(scenario) : null),
     [scenario, field]
   );
+  const thresholdCurve = thresholdResult?.status === "available" ? thresholdResult.curve : null;
   const metric = field === "alternative_window_months"
     ? "difference_person_months"
     : "capacity_gap";
@@ -161,7 +162,17 @@ export function SensitivityExplorer({
           <span className="sr-only" aria-live="polite" aria-atomic="true">{requestAnnouncement}</span>
         </div>
       )}
+      {!error && thresholdResult && thresholdResult.status === "unavailable" && (
+        <figure className="capacity-threshold-figure capacity-threshold-unavailable">
+          <div className="threshold-header">
+            <strong>Capacity sufficiency threshold</strong>
+            <span>Unavailable ({thresholdResult.reason.replaceAll("_", " ")})</span>
+          </div>
+          <p className="micro-caption">{thresholdResult.message}</p>
+        </figure>
+      )}
       {!error && thresholdCurve ? (() => {
+        const rawFormatter = new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 });
         const padL = 44;
         const padR = 16;
         const padT = 16;
@@ -186,13 +197,17 @@ export function SensitivityExplorer({
           <figure className="capacity-threshold-figure">
             <div className="threshold-header">
               <strong>Capacity sufficiency threshold</strong>
-              <span>Break-even: {formatPlanningNumber(thresholdCurve.breakEvenCapacity, integer)} slots</span>
+              <span>
+                Break-even: {formatPlanningNumber(thresholdCurve.breakEvenCapacity, integer)} effective slots
+                {thresholdCurve.hasFractionalRounding &&
+                  ` (first sufficient raw input: ${formatPlanningNumber(thresholdCurve.firstSufficientRawCapacity, rawFormatter)})`}
+              </span>
             </div>
             <svg
               className="capacity-threshold-svg"
               viewBox="0 0 420 148"
               role="img"
-              aria-label={`Capacity sufficiency threshold curve. At ${formatPlanningNumber(thresholdCurve.currentCapacity, integer)} configured slots, reached participants is ${formatPlanningNumber(thresholdCurve.currentReached, integer)} and capacity gap is ${formatPlanningNumber(thresholdCurve.currentGap, integer)}. Break-even occurs at ${formatPlanningNumber(thresholdCurve.breakEvenCapacity, integer)} slots.`}
+              aria-label={`Capacity sufficiency threshold curve. At ${formatPlanningNumber(thresholdCurve.currentCapacity, integer)} effective slots (raw input ${formatPlanningNumber(thresholdCurve.rawCurrentCapacity, rawFormatter)}), reached participants is ${formatPlanningNumber(thresholdCurve.currentReached, integer)} and capacity gap is ${formatPlanningNumber(thresholdCurve.currentGap, integer)}. Break-even occurs at ${formatPlanningNumber(thresholdCurve.breakEvenCapacity, integer)} effective slots.`}
             >
               <line x1={padL} y1={padT} x2={padL} y2={padT + plotH} className="threshold-axis" />
               <line x1={padL} y1={padT + plotH} x2={padL + plotW} y2={padT + plotH} className="threshold-axis" />
@@ -213,36 +228,41 @@ export function SensitivityExplorer({
                 0
               </text>
               <text x={padL} y={padT + plotH + 16} textAnchor="start" className="threshold-svg-label">
-                0 slots
+                0 effective slots
               </text>
               <text x={padL + plotW} y={padT + plotH + 16} textAnchor="end" className="threshold-svg-label">
-                {formatPlanningNumber(thresholdCurve.maxCapacity, integer)} slots
+                {formatPlanningNumber(thresholdCurve.maxCapacity, integer)} effective slots
               </text>
             </svg>
             <figcaption className="threshold-legend">
               <span><i className="threshold-swatch is-reached" aria-hidden="true" />Reached participants</span>
               <span><i className="threshold-swatch is-gap" aria-hidden="true" />Capacity gap</span>
               <span><i className="threshold-swatch is-breakeven" aria-hidden="true" />Break-even threshold</span>
-              <span>Active capacity: {formatPlanningNumber(thresholdCurve.currentCapacity, integer)} slots</span>
+              <span>Effective slots: {formatPlanningNumber(thresholdCurve.currentCapacity, integer)}</span>
             </figcaption>
+            {thresholdCurve.hasFractionalRounding && (
+              <p className="micro-caption threshold-rounding-note">
+                Engine rounding: raw capacity {formatPlanningNumber(thresholdCurve.rawCurrentCapacity, rawFormatter)} rounds to {formatPlanningNumber(thresholdCurve.currentCapacity, integer)} effective integer slot(s); break-even requires {formatPlanningNumber(thresholdCurve.breakEvenCapacity, integer)} effective slot(s) (first sufficient raw input {formatPlanningNumber(thresholdCurve.firstSufficientRawCapacity, rawFormatter)}).
+              </p>
+            )}
             <details className="visual-table-disclosure">
               <summary>Threshold curve summary values</summary>
               <dl className="threshold-summary-list">
                 <div>
                   <dt>Intended reach (break-even)</dt>
-                  <dd>{formatPlanningNumber(thresholdCurve.breakEvenCapacity, integer)} slots</dd>
+                  <dd>{formatPlanningNumber(thresholdCurve.breakEvenCapacity, integer)} effective slots</dd>
                 </div>
                 <div>
-                  <dt>Active capacity</dt>
-                  <dd>{formatPlanningNumber(thresholdCurve.currentCapacity, integer)} slots</dd>
+                  <dt>First sufficient raw capacity</dt>
+                  <dd>{formatPlanningNumber(thresholdCurve.firstSufficientRawCapacity, rawFormatter)}</dd>
                 </div>
                 <div>
-                  <dt>Active reached participants</dt>
-                  <dd>{formatPlanningNumber(thresholdCurve.currentReached, integer)}</dd>
+                  <dt>Active effective capacity</dt>
+                  <dd>{formatPlanningNumber(thresholdCurve.currentCapacity, integer)} slots (raw {formatPlanningNumber(thresholdCurve.rawCurrentCapacity, rawFormatter)})</dd>
                 </div>
                 <div>
-                  <dt>Active capacity gap</dt>
-                  <dd>{formatPlanningNumber(thresholdCurve.currentGap, integer)}</dd>
+                  <dt>Active reached / gap</dt>
+                  <dd>{formatPlanningNumber(thresholdCurve.currentReached, integer)} / {formatPlanningNumber(thresholdCurve.currentGap, integer)}</dd>
                 </div>
               </dl>
             </details>
