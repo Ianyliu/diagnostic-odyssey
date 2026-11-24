@@ -1,0 +1,187 @@
+/* Chapter V: Tasteful Governed AI Handoff demonstration */
+.atlas-ai-demo {
+  padding: clamp(24px, 3.2vw, 40px);
+  border-radius: 24px;
+  border: 1px solid var(--do-ai-border);
+  background: var(--do-surface);
+  box-shadow: var(--do-shadow-soft);
+}
+
+.atlas-ai-demo-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+  gap: clamp(24px, 4vw, 48px);
+  align-items: start;
+}
+
+.atlas-ai-copy {
+  display: grid;
+  gap: 12px;
+}
+
+.atlas-ai-copy h2 {
+  margin: 0;
+  font-family: var(--do-font-display);
+  font-weight: 500;
+  font-size: clamp(1.75rem, 3vw, 2.45rem);
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  color: var(--do-text);
+}
+
+.atlas-ai-copy h2 em {
+  font-style: italic;
+  color: var(--do-ai-text);
+}
+
+.atlas-ai-copy .subtle {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.atlas-ai-tabs {
+  display: grid;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.atlas-ai-tab {
+  display: grid;
+  gap: 3px;
+  min-height: 48px;
+  padding: 12px 16px;
+  border-radius: 14px;
+  border: 1px solid var(--do-border);
+  background: var(--do-surface-elevated);
+  color: var(--do-text);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color var(--do-motion-fast) ease, background-color var(--do-motion-fast) ease;
+}
+
+.atlas-ai-tab:hover {
+  border-color: var(--do-ai-border);
+}
+
+.atlas-ai-tab[aria-selected="true"] {
+  border-color: var(--do-ai-text);
+  background: var(--do-ai-bg);
+  box-shadow: inset 3px 0 0 var(--do-ai-text);
+}
+
+.atlas-ai-tab strong {
+  font-size: 0.92rem;
+  font-weight: 650;
+}
+
+.atlas-ai-tab small {
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: var(--do-text-muted);
+}
+
+.atlas-ai-tab[aria-selected="true"] small {
+  color: var(--do-ai-text);
+}
+
+.atlas-ai-packet {
+  display: grid;
+  gap: 16px;
+  padding: clamp(20px, 2.6vw, 28px);
+  border-radius: 18px;
+  border: 1.5px dotted var(--do-ai-border);
+  background: var(--do-surface-elevated);
+}
+
+.atlas-ai-packet-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--do-border);
+}
+
+.atlas-ai-schema {
+  font-family: var(--do-font-mono);
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--do-ai-text);
+}
+
+.atlas-ai-packet-body {
+  display: grid;
+  gap: 12px;
+}
+
+.atlas-ai-field-label {
+  display: block;
+  margin-bottom: 3px;
+  font-family: var(--do-font-mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--do-text-muted);
+}
+
+.atlas-ai-packet-body p {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.52;
+  color: var(--do-text);
+}
+
+.atlas-ai-headings {
+  font-family: var(--do-font-mono);
+  font-size: 0.78rem !important;
+  color: var(--do-text-muted) !important;
+}
+
+.atlas-ai-guardrails {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 12px 0 0;
+  list-style: none;
+  border-top: 1px solid var(--do-border);
+}
+
+.atlas-ai-guardrails li {
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--do-border);
+  background: var(--do-surface);
+  font-family: var(--do-font-mono);
+  font-size: 0.68rem;
+  color: var(--do-text-muted);
+}
+
+.atlas-ai-packet-foot {
+  display: grid;
+  gap: 12px;
+  padding-top: 8px;
+  border-top: 1px solid var(--do-border);
+}
+
+.atlas-ai-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 18px;
+}
+
+@media (max-width: 900px) {
+  .atlas-ai-demo-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce), print {
+  .atlas-ai-tab {
+    transition: none !important;
+  }
+}
