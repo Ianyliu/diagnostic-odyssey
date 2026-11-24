@@ -50,7 +50,7 @@ async function setup(name) {
       }
     }
     if (name === "pilot-only" || name === "pilot-overlap") {
-      await page.getByRole("button", {name: /Use .* in Pilot planning/}).first().click();
+      await page.getByRole("button", {name: /Use .* in (?:Pilot planning|Strategy Lab)/}).first().click();
     }
     await nav(page, "Planning brief");
     if (name === "pilot-overlap") {

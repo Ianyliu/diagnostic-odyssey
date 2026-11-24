@@ -2,6 +2,7 @@
 import assert from "node:assert/strict";
 import {createRequire} from "node:module";
 import {mkdir, writeFile} from "node:fs/promises";
+import {navigateWorkspace} from "./workspace-helpers.mjs";
 const require = createRequire(process.env.PLAYWRIGHT_RUNNER ?? import.meta.url);
 const {chromium} = require("playwright");
 const base = process.env.QA_BASE_URL ?? "http://127.0.0.1:4186";
@@ -66,25 +67,26 @@ for (const width of [320, 360, 390, 768, 1024, 1440]) for (const theme of ["ligh
       await page.goto(base + route); await page.locator("main h1").waitFor();
       await overflow(page);
       const navigation = page.getByRole("navigation", {name: "Primary navigation"});
-      assert.equal(await navigation.getByRole("link").count(), 4);
-      assert.equal(await navigation.getByRole("link", {name: "Reviewed evidence", exact: true}).getAttribute("href"), "/burden");
+      const menuToggle = page.getByRole("button", {name: "Menu", exact: true});
+      if (await menuToggle.isVisible()) await menuToggle.click();
+      assert.equal(await navigation.getByRole("link").count(), 5);
+      assert.equal(await navigation.getByRole("link", {name: /^(?:01\s+)?Burden$/}).getAttribute("href"), "/burden");
       const rect = await navigation.boundingBox();
       assert.ok(rect.x >= 0 && rect.x + rect.width <= width + 1);
       const targets = await navigation.locator("a").evaluateAll(links => links.map(link => ({w: link.getBoundingClientRect().width, h: link.getBoundingClientRect().height})));
       assert.ok(targets.every(target => target.w >= 44 && target.h >= 44));
       if (width < 1024) assert.ok(rect.y + rect.height <= 901);
+      if (await menuToggle.isVisible() && await navigation.isVisible()) await menuToggle.click();
       if (route === "/pilot") {
         assert.equal(await page.locator(".pilot-headlines > div").count(), 4);
-        assert.equal(await page.locator("#pilot-input-group-1").evaluate(e => e.open), false);
-        assert.match(await page.locator("#pilot-input-group-1 > summary").innerText(), /Program capacity: 3,000/);
-        assert.ok(await page.getByRole("link", {name: "Explore sensitivity →", exact: true}).isVisible());
+        assert.equal(await page.getByRole("button", {name: /More parameters/}).getAttribute("aria-expanded"), "false");
+        assert.equal(await page.locator("#pilot-capacity").inputValue(), "3000");
         assert.equal(await page.locator(".decision-visual").count(), 3);
-        assert.ok((await page.locator(".pilot-summary").boundingBox()).y < (await page.locator(".pilot-input-column").boundingBox()).y || width > 1100);
       }
       if (route === "/brief") {
         assert.equal(await page.locator("#brief-full-report").evaluate(e => e.open), false);
         assert.ok(await page.getByRole("button", {name: "Analyze with AI", exact: true}).isVisible());
-        assert.ok(await page.getByRole("link", {name: "Explore future AI concept →", exact: true}).isVisible());
+        assert.ok(await page.getByRole("link", {name: /(?:Explore future AI concept|Open Strategy AI Studio)/}).first().isVisible());
         assert.equal(await page.locator(".insight-finding").count(), 3);
       }
       layouts.push({route, navigation: rect, height: await page.evaluate(() => document.documentElement.scrollHeight)});
@@ -136,33 +138,30 @@ await check("visible selections, collapsed category state and unchanged Pilot in
   assert.equal(await row.getByRole("checkbox").isChecked(), true, "reviewed indicator starts checked");
   await page.getByRole("button", {name: "Select none", exact: true}).first().click();
   await row.getByRole("checkbox").check();
-  await row.getByRole("button", {name: /Use .* in Pilot planning/}).click();
+  await row.getByRole("button", {name: /Use .* in (?:Pilot planning|Strategy Lab)/}).click();
   await category.locator(":scope > summary").click();
   assert.match(await category.locator(":scope > summary").innerText(), /1 selected for Brief.*Pilot:/);
-  await page.getByRole("navigation", {name: "Primary navigation"}).getByRole("link", {name: "Pilot planner", exact: true}).click();
-  await page.locator("#pilot-input-group-1 > summary").click();
+  await navigateWorkspace(page, "Pilot planner");
   assert.equal(await page.locator("#pilot-capacity").inputValue(), "3000");
   assert.match(await page.locator("#pilot-context").innerText(), /does not alter reach, capacity, timing, cost/);
   await page.locator("#pilot-capacity").fill("2345");
   await page.locator("#pilot-capacity").fill("2e");
   assert.match(await page.locator(".pilot-summary").innerText(), /Draft not applied/);
   assert.ok(await page.getByRole("button", {name: "Review planning brief", exact: true}).isDisabled());
-  await page.locator("#pilot-input-group-1 > summary").click();
-  assert.ok(await page.locator("#pilot-capacity").isVisible(), "errors remain revealed");
   await page.locator("#pilot-capacity").fill("2000");
-  await page.getByRole("link", {name: "Explore sensitivity →", exact: true}).click();
+  await page.getByRole("link", {name: /(?:Explore sensitivity|Open sensitivity explorer)/}).click();
   assert.equal(await page.locator(":focus").getAttribute("id"), "sensitivity-title");
   await page.locator("#sensitivity").getByRole("button", {name: "Add to data requests", exact: true}).click();
-  await page.getByRole("link", {name: "Review unresolved data needs", exact: true}).click();
+  await page.getByRole("link", {name: /(?:Review unresolved data needs|Review data request)/}).first().click();
   assert.ok(await page.getByRole("checkbox", {name: /Include in Planning Brief/}).isVisible());
 });
 await check("collapsed report links, print completeness, exact restoration and AI dialog", async () => {
   const page = await pageAt("/brief");
   // Compact 7–8-page contract uses an explicit none-selected Local Context state.
   // The all-reviewed default is checked in a separate native PDF below.
-  await page.getByRole("navigation", {name: "Primary navigation"}).getByRole("link", {name: "Local context", exact: true}).click();
+  await page.getByRole("navigation", {name: "Primary navigation"}).getByRole("link", {name: /^(?:02\s+)?Local context$/}).click();
   await page.getByRole("button", {name: "Select none", exact: true}).first().click();
-  await page.getByRole("navigation", {name: "Primary navigation"}).getByRole("link", {name: "Planning brief", exact: true}).click();
+  await page.getByRole("navigation", {name: "Primary navigation"}).getByRole("link", {name: /^(?:04\s+)?Planning Brief$/}).click();
   await page.locator(".insight-finding summary").first().click();
   const before = await page.locator("main details").evaluateAll(elements => elements.map(e => e.open));
   const scrollBefore = await page.evaluate(() => window.scrollY);
@@ -193,7 +192,7 @@ await check("all-reviewed default prints a concise PDF with 34 canonical selecti
   const inputs = page.locator('input[id^="select-local-context-"]');
   assert.equal(await inputs.count(), 34);
   assert.equal(await inputs.evaluateAll(elements => elements.filter(input => input.checked).length), 34);
-  await page.getByRole("navigation", {name: "Primary navigation"}).getByRole("link", {name: "Planning brief", exact: true}).click();
+  await page.getByRole("navigation", {name: "Primary navigation"}).getByRole("link", {name: /^(?:04\s+)?Planning Brief$/}).click();
   const before = await page.locator("main details").evaluateAll(elements => elements.map(e => e.open));
   await page.evaluate(() => { window.print = () => window.dispatchEvent(new Event("beforeprint")); });
   await page.getByRole("button", {name: "Print / save PDF", exact: true}).evaluate(button => button.click());
@@ -208,8 +207,7 @@ await check("all-reviewed default prints a concise PDF with 34 canonical selecti
 for (const width of [390, 1440]) await check(`cross-route history reveals fragments and preserves ordinary scroll ${width}`, async () => {
   const page = await pageAt("/brief", width);
   const navigate = async name => {
-    await page.getByRole("navigation", {name: "Primary navigation"}).getByRole("link", {name, exact: true}).click();
-    await page.locator("main h1").waitFor();
+    await navigateWorkspace(page, name);
   };
   const settleScroll = () => page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
   const expectBurdenFocus = () => page.waitForFunction(() => document.activeElement?.textContent === "Reviewed national burden findings", null, {timeout: 6000});
@@ -263,13 +261,12 @@ await check("text enlargement and keyboard-height simulation keep controls reach
   const page = await pageAt("/pilot", 390);
   await page.addStyleTag({content: "html {font-size: 200% !important;}"});
   await overflow(page);
-  await page.locator("#pilot-input-group-1 > summary").click();
   await page.locator("#pilot-capacity").focus();
   await page.setViewportSize({width: 390, height: 480});
   await page.locator("#pilot-capacity").scrollIntoViewIfNeeded();
   const box = await page.locator("#pilot-capacity").boundingBox();
-  const nav = await page.getByRole("navigation", {name: "Primary navigation"}).boundingBox();
-  assert.ok(box.y >= 0 && box.y + box.height <= nav.y, "focused input clears bottom navigation");
+  const header = await page.locator("header.site-header").boundingBox();
+  assert.ok(box.y >= header.y + header.height - 1 && box.y + box.height <= 480, "focused input clears header and viewport");
   await overflow(page);
 });
 await check("200% text enlargement across all widths and themes", async () => {
@@ -284,7 +281,7 @@ await check("200% text enlargement across all widths and themes", async () => {
 await check("extreme headline values retain every digit at 320px", async () => {
   for (const theme of ["light", "dark"]) {
     const page = await pageAt("/pilot", 320, theme);
-    for (const id of [1, 2]) await page.locator(`#pilot-input-group-${id} > summary`).click();
+    await page.getByRole("button", {name: /More parameters/}).click();
     for (const [field, value] of Object.entries({fixed_cost: "0", per_participant_cost: "0", baseline_window_months: "0", alternative_window_months: "0", horizon_months: "0", reach: "100", capacity: String(Number.MAX_VALUE), eligible_population: String(Number.MAX_VALUE)})) {
       await page.locator(`#pilot-${field}`).fill(value);
     }

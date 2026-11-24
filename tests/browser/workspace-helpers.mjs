@@ -11,13 +11,13 @@ export async function prepareWorkspace(page) {
 export async function navigateWorkspace(page, name) {
   const labelPattern =
     name === "Burden" || name === "Reviewed evidence"
-      ? /^(?:01\s+)?Burden$/
+      ? /^(?:01\s+)?(?:Burden|Reviewed evidence)$/
       : name === "Local context"
         ? /^(?:02\s+)?Local context$/
         : name === "Pilot planner" || name === "Strategy Lab"
-          ? /^(?:03\s+)?Strategy Lab$/
+          ? /^(?:03\s+)?(?:Strategy Lab|Pilot planner)$/
           : name === "Planning brief" || name === "Planning Brief"
-            ? /^(?:04\s+)?Planning Brief$/
+            ? /^(?:04\s+)?Planning [Bb]rief$/
             : name === "Evidence" || name === "Intervention evidence & limits"
               ? "Evidence limits"
               : name;
