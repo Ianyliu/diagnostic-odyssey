@@ -204,6 +204,8 @@
   background: var(--do-canvas);
   border-radius: 0 8px 8px 0;
 }
+
+.atlas-more-params {
   display: grid;
   gap: 10px;
   padding-top: 8px;
