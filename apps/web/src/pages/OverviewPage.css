@@ -372,8 +372,8 @@
 }
 
 .atlas-grammar-token.is-gap .atlas-grammar-swatch {
-  border: 1.5px dashed var(--do-error-text);
-  background: var(--do-error-bg);
+  border: 1.5px dashed var(--do-gap-border);
+  background: var(--do-gap-bg);
 }
 
 .atlas-editions-bar {

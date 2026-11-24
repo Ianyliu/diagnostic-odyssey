@@ -108,7 +108,13 @@
 
 .atlas-preset-card.is-active {
   border-color: var(--do-assumption-border);
-  background: var(--do-assumption-bg);
+  background:
+    repeating-linear-gradient(
+      -45deg,
+      transparent 0 8px,
+      color-mix(in srgb, var(--do-assumption-text) 5%, transparent) 8px 11px
+    ),
+    var(--do-assumption-bg);
   box-shadow: inset 3px 0 0 var(--do-assumption-text);
 }
 
@@ -157,7 +163,7 @@
 }
 
 .atlas-slider-num.invalid {
-  border-color: var(--do-warning-text);
+  border-color: var(--do-error-text);
 }
 
 .atlas-slider-num input {
@@ -232,8 +238,8 @@
 }
 
 .atlas-kpi.is-gap {
-  border-color: var(--do-warning-border);
-  background: var(--do-warning-bg);
+  border-color: var(--do-error-border);
+  background: var(--do-error-bg);
 }
 
 .atlas-kpi dt {
@@ -348,8 +354,8 @@
 }
 
 .field-error {
-  color: var(--do-warning-text);
-  font-size: 0.76rem;
+  color: var(--do-error-text);
+  font-size: 0.78rem;
   font-weight: 650;
 }
 
@@ -428,7 +434,7 @@
 .atlas-decision-inspector h3 { font-size: .87rem; margin: 0 0 6px; }
 .atlas-decision-inspector p { font-size: .82rem; line-height: 1.55; margin: 0 0 8px; overflow-wrap: anywhere; }
 .atlas-inspector-item { padding-top: 12px; border-top: 1px solid var(--do-border); }
-.atlas-inspector-ai { padding: 13px; border: 1px solid var(--do-ai-border); border-radius: 12px; background: var(--do-ai-bg); }
+.atlas-inspector-ai { padding: 13px; border: 1.5px dotted var(--do-ai-border); border-radius: 12px; background: var(--do-ai-bg); }
 .atlas-inspector-ai h3 { color: var(--do-ai-text); }
 .atlas-inspector-ai .button { width: 100%; }
 .atlas-range { height: 28px; }

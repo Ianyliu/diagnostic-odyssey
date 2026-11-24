@@ -19,8 +19,18 @@
 }
 
 .request-epistemic-cell.is-known { border-top: 3px solid var(--do-reviewed-text); }
-.request-epistemic-cell.is-assumed { border-top: 3px solid var(--do-assumption-text); }
-.request-epistemic-cell.is-unknown { border-top: 3px solid var(--do-error-text); }
+.request-epistemic-cell.is-assumed {
+  border-top: 3px solid var(--do-assumption-text);
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent 0 10px,
+    color-mix(in srgb, var(--do-assumption-bg) 55%, transparent) 10px 14px
+  );
+}
+.request-epistemic-cell.is-unknown {
+  border-top: 3px dashed var(--do-gap-border);
+  background: var(--do-gap-bg);
+}
 
 .request-epistemic-cell > span {
   font-family: var(--do-font-mono);

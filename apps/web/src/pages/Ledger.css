@@ -113,6 +113,7 @@
 
 .atlas-terrain-row.is-pilot {
   border-color: var(--do-selection-border);
+  box-shadow: inset 0 0 0 1px var(--do-selection-border), var(--do-shadow-soft);
 }
 
 .atlas-terrain-row-main {
@@ -472,9 +473,9 @@
   align-items: center;
   gap: 10px 14px;
   padding: 14px 18px;
-  border: 1px dashed var(--do-assumption-border);
+  border: 1px dashed var(--do-gap-border);
   border-radius: 14px;
-  background: var(--do-assumption-bg);
+  background: var(--do-gap-bg);
   font-size: 0.85rem;
 }
 

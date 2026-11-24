@@ -133,21 +133,25 @@ main { min-height: calc(100vh - 132px); }
   font-weight: 650;
   white-space: nowrap;
 }
-.status-ok, .status-reviewed { color: var(--do-reviewed-text); background: var(--do-reviewed-bg); }
-.status-assumption { color: var(--do-assumption-text); background: var(--do-assumption-bg); }
-.status-selection { color: var(--do-selection-text); background: var(--do-selection-bg); }
-.status-warning, .status-scaffold, .status-fixture { color: var(--do-warning-text); background: var(--do-warning-bg); }
-.status-error { color: var(--do-error-text); background: var(--do-error-bg); }
-.status-neutral, .status-unavailable { color: var(--do-text-muted); background: var(--do-surface-elevated); border: 1px solid var(--do-border); }
+.status-ok, .status-reviewed { color: var(--do-reviewed-text); background: var(--do-reviewed-bg); border: 1px solid var(--do-reviewed-border); }
+.status-assumption { color: var(--do-assumption-text); background: var(--do-assumption-bg); border: 1px solid var(--do-assumption-border); }
+.status-selection { color: var(--do-selection-text); background: var(--do-selection-bg); border: 1px solid var(--do-selection-border); box-shadow: inset 0 0 0 1px var(--do-selection-border); }
+.status-ai { color: var(--do-ai-text); background: var(--do-ai-bg); border: 1.5px dotted var(--do-ai-border); }
+.status-positive { color: var(--do-success-text); background: var(--do-success-bg); border: 1px solid var(--do-success-border); }
+.status-gap, .status-unavailable { color: var(--do-gap-text); background: var(--do-gap-bg); border: 1px dashed var(--do-gap-border); }
+.status-warning, .status-scaffold, .status-fixture { color: var(--do-warning-text); background: var(--do-warning-bg); border: 1px solid var(--do-warning-border); }
+.status-error { color: var(--do-error-text); background: var(--do-error-bg); border: 1px solid var(--do-error-border); }
+.status-neutral { color: var(--do-text-muted); background: var(--do-surface-elevated); border: 1px solid var(--do-border); }
 
 .subtle, .limitations, .visual-note { color: var(--do-text-muted); font-size: 0.85rem; }
 .numeric-unit { display: inline-block; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .micro-caption {
   margin: 0;
-  font-family: var(--do-font-mono);
-  font-size: 0.72rem;
+  font-family: var(--do-font-body);
+  font-size: 0.78rem;
+  line-height: 1.45;
   color: var(--do-text-muted);
-  letter-spacing: 0.03em;
+  letter-spacing: 0.005em;
 }
 
 .empty-state, .state-card {

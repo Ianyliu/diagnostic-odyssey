@@ -42,7 +42,7 @@
 .fc-unified-workbench {
   padding: 22px;
   border-radius: 18px;
-  border: 1px solid var(--do-border);
+  border: 1.5px dotted var(--do-ai-border);
   background: var(--do-surface);
   box-shadow: var(--do-shadow-soft);
   display: grid;

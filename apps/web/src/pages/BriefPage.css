@@ -160,8 +160,15 @@
 }
 
 .brief-role-card.is-known { border-top-color: var(--do-reviewed-text); }
-.brief-role-card.is-assumed { border-top-color: var(--do-assumption-text); }
-.brief-role-card.is-unknown { border-top-style: dashed; border-top-color: var(--do-control-border); }
+.brief-role-card.is-assumed {
+  border-top-color: var(--do-assumption-text);
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent 0 10px,
+    color-mix(in srgb, var(--do-assumption-bg) 55%, transparent) 10px 14px
+  );
+}
+.brief-role-card.is-unknown { border-top-style: dashed; border-top-color: var(--do-gap-border); }
 
 .brief-role-tag {
   font-family: var(--do-font-mono);
