@@ -148,7 +148,7 @@ if (disabled) {
     assert.equal(await page.getByRole("checkbox", {name: "Care navigation", exact: true}).isDisabled(), false);
     await page.getByLabel("Comparison lens").selectOption("evidence"); assert.equal(await page.locator("tbody tr").count(), 3);
     assert.match(await page.locator("tbody").innerText(), /No matched comparative estimate/); assert.match(await page.locator("tbody").innerText(), /Not evaluated for local Pilot/);
-    assert.match(await page.locator(".fc-demo-analysis").innerText(), /Not a winner/);
+    assert.match(await page.locator(".fc-comparison").innerText(), /Framework only/);
     assert.equal(await page.locator(".fc-strategy .fc-demo-insight").count(), 2);
     await page.getByText("Inspect transferability questions", {exact: true}).first().click();
     assert.match(await page.locator(".fc-strategy").first().innerText(), /Geography & health system/);
@@ -179,8 +179,8 @@ if (disabled) {
     await page.getByRole("link", {name: /(?:Return to assumption-based Pilot|Return to Simulate)/}).click();
     await nav(page, "Data requests"); assert.equal(await request.innerText(), requestBefore);
     await nav(page, "Planning brief"); assert.deepEqual(await exportBrief(page, "after-exploration"), before);
-    assert.equal(await page.locator(".brief-concept-entry").isVisible(), true);
-    await page.emulateMedia({media: "print"}); assert.equal(await page.locator(".brief-concept-entry a").isVisible(), false);
+    assert.equal(await page.locator(".brief-concept-strip").isVisible(), true);
+    await page.emulateMedia({media: "print"}); assert.equal(await page.locator(".brief-concept-strip a").isVisible(), false);
     await page.pdf({path: `${output}/canonical-brief.pdf`, format: "Letter", printBackground: true});
     return {selectedLocal: 1, selectedRequests: 1, exactCanonicalEquality: true};
   });
@@ -240,6 +240,7 @@ if (disabled) {
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
       assert.equal(await page.locator(".fc-output-content").evaluate(el => getComputedStyle(el).animationName), "none");
     }
+    await goal(page, goals[0]);
     await page.locator(".fc-boundaries summary").click(); assert.match(await page.locator(".fc-boundaries").innerText(), /Advisory boundaries/);
     assert.equal(await page.locator(".fc-hero-meta").evaluate(el => { const r = el.getBoundingClientRect(); return el.contains(document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2)); }), true, "Studio header must remain visible below the sticky product header");
     await page.evaluate(() => window.scrollTo(0, 0));

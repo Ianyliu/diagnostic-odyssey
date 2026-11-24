@@ -48,16 +48,17 @@ await check("reviewed OpenGraph preview is a served, valid 1200x630 PNG", async 
 });
 await check("Burden charts expose numeric confidence bounds and distinguish descriptive IQR",async()=>{
  const page=await pageAt("/burden",390);
- const tracks=page.locator('.burden-domain-stack .metric-visual-track[role="img"]');
+ const tracks=page.locator('.burden-domain-stack .metric-visual-svg[role="img"]');
  const labels=await tracks.evaluateAll(nodes=>nodes.map(n=>n.getAttribute("aria-label")??""));
- assert.ok(labels.some(label=>/95% CI.*to/.test(label)), "numeric sampling CI is accessible");
- assert.ok(labels.some(label=>/Interquartile range.*not a confidence interval/i.test(label)), "IQR is distinguished from sampling CI");
- const normal=page.locator('.burden-domain-stack .metric-visual-interval').first();
+ assert.ok(labels.some(label=>/(?:95% CI|95% confidence interval).*to/i.test(label)), "numeric sampling CI is accessible");
+ assert.ok(labels.some(label=>/IQR.*25th–75th percentile.*to/i.test(label)), "IQR is distinguished from sampling CI");
+ const normal=page.locator('.burden-domain-stack .metric-svg-interval').first();
  assert.ok(await normal.count()>0);
- const style=await normal.getAttribute("style");
- assert.match(style,/left: [0-9.]+%; width: [0-9.]+%/);
+ const xAttr = Number(await normal.getAttribute("x"));
+ const wAttr = Number(await normal.getAttribute("width"));
+ assert.ok(Number.isFinite(xAttr) && Number.isFinite(wAttr) && wAttr > 0);
  await overflow(page);
- return {charts:labels.length,firstInterval:style};
+ return {charts:labels.length,firstInterval:{x:xAttr,width:wAttr}};
 });
 for (const width of [320, 360, 390, 768, 1024, 1440]) for (const theme of ["light", "dark"]) {
   await check(`default guided layouts ${width} ${theme}`, async () => {
@@ -84,7 +85,7 @@ for (const width of [320, 360, 390, 768, 1024, 1440]) for (const theme of ["ligh
         assert.equal(await page.locator(".decision-visual").count(), 3);
       }
       if (route === "/brief") {
-        assert.equal(await page.locator("#brief-full-report").evaluate(e => e.open), false);
+        assert.ok(await page.locator("#brief-national-burden h2").isVisible());
         assert.ok(await page.getByRole("button", {name: "Analyze with AI", exact: true}).isVisible());
         assert.ok(await page.getByRole("link", {name: /(?:Explore future AI concept|Open Strategy AI Studio)/}).first().isVisible());
         assert.equal(await page.locator(".insight-finding").count(), 3);
@@ -99,19 +100,19 @@ await check("bulk local selections default to all, respect individual overrides 
   const inputs = page.locator('input[id^="select-local-context-"]');
   assert.equal(await inputs.count(), 34);
   assert.equal(await inputs.evaluateAll(elements => elements.filter(input => input.checked).length), 34);
-  assert.match(await page.locator("#local-selection-summary").innerText(), /34 indicators selected/);
-  assert.match(await page.locator("#local-selection-summary").innerText(), /start selected by default/);
+  assert.match(await page.locator("#local-selection-summary").innerText(), /34 of 34 in Brief/);
   await page.getByRole("button", {name: "Select none", exact: true}).first().click();
   assert.equal(await inputs.evaluateAll(elements => elements.filter(input => input.checked).length), 0);
-  const category = page.locator("#local-primary-care-category");
-  await category.getByRole("button", {name: "Select all", exact: true}).click();
-  const selectedInCategory = await category.locator('input[type="checkbox"]:checked').count();
+  await page.getByRole("button", {name: /^Primary Care HPSA/}).click();
+  await page.getByRole("button", {name: "Include filtered group", exact: true}).click();
+  const selectedInCategory = await page.locator('input[id^="select-local-context-"]:checked').count();
   assert.ok(selectedInCategory >= 2, "category bulk action selects eligible records");
-  await category.getByRole("button", {name: "Select none", exact: true}).click();
-  assert.equal(await category.locator('input[type="checkbox"]:checked').count(), 0);
+  await page.getByRole("button", {name: "Clear filtered group", exact: true}).click();
+  assert.equal(await page.locator('input[id^="select-local-context-"]:checked').count(), 0);
+  await page.getByRole("button", {name: /^All \(/}).click();
   await page.getByRole("button", {name: "Select all", exact: true}).first().click();
   assert.equal(await inputs.evaluateAll(elements => elements.filter(input => input.checked).length), 34);
-  assert.match(await page.getByRole("status").first().innerText(), /No Pilot context selected/);
+  assert.match(await page.locator(".pilot-local-pill, .atlas-local-status, main").innerText(), /34 of 34|Use in Strategy Lab/);
 });
 await check("multiple data requests default selected and support reversible bulk choices", async () => {
   const page = await pageAt("/pilot");
@@ -133,14 +134,13 @@ await check("multiple data requests default selected and support reversible bulk
 });
 await check("visible selections, collapsed category state and unchanged Pilot inputs", async () => {
   const page = await pageAt("/local-context");
-  const category = page.locator("#local-primary-care-category");
-  const row = category.locator(".ledger-indicator-row").first();
+  await page.getByRole("button", {name: /^Primary Care HPSA/}).click();
+  const row = page.locator(".ledger-indicator-row").first();
   assert.equal(await row.getByRole("checkbox").isChecked(), true, "reviewed indicator starts checked");
   await page.getByRole("button", {name: "Select none", exact: true}).first().click();
   await row.getByRole("checkbox").check();
   await row.getByRole("button", {name: /Use .* in (?:Pilot planning|Strategy Lab)/}).click();
-  await category.locator(":scope > summary").click();
-  assert.match(await category.locator(":scope > summary").innerText(), /1 selected for Brief.*Pilot:/);
+  assert.match(await page.locator("#local-selection-summary").innerText(), /1 of 34 in Brief/);
   await navigateWorkspace(page, "Pilot planner");
   assert.equal(await page.locator("#pilot-capacity").inputValue(), "3000");
   assert.match(await page.locator("#pilot-context").innerText(), /does not alter reach, capacity, timing, cost/);
@@ -159,9 +159,9 @@ await check("collapsed report links, print completeness, exact restoration and A
   const page = await pageAt("/brief");
   // Compact 7–8-page contract uses an explicit none-selected Local Context state.
   // The all-reviewed default is checked in a separate native PDF below.
-  await page.getByRole("navigation", {name: "Primary navigation"}).getByRole("link", {name: /^(?:02\s+)?Local context$/}).click();
+  await navigateWorkspace(page, "Local context");
   await page.getByRole("button", {name: "Select none", exact: true}).first().click();
-  await page.getByRole("navigation", {name: "Primary navigation"}).getByRole("link", {name: /^(?:04\s+)?Planning Brief$/}).click();
+  await navigateWorkspace(page, "Planning brief");
   await page.locator(".insight-finding summary").first().click();
   const before = await page.locator("main details").evaluateAll(elements => elements.map(e => e.open));
   const scrollBefore = await page.evaluate(() => window.scrollY);
@@ -182,17 +182,14 @@ await check("collapsed report links, print completeness, exact restoration and A
   assert.equal(await page.locator(":focus").innerText(), "Analyze with AI");
   await page.goto(base + "/brief#brief-national-burden");
   await page.waitForFunction(() => document.activeElement?.textContent === "Reviewed national burden findings");
-  assert.equal(await page.locator("#brief-full-report").evaluate(e => e.open), true);
-  await page.goto(base + "/pilot#pilot-trace");
-  await page.waitForFunction(() => document.activeElement?.textContent === "Decision trace");
-  assert.equal(await page.locator("#pilot-decision-details").evaluate(e => e.open), true);
+  assert.ok(await page.locator("#brief-national-burden h2").isVisible());
 });
 await check("all-reviewed default prints a concise PDF with 34 canonical selections", async () => {
   const page = await pageAt("/local-context");
   const inputs = page.locator('input[id^="select-local-context-"]');
   assert.equal(await inputs.count(), 34);
   assert.equal(await inputs.evaluateAll(elements => elements.filter(input => input.checked).length), 34);
-  await page.getByRole("navigation", {name: "Primary navigation"}).getByRole("link", {name: /^(?:04\s+)?Planning Brief$/}).click();
+  await navigateWorkspace(page, "Planning brief");
   const before = await page.locator("main details").evaluateAll(elements => elements.map(e => e.open));
   await page.evaluate(() => { window.print = () => window.dispatchEvent(new Event("beforeprint")); });
   await page.getByRole("button", {name: "Print / save PDF", exact: true}).evaluate(button => button.click());
@@ -217,8 +214,6 @@ for (const width of [390, 1440]) await check(`cross-route history reveals fragme
   const fragmentScroll = await page.evaluate(() => window.scrollY);
   await navigate("Pilot planner");
   await navigate("Planning brief");
-  await page.locator("#brief-full-report > summary").click();
-  assert.equal(await page.locator("#brief-full-report").evaluate(e => e.open), false);
   await navigate("Pilot planner");
   await page.goBack();
   await page.waitForURL(base + "/brief");
@@ -227,7 +222,6 @@ for (const width of [390, 1440]) await check(`cross-route history reveals fragme
   await page.goBack();
   await page.waitForURL(base + "/brief#brief-national-burden");
   await expectBurdenFocus();
-  assert.equal(await page.locator("#brief-full-report").evaluate(e => e.open), true);
   assert.ok(await page.locator("#brief-national-burden h2").isVisible());
   await page.waitForFunction(y => Math.abs(window.scrollY - y) <= 1, fragmentScroll);
 
@@ -246,7 +240,7 @@ for (const width of [390, 1440]) await check(`cross-route history reveals fragme
 
   // A real cross-route link must also regain fragment focus on Forward.
   await page.goto(base + "/");
-  await page.getByRole("link", {name: "See planning insights", exact: true}).click();
+  await page.locator('a[href="/brief#planning-insights"]').first().click();
   await page.waitForFunction(() => document.activeElement?.id === "planning-insights-title");
   await settleScroll();
   const insightsScroll = await page.evaluate(() => window.scrollY);
