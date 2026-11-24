@@ -32,50 +32,50 @@ function categoryKicker(record: LocalContextRecord): string {
   return "CENSUS ACS";
 }
 
-function LocalContextProvenanceDetails({ record }: { record: LocalContextRecord }) {
+function LocalContextProvenanceDetails({ record: inspectRecord }: { record: LocalContextRecord }) {
   return (
     <>
       <div className="atlas-drawer-stat">
-        <strong>{formatLocalContextValue(record)}</strong>
-        <span>{record.source_agency} · {record.source_release_vintage}</span>
+        <strong>{formatLocalContextValue(inspectRecord)}</strong>
+        <span>{inspectRecord.source_agency} · {inspectRecord.source_release_vintage}</span>
       </div>
       <dl className="atlas-drawer-list">
         <div>
           <dt>Observation date</dt>
-          <dd>{record.observation_as_of_date ?? "Not specified"}</dd>
+          <dd>{inspectRecord.observation_as_of_date ?? "Not specified"}</dd>
         </div>
         <div>
           <dt>Geography &amp; universe</dt>
-          <dd>{record.geography_name} ({record.geography_type}) · {record.universe}</dd>
+          <dd>{inspectRecord.geography_name} ({inspectRecord.geography_type}) · {inspectRecord.universe}</dd>
         </div>
         <div>
           <dt>Source &amp; locator</dt>
-          <dd>{record.source_ref} · {record.source_locator}</dd>
+          <dd>{inspectRecord.source_ref} · {inspectRecord.source_locator}</dd>
         </div>
         <div>
           <dt>Published uncertainty</dt>
           <dd>
-            {formatLocalContextUncertaintyType(record.uncertainty_type)} ·{" "}
-            {record.margin_of_error === null
+            {formatLocalContextUncertaintyType(inspectRecord.uncertainty_type)} ·{" "}
+            {inspectRecord.margin_of_error === null
               ? "Not published"
-              : formatPublishedLocalContextUncertainty(record)}
+              : formatPublishedLocalContextUncertainty(inspectRecord)}
           </dd>
         </div>
         <div>
           <dt>Allowed use</dt>
-          <dd>{record.allowed_interpretation}</dd>
+          <dd>{inspectRecord.allowed_interpretation}</dd>
         </div>
         <div>
           <dt>Not supported</dt>
-          <dd>{record.prohibited_interpretation.join("; ")}</dd>
+          <dd>{inspectRecord.prohibited_interpretation.join("; ")}</dd>
         </div>
         <div>
           <dt>Limitations</dt>
-          <dd>{record.limitations.join(" ")}</dd>
+          <dd>{inspectRecord.limitations.join(" ")}</dd>
         </div>
         <div>
           <dt>Release / state</dt>
-          <dd>{formatReleaseStatusLabel(record.release_status)} · {formatDataStateLabel(record.state)}</dd>
+          <dd>{formatReleaseStatusLabel(inspectRecord.release_status)} · {formatDataStateLabel(inspectRecord.state)}</dd>
         </div>
       </dl>
     </>
@@ -145,7 +145,7 @@ export function LocalContextPage() {
         <header className="page-heading">
           <p className="eyebrow">02 · LOCAL CONTEXT</p>
           <h1>West Virginia access conditions</h1>
-          <p>Access conditions, not prevalence. Missing does not mean zero constraint.</p>
+          <p>Local context unavailable; missing does not mean zero constraint.</p>
         </header>
         <div className="empty-state" role="alert">
           <strong>Local indicators unavailable.</strong>

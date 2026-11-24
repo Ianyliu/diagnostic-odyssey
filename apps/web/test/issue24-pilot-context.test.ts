@@ -121,13 +121,13 @@ test("DecisionTrace and page sources preserve independent UI semantics", () => {
   assert.match(traceComponent, /not a proven causal chain/);
   assert.match(traceComponent, /<ol>/);
   assert.match(localPage, /Include in Brief/);
-  assert.match(localPage, /Use in Simulate/);
-  assert.match(localPage, /Active in Simulate/);
-  assert.match(localPage, /Remove \$\{record\.label\} from Simulate/);
+  assert.match(localPage, /Use in Strategy Lab/);
+  assert.match(localPage, /Active in Strategy Lab/);
+  assert.match(localPage, /Remove \$\{record\.label\} from Strategy Lab/);
   assert.match(pilotPage, /context never alters numeric scenario math/);
   assert.match(pilotPage, /No local indicator attached/);
   assert.match(briefPage, /mergeBriefLocalContext/);
-  assert.match(briefPage, /status status-selection pilot-used-badge">Active in Simulate<\/span>/);
+  assert.match(briefPage, /status status-selection pilot-used-badge">Active in Strategy Lab<\/span>/);
   assert.match(context, /pilotLocalContextId: string \| null/);
   assert.match(context, /selectedLocalContextIds: string\[\]/);
   assert.doesNotMatch(context, /localStorage|sessionStorage/);

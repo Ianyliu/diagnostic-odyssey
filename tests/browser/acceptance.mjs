@@ -192,7 +192,7 @@ await check(
     await page.goBack();
     assert.ok(page.url().endsWith("/burden"));
     await page
-      .getByRole("heading", { name: "Burden overview", exact: true })
+      .getByRole("heading", { name: "National burden overview", exact: true })
       .waitFor();
     await page.goForward();
     assert.ok(page.url().endsWith("/pilot"));
@@ -201,7 +201,7 @@ await check(
       .waitFor();
     assert.equal(await page.locator("#pilot-capacity").inputValue(), "2345");
     await page
-      .getByRole("navigation", { name: "Pilot planner sections" })
+      .getByRole("navigation", { name: "Strategy Lab sections" })
       .getByRole("link", { name: "Sensitivity", exact: true })
       .click();
     await page.waitForFunction(
@@ -263,7 +263,7 @@ await check(
     await navigate(page, "Local context");
     await page.getByRole("checkbox").filter({ visible: true }).first().check();
     await page
-      .getByRole("button", { name: /^Use .* in Pilot planning$/ })
+      .getByRole("button", { name: /^Use .* in Strategy Lab$/ })
       .first()
       .click();
     await navigate(page, "Pilot planner");
@@ -458,7 +458,7 @@ await check("local context labels preserve native scores and exported uncertaint
         assert.ok((await row.locator(".ledger-record-value").innerText()).startsWith(`${record.value} points`));
       }
       await checkbox.check();
-      if (id === ids[0]) await row.getByRole("button", {name: /^Use .* in Pilot planning$/}).click();
+      if (id === ids[0]) await row.getByRole("button", {name: /^Use .* in Strategy Lab$/}).click();
     }
     const localText = await page.locator("main").textContent();
     assert.ok(localText.includes("Published 90% margin of error"));
@@ -939,14 +939,14 @@ await check(
     await page.keyboard.press("Space");
     assert.equal(await selection.isChecked(), true);
     const pilotContext = page
-      .getByRole("button", { name: /^Use .* in Pilot planning$/ })
+      .getByRole("button", { name: /^Use .* in Strategy Lab$/ })
       .first();
     await tabTo(page, pilotContext);
     await page.keyboard.press("Enter");
     const nav = page.getByRole("navigation", { name: "Primary navigation" });
     await tabTo(
       page,
-      nav.getByRole("link", { name: "Pilot planner", exact: true }),
+      nav.getByRole("link", { name: /^(?:03\s+)?Strategy Lab$/, exact: true }),
       true,
     );
     await page.keyboard.press("Enter");
@@ -993,7 +993,7 @@ await check(
     assert.equal(await request.isChecked(), true);
     await tabTo(
       page,
-      nav.getByRole("link", { name: "Planning brief", exact: true }),
+      nav.getByRole("link", { name: /^(?:04\s+)?Planning Brief$/, exact: true }),
       true,
     );
     await page.keyboard.press("Enter");

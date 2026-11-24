@@ -504,7 +504,7 @@ test("reviewed burden UI has no development-fixture labels", () => {
   ]) {
     assert.doesNotMatch(burden, new RegExp(forbidden));
   }
-  assert.match(burden, /2024 AHRQ MEPS/);
+  assert.match(burden, /AHRQ MEPS/);
   assert.match(burden, /Gross vs\. attributable cost/);
   const burdenMeasures = readSource("../src/components/BurdenMeasureList.tsx");
   assert.match(burden, /<BurdenMeasureList estimates=\{domain\.measures\} \/>/);
@@ -512,11 +512,11 @@ test("reviewed burden UI has no development-fixture labels", () => {
   assert.match(burdenMeasures, /canExportEstimate\(estimate\)/);
   assert.match(burdenMeasures, /aria-hidden="true"/);
   assert.match(burdenMeasures, /sr-only/);
-  assert.match(burdenMeasures, /\\d\+.*confidence interval/);
   assert.match(burden, /intervalMethods\.length > 0/);
   assert.match(burdenMeasures, /measure-interval/);
   assert.match(burden, /<DetailDrawer/);
   assert.match(burden, /without browser recomputation/);
+  assert.match(burdenMeasures, /prohibited_interpretation/);
 });
 
 test("LocalContextPage uses canonical fields and preserves score/source interpretation boundaries", () => {
@@ -527,9 +527,11 @@ test("LocalContextPage uses canonical fields and preserves score/source interpre
     "source_agency",
     "source_ref",
     "source_release_vintage",
+    "observation_as_of_date",
     "value",
     "unit",
     "universe",
+    "confidence_level",
     "uncertainty_type",
     "limitations",
     "allowed_interpretation",
@@ -629,9 +631,11 @@ test("planning brief includes only explicitly supplied release-eligible local co
   assert.doesNotMatch(briefSource, /Partial data state/);
   assert.match(briefSource, /source_release_vintage/);
   assert.match(briefSource, /record\.state/);
+  assert.match(briefSource, /record\.limitations/);
+  assert.match(briefSource, /record\.prohibited_interpretation/);
   assert.match(briefSource, /record\.allowed_interpretation/);
   assert.match(briefSource, /formatPublishedLocalContextUncertainty\(record\)/);
-  assert.match(briefSource, /No local context selected for this brief/);
+  assert.match(briefSource, /No local context has been selected for this brief/);
   assert.doesNotMatch(briefSource, /development fixture|Fixture only|Partial fixture/);
 });
 
@@ -642,8 +646,8 @@ test("local-context selection UI supports reviewed records without changing Pilo
 
   assert.match(localSource, /Include in Brief/);
   assert.match(localSource, /Select all/);
-  assert.match(localSource, /Clear/);
-  assert.match(localSource, /Use in Simulate/);
+  assert.match(localSource, /Select none/);
+  assert.match(localSource, /Use in Strategy Lab/);
   assert.match(localSource, /primaryBreakdowns/);
   assert.match(localSource, /mentalBreakdowns/);
 

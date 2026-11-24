@@ -60,7 +60,7 @@ export function SensitivityExplorer({
           <h3 id="sensitivity-title">Test one assumption at a time</h3>
         </div>
         <label className="sensitivity-control">
-          <span>Assumption</span>
+          <span>Test assumption</span>
           <select
             value={field}
             onChange={event => {

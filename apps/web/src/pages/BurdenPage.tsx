@@ -17,10 +17,10 @@ import "./Ledger.css";
 type DomainTab = "all" | "economic-healthcare" | "healthcare-work-admin" | "mental-human";
 
 const TABS: ReadonlyArray<{ id: DomainTab; label: string }> = [
-  { id: "all", label: "All domains" },
-  { id: "economic-healthcare", label: "Medical & out-of-pocket" },
-  { id: "healthcare-work-admin", label: "Work & administrative time" },
-  { id: "mental-human", label: "Mental & human toll" }
+  { id: "all", label: "All" },
+  { id: "economic-healthcare", label: "Medical" },
+  { id: "healthcare-work-admin", label: "Work & Time" },
+  { id: "mental-human", label: "Mental & Human" }
 ];
 
 const SUB_ROUTES: ReadonlyArray<{ to: string; label: string }> = [

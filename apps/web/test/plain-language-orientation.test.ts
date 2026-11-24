@@ -58,15 +58,15 @@ test("Overview keeps the workflow visual and concise across four stages", () => 
   const journey = readSource("../src/components/LandingJourney.tsx");
 
   for (const phrase of [
-    "Lower the hidden cost of care.",
-    "National burden, local access, and pilot math—kept strictly separate.",
+    "See the burden.",
+    "Find the leverage.",
     "Never blended",
     "National descriptive · Not causal"
   ]) {
     assert.ok(source.includes(phrase), phrase);
   }
   assert.match(source, /to="\/evidence"/);
-  for (const label of ["Costs", "Terrain", "Simulate", "Requests", "Brief"]) {
+  for (const label of ["Burden", "Local context", "Strategy Lab", "Data requests", "Planning Brief"]) {
     assert.ok(journey.includes(label), label);
   }
 });
@@ -86,7 +86,7 @@ test("Local Context humanizes statuses and preserves interpretation boundaries i
   assert.match(source, /Access conditions, not prevalence/);
   assert.match(source, /<DetailDrawer/);
   assert.match(source, /Include in Brief/);
-  assert.match(source, /Use in Simulate/);
+  assert.match(source, /Use in Strategy Lab/);
 });
 
 test("Pilot simulator keeps draft boundaries and opens pathway boundary in a drawer", () => {

@@ -84,14 +84,14 @@ for(const [theme,width] of [["light",390],["dark",1440]]){
    }));
    assert.equal(observed.first,theme);
    assert.equal(observed.current,theme);
-   assert.equal(observed.meta,theme==="dark"?"#09131b":"#f5f2eb");
+   assert.equal(observed.meta,theme==="dark"?"#0b1119":"#f5f7fc");
    assert.equal(observed.bootstrap,true,"parser-blocking theme initializer loaded");
    assert.deepEqual(errors,[]);
    assert.deepEqual(observed.violations,[],"unintended CSP violations");
    assert.deepEqual(external,[],"static app must not issue cross-origin requests");
    if(path==="/burden"){
-     const span=page.locator(".metric-visual-interval").first();
-     if(await span.count())assert.ok(await span.evaluate(el=>el.style.left.endsWith("%") && el.style.width.endsWith("%")),"React percentage positions and widths remain set via CSSOM (including legitimate zero-width intervals)");
+     const rect=page.locator(".metric-visual-svg .metric-svg-interval, .metric-visual-svg .metric-svg-point").first();
+     assert.ok(await rect.count() > 0,"SVG metric visuals render without inline CSS");
    }
    report.violations.push(...observed.violations.map(v=>({...v,path,theme})));
    report.externalRequests.push(...external.map(url=>({url,path,theme})));
