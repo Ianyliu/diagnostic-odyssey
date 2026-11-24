@@ -3,6 +3,10 @@
   scroll-margin-block-start: var(--do-sticky-offset);
 }
 
+:where(input, select, textarea, button, a) {
+  scroll-margin-block-end: 24px;
+}
+
 .site-header {
   position: sticky;
   top: 0;
