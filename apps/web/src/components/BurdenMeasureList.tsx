@@ -10,6 +10,7 @@ import {
   formatIntervalLabel
 } from "../data/formatEstimateValue";
 import { formatReleaseStatusLabel } from "../data/presentationLabels";
+import { getBurdenScaleDomain } from "../data/metricGeometry";
 import { DetailDrawer } from "./DetailDrawer";
 import { DistributionSummaryText } from "./DistributionSummaryText";
 import { MetricVisual } from "./MetricVisual";
@@ -191,8 +192,15 @@ export function BurdenMeasureList({
                     }
                     intervalStyle={estimate.distribution_summary ? "range" : "confidence"}
                     pointLabel={estimate.distribution_summary ? "Survey mean" : "Point estimate"}
+                    scaleDomain={getBurdenScaleDomain(estimate, estimates)}
+                    standaloneNote={`Standalone ${estimate.unit} measure · no cross-row comparison bar`}
                     compact
                   />
+                )}
+                {reviewed && estimate.distribution_summary && (
+                  <small className="metric-skew-note">
+                    Right-skewed distribution: high-spending or high-time outliers pull the survey mean above the median and IQR (25th–75th percentile); the IQR shows typical spread, not a sampling CI.
+                  </small>
                 )}
                 {!reviewed && (
                   <small className="measure-release-status">

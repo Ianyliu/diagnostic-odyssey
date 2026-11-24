@@ -1,5 +1,5 @@
 import { formatMetricTick } from "../data/metricFormatting";
-import { metricGeometry, metricAriaDescription } from "../data/metricGeometry";
+import { metricGeometry, metricAriaDescription, type MetricScaleDomain } from "../data/metricGeometry";
 import "./MetricVisual.css";
 
 const VIEW_WIDTH = 260;
@@ -15,7 +15,9 @@ export function MetricVisual({
   source,
   universe,
   intervalStyle = "confidence",
-  compact = false
+  compact = false,
+  scaleDomain,
+  standaloneNote = "Standalone unit · no cross-metric bar chart"
 }: {
   label: string;
   value: number;
@@ -29,8 +31,19 @@ export function MetricVisual({
   /** Descriptive spread is never encoded as a sampling confidence interval. */
   intervalStyle?: "confidence" | "range";
   compact?: boolean;
+  /** Pass null explicitly to omit decorative row-local charts on standalone incompatible metrics. */
+  scaleDomain?: MetricScaleDomain | null;
+  standaloneNote?: string;
 }) {
-  const geometry = metricGeometry(value, unit, low, high);
+  if (scaleDomain === null) {
+    return (
+      <div className={`metric-visual metric-visual-standalone${compact ? " is-compact" : ""}`}>
+        <small className="metric-visual-scale-note">{standaloneNote}</small>
+      </div>
+    );
+  }
+
+  const geometry = metricGeometry(value, unit, low, high, scaleDomain);
   const aria = metricAriaDescription({
     label, value, unit, low, high, intervalLabel, pointLabel, intervalStyle,
     narrowInterval: geometry.narrowInterval
@@ -77,18 +90,19 @@ export function MetricVisual({
         )}
         <circle cx={pointX} cy="10" r="4.5" className="metric-svg-point" />
       </svg>
+      {(scaleDomain || !compact) && (
+        <div className="metric-visual-axis" aria-hidden="true">
+          <span>{formatMetricTick(geometry.min, unit, false)}</span>
+          {scaleDomain?.note && <span className="metric-visual-scale-note">{scaleDomain.note}</span>}
+          <span>{formatMetricTick(geometry.max, unit, true)}</span>
+        </div>
+      )}
       {!compact && (
-        <>
-          <div className="metric-visual-axis" aria-hidden="true">
-            <span>{formatMetricTick(geometry.min, unit, false)}</span>
-            <span>{formatMetricTick(geometry.max, unit, true)}</span>
-          </div>
-          <div className="metric-visual-meta">
-            <span>{pointLabel}{geometry.hasInterval ? ` · ${intervalLabel ?? "Published interval"}` : " · Interval not available"}</span>
-            {source && <span>{source}</span>}
-            {universe && <span>{universe}</span>}
-          </div>
-        </>
+        <div className="metric-visual-meta">
+          <span>{pointLabel}{geometry.hasInterval ? ` · ${intervalLabel ?? "Published interval"}` : " · Interval not available"}</span>
+          {source && <span>{source}</span>}
+          {universe && <span>{universe}</span>}
+        </div>
       )}
     </div>
   );

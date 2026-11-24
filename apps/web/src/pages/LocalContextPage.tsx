@@ -15,6 +15,7 @@ import {
   getLocalContextSelectionAccessibility
 } from "../data/localContextPresentation";
 import { formatDataStateLabel, formatReleaseStatusLabel } from "../data/presentationLabels";
+import { getLocalContextScaleDomain } from "../data/metricGeometry";
 import "./Ledger.css";
 
 type TerrainCategory = "all" | "primary-care" | "mental-health" | "acs";
@@ -350,6 +351,8 @@ export function LocalContextPage() {
                           ? null
                           : `${record.confidence_level === null ? "" : `${(record.confidence_level * 100).toFixed(0)}% `}margin`
                       }
+                      scaleDomain={getLocalContextScaleDomain(record, indicators)}
+                      standaloneNote="Standalone HRSA priority score · no cross-metric bar scale"
                       compact
                     />
                   )}
