@@ -103,94 +103,6 @@ export function SensitivityExplorer({
               );
             })}
           </div>
-          {thresholdCurve ? (() => {
-            const padL = 44;
-            const padR = 16;
-            const padT = 16;
-            const padB = 26;
-            const plotW = 420 - padL - padR;
-            const plotH = 148 - padT - padB;
-            const xAt = (cap: number) =>
-              padL + (thresholdCurve.maxCapacity > 0 ? (cap / thresholdCurve.maxCapacity) * plotW : 0);
-            const yAt = (val: number) =>
-              padT + plotH - (thresholdCurve.maxY > 0 ? (val / thresholdCurve.maxY) * plotH : 0);
-            const reachedPolyline = thresholdCurve.points
-              .map(point => `${xAt(point.capacity).toFixed(1)},${yAt(point.reachedParticipants).toFixed(1)}`)
-              .join(" ");
-            const gapPolyline = thresholdCurve.points
-              .map(point => `${xAt(point.capacity).toFixed(1)},${yAt(point.capacityGap).toFixed(1)}`)
-              .join(" ");
-            const breakEvenX = xAt(thresholdCurve.breakEvenCapacity);
-            const activeX = xAt(thresholdCurve.currentCapacity);
-            const activeReachedY = yAt(thresholdCurve.currentReached);
-
-            return (
-              <figure className="capacity-threshold-figure">
-                <div className="threshold-header">
-                  <strong>Capacity sufficiency threshold</strong>
-                  <span>Break-even: {formatPlanningNumber(thresholdCurve.breakEvenCapacity, integer)} slots</span>
-                </div>
-                <svg
-                  className="capacity-threshold-svg"
-                  viewBox="0 0 420 148"
-                  role="img"
-                  aria-label={`Capacity sufficiency threshold curve. At ${formatPlanningNumber(thresholdCurve.currentCapacity, integer)} configured slots, reached participants is ${formatPlanningNumber(thresholdCurve.currentReached, integer)} and capacity gap is ${formatPlanningNumber(thresholdCurve.currentGap, integer)}. Break-even occurs at ${formatPlanningNumber(thresholdCurve.breakEvenCapacity, integer)} slots.`}
-                >
-                  <line x1={padL} y1={padT} x2={padL} y2={padT + plotH} className="threshold-axis" />
-                  <line x1={padL} y1={padT + plotH} x2={padL + plotW} y2={padT + plotH} className="threshold-axis" />
-                  <line
-                    x1={breakEvenX}
-                    y1={padT}
-                    x2={breakEvenX}
-                    y2={padT + plotH}
-                    className="threshold-breakeven-line"
-                  />
-                  <polyline points={gapPolyline} className="threshold-gap-path" />
-                  <polyline points={reachedPolyline} className="threshold-reached-path" />
-                  <circle cx={activeX} cy={activeReachedY} r="4.5" className="threshold-current-dot" />
-                  <text x={padL - 6} y={padT + 4} textAnchor="end" className="threshold-svg-label">
-                    {formatPlanningNumber(thresholdCurve.maxY, integer)}
-                  </text>
-                  <text x={padL - 6} y={padT + plotH} textAnchor="end" className="threshold-svg-label">
-                    0
-                  </text>
-                  <text x={padL} y={padT + plotH + 16} textAnchor="start" className="threshold-svg-label">
-                    0 slots
-                  </text>
-                  <text x={padL + plotW} y={padT + plotH + 16} textAnchor="end" className="threshold-svg-label">
-                    {formatPlanningNumber(thresholdCurve.maxCapacity, integer)} slots
-                  </text>
-                </svg>
-                <figcaption className="threshold-legend">
-                  <span><i className="threshold-swatch is-reached" aria-hidden="true" />Reached participants</span>
-                  <span><i className="threshold-swatch is-gap" aria-hidden="true" />Capacity gap</span>
-                  <span><i className="threshold-swatch is-breakeven" aria-hidden="true" />Break-even threshold</span>
-                  <span>Active capacity: {formatPlanningNumber(thresholdCurve.currentCapacity, integer)} slots</span>
-                </figcaption>
-                <details className="visual-table-disclosure">
-                  <summary>Threshold curve summary values</summary>
-                  <dl className="threshold-summary-list">
-                    <div>
-                      <dt>Intended reach (break-even)</dt>
-                      <dd>{formatPlanningNumber(thresholdCurve.breakEvenCapacity, integer)} slots</dd>
-                    </div>
-                    <div>
-                      <dt>Active capacity</dt>
-                      <dd>{formatPlanningNumber(thresholdCurve.currentCapacity, integer)} slots</dd>
-                    </div>
-                    <div>
-                      <dt>Active reached participants</dt>
-                      <dd>{formatPlanningNumber(thresholdCurve.currentReached, integer)}</dd>
-                    </div>
-                    <div>
-                      <dt>Active capacity gap</dt>
-                      <dd>{formatPlanningNumber(thresholdCurve.currentGap, integer)}</dd>
-                    </div>
-                  </dl>
-                </details>
-              </figure>
-            );
-          })() : null}
           <details className="visual-table-disclosure">
             <summary>View sensitivity values as a table</summary>
             <div className="sensitivity-table-scroll" role="region" aria-label="Sensitivity values table, horizontally scrollable when needed" tabIndex={0}>
@@ -249,6 +161,94 @@ export function SensitivityExplorer({
           <span className="sr-only" aria-live="polite" aria-atomic="true">{requestAnnouncement}</span>
         </div>
       )}
+      {!error && thresholdCurve ? (() => {
+        const padL = 44;
+        const padR = 16;
+        const padT = 16;
+        const padB = 26;
+        const plotW = 420 - padL - padR;
+        const plotH = 148 - padT - padB;
+        const xAt = (cap: number) =>
+          padL + (thresholdCurve.maxCapacity > 0 ? (cap / thresholdCurve.maxCapacity) * plotW : 0);
+        const yAt = (val: number) =>
+          padT + plotH - (thresholdCurve.maxY > 0 ? (val / thresholdCurve.maxY) * plotH : 0);
+        const reachedPolyline = thresholdCurve.points
+          .map(point => `${xAt(point.capacity).toFixed(1)},${yAt(point.reachedParticipants).toFixed(1)}`)
+          .join(" ");
+        const gapPolyline = thresholdCurve.points
+          .map(point => `${xAt(point.capacity).toFixed(1)},${yAt(point.capacityGap).toFixed(1)}`)
+          .join(" ");
+        const breakEvenX = xAt(thresholdCurve.breakEvenCapacity);
+        const activeX = xAt(thresholdCurve.currentCapacity);
+        const activeReachedY = yAt(thresholdCurve.currentReached);
+
+        return (
+          <figure className="capacity-threshold-figure">
+            <div className="threshold-header">
+              <strong>Capacity sufficiency threshold</strong>
+              <span>Break-even: {formatPlanningNumber(thresholdCurve.breakEvenCapacity, integer)} slots</span>
+            </div>
+            <svg
+              className="capacity-threshold-svg"
+              viewBox="0 0 420 148"
+              role="img"
+              aria-label={`Capacity sufficiency threshold curve. At ${formatPlanningNumber(thresholdCurve.currentCapacity, integer)} configured slots, reached participants is ${formatPlanningNumber(thresholdCurve.currentReached, integer)} and capacity gap is ${formatPlanningNumber(thresholdCurve.currentGap, integer)}. Break-even occurs at ${formatPlanningNumber(thresholdCurve.breakEvenCapacity, integer)} slots.`}
+            >
+              <line x1={padL} y1={padT} x2={padL} y2={padT + plotH} className="threshold-axis" />
+              <line x1={padL} y1={padT + plotH} x2={padL + plotW} y2={padT + plotH} className="threshold-axis" />
+              <line
+                x1={breakEvenX}
+                y1={padT}
+                x2={breakEvenX}
+                y2={padT + plotH}
+                className="threshold-breakeven-line"
+              />
+              <polyline points={gapPolyline} className="threshold-gap-path" />
+              <polyline points={reachedPolyline} className="threshold-reached-path" />
+              <circle cx={activeX} cy={activeReachedY} r="4.5" className="threshold-current-dot" />
+              <text x={padL - 6} y={padT + 4} textAnchor="end" className="threshold-svg-label">
+                {formatPlanningNumber(thresholdCurve.maxY, integer)}
+              </text>
+              <text x={padL - 6} y={padT + plotH} textAnchor="end" className="threshold-svg-label">
+                0
+              </text>
+              <text x={padL} y={padT + plotH + 16} textAnchor="start" className="threshold-svg-label">
+                0 slots
+              </text>
+              <text x={padL + plotW} y={padT + plotH + 16} textAnchor="end" className="threshold-svg-label">
+                {formatPlanningNumber(thresholdCurve.maxCapacity, integer)} slots
+              </text>
+            </svg>
+            <figcaption className="threshold-legend">
+              <span><i className="threshold-swatch is-reached" aria-hidden="true" />Reached participants</span>
+              <span><i className="threshold-swatch is-gap" aria-hidden="true" />Capacity gap</span>
+              <span><i className="threshold-swatch is-breakeven" aria-hidden="true" />Break-even threshold</span>
+              <span>Active capacity: {formatPlanningNumber(thresholdCurve.currentCapacity, integer)} slots</span>
+            </figcaption>
+            <details className="visual-table-disclosure">
+              <summary>Threshold curve summary values</summary>
+              <dl className="threshold-summary-list">
+                <div>
+                  <dt>Intended reach (break-even)</dt>
+                  <dd>{formatPlanningNumber(thresholdCurve.breakEvenCapacity, integer)} slots</dd>
+                </div>
+                <div>
+                  <dt>Active capacity</dt>
+                  <dd>{formatPlanningNumber(thresholdCurve.currentCapacity, integer)} slots</dd>
+                </div>
+                <div>
+                  <dt>Active reached participants</dt>
+                  <dd>{formatPlanningNumber(thresholdCurve.currentReached, integer)}</dd>
+                </div>
+                <div>
+                  <dt>Active capacity gap</dt>
+                  <dd>{formatPlanningNumber(thresholdCurve.currentGap, integer)}</dd>
+                </div>
+              </dl>
+            </details>
+          </figure>
+        );
+      })() : null}
     </section>
   );
 }
