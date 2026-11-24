@@ -1,6 +1,28 @@
-import { Fragment, useCallback, useEffect, useState } from "react";
+import { createContext, Fragment, useCallback, useContext, useEffect, useState } from "react";
 import { canReplayOpening, markOpeningSeen, OPENING_DURATION_MS, reducedMotionRequested, sessionStorageOrNull, shouldPlayOpening } from "./openingMotion";
 import { getBrowserMediaQuery, readMediaQueryMatches, subscribeToMediaQuery } from "../browserMedia";
+
+export interface OpeningMotionState {
+  readonly playing: boolean;
+  readonly replay: () => void;
+  readonly runId: number;
+  readonly reducedMotion: boolean;
+  readonly announcement: string;
+}
+
+const noopReplay = () => {};
+
+export const OpeningMotionContext = createContext<OpeningMotionState>({
+  playing: false,
+  replay: noopReplay,
+  runId: 0,
+  reducedMotion: false,
+  announcement: ""
+});
+
+export function useOpeningMotionContext(): OpeningMotionState {
+  return useContext(OpeningMotionContext);
+}
 
 const documentEntry = typeof window !== "undefined" ? {
   pathname: window.location.pathname,
@@ -50,12 +72,26 @@ export function useOpeningMotion() {
       return;
     }
     const settle = () => setPlaying(false);
+    const handlePointerDown = (event: PointerEvent) => {
+      if (event.target instanceof Element && event.target.closest(".preview-replay")) return;
+      settle();
+    };
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (
+        (event.key === "Enter" || event.key === " ") &&
+        event.target instanceof Element &&
+        event.target.closest(".preview-replay")
+      ) {
+        return;
+      }
+      settle();
+    };
     if (reducedMotionRequested()) {
       settle();
       return;
     }
-    window.addEventListener("pointerdown", settle, { passive: true });
-    window.addEventListener("keydown", settle);
+    window.addEventListener("pointerdown", handlePointerDown, { passive: true });
+    window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("wheel", settle, { passive: true });
     window.addEventListener("touchstart", settle, { passive: true });
     window.addEventListener("pagehide", settle);
@@ -66,8 +102,8 @@ export function useOpeningMotion() {
     const timer = window.setTimeout(settle, OPENING_DURATION_MS);
     return () => {
       window.clearTimeout(timer);
-      window.removeEventListener("pointerdown", settle);
-      window.removeEventListener("keydown", settle);
+      window.removeEventListener("pointerdown", handlePointerDown);
+      window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("wheel", settle);
       window.removeEventListener("touchstart", settle);
       window.removeEventListener("pagehide", settle);

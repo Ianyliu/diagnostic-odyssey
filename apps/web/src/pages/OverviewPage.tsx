@@ -8,7 +8,7 @@ import { formatEstimateInterval, formatEstimateValue } from "../data/formatEstim
 import { LandingJourney } from "../components/LandingJourney";
 import { StrategyTeaserSandbox } from "../components/StrategyTeaserSandbox";
 import { useEditionDrawer } from "../components/EditionDrawerContext";
-import { useOpeningMotion } from "./OpeningProvenance";
+import { useOpeningMotion, OpeningMotionContext } from "./OpeningProvenance";
 import { useScrollReveal } from "./useScrollReveal";
 import "./OverviewPage.css";
 
@@ -43,6 +43,7 @@ export function OverviewPage({ advisorAvailable = false }: { advisorAvailable?: 
   const headlines = bundle ? selectHeadlineFindings(bundle) : [];
 
   return (
+    <OpeningMotionContext.Provider value={opening}>
     <div ref={pageRef} className={"overview-page" + (opening.playing ? " is-opening" : "")}>
       {/* Band 1: Full-bleed Midnight Navy Hero + Above-the-Fold Animated Pathway */}
       <section className="atlas-hero-band" aria-labelledby="overview-title">
@@ -224,5 +225,6 @@ export function OverviewPage({ advisorAvailable = false }: { advisorAvailable?: 
         </div>
       </section>
     </div>
+    </OpeningMotionContext.Provider>
   );
 }

@@ -2,6 +2,10 @@ name: Opening Circuit Browser QA
 on:
   pull_request:
     paths:
+      - "apps/web/src/components/LandingJourney.tsx"
+      - "apps/web/src/components/LandingJourney.css"
+      - "apps/web/src/motion.css"
+      - "apps/web/src/workspace.css"
       - "apps/web/src/pages/openingMotion.ts"
       - "apps/web/src/pages/OpeningProvenance.tsx"
       - "apps/web/src/pages/OverviewPage.tsx"

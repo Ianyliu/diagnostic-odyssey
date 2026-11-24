@@ -112,7 +112,8 @@ await check("bulk local selections default to all, respect individual overrides 
   await page.getByRole("button", {name: /^All \(/}).click();
   await page.getByRole("button", {name: "Select all", exact: true}).first().click();
   assert.equal(await inputs.evaluateAll(elements => elements.filter(input => input.checked).length), 34);
-  assert.match(await page.locator(".pilot-local-pill, .atlas-local-status, main").innerText(), /34 of 34|Use in Strategy Lab/);
+  assert.match(await page.locator("#local-selection-summary").innerText(), /34 of 34 in Brief/);
+  assert.ok(await page.getByRole("button", {name: /^Use .* in Strategy Lab$/}).first().isVisible());
 });
 await check("multiple data requests default selected and support reversible bulk choices", async () => {
   const page = await pageAt("/pilot");
