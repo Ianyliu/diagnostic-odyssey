@@ -12,7 +12,8 @@
 .metric-visual-svg {
   display: block;
   width: 100%;
-  height: 18px;
+  height: auto;
+  aspect-ratio: 260 / 20;
   overflow: visible;
 }
 
@@ -22,38 +23,38 @@
 
 .metric-svg-grid {
   stroke: var(--do-chart-grid);
-  stroke-width: 2;
+  stroke-width: 1.5;
 }
 
 .metric-svg-zero {
   stroke: var(--do-text-muted);
-  stroke-width: 2;
-  opacity: 0.6;
+  stroke-width: 1.5;
+  opacity: 0.65;
 }
 
 .metric-svg-interval {
-  fill: color-mix(in srgb, var(--do-chart-1) 60%, var(--do-chart-2));
+  fill: color-mix(in srgb, var(--do-chart-1) 62%, var(--do-chart-2));
 }
 
 .metric-svg-interval.is-range {
   fill: transparent;
   stroke: var(--do-chart-1);
-  stroke-width: 3;
+  stroke-width: 1.8;
 }
 
 .metric-svg-narrow {
   stroke: var(--do-brand-navy);
-  stroke-width: 4;
+  stroke-width: 2;
 }
 
 .metric-svg-narrow.is-range {
-  stroke-dasharray: 4 3;
+  stroke-dasharray: 3 2;
 }
 
 .metric-svg-point {
   fill: var(--do-accent);
   stroke: var(--do-surface);
-  stroke-width: 2.5;
+  stroke-width: 1.75;
 }
 
 .metric-visual-axis,

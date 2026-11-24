@@ -2,6 +2,8 @@ import { formatMetricTick } from "../data/metricFormatting";
 import { metricGeometry, metricAriaDescription } from "../data/metricGeometry";
 import "./MetricVisual.css";
 
+const VIEW_WIDTH = 260;
+
 export function MetricVisual({
   label,
   value,
@@ -34,46 +36,46 @@ export function MetricVisual({
     narrowInterval: geometry.narrowInterval
   });
 
-  const x = (pct: number) => Math.max(0, Math.min(1000, pct * 10));
+  const x = (pct: number) => Math.max(0, Math.min(VIEW_WIDTH, (pct / 100) * VIEW_WIDTH));
   const intervalX = x(geometry.intervalLeftPercent);
-  const intervalW = Math.max(2, geometry.intervalWidthPercent * 10);
-  const pointX = Math.max(12, Math.min(988, x(geometry.pointPercent)));
+  const intervalW = Math.max(2, (geometry.intervalWidthPercent / 100) * VIEW_WIDTH);
+  const pointX = Math.max(6, Math.min(VIEW_WIDTH - 6, x(geometry.pointPercent)));
 
   return (
     <div className={`metric-visual${compact ? " is-compact" : ""}`}>
       <svg
         className="metric-visual-svg"
-        viewBox="0 0 1000 28"
-        preserveAspectRatio="none"
+        viewBox={`0 0 ${VIEW_WIDTH} 20`}
+        preserveAspectRatio="xMidYMid meet"
         role="img"
         aria-label={aria}
       >
-        <rect x="0" y="8" width="1000" height="12" rx="6" className="metric-svg-track" />
-        <line x1="250" y1="8" x2="250" y2="20" className="metric-svg-grid" />
-        <line x1="500" y1="8" x2="500" y2="20" className="metric-svg-grid" />
-        <line x1="750" y1="8" x2="750" y2="20" className="metric-svg-grid" />
-        <line x1={x(geometry.zeroPercent)} y1="5" x2={x(geometry.zeroPercent)} y2="23" className="metric-svg-zero" />
+        <rect x="0" y="6" width={VIEW_WIDTH} height="8" rx="4" className="metric-svg-track" />
+        <line x1={VIEW_WIDTH * 0.25} y1="6" x2={VIEW_WIDTH * 0.25} y2="14" className="metric-svg-grid" />
+        <line x1={VIEW_WIDTH * 0.5} y1="6" x2={VIEW_WIDTH * 0.5} y2="14" className="metric-svg-grid" />
+        <line x1={VIEW_WIDTH * 0.75} y1="6" x2={VIEW_WIDTH * 0.75} y2="14" className="metric-svg-grid" />
+        <line x1={x(geometry.zeroPercent)} y1="3" x2={x(geometry.zeroPercent)} y2="17" className="metric-svg-zero" />
         {geometry.hasInterval && (
           geometry.narrowInterval ? (
             <line
               x1={x(geometry.intervalMidpointPercent)}
-              y1="3"
+              y1="2"
               x2={x(geometry.intervalMidpointPercent)}
-              y2="25"
+              y2="18"
               className={`metric-svg-narrow${intervalStyle === "range" ? " is-range" : ""}`}
             />
           ) : (
             <rect
               x={intervalX}
-              y={intervalStyle === "range" ? 9 : 11}
+              y={intervalStyle === "range" ? 6 : 7.5}
               width={intervalW}
-              height={intervalStyle === "range" ? 10 : 6}
-              rx="3"
+              height={intervalStyle === "range" ? 8 : 5}
+              rx="2.5"
               className={`metric-svg-interval${intervalStyle === "range" ? " is-range" : ""}`}
             />
           )
         )}
-        <circle cx={pointX} cy="14" r="6" className="metric-svg-point" />
+        <circle cx={pointX} cy="10" r="4.5" className="metric-svg-point" />
       </svg>
       {!compact && (
         <>

@@ -30,11 +30,110 @@ function EstimateIntervalText({ estimate }: { estimate: Estimate }) {
   );
 }
 
-export function BurdenMeasureList({ estimates }: { estimates: Estimate[] }) {
-  const [activeEstimate, setActiveEstimate] = useState<Estimate | null>(null);
+export function EstimateProvenanceDetails({ estimate }: { estimate: Estimate }) {
+  return (
+    <>
+      <div className="atlas-drawer-stat">
+        <strong>
+          {canDisplayDistributionSummary(estimate)
+            ? <DistributionSummaryText estimate={estimate} />
+            : formatEstimateValue(estimate)}
+        </strong>
+        <span>{formatEstimateInterval(estimate) || "Interval not published"}</span>
+      </div>
+
+      <dl className="atlas-drawer-list">
+        <div>
+          <dt>Allowed interpretation</dt>
+          <dd>{estimate.allowed_interpretation}</dd>
+        </div>
+        {estimate.prohibited_interpretation.length > 0 && (
+          <div>
+            <dt>Not supported</dt>
+            <dd>
+              <ul className="atlas-compact-list">
+                {estimate.prohibited_interpretation.map(item => <li key={item}>{item}</li>)}
+              </ul>
+            </dd>
+          </div>
+        )}
+        <div>
+          <dt>Population / universe</dt>
+          <dd>{estimate.universe}</dd>
+        </div>
+        <div>
+          <dt>Denominator</dt>
+          <dd>{estimate.denominator}</dd>
+        </div>
+        <div>
+          <dt>System boundary</dt>
+          <dd>{estimate.system_boundary}</dd>
+        </div>
+        <div>
+          <dt>Source</dt>
+          <dd>{estimate.source_ref}</dd>
+        </div>
+        {estimate.source_locator && (
+          <div>
+            <dt>Source locator</dt>
+            <dd>{estimate.source_locator}</dd>
+          </div>
+        )}
+        <div>
+          <dt>Release status</dt>
+          <dd>{formatReleaseStatusLabel(estimate.release_status)}</dd>
+        </div>
+        {estimate.statistics_method && (
+          <div>
+            <dt>Statistical method</dt>
+            <dd>{estimate.statistics_method}</dd>
+          </div>
+        )}
+        {estimate.weight_variable && (
+          <div>
+            <dt>Weight variable</dt>
+            <dd>{estimate.weight_variable}</dd>
+          </div>
+        )}
+        {estimate.limitations.length > 0 && (
+          <div>
+            <dt>Limitations</dt>
+            <dd>{estimate.limitations.join(" ")}</dd>
+          </div>
+        )}
+      </dl>
+    </>
+  );
+}
+
+export function BurdenMeasureList({
+  estimates,
+  selectedEstimateId,
+  onInspect
+}: {
+  estimates: Estimate[];
+  selectedEstimateId?: string | null;
+  onInspect?: (estimate: Estimate) => void;
+}) {
+  const [drawerEstimate, setDrawerEstimate] = useState<Estimate | null>(null);
   const parentLabels = new Map(
     estimates.map(estimate => [estimate.measure_id, estimate.label])
   );
+
+  const handleInspectClick = (estimate: Estimate) => {
+    if (onInspect) {
+      onInspect(estimate);
+      const compactViewport =
+        typeof window !== "undefined" &&
+        typeof window.matchMedia === "function" &&
+        window.matchMedia("(max-width: 1099px)").matches;
+      if (compactViewport) {
+        setDrawerEstimate(estimate);
+      }
+      return;
+    }
+    setDrawerEstimate(estimate);
+  };
 
   return (
     <>
@@ -44,10 +143,11 @@ export function BurdenMeasureList({ estimates }: { estimates: Estimate[] }) {
           const parentLabel = estimate.component_of_measure_id
             ? parentLabels.get(estimate.component_of_measure_id)
             : null;
+          const isInspected = selectedEstimateId === estimate.estimate_id;
 
           return (
             <article
-              className="measure burden-measure-row atlas-metric-row"
+              className={`measure burden-measure-row atlas-metric-row${isInspected ? " is-inspected" : ""}`}
               aria-labelledby={`burden-measure-${estimate.estimate_id}`}
               key={estimate.estimate_id}
             >
@@ -55,15 +155,16 @@ export function BurdenMeasureList({ estimates }: { estimates: Estimate[] }) {
                 <h3 id={`burden-measure-${estimate.estimate_id}`}>{estimate.label}</h3>
                 {estimate.component_of_measure_id && (
                   <span className="component-note">
-                    Nested in {parentLabel ?? "parent total"} · do not add.
+                    Nested inside {parentLabel ?? "parent total"} — do not add separately.
                   </span>
                 )}
                 <button
                   type="button"
                   className="atlas-detail-trigger"
-                  onClick={() => setActiveEstimate(estimate)}
+                  aria-pressed={onInspect ? isInspected : undefined}
+                  onClick={() => handleInspectClick(estimate)}
                 >
-                  Details &amp; 95% CI ↗
+                  Provenance &amp; 95% CI ↗
                 </button>
               </div>
 
@@ -103,74 +204,12 @@ export function BurdenMeasureList({ estimates }: { estimates: Estimate[] }) {
       </div>
 
       <DetailDrawer
-        open={activeEstimate !== null}
+        open={drawerEstimate !== null}
         eyebrow="MEPS 2024 · MEASURE PROVENANCE"
-        title={activeEstimate?.label ?? ""}
-        onClose={() => setActiveEstimate(null)}
+        title={drawerEstimate?.label ?? ""}
+        onClose={() => setDrawerEstimate(null)}
       >
-        {activeEstimate && (
-          <>
-            <div className="atlas-drawer-stat">
-              <strong>
-                {canDisplayDistributionSummary(activeEstimate)
-                  ? <DistributionSummaryText estimate={activeEstimate} />
-                  : formatEstimateValue(activeEstimate)}
-              </strong>
-              <span>{formatEstimateInterval(activeEstimate)}</span>
-            </div>
-
-            <dl className="atlas-drawer-list">
-              <div>
-                <dt>Allowed interpretation</dt>
-                <dd>{activeEstimate.allowed_interpretation}</dd>
-              </div>
-              <div>
-                <dt>Population / universe</dt>
-                <dd>{activeEstimate.universe}</dd>
-              </div>
-              <div>
-                <dt>Denominator</dt>
-                <dd>{activeEstimate.denominator}</dd>
-              </div>
-              <div>
-                <dt>System boundary</dt>
-                <dd>{activeEstimate.system_boundary}</dd>
-              </div>
-              <div>
-                <dt>Source</dt>
-                <dd>{activeEstimate.source_ref}</dd>
-              </div>
-              {activeEstimate.source_locator && (
-                <div>
-                  <dt>Source locator</dt>
-                  <dd>{activeEstimate.source_locator}</dd>
-                </div>
-              )}
-              <div>
-                <dt>Release status</dt>
-                <dd>{formatReleaseStatusLabel(activeEstimate.release_status)}</dd>
-              </div>
-              {activeEstimate.statistics_method && (
-                <div>
-                  <dt>Statistical method</dt>
-                  <dd>{activeEstimate.statistics_method}</dd>
-                </div>
-              )}
-              {activeEstimate.weight_variable && (
-                <div>
-                  <dt>Weight variable</dt>
-                  <dd>{activeEstimate.weight_variable}</dd>
-                </div>
-              )}
-              {activeEstimate.limitations.length > 0 && (
-                <div>
-                  <dt>Limitations</dt>
-                  <dd>{activeEstimate.limitations.join(" ")}</dd>
-                </div>
-              )}
-            </dl>
-          </>
-        )}
+        {drawerEstimate && <EstimateProvenanceDetails estimate={drawerEstimate} />}
       </DetailDrawer>
     </>
   );
