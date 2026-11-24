@@ -92,8 +92,9 @@ export function AppShell({ advisorAvailable = false }: { advisorAvailable?: bool
   useLayoutEffect(() => {
     setMenuOpen(false);
     const frame = requestAnimationFrame(() => {
-      if (navigationType === "POP" && savedScroll.has(location.key)) {
-        scrollToFragment(location.hash);
+      if (navigationType === "POP" && location.hash && scrollToFragment(location.hash)) {
+        // Restore fragment focus and target position instead of stale scroll when returning to a hash entry.
+      } else if (navigationType === "POP" && savedScroll.has(location.key)) {
         window.scrollTo(0, savedScroll.get(location.key) ?? 0);
       } else if (scrollToFragment(location.hash)) {
         // Anchor focus and scrolling handled together.
