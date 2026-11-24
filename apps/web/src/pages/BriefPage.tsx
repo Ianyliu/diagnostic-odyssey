@@ -309,74 +309,6 @@ export function BriefPage({
         </section>
 
         <article className="card brief-content atlas-memo-body" aria-label="Planning Brief document">
-          <section id="brief-interpretation-boundaries" className="interpretation-boundaries">
-            <h2>Interpretation boundaries</h2>
-            <ul>{brief.warnings.map(warning => <li key={warning}>{warning}</li>)}</ul>
-          </section>
-
-          <section id="brief-national-burden">
-            <h2>Reviewed national burden findings</h2>
-            {brief.burden_findings.length === 0 ? (
-              <div className="empty-state">
-                <strong>No reviewed analytical estimate is currently export-eligible.</strong>
-              </div>
-            ) : (
-              <div className="brief-burden-groups">
-                {burdenGroups.map(group => (
-                  <section
-                    className={`brief-burden-group${group.findings.length <= 8 ? " brief-burden-group-short" : ""}`}
-                    aria-labelledby={`brief-burden-${group.group_id}`}
-                    key={group.group_id}
-                  >
-                    <div className="brief-burden-group-heading">
-                      <h3 id={`brief-burden-${group.group_id}`}>{group.label}</h3>
-                      <span className="status status-ok">{group.findings.length} reviewed</span>
-                    </div>
-                    <div className="brief-burden-table-wrap" role="region" tabIndex={0} aria-label={`${group.label} burden findings table`}>
-                      <table className="brief-burden-table">
-                        <caption className="sr-only">{group.label} reviewed national burden findings</caption>
-                        <thead>
-                          <tr>
-                            <th scope="col">Measure</th>
-                            <th scope="col">Estimate</th>
-                            <th scope="col">Confidence interval</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {group.findings.map(finding => (
-                            <tr key={finding.estimate_id}>
-                              <th scope="row">{finding.label}</th>
-                              <td>
-                                {canDisplayDistributionSummary(finding)
-                                  ? <DistributionSummaryText estimate={finding} />
-                                  : formatEstimateValue(finding)}
-                              </td>
-                              <td><AccessibleEstimateInterval estimate={finding} /></td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                    <details className="brief-burden-details technical-disclosure">
-                      <summary>Interpretation &amp; provenance</summary>
-                      {group.limitations.length > 0 && (
-                        <p><strong>Domain limitations:</strong> {group.limitations.join(" ")}</p>
-                      )}
-                      <ul>
-                        {group.findings.map(finding => (
-                          <li key={finding.estimate_id}>
-                            <strong>{finding.label}:</strong> {finding.allowed_interpretation}
-                            {finding.system_boundary && <> <span className="subtle">Boundary: {finding.system_boundary}</span></>}
-                          </li>
-                        ))}
-                      </ul>
-                    </details>
-                  </section>
-                ))}
-              </div>
-            )}
-          </section>
-
           <section id="brief-pilot-assumptions">
             <h2>Strategy Lab planning assumptions</h2>
             <p className="subtle"><strong>{PLANNING_DEFAULTS_LABEL}.</strong> These inputs are planning assumptions, not observed evidence.</p>
@@ -572,6 +504,74 @@ export function BriefPage({
                 </strong>
                 <p>Data requests are planning artifacts, not observed evidence. New requests start selected and only requests current for the applied scenario export; review or deselect them before export.</p>
                 <Link className="button secondary" to="/data-requests">Review data requests →</Link>
+              </div>
+            )}
+          </section>
+
+          <section id="brief-interpretation-boundaries" className="interpretation-boundaries">
+            <h2>Interpretation boundaries</h2>
+            <ul>{brief.warnings.map(warning => <li key={warning}>{warning}</li>)}</ul>
+          </section>
+
+          <section id="brief-national-burden">
+            <h2>Reviewed national burden findings</h2>
+            {brief.burden_findings.length === 0 ? (
+              <div className="empty-state">
+                <strong>No reviewed analytical estimate is currently export-eligible.</strong>
+              </div>
+            ) : (
+              <div className="brief-burden-groups">
+                {burdenGroups.map(group => (
+                  <section
+                    className={`brief-burden-group${group.findings.length <= 8 ? " brief-burden-group-short" : ""}`}
+                    aria-labelledby={`brief-burden-${group.group_id}`}
+                    key={group.group_id}
+                  >
+                    <div className="brief-burden-group-heading">
+                      <h3 id={`brief-burden-${group.group_id}`}>{group.label}</h3>
+                      <span className="status status-ok">{group.findings.length} reviewed</span>
+                    </div>
+                    <div className="brief-burden-table-wrap" role="region" tabIndex={0} aria-label={`${group.label} burden findings table`}>
+                      <table className="brief-burden-table">
+                        <caption className="sr-only">{group.label} reviewed national burden findings</caption>
+                        <thead>
+                          <tr>
+                            <th scope="col">Measure</th>
+                            <th scope="col">Estimate</th>
+                            <th scope="col">Confidence interval</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {group.findings.map(finding => (
+                            <tr key={finding.estimate_id}>
+                              <th scope="row">{finding.label}</th>
+                              <td>
+                                {canDisplayDistributionSummary(finding)
+                                  ? <DistributionSummaryText estimate={finding} />
+                                  : formatEstimateValue(finding)}
+                              </td>
+                              <td><AccessibleEstimateInterval estimate={finding} /></td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    <details className="brief-burden-details technical-disclosure">
+                      <summary>Interpretation &amp; provenance</summary>
+                      {group.limitations.length > 0 && (
+                        <p><strong>Domain limitations:</strong> {group.limitations.join(" ")}</p>
+                      )}
+                      <ul>
+                        {group.findings.map(finding => (
+                          <li key={finding.estimate_id}>
+                            <strong>{finding.label}:</strong> {finding.allowed_interpretation}
+                            {finding.system_boundary && <> <span className="subtle">Boundary: {finding.system_boundary}</span></>}
+                          </li>
+                        ))}
+                      </ul>
+                    </details>
+                  </section>
+                ))}
               </div>
             )}
           </section>

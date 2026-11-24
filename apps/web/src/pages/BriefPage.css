@@ -132,7 +132,8 @@
   color: var(--do-text-muted);
 }
 
-.brief-executive-finding small {
+.brief-executive-finding small,
+.brief-executive-provenance {
   font-family: var(--do-font-mono);
   font-size: 0.68rem;
   color: var(--do-text-muted);
@@ -147,9 +148,41 @@
   font-size: 0.8rem;
 }
 
-.brief-executive-roles p {
-  margin: 4px 0 0;
+.brief-role-card {
+  display: grid;
+  gap: 4px;
+  align-content: start;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--do-border);
+  border-top-width: 3px;
+  background: var(--do-canvas);
+}
+
+.brief-role-card.is-known { border-top-color: var(--do-reviewed-text); }
+.brief-role-card.is-assumed { border-top-color: var(--do-assumption-text); }
+.brief-role-card.is-unknown { border-top-style: dashed; border-top-color: var(--do-control-border); }
+
+.brief-role-tag {
+  font-family: var(--do-font-mono);
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   color: var(--do-text-muted);
+}
+
+.brief-role-card strong {
+  font-family: var(--do-font-display);
+  font-size: 0.96rem;
+  font-weight: 500;
+  color: var(--do-text);
+}
+
+.brief-executive-roles p {
+  margin: 2px 0 0;
+  color: var(--do-text-muted);
+  line-height: 1.42;
 }
 
 .atlas-memo-body {
@@ -228,12 +261,21 @@
 }
 
 .brief-applied-assumptions dd,
-.brief-output-list dd,
-.brief-scenario-trace dd {
+.brief-output-list dd {
   margin: 0;
   font-family: var(--do-font-mono);
   font-size: 0.88rem;
   font-weight: 600;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.brief-scenario-trace dd {
+  margin: 0;
+  font-family: var(--do-font-body);
+  font-size: 0.86rem;
+  font-weight: 500;
+  line-height: 1.45;
   min-width: 0;
   max-width: 100%;
 }
@@ -284,7 +326,12 @@
   .brief-burden-group + .brief-burden-group { margin-top: 5pt; }
   .brief-applied-assumptions,
   .brief-output-list,
-  .brief-scenario-trace { padding: 4.5pt 8pt; margin: 2.5pt 0; gap: 2pt 12pt; }
+  .brief-scenario-trace { padding: 4.5pt 8pt; margin: 2.5pt 0; gap: 2pt 12pt; break-inside: avoid; }
+  .brief-applied-assumptions dd,
+  .brief-output-list dd { font-size: 8.2pt; }
+  .brief-scenario-trace dd { font-size: 8pt; line-height: 1.32; }
+  #brief-pilot-assumptions > h2,
+  #brief-pilot-assumptions > .subtle { break-after: avoid-page; }
   .brief-decision-trace { margin-top: 4pt; padding-top: 4pt; }
   .brief-decision-trace h3 { margin: 0 0 2pt; }
   .planning-brief-page.brief-include-context-appendix .brief-local-context-list { display: block !important; }
@@ -319,11 +366,17 @@
   .brief-executive-interval { font-size: 7.5pt; color: #36455d; }
   .brief-executive-finding p { font-size: 7.5pt; margin: 2pt 0; }
   .brief-executive-finding small { font-size: 6.8pt; color: #36455d; }
-  .brief-executive-roles { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8pt; margin-top: 5pt; padding-top: 4pt; border-color: #cbd5e4; }
+  .brief-executive-roles { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6pt; margin-top: 4pt; padding-top: 4pt; border-color: #cbd5e4; }
+  .brief-role-card { padding: 3pt 5pt; border-radius: 3pt; border-color: #cbd5e4; border-top-width: 1.5pt; background: #ffffff; break-inside: avoid; }
+  .brief-role-tag { font-size: 6.2pt; }
   .brief-executive-roles strong { font-size: 7.4pt; }
-  .brief-executive-roles p { font-size: 7pt; margin: 2pt 0; }
+  .brief-executive-roles p { font-size: 6.8pt; margin: 1.5pt 0 0; line-height: 1.25; }
   .brief-executive-boundary { font-size: 7.2pt; margin: 4pt 0 0; }
-  .brief-print-decision-state { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4pt 16pt; margin-bottom: 10pt; font-size: 8pt; }
+  .brief-print-decision-state { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 3pt 16pt; margin-bottom: 6pt; padding: 4pt 0; border-bottom: 0.75pt solid #cbd5e4; font-size: 8pt; break-inside: avoid; }
+  .brief-print-decision-state h2 { grid-column: 1 / -1; font-size: 9.5pt; margin: 0 0 2pt; font-family: var(--do-font-display); font-weight: 500; }
+  .brief-print-decision-state > div { display: flex; justify-content: space-between; align-items: baseline; gap: 8pt; }
+  .brief-print-decision-state > div span { color: #36455d; text-align: right; }
+  .planning-brief-page .brief-burden-table-wrap { border: 0; border-radius: 0; }
   .brief-local-context-executive { display: block; font-size: 8pt; line-height: 1.26; }
   .brief-local-context-executive p { margin: 2pt 0; }
   .brief-local-context-executive ul { margin: 2pt 0 2.5pt 14pt; padding: 0; }
