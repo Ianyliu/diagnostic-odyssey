@@ -1,8 +1,9 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Link, NavLink, Outlet, useLocation, useNavigationType } from "react-router-dom";
-import { workspaceStages, workspaceStageForPath } from "../data/workspaceNavigation";
+import { pageTitleForPath, workspaceStages, workspaceStageForPath } from "../data/workspaceNavigation";
 import { DisclosureProvider } from "./WorkspaceDisclosure";
 import { EditionDrawer } from "./EditionDrawer";
+import { EditionDrawerContext } from "./EditionDrawerContext";
 import { focusTarget, scrollToFragment } from "../data/fragmentNavigation";
 import { ThemeControl } from "./ThemeControl";
 import { displayBuildProvenance, type BuildProvenance } from "../data/buildProvenance";
@@ -17,10 +18,22 @@ export function AppShell({ advisorAvailable = false }: { advisorAvailable?: bool
   const navigationType = useNavigationType();
   const [menuOpen, setMenuOpen] = useState(false);
   const [editionOpen, setEditionOpen] = useState(false);
+  const [editionId, setEditionId] = useState<string | null>(null);
   const initialRoute = useRef(true);
   const menuToggle = useRef<HTMLButtonElement>(null);
   const preFragmentScroll = useRef<number | null>(null);
   const lastScrollY = useRef(0);
+
+  const openEdition = useCallback((id?: string) => {
+    setEditionId(id ?? null);
+    setEditionOpen(true);
+  }, []);
+
+  const editionContextValue = useMemo(() => ({ openEdition }), [openEdition]);
+
+  useEffect(() => {
+    document.title = pageTitleForPath(location.pathname);
+  }, [location.pathname]);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -122,6 +135,7 @@ export function AppShell({ advisorAvailable = false }: { advisorAvailable?: bool
                 <span className="atlas-stage-number" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span> {label}
               </NavLink>
             ))}
+            <span className="atlas-nav-divider" aria-hidden="true" />
             <NavLink to="/data-requests" end className="atlas-requests-link">Data requests</NavLink>
           </nav>
 
@@ -136,7 +150,7 @@ export function AppShell({ advisorAvailable = false }: { advisorAvailable?: bool
             <button
               type="button"
               className="edition-trigger"
-              onClick={() => setEditionOpen(true)}
+              onClick={() => openEdition()}
               aria-haspopup="dialog"
             >
               Edition 01 <span aria-hidden="true">▾</span>
@@ -157,18 +171,21 @@ export function AppShell({ advisorAvailable = false }: { advisorAvailable?: bool
         </div>
       </header>
 
-      <DisclosureProvider>
-        <main id="main-content" tabIndex={-1} data-navigation={navigationType}>
-          <Outlet />
-        </main>
-      </DisclosureProvider>
+      <EditionDrawerContext.Provider value={editionContextValue}>
+        <DisclosureProvider>
+          <main id="main-content" tabIndex={-1} data-navigation={navigationType}>
+            <Outlet />
+          </main>
+        </DisclosureProvider>
+      </EditionDrawerContext.Provider>
 
       <footer className="site-footer">
         <div className="footer-inner">
           <span>Diagnostic Odyssey · Edition 01: Long COVID (U.S.) · West Virginia</span>
           <nav className="footer-links" aria-label="Supporting navigation">
+            <Link to="/">Overview</Link>
             <Link to="/evidence">Evidence</Link>
-            <Link to="/data-requests">Data Requests</Link>
+            <Link to="/data-requests">Data requests</Link>
             {advisorAvailable && <Link to="/advisor">Strategy AI</Link>}
           </nav>
           <small className="source-revision" aria-label="Application source revision">
@@ -181,7 +198,7 @@ export function AppShell({ advisorAvailable = false }: { advisorAvailable?: bool
         </div>
       </footer>
 
-      <EditionDrawer open={editionOpen} onClose={() => setEditionOpen(false)} />
+      <EditionDrawer open={editionOpen} initialEditionId={editionId} onClose={() => setEditionOpen(false)} />
     </div>
   );
 }

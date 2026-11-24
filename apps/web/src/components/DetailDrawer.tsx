@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, type ReactNode } from "react";
+import { useId, useLayoutEffect, useRef, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import "./DetailDrawer.css";
 
@@ -23,41 +23,59 @@ export function DetailDrawer({ open, eyebrow, title, onClose, children }: Detail
 function DetailDrawerDialog({ eyebrow, title, onClose, children }: Omit<DetailDrawerProps, "open">) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
+  const pressedOutsideRef = useRef(false);
+  const titleId = useId();
 
   useLayoutEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog) return;
     const previousFocus = document.activeElement;
-    const previousOverflow = document.body.style.overflow;
     if (!dialog.open) dialog.showModal();
-    document.body.style.overflow = "hidden";
     closeRef.current?.focus();
     return () => {
       if (dialog.open) dialog.close();
-      document.body.style.overflow = previousOverflow;
       if (previousFocus instanceof HTMLElement && previousFocus.isConnected) {
         previousFocus.focus();
       }
     };
   }, []);
 
+  const isOutsideDialog = (clientX: number, clientY: number) => {
+    const dialog = dialogRef.current;
+    if (!dialog) return false;
+    const rect = dialog.getBoundingClientRect();
+    return (
+      clientX < rect.left ||
+      clientX > rect.right ||
+      clientY < rect.top ||
+      clientY > rect.bottom
+    );
+  };
+
   return (
     <dialog
       ref={dialogRef}
       className="atlas-drawer"
-      aria-labelledby="atlas-drawer-title"
+      aria-labelledby={titleId}
+      {...({ closedby: "any" } as Record<string, unknown>)}
       onCancel={event => {
         event.preventDefault();
         onClose();
       }}
-      onClick={event => {
-        if (event.target === dialogRef.current) onClose();
+      onPointerDown={event => {
+        pressedOutsideRef.current = isOutsideDialog(event.clientX, event.clientY);
+      }}
+      onPointerUp={event => {
+        if (pressedOutsideRef.current && isOutsideDialog(event.clientX, event.clientY)) {
+          onClose();
+        }
+        pressedOutsideRef.current = false;
       }}
     >
       <header className="atlas-drawer-head">
         <div>
           <p className="atlas-drawer-eyebrow">{eyebrow}</p>
-          <h2 id="atlas-drawer-title">{title}</h2>
+          <h2 id={titleId}>{title}</h2>
         </div>
         <button
           ref={closeRef}

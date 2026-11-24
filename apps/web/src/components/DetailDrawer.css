@@ -16,9 +16,15 @@
   grid-template-rows: auto minmax(0, 1fr);
 }
 
+.atlas-drawer:modal {
+  overscroll-behavior: contain;
+}
+
 .atlas-drawer::backdrop {
   background: rgba(16, 27, 50, 0.56);
   backdrop-filter: blur(4px);
+  overflow: hidden;
+  overscroll-behavior: contain;
 }
 
 .atlas-drawer-head {
