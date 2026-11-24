@@ -20,6 +20,8 @@ export function DataRequestsPage() {
   const [announcement, setAnnouncement] = useState("");
   const {
     bundle,
+    localContext,
+    localContextStatus,
     scenario,
     scenarioResult,
     analystDataRequests,
@@ -37,21 +39,48 @@ export function DataRequestsPage() {
   if (!bundle) return null;
 
   const analystIds = new Set(analystDataRequests.map(request => request.request_id));
+  const reviewedBurdenCount = bundle.burden_domains.reduce((sum, d) => sum + d.measures.length, 0);
+  const localCount = localContextStatus === "loaded" ? (localContext?.indicators.length ?? 0) : 0;
+  const staleSelectedCount = Math.max(0, briefDataRequestIds.length - selectedDataRequests.length);
 
   return (
     <section className="page page-stack data-requests-page">
       <header className="page-heading">
-        <p className="eyebrow">OPTIONAL · DATA REQUESTS</p>
-        <h1 id="data-requests-heading" tabIndex={-1}>Operational data requests</h1>
-        <p>Planning artifacts tied to scenario assumptions; stale requests stay out of the Brief until refreshed.</p>
+        <p className="eyebrow">COMPANION · DATA REQUESTS</p>
+        <h1 id="data-requests-heading" tabIndex={-1}>Turn uncertainty into a concrete request</h1>
+        <p>
+          Requests are planning artifacts, not observed evidence. Available requests start selected for convenience; review or deselect them before exporting. Stale requests remain excluded from the Brief until refreshed.
+        </p>
+        <p className="micro-caption">
+          &ldquo;Current&rdquo; means the request matches the applied scenario, not that its source data is up to date. Confirm reporting periods and availability with the local owner.
+        </p>
       </header>
       <p className="sr-only" role="status" aria-live="polite" aria-atomic="true">{announcement}</p>
 
+      {/* Three-column epistemic summary strip: Known / Assumed / Unknown */}
+      <div className="request-epistemic-strip" aria-label="Workspace evidence, assumptions, and open gaps">
+        <div className="request-epistemic-cell is-known">
+          <span>KNOWN (REVIEWED)</span>
+          <strong>{reviewedBurdenCount} national · {localCount} local</strong>
+          <small>Published MEPS, HRSA &amp; ACS records</small>
+        </div>
+        <div className="request-epistemic-cell is-assumed">
+          <span>ASSUMED (STRATEGY LAB)</span>
+          <strong>{scenarioResult ? "Active scenario" : "Invalid draft"}</strong>
+          <small>{scenario ? scenario.scenario_id : "No scenario loaded"}</small>
+        </div>
+        <div className="request-epistemic-cell is-unknown">
+          <span>UNKNOWN (DATA REQUESTS)</span>
+          <strong>{selectedDataRequests.length} ready{staleSelectedCount > 0 ? ` · ${staleSelectedCount} stale` : ""}</strong>
+          <small>Operational unknowns scoped for local verification</small>
+        </div>
+      </div>
+
       {availableDataRequests.length === 0 ? (
         <div className="empty-state">
-          <strong>No data requests created or loaded.</strong>
-          <p>Run sensitivity in Simulate to generate a structured request.</p>
-          <Link className="button secondary" to="/pilot#sensitivity">Open Sensitivity</Link>
+          <strong>No data requests have been created or loaded.</strong>
+          <p>Stress-test a Strategy Lab assumption first, then create a request for the operational information that would reduce that uncertainty.</p>
+          <Link className="button secondary" to="/pilot#sensitivity">Open sensitivity explorer</Link>
         </div>
       ) : (
         <>
@@ -62,7 +91,7 @@ export function DataRequestsPage() {
                 type="button"
                 onClick={() => {
                   selectAllDataRequestsForBrief();
-                  setAnnouncement("All available data requests selected.");
+                  setAnnouncement("All available data requests selected. Stale requests remain excluded from the Brief.");
                 }}
                 disabled={availableDataRequests.every(request => briefDataRequestIds.includes(request.request_id))}
               >
@@ -98,7 +127,7 @@ export function DataRequestsPage() {
                 <article className="card data-request-sheet" key={request.request_id}>
                   <header className="request-sheet-heading">
                     <div>
-                      <p className="visual-kicker">{isAnalystRequest ? "SESSION REQUEST" : "TEMPLATE"}</p>
+                      <p className="visual-kicker">{isAnalystRequest ? "SESSION PLANNING REQUEST" : "LOADED REQUEST TEMPLATE"}</p>
                       <h2 id={`request-title-${request.request_id}`}>{request.target_question}</h2>
                     </div>
                     <div className="request-sheet-states" role="group" aria-label="Freshness and Brief selection">
@@ -111,26 +140,62 @@ export function DataRequestsPage() {
                     </div>
                   </header>
 
-                  <p className="request-owner"><strong>Likely owner:</strong> {request.likely_source_owner}</p>
-
                   {handoff && (
                     <section className="request-handoff" aria-labelledby={`request-decision-${request.request_id}`}>
-                      <h3 id={`request-decision-${request.request_id}`}>Decision question</h3>
+                      <h3 id={`request-decision-${request.request_id}`}>Decision to resolve</h3>
                       <p>{handoff.decisionQuestion}</p>
-                      {!handoff.current && (
-                        <p className="subtle">Scenario changed since creation; refresh to include in Brief.</p>
+                      <div className="request-rationale">
+                        <h3>{stale ? "Why this request was created · earlier assumptions" : "Why this data would matter"}</h3>
+                        <p>{request.rationale}</p>
+                      </div>
+                      {handoff.current ? (
+                        <details className="technical-disclosure request-applied-inputs">
+                          <summary>Exact applied Strategy Lab assumptions</summary>
+                          <p>Analyst inputs, not reviewed evidence. Review these together when deciding whether to collect data.</p>
+                          <dl className="data-request-details">
+                            {handoff.appliedInputs.map(input => (
+                              <div key={input.key}><dt>{input.label}</dt><dd>{input.value}</dd></div>
+                            ))}
+                          </dl>
+                        </details>
+                      ) : (
+                        <p className="request-stale-guidance">
+                          Scenario changed since creation; refresh to include in Brief. Review the applied Strategy Lab inputs before refreshing; refreshing replaces the request wording and preserves its Brief selection. Request currency does not certify source freshness.
+                        </p>
                       )}
                     </section>
                   )}
 
-                  <WorkspaceDisclosure id={`request-details-${request.request_id}`} title="Fields, privacy & guidance">
+                  <p className="request-owner"><strong>Likely owner:</strong> {request.likely_source_owner}</p>
+
+                  <section className="request-next-step" aria-labelledby={`request-next-${request.request_id}`}>
+                    <h3 id={`request-next-${request.request_id}`}>Next step with the local data owner</h3>
+                    <ol>
+                      <li>Confirm who owns this question and which local source system can supply the fields and time window below. Availability is unconfirmed.</li>
+                      <li>Agree on the minimum necessary aggregate summary, definitions, reporting period, and small-cell protections before collection. Keep identifiers, row-level dates, and linkage with the local steward; do not send them to this app.</li>
+                      <li>If the summary is unavailable or incomplete, document the gap with the owner and revise the planning assumption or pilot scope. Rerun sensitivity before using the request in the Brief.</li>
+                    </ol>
+                    <p>Collection guidance is a planning checklist, not an approved system mapping or a quantified value-of-information estimate. Including a request in the Brief does not send it to anyone.</p>
+                    <Link className="text-button" to="/pilot#sensitivity">Review assumptions and sensitivity</Link>
+                  </section>
+
+                  <WorkspaceDisclosure id={`request-details-${request.request_id}`} title="Request details & collection guidance">
                     <dl className="data-request-details">
                       <div><dt>Pathway step</dt><dd>{formatPathwayStepLabel(request.pathway_step)}</dd></div>
-                      {request.target_mechanism && <div><dt>Mechanism</dt><dd>{formatMechanismLabel(request.target_mechanism)}</dd></div>}
-                      <div><dt>Window</dt><dd>{request.granularity_time_window}</dd></div>
-                      <div className="request-fields"><dt>Fields</dt><dd>{request.fields_needed.join(", ")}</dd></div>
+                      {request.target_mechanism && <div><dt>Target mechanism</dt><dd>{formatMechanismLabel(request.target_mechanism)}</dd></div>}
+                      <div><dt>Granularity / time window</dt><dd>{request.granularity_time_window}</dd></div>
+                      <div className="request-fields"><dt>Fields needed</dt><dd>{request.fields_needed.join(", ")}</dd></div>
                     </dl>
-                    <p className="subtle">{request.feasibility_privacy_notes}</p>
+                    {!handoff && (
+                      <div className="request-rationale">
+                        <h3>Why collect it</h3>
+                        <p>{request.rationale}</p>
+                      </div>
+                    )}
+                    <details className="technical-disclosure request-privacy">
+                      <summary>Feasibility and privacy</summary>
+                      <p>{request.feasibility_privacy_notes}</p>
+                    </details>
                     <AcquisitionGuidanceStatus resolution={acquisition} />
                     {attachable && acquisition.state !== "reviewed" && (
                       <button
@@ -138,11 +203,11 @@ export function DataRequestsPage() {
                         className="text-button"
                         onClick={() => {
                           setAnnouncement(attachAcquisitionHint(request.request_id)
-                            ? "Acquisition guidance attached."
-                            : "Acquisition guidance unavailable.");
+                            ? "Reviewed acquisition guidance attached. Brief selection is unchanged."
+                            : "Acquisition guidance is unavailable; the request is unchanged.");
                         }}
                       >
-                        Attach reviewed acquisition guidance
+                        {Object.hasOwn(request, "acquisition_hint") ? "Refresh acquisition guidance" : "Attach reviewed acquisition guidance"}
                       </button>
                     )}
                     {isAnalystRequest && Object.hasOwn(request, "acquisition_hint") && (
@@ -151,7 +216,7 @@ export function DataRequestsPage() {
                         className="text-button"
                         onClick={() => {
                           removeAcquisitionHint(request.request_id);
-                          setAnnouncement("Acquisition guidance removed.");
+                          setAnnouncement("Acquisition guidance removed. Brief selection is unchanged.");
                         }}
                       >
                         Remove acquisition guidance
@@ -164,9 +229,12 @@ export function DataRequestsPage() {
                         onClick={() => {
                           removeAnalystDataRequest(request.request_id);
                           setAnnouncement("Session request removed.");
+                          requestAnimationFrame(() =>
+                            (document.getElementById("request-summary") ?? document.getElementById("data-requests-heading"))?.focus()
+                          );
                         }}
                       >
-                        Remove request
+                        Remove session request
                       </button>
                     )}
                   </WorkspaceDisclosure>
@@ -179,24 +247,41 @@ export function DataRequestsPage() {
                         checked={selected}
                         onChange={() => {
                           toggleDataRequestForBrief(request.request_id);
-                          setAnnouncement(selected ? "Removed from Brief." : "Selected for Brief.");
+                          setAnnouncement(selected
+                            ? "Request removed from Planning Brief selection."
+                            : stale
+                              ? "Request selected, but stale information is excluded from the Brief until refreshed."
+                              : "Request selected for Planning Brief.");
                         }}
                       />
-                      <span id={`request-action-${request.request_id}`}>Include in Brief</span>
+                      <span>
+                        <strong id={`request-action-${request.request_id}`}>Include in Brief</strong>
+                        <small>
+                          {stale && selected
+                            ? "Selected state is preserved, but this stale request is excluded from export until refreshed."
+                            : "Selected by default for convenience; review before export."}
+                        </small>
+                      </span>
                     </label>
-
-                    {stale && sensitivityField && scenario && scenarioResult && (
-                      <button
-                        className="text-button"
-                        type="button"
-                        onClick={() => {
-                          upsertAnalystDataRequest(createSensitivityDataRequest(scenario, sensitivityField));
-                          setAnnouncement("Data request refreshed.");
-                        }}
-                      >
-                        Refresh request
-                      </button>
-                    )}
+                    <div className="request-sheet-controls">
+                      {stale && sensitivityField && scenario && scenarioResult && (
+                        <button
+                          className="text-button"
+                          type="button"
+                          onClick={() => {
+                            upsertAnalystDataRequest(createSensitivityDataRequest(scenario, sensitivityField));
+                            setAnnouncement("Data request refreshed for the applied scenario. Its Brief selection is unchanged.");
+                          }}
+                        >
+                          Refresh data request
+                        </button>
+                      )}
+                      {stale && sensitivityField && scenario && !scenarioResult && (
+                        <span className="data-request-refresh-blocked">
+                          Fix the Pilot planner inputs before refreshing this request.
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </article>
               );
@@ -208,9 +293,12 @@ export function DataRequestsPage() {
       {availableDataRequests.length > 0 && (
         <div id="request-summary" tabIndex={-1} className="request-footer-actions">
           <span>
-            <strong>{selectedDataRequests.length}</strong> eligible for Brief.
+            <strong>{selectedDataRequests.length}</strong> current request{selectedDataRequests.length === 1 ? "" : "s"} eligible for the Planning Brief.
+            {staleSelectedCount > 0
+              ? ` ${staleSelectedCount} selected request(s) are stale and excluded until refreshed.`
+              : ""}
           </span>
-          <Link className="button" to="/brief">Open Brief →</Link>
+          <Link className="button" to="/brief">Open Planning Brief →</Link>
         </div>
       )}
     </section>
