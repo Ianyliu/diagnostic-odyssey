@@ -1,4 +1,4 @@
-/* Atelier Atlas restrained choreography; zero motion under reduced-motion or print. */
+/* Strategic Atlas restrained choreography; zero motion under reduced-motion or print. */
 :root {
   --do-motion-fast: 150ms;
   --do-motion-standard: 220ms;
@@ -20,15 +20,13 @@
   .atlas-terrain-tile,
   .atlas-preset-card {
     transition:
-      transform var(--do-motion-fast) var(--do-ease-out),
       border-color var(--do-motion-fast) ease,
       box-shadow var(--do-motion-standard) ease,
-      background-color var(--do-motion-fast) ease;
+      background-color var(--do-motion-fast) ease,
+      color var(--do-motion-fast) ease;
   }
 
-  .button:not(:disabled):active { transform: translateY(1px) scale(0.99); }
   @media (hover: hover) {
-    .button:not(:disabled):hover { transform: translateY(-1px); }
     .atlas-lens-card:hover { transform: translateY(-2px); }
   }
 }

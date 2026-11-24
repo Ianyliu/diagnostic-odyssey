@@ -32,7 +32,7 @@
 }
 
 .metric-svg-interval {
-  fill: color-mix(in srgb, var(--do-chart-1) 55%, var(--do-gold));
+  fill: color-mix(in srgb, var(--do-chart-1) 60%, var(--do-chart-2));
 }
 
 .metric-svg-interval.is-range {

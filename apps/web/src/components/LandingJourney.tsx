@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import "./LandingJourney.css";
 
 /**
- * Atelier Atlas sweeping Bezier cartographic pathway.
+ * Strategic Atlas sweeping Bezier cartographic pathway.
  * All destinations are real routes; SVG is decorative, links are HTML.
  */
 const waypoints = [

@@ -15,7 +15,7 @@
 }
 
 .decision-state-heading .visual-kicker { margin: 0 0 4px; }
-.decision-state-card h2 { margin: 0; color: var(--do-text); font-size: 1.25rem; }
+.decision-state-card h2 { margin: 0; color: var(--do-text); font-family: var(--do-font-display); font-weight: 500; font-size: 1.3rem; }
 
 .decision-state-rail {
   display: grid;

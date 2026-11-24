@@ -129,5 +129,5 @@
 .request-applied-inputs summary { min-height: 44px; padding-block: 10px; }
 .data-requests-page :is(summary, a, button, input) { scroll-margin-block: 100px; }
 .request-applied-inputs > p { font-size: .8rem; color: var(--do-text-muted); }
-.data-requests-page .request-sheet-heading h2 { font-size: 1.2rem; }
+.data-requests-page .request-sheet-heading h2 { font-family: var(--do-font-display); font-weight: 500; font-size: 1.25rem; }
 .data-requests-page .brief-selection { min-height: 44px; }

@@ -1,10 +1,10 @@
-/* Atelier Atlas sweeping Bezier cartographic pathway (Midnight Ink band, Cobalt/violet accents). */
+/* Strategic Atlas sweeping Bezier cartographic pathway (Midnight Ink band, Cobalt/violet accents). */
 .atlas-journey { width: 100%; min-width: 0; }
 .atlas-journey-canvas { position: relative; width: 100%; max-width: 1120px; margin-inline: auto; aspect-ratio: 1024 / 260; }
 .atlas-journey-path { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
 .atlas-journey-reveal { stroke-dasharray: 1400; stroke-dashoffset: 0; }
 .atlas-journey-point.is-evidence { fill: #3157d5; stroke: #f5f7ff; }
-.atlas-journey-point.is-context { fill: #0d1622; stroke: #8bb8dc; stroke-width: 4; }
+.atlas-journey-point.is-context { fill: #101b32; stroke: #8bb8f0; stroke-width: 4; }
 .atlas-journey-point.is-assumption { stroke: #b8a5ff; }
 .atlas-journey-point.is-gap { fill: #ff91b3; stroke: #f5f7ff; }
 .atlas-journey-point.is-brief { fill: #f5f7ff; stroke: #b8a5ff; stroke-width: 4; }

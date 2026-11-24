@@ -1,4 +1,4 @@
-/* Atelier Atlas Landing Page — Midnight Ink & Cool Gallery Paper alternating bands */
+/* Strategic Atlas Landing Page — Midnight Ink & Cool Gallery Paper alternating bands */
 .overview-page {
   display: grid;
 }
@@ -159,7 +159,7 @@
 }
 
 .atlas-lens-card.is-local .atlas-lens-kicker {
-  color: var(--do-assumption-text);
+  color: var(--do-selection-text);
 }
 
 .atlas-lens-figure {
@@ -193,9 +193,9 @@
 .atlas-never-blended {
   padding: 7px 14px;
   border-radius: 999px;
-  border: 1px solid var(--do-journey-accent);
-  background: var(--do-assumption-bg);
-  color: var(--do-assumption-text);
+  border: 1px solid var(--do-border);
+  background: var(--do-canvas);
+  color: var(--do-text-muted);
   font-family: var(--do-font-mono);
   font-size: 0.72rem;
   font-weight: 600;
@@ -392,13 +392,10 @@
   .atlas-never-blended { justify-self: start; }
 }
 
-/* Keep the animated journey within the desktop opening viewport. */
 .atlas-hero-title em { color: #b8c9ff; font-weight: 500; }
 .atlas-hero-band .button { background: #f5f7ff; color: #172a65; border-color: #f5f7ff; }
 .atlas-hero-band .button:hover { background: #dce5ff; }
 .atlas-hero-band .atlas-ghost-cta:focus-visible { outline: 2px solid #c1b5ff; outline-offset: 3px; }
-.atlas-lens-card.is-local .atlas-lens-kicker { color: var(--do-selection-text); }
-.atlas-never-blended { background: var(--do-canvas); color: var(--do-text-muted); border-color: var(--do-border); }
 @media (max-width: 760px) {
   .atlas-hero-title { font-size: clamp(2rem, 7vw, 2.8rem); }
   .atlas-hero-header { gap: 8px; }
@@ -408,3 +405,21 @@
 
 .atlas-sandbox-band { background: var(--do-canvas); padding: 36px 0 0; }
 @media (max-width: 760px) { .atlas-sandbox-band { padding-top: 24px; } }
+
+@media print {
+  .atlas-hero-band,
+  .atlas-closing-band {
+    background: #ffffff !important;
+    color: var(--do-text) !important;
+    border-bottom: 1px solid var(--do-border);
+    padding: 16pt 0;
+  }
+  .atlas-hero-grid,
+  .atlas-paper-fan { display: none !important; }
+  .atlas-hero-eyebrow,
+  .atlas-hero-title,
+  .atlas-hero-title em,
+  .atlas-hero-sub,
+  .atlas-closing-copy h2,
+  .atlas-closing-copy p { color: var(--do-text) !important; }
+}

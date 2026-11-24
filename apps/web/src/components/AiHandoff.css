@@ -7,11 +7,11 @@
   background: var(--do-surface);
   color: var(--do-text);
   overflow: auto;
-  box-shadow: 0 24px 70px rgba(13, 22, 34, 0.35);
+  box-shadow: 0 24px 70px rgba(16, 27, 50, 0.35);
 }
 
 .ai-handoff-dialog::backdrop {
-  background: rgba(13, 22, 34, 0.62);
+  background: rgba(16, 27, 50, 0.62);
   backdrop-filter: blur(4px);
 }
 
@@ -60,9 +60,9 @@
 
 .ai-starter-chip.is-active,
 .ai-starter-chip:hover {
-  border-color: var(--do-gold);
-  background: var(--do-assumption-bg);
-  color: var(--do-assumption-text);
+  border-color: var(--do-ai-border);
+  background: var(--do-ai-bg);
+  color: var(--do-ai-text);
 }
 
 .ai-handoff-options label,
@@ -130,9 +130,9 @@
   display: grid;
   gap: 10px;
   padding: 14px;
-  border: 1px solid var(--do-gold);
+  border: 1px solid var(--do-ai-border);
   border-radius: 12px;
-  background: var(--do-assumption-bg);
+  background: var(--do-ai-bg);
 }
 
 .ai-gemini-panel input[type="password"] {

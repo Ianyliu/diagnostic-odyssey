@@ -1,12 +1,4 @@
-/* Atelier Atlas AppShell, 56px editorial header, drawers, and shared controls */
-html {
-  font-family: var(--do-font-body);
-  color: var(--do-text);
-  background: var(--do-canvas);
-  font-variant-numeric: tabular-nums;
-  scroll-padding-block-start: var(--do-sticky-offset);
-}
-
+/* Strategic Atlas AppShell, 56px editorial header, drawers, and shared controls */
 :where([id]) {
   scroll-margin-block-start: var(--do-sticky-offset);
 }
@@ -90,7 +82,7 @@ html {
   color: var(--do-text);
   font-weight: 650;
   background: var(--do-surface);
-  box-shadow: 0 1px 4px rgba(13, 22, 34, 0.08);
+  box-shadow: 0 1px 4px color-mix(in srgb, var(--do-brand-navy) 10%, transparent);
 }
 
 .header-controls {
@@ -103,12 +95,12 @@ html {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 30px;
+  min-height: 44px;
   padding: 4px 11px;
   border-radius: 999px;
-  border: 1px solid color-mix(in srgb, var(--do-gold) 45%, var(--do-border));
-  background: var(--do-assumption-bg);
-  color: var(--do-assumption-text);
+  border: 1px solid var(--do-ai-border);
+  background: var(--do-ai-bg);
+  color: var(--do-ai-text);
   font-family: var(--do-font-mono);
   font-size: 0.72rem;
   font-weight: 600;
@@ -118,15 +110,16 @@ html {
 
 .header-ai-pill:hover,
 .header-ai-pill.active {
-  border-color: var(--do-accent);
-  color: var(--do-accent);
+  border-color: var(--do-ai-text);
+  color: var(--do-ai-text);
+  background: var(--do-ai-bg);
 }
 
 .edition-trigger {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  min-height: 30px;
+  min-height: 44px;
   padding: 4px 11px;
   border-radius: 999px;
   border: 1px solid var(--do-border);
@@ -139,7 +132,7 @@ html {
 }
 
 .edition-trigger:hover {
-  border-color: var(--do-gold);
+  border-color: var(--do-journey-accent);
 }
 
 .theme-icon-toggle {
@@ -239,7 +232,7 @@ html {
 }
 
 .edition-option.is-active {
-  border-color: var(--do-gold);
+  border-color: var(--do-journey-accent);
   background: var(--do-assumption-bg);
 }
 
@@ -359,17 +352,13 @@ html {
   }
 }
 
-/* AI is its own semantic color, not evidence or scenario assumptions. */
-.header-ai-pill { color: var(--do-ai-text); border-color: var(--do-ai-border); background: var(--do-ai-bg); }
-.header-ai-pill:hover, .header-ai-pill.active { color: var(--do-ai-text); border-color: var(--do-ai-text); background: var(--do-ai-bg); }
-
-/* Cupertino-like compact, accessible controls, with the optional companion visible. */
+/* Compact accessible navigation with optional Data requests companion. */
 .primary-nav a { display: inline-flex; align-items: center; justify-content: center; gap: 5px; min-height: 44px; white-space: nowrap; padding-inline: 9px; }
 .atlas-stage-number { font-family: var(--do-font-mono); font-size: .66rem; color: var(--do-text-muted); }
 .primary-nav a.active .atlas-stage-number { color: var(--do-accent); }
 .primary-nav .atlas-requests-link { border: 1px dashed var(--do-border); }
 .primary-nav .atlas-requests-link.active { border-color: var(--do-accent); background: var(--do-selection-bg); color: var(--do-selection-text); }
-.header-ai-pill, .edition-trigger, .menu-toggle { min-height: 44px; }
+.menu-toggle { min-height: 44px; }
 .theme-icon-toggle { min-width: 44px; min-height: 44px; }
 @media (min-width: 821px) and (max-width: 1120px) {
   .header-inner { height: auto; min-height: var(--do-shell-height); grid-template-columns: minmax(0, 1fr) auto; padding-block: 6px; gap: 5px 12px; }

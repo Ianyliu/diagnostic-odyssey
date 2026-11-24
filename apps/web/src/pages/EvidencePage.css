@@ -10,7 +10,7 @@
 .evidence-availability .visual-kicker,
 .evidence-availability h2,
 .evidence-availability p { margin: 0; }
-.evidence-availability h2 { color: var(--do-text); font-size: clamp(1.35rem, 2vw, 1.7rem); line-height: 1.25; }
+.evidence-availability h2 { color: var(--do-text); font-family: var(--do-font-display); font-weight: 500; font-size: clamp(1.35rem, 2vw, 1.7rem); line-height: 1.25; }
 .evidence-availability > p:last-child { color: var(--do-text-muted); font-size: .9rem; line-height: 1.55; }
 
 .evidence-page .evidence-empty-state {
@@ -32,7 +32,7 @@
 .evidence-record { display: grid; gap: 16px; padding: 20px 0; border-bottom: 1px solid var(--do-border); }
 .evidence-record-heading { display: flex; justify-content: space-between; gap: 16px; }
 .evidence-record-heading .visual-kicker { margin: 0 0 4px; }
-.evidence-record-heading h2 { margin: 0; color: var(--do-text); font-size: 1.2rem; }
+.evidence-record-heading h2 { margin: 0; color: var(--do-text); font-family: var(--do-font-display); font-weight: 500; font-size: 1.25rem; }
 .evidence-record-heading .subtle { margin: 4px 0 0; }
 
 .evidence-state-grid {

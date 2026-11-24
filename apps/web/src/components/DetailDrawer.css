@@ -11,13 +11,13 @@
   border-left: 1px solid var(--do-border);
   background: var(--do-surface);
   color: var(--do-text);
-  box-shadow: -20px 0 60px rgba(13, 22, 34, 0.22);
+  box-shadow: -20px 0 60px rgba(16, 27, 50, 0.24);
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
 }
 
 .atlas-drawer::backdrop {
-  background: rgba(13, 22, 34, 0.56);
+  background: rgba(16, 27, 50, 0.56);
   backdrop-filter: blur(4px);
 }
 
@@ -33,7 +33,7 @@
 
 .atlas-drawer-eyebrow {
   margin: 0 0 4px;
-  color: var(--do-gold);
+  color: var(--do-journey-accent);
   font-family: var(--do-font-mono);
   font-size: 0.72rem;
   font-weight: 600;

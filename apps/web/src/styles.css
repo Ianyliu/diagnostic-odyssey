@@ -1,9 +1,11 @@
-/* Atelier Atlas base geometry, utilities, and print rules. */
-* { box-sizing: border-box; }
+/* Strategic Atlas base geometry, utilities, and print rules. */
+*, *::before, *::after { box-sizing: border-box; }
 html {
   font-family: var(--do-font-body);
   color: var(--do-text);
   background: var(--do-canvas);
+  font-variant-numeric: tabular-nums;
+  scroll-padding-block-start: var(--do-sticky-offset);
   -webkit-font-smoothing: antialiased;
 }
 body { margin: 0; min-width: 320px; }
@@ -73,7 +75,7 @@ main { min-height: calc(100vh - 132px); }
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--do-gold);
+  color: var(--do-journey-accent);
 }
 
 .card {
@@ -228,17 +230,26 @@ main { min-height: calc(100vh - 132px); }
   }
 }
 
+@media (forced-colors: active) {
+  .card, .button, .status, .caution, .guardrail, .technical-disclosure, .brief-burden-table-wrap {
+    border: 1px solid CanvasText;
+  }
+  button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, summary:focus-visible {
+    outline: 2px solid Highlight;
+  }
+}
+
 @page { margin: 0.6in; }
 @media print {
-  html, body { background: #ffffff; color: #0d1622; }
+  html, body { background: #ffffff; color: var(--do-text); }
   .skip-link, .site-header, .site-footer, .prototype-strip, footer, .planning-brief-page > .context-bar, .brief-export-actions, .brief-dock, .brief-content .button { display: none !important; }
   main { min-height: 0; }
   .planning-brief-page { display: block; width: 100%; max-width: none; margin: 0; padding: 0; }
-  .print-provenance { display: grid; gap: 3pt; margin: 0 0 12pt; padding: 8pt 10pt; border: 1px solid #9aa7af; font-size: 8.5pt; break-inside: avoid; }
-  .brief-burden-table-wrap{overflow:visible;border-color:#9aa7af}
-  .brief-burden-table{min-width:0}
-  .brief-burden-table tr{break-inside:avoid}
-  thead{display:table-header-group}
+  .print-provenance { display: grid; gap: 3pt; margin: 0 0 12pt; padding: 8pt 10pt; border: 1px solid var(--do-border); font-size: 8.5pt; break-inside: avoid; }
+  .brief-burden-table-wrap { overflow: visible; border-color: var(--do-border); }
+  .brief-burden-table { min-width: 0; }
+  .brief-burden-table tr { break-inside: avoid; }
+  thead { display: table-header-group; }
   .card { box-shadow: none; }
   a { text-decoration: none; }
 }

@@ -3,7 +3,7 @@ export const THEME_STORAGE_KEY = "diagnostic-odyssey.theme";
 export type ThemePreference = "light" | "dark" | "system";
 export type ResolvedTheme = "light" | "dark";
 
-/** Browser chrome follows the Atelier Atlas light/dark canvas colors. */
+/** Browser chrome follows the Strategic Atlas light/dark canvas colors. */
 export function getThemeColor(theme: ResolvedTheme): string {
   return theme === "dark" ? "#0b1119" : "#f5f7fc";
 }

@@ -1,4 +1,4 @@
-/* Atelier Atlas Costs & Terrain form-first layouts */
+/* Strategic Atlas Burden & Local Context form-first layouts */
 .atlas-page-top {
   display: flex;
   flex-wrap: wrap;
@@ -229,7 +229,7 @@
 }
 
 .atlas-terrain-tile.is-pilot {
-  border-color: var(--do-gold);
+  border-color: var(--do-selection-border);
 }
 
 .atlas-terrain-tile-top {
@@ -303,9 +303,9 @@
 }
 
 .atlas-pilot-pill.is-active {
-  border-color: var(--do-gold);
-  background: var(--do-assumption-bg);
-  color: var(--do-assumption-text);
+  border-color: var(--do-selection-border);
+  background: var(--do-selection-bg);
+  color: var(--do-selection-text);
 }
 
 .atlas-composition-grid {

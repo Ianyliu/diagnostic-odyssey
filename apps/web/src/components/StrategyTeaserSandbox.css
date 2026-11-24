@@ -21,7 +21,9 @@
   margin: 4px 0 6px;
   color: var(--do-text);
   font-family: var(--do-font-display);
-  font-size: clamp(1.25rem, 2vw, 1.55rem);
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+  font-weight: 500;
+  letter-spacing: -0.025em;
 }
 
 .teaser-sandbox-header p {
@@ -37,7 +39,7 @@
   color: var(--do-assumption-text);
   font-family: var(--do-font-mono);
   font-size: .72rem;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .teaser-sandbox-grid {
@@ -60,7 +62,7 @@
 .teaser-presets-label {
   font-family: var(--do-font-mono);
   font-size: .72rem;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: .06em;
   text-transform: uppercase;
   color: var(--do-text-muted);
@@ -91,7 +93,7 @@
 
 .teaser-preset-btn[aria-pressed="true"] {
   border-color: var(--do-accent);
-  background: var(--do-reviewed-bg);
+  background: var(--do-selection-bg);
   box-shadow: inset 3px 0 0 var(--do-accent);
 }
 
@@ -134,7 +136,7 @@
 .teaser-slider-value {
   font-family: var(--do-font-mono);
   font-size: .95rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--do-accent);
 }
 
@@ -185,8 +187,8 @@
   margin: 4px 0 0;
   color: var(--do-text);
   font-family: var(--do-font-display);
-  font-size: 1.35rem;
-  font-weight: 700;
+  font-size: clamp(1.3rem, 2.2vw, 1.9rem);
+  font-weight: 500;
   font-variant-numeric: tabular-nums;
 }
 
@@ -305,7 +307,4 @@
   }
 }
 
-.teaser-sandbox-header h2 { font-size: clamp(1.8rem, 3vw, 2.6rem); font-weight: 500; letter-spacing: -.025em; }
-.teaser-metrics dd { font-size: clamp(1.3rem, 2.2vw, 1.9rem); font-weight: 500; }
-.teaser-preset-btn[aria-pressed="true"] { background: var(--do-selection-bg); }
 @media (prefers-reduced-motion: reduce) { .teaser-sandbox * { transition: none !important; } }
