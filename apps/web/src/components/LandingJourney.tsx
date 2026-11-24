@@ -1,33 +1,154 @@
-import { Fragment } from "react";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { useOpeningMotionContext } from "../pages/OpeningProvenance";
+import {
+  canReplayOpening,
+  JOURNEY_DURATION_MS,
+  JOURNEY_SESSION_KEY,
+  markOpeningSeen,
+  reducedMotionRequested,
+  sessionStorageOrNull,
+  shouldPlayJourney
+} from "../pages/openingMotion";
+import { getBrowserMediaQuery, readMediaQueryMatches, subscribeToMediaQuery } from "../browserMedia";
 import "./LandingJourney.css";
 
 /**
- * Strategic Atlas sweeping Bezier cartographic pathway.
+ * Restored sweeping Bezier cartographic pathway (1024x380 viewBox) inside Chapter IV.
  * Primary spine moves 01 Burden -> 02 Local context -> 03 Strategy Lab -> 04 Planning Brief,
  * with Data requests shown as an explicit dashed optional spur off Strategy Lab.
- * All destinations are real routes; SVG is decorative, links are HTML.
+ * Has its own independent viewport-triggered lifecycle so Chapter I completion or scroll
+ * inertia never consumes or cancels the Chapter IV reveal.
  */
 const waypoints = [
-  { label: "Burden", n: "01", to: "/burden", x: 96, y: 196, type: "evidence" },
-  { label: "Local context", n: "02", to: "/local-context", x: 356, y: 108, type: "context" },
-  { label: "Strategy Lab", n: "03", to: "/pilot", x: 616, y: 146, type: "assumption" },
-  { label: "Data requests", n: "Optional", to: "/data-requests", x: 736, y: 214, type: "gap" },
-  { label: "Planning Brief", n: "04", to: "/brief", x: 912, y: 62, type: "brief" }
+  { label: "Burden", n: "01", to: "/burden", x: 96, y: 296, type: "evidence" },
+  { label: "Local context", n: "02", to: "/local-context", x: 340, y: 178, type: "context" },
+  { label: "Strategy Lab", n: "03", to: "/pilot", x: 602, y: 232, type: "assumption" },
+  { label: "Data requests", n: "Optional", to: "/data-requests", x: 758, y: 316, type: "gap" },
+  { label: "Planning Brief", n: "04", to: "/brief", x: 916, y: 88, type: "brief" }
 ] as const;
 
-const route = "M96 196 C 210 196 240 108 356 108 S 496 146 616 146 S 776 62 912 62";
-const optionalSpur = "M616 146 C 650 202 686 214 736 214";
+const route =
+  "M 96 296 C 216 296, 224 178, 340 178 C 464 178, 486 232, 602 232 C 742 232, 782 88, 916 88";
+const optionalSpur = "M 602 232 C 646 298, 696 316, 758 316";
 
 export function LandingJourney() {
-  const { replay, runId, announcement } = useOpeningMotionContext();
+  const navRef = useRef<HTMLElement>(null);
+  const hasAutoPlayedRef = useRef(false);
+  const [playing, setPlaying] = useState(false);
+  const [runId, setRunId] = useState(0);
+  const [announcement, setAnnouncement] = useState("");
+
+  useEffect(() => {
+    const media = getBrowserMediaQuery("(prefers-reduced-motion: reduce)");
+    const handleChange = () => {
+      if (readMediaQueryMatches(media, true)) setPlaying(false);
+    };
+    return subscribeToMediaQuery(media, handleChange);
+  }, []);
+
+  // Independent viewport-triggered reveal for Chapter IV.
+  useEffect(() => {
+    const root = navRef.current;
+    if (!root || typeof IntersectionObserver === "undefined") return;
+
+    const triggerIfEligible = () => {
+      if (hasAutoPlayedRef.current) return;
+      const entry = typeof window !== "undefined"
+        ? {
+            pathname: window.location.pathname,
+            search: window.location.search,
+            hash: window.location.hash,
+            reducedMotion: reducedMotionRequested(),
+            storage: sessionStorageOrNull()
+          }
+        : { pathname: "/", search: "", hash: "", reducedMotion: true, storage: null };
+
+      if (!shouldPlayJourney(entry)) return;
+      if (!markOpeningSeen(sessionStorageOrNull(), JOURNEY_SESSION_KEY)) return;
+      hasAutoPlayedRef.current = true;
+      setRunId(previous => previous + 1);
+      setPlaying(true);
+    };
+
+    const observer = new IntersectionObserver(
+      entries => {
+        for (const entry of entries) {
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.25) {
+            triggerIfEligible();
+          }
+        }
+      },
+      { threshold: [0, 0.25, 0.5] }
+    );
+
+    observer.observe(root);
+    return () => observer.disconnect();
+  }, []);
+
+  // Interruptible by deliberate pointerdown/keydown/visibility; never canceled by wheel scroll inertia.
+  useEffect(() => {
+    if (!playing) return;
+    if (reducedMotionRequested()) {
+      setPlaying(false);
+      return;
+    }
+
+    const settle = () => setPlaying(false);
+    const handlePointerDown = (event: PointerEvent) => {
+      if (event.target instanceof Element && event.target.closest(".preview-replay")) return;
+      settle();
+    };
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (
+        (event.key === "Enter" || event.key === " ") &&
+        event.target instanceof Element &&
+        event.target.closest(".preview-replay")
+      ) {
+        return;
+      }
+      settle();
+    };
+    const settleOnHidden = () => {
+      if (document.hidden) settle();
+    };
+
+    window.addEventListener("pointerdown", handlePointerDown, { passive: true });
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("pagehide", settle);
+    document.addEventListener("visibilitychange", settleOnHidden);
+    const timer = window.setTimeout(settle, JOURNEY_DURATION_MS);
+
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener("pointerdown", handlePointerDown);
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("pagehide", settle);
+      document.removeEventListener("visibilitychange", settleOnHidden);
+    };
+  }, [playing, runId]);
+
+  const replay = useCallback(() => {
+    const prefersReduced = reducedMotionRequested();
+    if (!canReplayOpening(prefersReduced)) {
+      setPlaying(false);
+      setAnnouncement("Reduced motion is on. The complete pathway remains visible.");
+      return;
+    }
+    hasAutoPlayedRef.current = true;
+    setRunId(previous => previous + 1);
+    setPlaying(true);
+    setAnnouncement("Replaying the burden-to-brief pathway sequence.");
+  }, []);
 
   return (
-    <nav className="atlas-journey" aria-label="Explore the evidence-to-action pathway">
+    <nav
+      ref={navRef}
+      className={"atlas-journey" + (playing ? " is-playing" : "")}
+      aria-label="Explore the evidence-to-action pathway"
+    >
       <div className="atlas-journey-canvas" data-replay-cycle={runId % 2}>
         <Fragment key={runId}>
-          <svg viewBox="0 0 1024 260" className="atlas-journey-path" aria-hidden="true">
+          <svg viewBox="0 0 1024 380" className="atlas-journey-path" aria-hidden="true">
             <defs>
               <pattern id="atlas-journey-hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
                 <rect width="8" height="8" fill="#251d40" />
@@ -42,7 +163,7 @@ export function LandingJourney() {
               fill="none"
               stroke="#b8a5ff"
               strokeOpacity="0.95"
-              strokeWidth="2.4"
+              strokeWidth="2.8"
               strokeLinecap="round"
             />
             <path
@@ -51,20 +172,21 @@ export function LandingJourney() {
               className="atlas-journey-spur"
               fill="none"
               stroke="#9fb3d1"
-              strokeOpacity="0.78"
-              strokeWidth="2"
+              strokeOpacity="0.82"
+              strokeWidth="2.2"
               strokeDasharray="6 5"
               strokeLinecap="round"
             />
-            {waypoints.map(item => (
+            <circle cx={916} cy={88} r={14} className="atlas-journey-halo" />
+            {waypoints.map((item, idx) => (
               <circle
                 key={item.to}
-                className={"atlas-journey-point is-" + item.type}
+                className={`atlas-journey-point atlas-journey-point-${idx} is-${item.type}`}
                 cx={item.x}
                 cy={item.y}
-                r={item.type === "brief" ? 14 : item.type === "gap" ? 9 : 10}
+                r={item.type === "brief" ? 14 : item.type === "gap" ? 9 : 11}
                 fill={item.type === "assumption" ? "url(#atlas-journey-hatch)" : undefined}
-                strokeWidth="2.5"
+                strokeWidth="2.6"
               />
             ))}
           </svg>
@@ -80,6 +202,7 @@ export function LandingJourney() {
           </Link>
         ))}
       </div>
+
       <Fragment key={`mobile-${runId}`}>
         <ol className="atlas-journey-mobile">
           {waypoints.map(item => (
@@ -93,12 +216,21 @@ export function LandingJourney() {
           ))}
         </ol>
       </Fragment>
+
       <div className="atlas-journey-controls">
+        {/* Replay button remains outside <Fragment key={runId}> to preserve DOM identity and focus. */}
         <button type="button" className="preview-replay atlas-journey-replay" onClick={replay}>
           <span aria-hidden="true">↻</span> Replay animation
         </button>
         <span className="sr-only" role="status" aria-live="polite">{announcement}</span>
       </div>
+
+      <ul className="atlas-journey-key" aria-label="Evidence role symbol key">
+        <li className="is-evidence"><i aria-hidden="true" />Reviewed evidence</li>
+        <li className="is-context"><i aria-hidden="true" />Local access</li>
+        <li className="is-assumption"><i aria-hidden="true" />Pilot assumptions</li>
+        <li className="is-gap"><i aria-hidden="true" />Optional data requests</li>
+      </ul>
     </nav>
   );
 }

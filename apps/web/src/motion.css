@@ -1,18 +1,37 @@
-/* Strategic Atlas restrained choreography; zero motion under reduced-motion or print. */
+/* Strategic Atlas deliberate landing choreography + analytical hover transitions; zero motion under reduced-motion or print. */
 :root {
   --do-motion-fast: 150ms;
-  --do-motion-standard: 220ms;
-  --do-motion-enter: 520ms;
+  --do-motion-standard: 240ms;
+  --do-motion-enter: 680ms;
   --do-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @media screen and (prefers-reduced-motion: no-preference) {
-  .overview-page.is-opening :is(.atlas-hero-eyebrow, .atlas-hero-title, .atlas-hero-sub, .atlas-hero-ctas) {
-    animation: atlas-rise var(--do-motion-enter) var(--do-ease-out) both;
+  /* Chapter I deliberate 2.6s opening stagger (never a 0.5s flash) */
+  .overview-page.is-opening .atlas-hero-eyebrow {
+    animation: atlas-rise 600ms var(--do-ease-out) 0ms both;
   }
-  .overview-page.is-opening .atlas-hero-title { animation-delay: 60ms; }
-  .overview-page.is-opening .atlas-hero-sub { animation-delay: 140ms; }
-  .overview-page.is-opening .atlas-hero-ctas { animation-delay: 200ms; }
+  .overview-page.is-opening .atlas-hero-title {
+    animation: atlas-rise 760ms var(--do-ease-out) 160ms both;
+  }
+  .overview-page.is-opening .atlas-hero-sub {
+    animation: atlas-rise 700ms var(--do-ease-out) 380ms both;
+  }
+  .overview-page.is-opening .atlas-hero-ctas {
+    animation: atlas-rise 620ms var(--do-ease-out) 580ms both;
+  }
+  .overview-page.is-opening .atlas-hero-provenance {
+    animation: atlas-rise 620ms var(--do-ease-out) 1950ms both;
+  }
+
+  /* Decorative hairline scroll progress indicator via native CSS scroll-timeline */
+  @supports (animation-timeline: scroll()) {
+    .atlas-scroll-progress {
+      transform-origin: 0 50%;
+      animation: atlas-scroll-progress auto linear both;
+      animation-timeline: scroll(root);
+    }
+  }
 
   .button,
   .atlas-lens-card,
@@ -30,10 +49,10 @@
     .atlas-lens-card:hover { transform: translateY(-2px); }
   }
 
-  /* Restrained editorial scroll choreography via IntersectionObserver */
+  /* Restrained editorial scroll choreography via IntersectionObserver fallback */
   [data-reveal="pending"] {
     opacity: 0;
-    transform: translateY(14px);
+    transform: translateY(16px);
   }
   [data-reveal="visible"] {
     opacity: 1;
@@ -43,8 +62,13 @@
 }
 
 @keyframes atlas-rise {
-  from { opacity: 0; transform: translateY(14px); }
+  from { opacity: 0; transform: translateY(16px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes atlas-scroll-progress {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
 }
 
 @media (prefers-reduced-motion: reduce), print {
@@ -59,7 +83,7 @@
     transition: none !important;
   }
 
-  .overview-page :is(.atlas-hero-eyebrow, .atlas-hero-title, .atlas-hero-sub, .atlas-hero-ctas),
+  .overview-page :is(.atlas-hero-eyebrow, .atlas-hero-title, .atlas-hero-sub, .atlas-hero-ctas, .atlas-hero-provenance),
   .atlas-lens-card:hover,
   [data-reveal] {
     opacity: 1 !important;

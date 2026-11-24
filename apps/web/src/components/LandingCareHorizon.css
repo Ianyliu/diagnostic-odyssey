@@ -42,6 +42,11 @@
   stroke: var(--do-journey-accent);
 }
 
+.horizon-node {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
 .horizon-node-evidence {
   fill: var(--do-reviewed-text);
   stroke: var(--do-canvas);
