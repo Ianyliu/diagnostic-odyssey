@@ -241,9 +241,9 @@ if (disabled) {
       assert.equal(await page.locator(".fc-output-content").evaluate(el => getComputedStyle(el).animationName), "none");
     }
     await goal(page, goals[0]);
-    await page.locator(".fc-boundaries summary").click(); assert.match(await page.locator(".fc-boundaries").innerText(), /Advisory boundaries/);
-    assert.equal(await page.locator(".fc-hero-meta").evaluate(el => { const r = el.getBoundingClientRect(); return el.contains(document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2)); }), true, "Studio header must remain visible below the sticky product header");
+    await page.locator(".fc-boundaries summary").click(); assert.match(await page.locator(".fc-boundaries").innerText(), /Gross burden is not attributable burden/);
     await page.evaluate(() => window.scrollTo(0, 0));
+    assert.equal(await page.locator(".fc-hero-meta").evaluate(el => { const r = el.getBoundingClientRect(); return el.contains(document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2)); }), true, "Studio header must remain visible below the sticky product header");
     await page.screenshot({path: `${output}/comparison-320-dark.png`, fullPage: true});
     await page.emulateMedia({media: "print"}); assert.equal(await page.locator(".future-concept").isVisible(), false);
   });

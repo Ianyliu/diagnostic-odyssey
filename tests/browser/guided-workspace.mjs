@@ -147,13 +147,13 @@ await check("visible selections, collapsed category state and unchanged Pilot in
   await page.locator("#pilot-capacity").fill("2345");
   await page.locator("#pilot-capacity").fill("2e");
   assert.match(await page.locator(".atlas-studio-output").innerText(), /Draft not applied/);
-  assert.ok(await page.getByRole("button", {name: "Review planning brief", exact: true}).isDisabled());
+  assert.ok(await page.getByRole("button", {name: "Open Brief", exact: true}).isDisabled());
   await page.locator("#pilot-capacity").fill("2000");
-  await page.getByRole("link", {name: /(?:Explore sensitivity|Open sensitivity explorer)/}).click();
+  await page.locator('a[href="#sensitivity"]').click();
   assert.equal(await page.locator(":focus").getAttribute("id"), "sensitivity-title");
   await page.locator("#sensitivity").getByRole("button", {name: "Add to data requests", exact: true}).click();
   await page.getByRole("link", {name: /(?:Review unresolved data needs|Review data request)/}).first().click();
-  assert.ok(await page.getByRole("checkbox", {name: /Include in Planning Brief/}).isVisible());
+  assert.ok(await page.getByRole("checkbox", {name: /Include in (?:Planning )?Brief/}).isVisible());
 });
 await check("collapsed report links, print completeness, exact restoration and AI dialog", async () => {
   const page = await pageAt("/brief");
@@ -204,7 +204,11 @@ await check("all-reviewed default prints a concise PDF with 34 canonical selecti
 for (const width of [390, 1440]) await check(`cross-route history reveals fragments and preserves ordinary scroll ${width}`, async () => {
   const page = await pageAt("/brief", width);
   const navigate = async name => {
-    await navigateWorkspace(page, name);
+    const label = name === "Pilot planner" ? /^(?:03\s+)?Strategy Lab$/ : /^(?:04\s+)?Planning Brief$/;
+    const link = page.getByRole("navigation", {name: "Primary navigation"}).getByRole("link", {name: label});
+    if (!await link.isVisible()) await page.getByRole("button", {name: "Menu", exact: true}).click();
+    await link.click();
+    await page.locator("main h1").waitFor();
   };
   const settleScroll = () => page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
   const expectBurdenFocus = () => page.waitForFunction(() => document.activeElement?.textContent === "Reviewed national burden findings", null, {timeout: 6000});
