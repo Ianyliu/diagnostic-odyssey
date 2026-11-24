@@ -49,7 +49,7 @@ export function DataRequestsPage() {
         <p className="eyebrow">COMPANION · DATA REQUESTS</p>
         <h1 id="data-requests-heading" tabIndex={-1}>Turn uncertainty into a concrete request</h1>
         <p>
-          Requests are planning artifacts, not observed evidence. Available requests start selected for convenience; review or deselect them before exporting. Stale requests remain excluded from the Brief until refreshed.
+          Requests are planning artifacts, not observed evidence. New and loaded requests start automatically selected for Brief inclusion by default; deselect any request below or with the bulk controls before exporting. Stale requests remain excluded from the Brief until refreshed.
         </p>
         <p className="micro-caption">
           &ldquo;Current&rdquo; means the request matches the applied scenario, not that its source data is up to date. Confirm reporting periods and availability with the local owner.
@@ -134,8 +134,12 @@ export function DataRequestsPage() {
                       <span className={`status ${stale ? "status-warning" : "status-neutral"}`}>
                         {stale ? "Stale for applied scenario" : isAnalystRequest ? "Current for applied scenario" : "Template"}
                       </span>
-                      <span className={`status ${selected ? "status-selection" : "status-neutral"}`}>
-                        {selected ? "In Brief" : "Excluded"}
+                      <span className={`status ${!selected ? "status-neutral" : stale ? "status-gap" : "status-selection"}`}>
+                        {!selected
+                          ? "Not selected for Brief"
+                          : stale
+                            ? "Selected · excluded until refreshed"
+                            : "Included in Brief"}
                       </span>
                     </div>
                   </header>
@@ -257,9 +261,11 @@ export function DataRequestsPage() {
                       <span>
                         <strong id={`request-action-${request.request_id}`}>Include in Brief</strong>
                         <small>
-                          {stale && selected
-                            ? "Selected state is preserved, but this stale request is excluded from export until refreshed."
-                            : "Selected by default for convenience; review before export."}
+                          {!selected
+                            ? "Not selected for Brief; check to include this request when current."
+                            : stale
+                              ? "Selected · excluded until refreshed for the current scenario; export state is preserved once refreshed."
+                              : "Auto-selected on creation and included in the Planning Brief; uncheck to exclude before export."}
                         </small>
                       </span>
                     </label>

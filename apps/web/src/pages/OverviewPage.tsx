@@ -140,6 +140,13 @@ export function OverviewPage({ advisorAvailable = false }: { advisorAvailable?: 
             </div>
           )}
 
+          <div className="atlas-section-head">
+            <p className="eyebrow">EPISTEMIC BOUNDARY · KNOWN · ASSUMED · UNKNOWN</p>
+            <p className="subtle">
+              Reviewed national &amp; state data (Known), editable Strategy Lab inputs (Assumed), and unresolved local operational questions (Unknown) stay visually and mathematically distinct across every view.
+            </p>
+          </div>
+
           <div className="atlas-grammar-strip" aria-label="Evidence-to-planning visual grammar">
             <div className="atlas-grammar-token is-evidence">
               <span className="atlas-grammar-swatch" aria-hidden="true" />
