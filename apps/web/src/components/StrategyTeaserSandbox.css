@@ -275,7 +275,7 @@
 }
 
 .teaser-svg-fill-fixed {
-  fill: var(--do-chart-3);
+  fill: var(--do-assumption-text);
   transition: width var(--do-motion-medium) ease-out;
 }
 
@@ -305,7 +305,7 @@
   border: 1px solid var(--do-error-text);
   background: repeating-linear-gradient(45deg, var(--do-error-text) 0 2px, var(--do-error-bg) 2px 5px);
 }
-.teaser-swatch-fixed { background: var(--do-chart-3); }
+.teaser-swatch-fixed { background: var(--do-assumption-text); }
 
 .teaser-footer {
   display: flex;

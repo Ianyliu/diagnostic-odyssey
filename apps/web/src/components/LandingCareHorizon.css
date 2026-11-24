@@ -1,7 +1,10 @@
 /* Chapter I Care Horizon — deliberate 2.6s opening choreography on porcelain/obsidian. */
 .atlas-care-horizon {
-  width: min(920px, 100%);
-  margin: clamp(10px, 2vh, 22px) auto 0;
+  width: min(1120px, 100%);
+  margin: clamp(18px, 3vh, 30px) auto 0;
+  padding: clamp(8px, 1.6vw, 20px) clamp(8px, 2.5vw, 28px) 12px;
+  border-block: 1px solid var(--do-border);
+  background: linear-gradient(90deg, transparent, var(--do-surface-elevated) 28% 72%, transparent);
   display: grid;
   gap: 8px;
 }
@@ -217,7 +220,7 @@
     margin-top: 6px;
   }
   .atlas-horizon-legend {
-    justify-content: flex-start;
+    justify-content: center;
     gap: 6px 14px;
     font-size: 0.68rem;
   }

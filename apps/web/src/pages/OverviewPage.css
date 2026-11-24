@@ -258,9 +258,9 @@
 .atlas-lenses-grid {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 20px;
-  align-items: center;
+  align-items: stretch;
 }
 
 .atlas-lens-card {
@@ -277,21 +277,8 @@
   box-shadow: var(--do-shadow-soft);
 }
 
-.atlas-lens-card.is-local::after {
-  content: "";
-  position: absolute;
-  right: -28px;
-  top: -28px;
-  width: 160px;
-  height: 160px;
-  border-radius: 50%;
-  background:
-    radial-gradient(circle, transparent 36%, var(--do-selection-bg) 37%, transparent 40%),
-    radial-gradient(circle, transparent 54%, var(--do-selection-bg) 55%, transparent 58%);
-  pointer-events: none;
-}
-
-.atlas-lens-card:hover {
+.atlas-lens-card:hover,
+.atlas-lens-card:focus-visible {
   border-color: var(--do-journey-accent);
 }
 
@@ -306,15 +293,6 @@
 
 .atlas-lens-card.is-local .atlas-lens-kicker {
   color: var(--do-selection-text);
-}
-
-.atlas-lens-figure {
-  font-family: var(--do-font-display);
-  font-size: clamp(3rem, 5vw, 4.5rem);
-  font-weight: 400;
-  line-height: 0.96;
-  letter-spacing: -0.035em;
-  color: var(--do-text);
 }
 
 .atlas-lens-card h3 {
@@ -336,20 +314,6 @@
   color: var(--do-accent);
   font-weight: 650;
   font-size: 0.9rem;
-}
-
-.atlas-never-blended {
-  padding: 8px 15px;
-  border-radius: 999px;
-  border: 1px solid var(--do-border);
-  background: var(--do-surface);
-  color: var(--do-text-muted);
-  font-family: var(--do-font-mono);
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  white-space: nowrap;
 }
 
 .atlas-lenses-note {

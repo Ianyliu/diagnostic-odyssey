@@ -11,7 +11,7 @@ export function LandingCareHorizon() {
     <div className="atlas-care-horizon" aria-hidden="true">
       <svg
         className="atlas-horizon-svg"
-        viewBox="0 0 960 190"
+        viewBox="12 17 934 160"
         preserveAspectRatio="xMidYMid meet"
         focusable="false"
       >
@@ -37,7 +37,7 @@ export function LandingCareHorizon() {
           pathLength={1}
           fill="none"
           className="horizon-ribbon horizon-ribbon-evidence"
-          strokeWidth="3.2"
+          strokeWidth="4.2"
           strokeLinecap="round"
         />
 
@@ -47,7 +47,7 @@ export function LandingCareHorizon() {
           pathLength={1}
           fill="none"
           className="horizon-ribbon horizon-ribbon-context"
-          strokeWidth="2.4"
+          strokeWidth="3.3"
           strokeLinecap="round"
         />
 
@@ -57,7 +57,7 @@ export function LandingCareHorizon() {
           pathLength={1}
           fill="none"
           className="horizon-ribbon horizon-ribbon-assumption"
-          strokeWidth="2.4"
+          strokeWidth="3.3"
           strokeDasharray="7 5"
           strokeLinecap="round"
         />

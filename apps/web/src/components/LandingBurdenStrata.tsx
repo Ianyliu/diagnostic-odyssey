@@ -126,7 +126,7 @@ export function LandingBurdenStrata({ bundle }: { bundle: ArtifactBundle | null 
     return [
       {
         id: "1",
-        eyebrow: "01 · FINANCIAL SCALE",
+        eyebrow: "Medical spending",
         figure: spending && spendTotal ? formatEstimateValue(spendTotal) : "Estimate unavailable",
         graphic: spending,
         headline: "In annual gross all-cause medical spending.",
@@ -137,7 +137,7 @@ export function LandingBurdenStrata({ bundle }: { bundle: ArtifactBundle | null 
       },
       {
         id: "2",
-        eyebrow: "02 · PAPERWORK & NAVIGATION",
+        eyebrow: "Paperwork & navigation",
         figure: formatHourFigure(admin ? paperwork : undefined),
         graphic: admin,
         headline: "Survey-weighted mean annualized hours per person per year for health care paperwork and navigation.",
@@ -148,7 +148,7 @@ export function LandingBurdenStrata({ bundle }: { bundle: ArtifactBundle | null 
       },
       {
         id: "3",
-        eyebrow: "03 · PSYCHOLOGICAL DISTRESS",
+        eyebrow: "Serious distress",
         figure: distress && k6Serious ? formatEstimateValue(k6Serious) : "Estimate unavailable",
         graphic: distress,
         headline: "Met the K6 screening threshold for serious nonspecific distress.",
@@ -200,12 +200,12 @@ export function LandingBurdenStrata({ bundle }: { bundle: ArtifactBundle | null 
     >
       <div className="atlas-band-inner">
         <div className="atlas-burden-intro" data-reveal="auto">
-          <p className="eyebrow">01 · THE BURDEN IN THREE SEPARATE MEASURES</p>
+          <p className="eyebrow">The burden of Long COVID</p>
           <h2 id="story-burden-title">
-            Three measures describe <em>different dimensions of burden.</em>
+            Money, time, and <em>mental health.</em>
           </h2>
           <p className="subtle">
-            These AHRQ MEPS 2024 estimates describe finances, administrative time, and distress. The outcome-specific respondent samples may overlap.
+            Three national estimates show what people spend on care, how much time paperwork takes, and how often respondents screen positive for serious distress. The AHRQ MEPS respondent samples may overlap.
           </p>
         </div>
 

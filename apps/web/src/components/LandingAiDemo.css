@@ -199,3 +199,18 @@
     transition: none !important;
   }
 }
+
+.atlas-ai-packet[hidden] {
+  display: none;
+}
+
+.atlas-ai-field-label {
+  font-family: inherit;
+  font-size: 0.86rem;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.atlas-ai-prompt-details .atlas-ai-packet-body {
+  padding: 10px 0 2px;
+}

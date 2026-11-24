@@ -51,7 +51,7 @@ export function OverviewPage({ advisorAvailable = false }: { advisorAvailable?: 
                 What does chronic illness <em>really cost us?</em>
               </h1>
               <p className="atlas-hero-sub">
-                Beyond medical bills and clinic visits, long-term illness brings unseen hours of paperwork and real psychological strain. Diagnostic Odyssey helps public-health teams see the evidence clearly—and plan care that fits local ground.
+                Medical bills tell part of the story. Paperwork takes time, and serious distress affects some adults living with Long COVID. Explore the national evidence, then use local access data to plan a pilot.
               </p>
               <div className="atlas-hero-ctas">
                 <a className="button" href="#story-burden">
@@ -104,38 +104,32 @@ export function OverviewPage({ advisorAvailable = false }: { advisorAvailable?: 
                 <p className="eyebrow">02 · TWO LENSES, KEPT APART</p>
                 <h2 id="overview-lenses-title">National reality. Local ground.</h2>
                 <p className="subtle">
-                  National descriptive data illuminates illness burden; statewide indicators illuminate delivery conditions. One never invents prevalence for the other.
+                  Use national estimates to understand burden. Use West Virginia indicators to understand conditions for delivering care.
                 </p>
               </div>
 
               <div className="atlas-lenses-grid">
                 <Link to="/burden" className="atlas-lens-card is-national">
                   <span className="atlas-lens-kicker">AHRQ MEPS · U.S. National</span>
-                  <strong className="atlas-lens-figure">{reviewedCount || "—"}</strong>
-                  <h3>Reviewed burden measures</h3>
+                  <h3>National burden</h3>
                   <p>
-                    Medical spending, healthcare utilization, administrative care time, and psychological distress across 3 populated domains (13 economic/healthcare, 4 administrative, 4 mental-health; work-loss measures remain unavailable).
+                    {reviewedCount || "—"} reviewed measures cover spending, healthcare use, administrative time, and distress. Work-loss measures remain unavailable.
                   </p>
                   <span className="atlas-lens-link">Open 01 Burden ↗</span>
                 </Link>
 
-                <span className="atlas-never-blended" aria-label="National and local data are never combined into a single score">
-                  Never blended
-                </span>
-
                 <Link to="/local-context" className="atlas-lens-card is-local">
                   <span className="atlas-lens-kicker">HRSA &amp; Census ACS · Statewide West Virginia</span>
-                  <strong className="atlas-lens-figure">{localIndicatorCount ?? "—"}</strong>
-                  <h3>Statewide indicators from HRSA and Census ACS</h3>
+                  <h3>West Virginia access</h3>
                   <p>
-                    Statewide West Virginia HRSA shortage designations (not people) and 2024 ACS insurance, broadband, poverty, and household vehicle indicators (no county-level data)—never local Long COVID prevalence.
+                    {localIndicatorCount ?? "—"} statewide indicators cover shortage designations, insurance, broadband, poverty, and household vehicle access. Designations count areas, facilities, or population groups. County-level data and local prevalence are outside this release.
                   </p>
                   <span className="atlas-lens-link">Open 02 Local context ↗</span>
                 </Link>
               </div>
 
               <p className="micro-caption atlas-lenses-note">
-                National descriptive · Not causal · All-cause estimates are not cost attributable to Long COVID alone
+                National spending is all-cause and descriptive. State indicators cannot be used to rescale national estimates.
               </p>
             </div>
 
