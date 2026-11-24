@@ -29,11 +29,11 @@ test("ordinary estimate count uses reviewed export eligibility rather than a lit
  assert.doesNotMatch(source,/Explore all 21/);
 });
 
-test("Overview keeps a single compact evidence-role explanation and one conceptual visual",()=>{
+test("Overview keeps National descriptive evidence separate from simulator math",()=>{
  const source=readFileSync(new URL("../src/pages/OverviewPage.tsx",import.meta.url),"utf8");
- assert.match(source,/Different evidence, distinct purposes/);
- assert.match(source,/not local Long COVID prevalence/);
- assert.match(source,/not observed effects/);
- assert.equal(source.split("<OpeningProvenance ").length-1,1);
+ assert.match(source,/Health costs, finally clear\./);
+ assert.match(source,/National descriptive · Not causal/);
+ assert.match(source,/Planning math · Not savings/);
+ assert.match(source,/Zero cross-condition borrowing/);
  assert.doesNotMatch(source,/overview-role-grid|roles\.map/);
 });

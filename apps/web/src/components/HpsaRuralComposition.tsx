@@ -45,29 +45,51 @@ export function HpsaRuralComposition({
     .map(segment => `${segment.label} ${segment.value}`)
     .join(", ");
 
-  return <div className="hpsa-composition">
-    <div className="hpsa-composition-heading">
-      <strong>{serviceLabel} designations by HRSA rural-status category</strong>
-      <span>{total} included distinct designations</span>
+  const W = 320;
+  let offset = 0;
+  const rects = nonzero.map(segment => {
+    const w = (segment.value / total) * W;
+    const x = offset;
+    offset += w;
+    return {...segment, x, w};
+  });
+
+  return (
+    <div className="hpsa-composition">
+      <div className="hpsa-composition-heading">
+        <strong>{serviceLabel} by rural status</strong>
+        <span className="mono-figure">{total} designations</span>
+      </div>
+      <svg
+        className="hpsa-composition-svg"
+        viewBox={`0 0 ${W} 14`}
+        role="img"
+        aria-label={`${serviceLabel} HPSA designation composition: ${aria}.`}
+        preserveAspectRatio="none"
+      >
+        <rect x={0} y={0} width={W} height={14} rx={7} className="hpsa-track-bg" />
+        {rects.map(segment => (
+          <rect
+            key={segment.label}
+            x={segment.x}
+            y={0}
+            width={segment.w}
+            height={14}
+            className={`hpsa-segment ${segment.className}`}
+          >
+            <title>{`${segment.label}: ${segment.value}`}</title>
+          </rect>
+        ))}
+      </svg>
+      <div className="hpsa-legend">
+        {nonzero.map(segment => (
+          <span key={segment.label}>
+            <i className={`legend-swatch ${segment.className}`} aria-hidden="true" />
+            {segment.label} <strong className="mono-figure">{segment.value}</strong>
+          </span>
+        ))}
+      </div>
+      <p className="micro-caption">Designation counts only · Not population share or prevalence</p>
     </div>
-    <div
-      className="hpsa-composition-track"
-      role="img"
-      aria-label={`${serviceLabel} HPSA designation composition: ${aria}.`}
-    >
-      {nonzero.map(segment => <span
-        key={segment.label}
-        className={`hpsa-segment ${segment.className}`}
-        style={{width: `${(segment.value / total) * 100}%`}}
-        title={`${segment.label}: ${segment.value}`}
-      />)}
-    </div>
-    <div className="hpsa-legend">
-      {nonzero.map(segment => <span key={segment.label}>
-        <i className={`legend-swatch ${segment.className}`} aria-hidden="true" />
-        {segment.label} <strong>{segment.value}</strong>
-      </span>)}
-    </div>
-    <p className="visual-note">Composition of included HPSA designations only—not population share, county coverage, or statewide shortage severity.</p>
-  </div>;
+  );
 }

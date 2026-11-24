@@ -1,123 +1,123 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import type { EvidenceRecord } from "@diagnostic-odyssey/contracts";
 import {
   canDriveScenarioParameter,
   evidenceClaimLabel
 } from "@diagnostic-odyssey/evidence-core";
-import { ContextBar } from "../components/ContextBar";
+import { AppleDetailModal } from "../components/AppleDetailModal";
 import { InterventionEvidenceGap } from "../components/PlanningInsights";
-import { planningInsightsEnabled } from "../data/planningInsightsEnabled";
 import { useArtifact } from "../data/ArtifactContext";
+import { formatMechanismLabel, formatPathwayStepLabel } from "../data/pathwayBoundary";
+import { planningInsightsEnabled } from "../data/planningInsightsEnabled";
 import { formatReviewerStatusLabel } from "../data/presentationLabels";
-import {
-  formatMechanismLabel,
-  formatPathwayStepLabel
-} from "../data/pathwayBoundary";
 import "./EvidencePage.css";
 
 export function EvidencePage() {
-  const {bundle, scenario} = useArtifact();
+  const { bundle, scenario } = useArtifact();
+  const [inspectingRecord, setInspectingRecord] = useState<EvidenceRecord | null>(null);
   if (!bundle) return null;
+
   const scenarioEligibleCount = scenario
     ? bundle.evidence.filter(record => canDriveScenarioParameter(record, scenario).allowed).length
     : null;
 
-  return <section className="page page-stack evidence-page">
-    <ContextBar />
-    <header className="page-heading">
-      <h1>Intervention evidence &amp; limits</h1>
-      <p>Intervention-effect evidence is kept separate from descriptive burden and planning assumptions.</p>
-    </header>
+  return (
+    <section className="page page-stack evidence-page">
+      <header className="apple-page-header">
+        <p className="apple-kicker">Edition 01 · Evidence Admissibility</p>
+        <h1>Intervention evidence &amp; limits.</h1>
+        <p className="apple-subtitle">
+          {bundle.evidence.length === 0
+            ? "No reviewed intervention-effect record is loaded."
+            : scenarioEligibleCount === null
+              ? `${bundle.evidence.length} records loaded; scenario check pending.`
+              : `${scenarioEligibleCount} of ${bundle.evidence.length} records pass scenario admissibility.`}
+        </p>
+        <p className="micro-caption">Admissibility gate · Separate from descriptive burden</p>
+      </header>
 
-    <section className="evidence-availability" aria-labelledby="evidence-availability-title">
-      <p className="visual-kicker">CURRENT AVAILABILITY</p>
-      <h2 id="evidence-availability-title">{bundle.evidence.length === 0
-        ? "No intervention-effect record is loaded"
-        : scenarioEligibleCount === null
-          ? `${bundle.evidence.length} evidence record${bundle.evidence.length === 1 ? "" : "s"} loaded; scenario match pending`
-          : `${scenarioEligibleCount} of ${bundle.evidence.length} record${bundle.evidence.length === 1 ? "" : "s"} pass the current-scenario use check`}</h2>
-      <p>Burden estimates are descriptive national evidence. Pilot inputs remain analyst assumptions. A record's reviewer state, claim admissibility, and current-scenario eligibility are separate checks.</p>
-    </section>
+      {planningInsightsEnabled && <InterventionEvidenceGap id="evidence-narrative-options" />}
 
-    {planningInsightsEnabled && <>
-      <InterventionEvidenceGap id="evidence-narrative-options" />
-      <Link className="text-button" to="/brief#planning-insights">See the current deterministic planning picture →</Link>
-    </>}
-
-    {bundle.evidence.length === 0 ? <div className="empty-state evidence-empty-state">
-      <strong>No reviewed intervention-effect parameter is currently available for this planning model.</strong>
-      <p>The Pilot therefore remains assumption-based. Causal benefit, savings, ROI, and preventable-cost claims remain unavailable.</p>
-      <p>Absence of a reviewed effect parameter is not evidence that an intervention has no effect.</p>
-      <div className="empty-state-actions">
-        <Link className="button" to="/pilot">Return to Pilot assumptions</Link>
-        <Link className="button secondary" to="/data-requests">Review operational data requests</Link>
-      </div>
-    </div> : <div className="evidence-record-list">{bundle.evidence.map(record => {
-      const currentUse = scenario
-        ? canDriveScenarioParameter(record, scenario)
-        : null;
-
-      return <article className="evidence-record" key={record.evidence_id}>
-        <div className="evidence-record-heading">
-          <div>
-            <p className="visual-kicker">EVIDENCE RECORD · {record.evidence_id}</p>
-            <h2>{record.allowed_use}</h2>
-            <p className="subtle">{record.source}</p>
+      {bundle.evidence.length === 0 ? (
+        <div className="empty-state">
+          <strong>No reviewed intervention-effect parameter is loaded.</strong>
+          <p>Absence of a reviewed parameter is not evidence of no effect. Simulator stays assumption-based.</p>
+          <div className="selection-actions">
+            <Link className="button" to="/pilot">Return to Simulator</Link>
+            <Link className="button secondary" to="/data-requests">Review data requests</Link>
           </div>
         </div>
-        <div className="evidence-state-grid" role="group" aria-label="Distinct evidence use states">
-          <div><span>Reviewer state</span><strong className={`status ${record.reviewer_status === "approved" ? "status-reviewed" : "status-unavailable"}`}>{formatReviewerStatusLabel(record.reviewer_status)}</strong></div>
-          <div><span>Claim admissibility</span><strong>{evidenceClaimLabel(record)}</strong></div>
-          <div><span>Current-scenario eligibility</span><strong>{currentUse ? currentUse.allowed ? "Eligible for bounded parameter use" : "Not eligible for parameter use" : "Not checked without a scenario"}</strong></div>
+      ) : (
+        <div className="evidence-record-list">
+          {bundle.evidence.map(record => {
+            const currentUse = scenario ? canDriveScenarioParameter(record, scenario) : null;
+            return (
+              <article className="apple-card evidence-record-card" key={record.evidence_id}>
+                <div className="burden-card-top">
+                  <div className="burden-card-title-group">
+                    <span className="apple-kicker">{record.evidence_id}</span>
+                    <h2>{record.allowed_use}</h2>
+                    <span className="subtle">{record.source}</span>
+                  </div>
+                  <button
+                    type="button"
+                    className="apple-info-btn"
+                    aria-label={`Details for ${record.evidence_id}`}
+                    onClick={() => setInspectingRecord(record)}
+                  >
+                    i
+                  </button>
+                </div>
+
+                <div className="request-pill-row">
+                  <span className={`status ${record.reviewer_status === "approved" ? "status-reviewed" : "status-neutral"}`}>
+                    {formatReviewerStatusLabel(record.reviewer_status)}
+                  </span>
+                  <span className="status status-selection">{evidenceClaimLabel(record)}</span>
+                  <span className="status status-neutral">
+                    {currentUse ? (currentUse.allowed ? "Eligible" : "Not eligible") : "Pending scenario"}
+                  </span>
+                </div>
+              </article>
+            );
+          })}
         </div>
-        <dl className="evidence-use-summary">
-          <div>
-            <dt>What this supports</dt>
-            <dd>{record.allowed_use}</dd>
-          </div>
-          <div>
-            <dt>Current planning use</dt>
-            <dd>{currentUse
-              ? currentUse.allowed
-                ? "May drive a bounded quantitative parameter for the current scenario."
-                : "May not drive a quantitative parameter for the current scenario."
-              : "No current scenario is available for a scenario-specific eligibility check."}</dd>
-          </div>
-          <div>
-            <dt>Why</dt>
-            <dd>{currentUse?.reason ?? "Scenario-specific pathway and mechanism matching cannot be evaluated without a current scenario."}</dd>
-          </div>
-          <div>
-            <dt>Limitations</dt>
-            <dd>{record.limitations.join(" ") || "No additional limitation text supplied."}</dd>
-          </div>
+      )}
+
+      <details className="apple-accordion">
+        <summary>How evidence labels affect planning use</summary>
+        <dl className="technical-detail-list">
+          <div><dt>Supported</dt><dd>Supports stated use within pathway, mechanism, and limitations.</dd></div>
+          <div><dt>Supported with bounds</dt><dd>Quantitative use permitted only within reviewed bounds.</dd></div>
+          <div><dt>Limited use</dt><dd>Informs interpretation only; no quantitative parameter use.</dd></div>
+          <div><dt>Insufficient evidence</dt><dd>Does not support quantitative claim or parameter use.</dd></div>
         </dl>
-        <details className="technical-disclosure">
-          <summary>Evidence provenance and technical details</summary>
-          <p><strong>Source:</strong> {record.source}</p>
-          <p><strong>Locator:</strong> {record.locator}</p>
-          <p><strong>Population:</strong> {record.population}</p>
-          <p><strong>Condition definition:</strong> {record.condition_definition}</p>
-          <p><strong>Outcome:</strong> {record.outcome}</p>
-          <p><strong>System boundary:</strong> {record.system_boundary}</p>
-          <p><strong>Pathway step:</strong> {record.pathway_step ? formatPathwayStepLabel(record.pathway_step) : "Not specified"}</p>
-          <p><strong>Target mechanism:</strong> {record.target_mechanism ? formatMechanismLabel(record.target_mechanism) : "Not specified"}</p>
-          <p><strong>Uncertainty:</strong> {record.uncertainty ?? "Not specified"}</p>
-          <p><strong>Reviewer state:</strong> {formatReviewerStatusLabel(record.reviewer_status)}</p>
-          <p><strong>Admissibility:</strong> {evidenceClaimLabel(record)}</p>
-          <p><strong>Limitations:</strong> {record.limitations.join(" ") || "None listed."}</p>
-        </details>
-      </article>;
-    })}</div>}
+      </details>
 
-    <details className="evidence-status-guide">
-      <summary id="evidence-status-guide-title">How evidence labels affect planning use</summary>
-      <dl>
-        <div><dt>Supported</dt><dd>Reviewed evidence may support its stated use, subject to the record's pathway, mechanism, and limitations.</dd></div>
-        <div><dt>Supported with bounds</dt><dd>Quantitative use may be allowed only within the reviewed bounds and matching scenario context.</dd></div>
-        <div><dt>Limited use</dt><dd>The record can inform interpretation but does not permit quantitative scenario-parameter use.</dd></div>
-        <div><dt>Insufficient evidence</dt><dd>The record does not support the proposed quantitative claim or parameter use.</dd></div>
-      </dl>
-      <p className="subtle">Admissibility alone is not enough: reviewer approval, pathway step, and target mechanism also determine whether a record can drive the current scenario.</p>
-    </details>
-  </section>;
+      <AppleDetailModal
+        open={inspectingRecord !== null}
+        kicker="Evidence Provenance"
+        title={inspectingRecord?.allowed_use ?? ""}
+        onClose={() => setInspectingRecord(null)}
+      >
+        {inspectingRecord && (
+          <dl className="apple-detail-list">
+            <div><dt>Source &amp; locator</dt><dd>{inspectingRecord.source} · {inspectingRecord.locator}</dd></div>
+            <div><dt>Population</dt><dd>{inspectingRecord.population}</dd></div>
+            <div><dt>Outcome</dt><dd>{inspectingRecord.outcome}</dd></div>
+            <div><dt>System boundary</dt><dd>{inspectingRecord.system_boundary}</dd></div>
+            <div>
+              <dt>Pathway &amp; mechanism</dt>
+              <dd>
+                {inspectingRecord.pathway_step ? formatPathwayStepLabel(inspectingRecord.pathway_step) : "Not specified"} ·{" "}
+                {inspectingRecord.target_mechanism ? formatMechanismLabel(inspectingRecord.target_mechanism) : "Not specified"}
+              </dd>
+            </div>
+            <div><dt>Limitations</dt><dd>{inspectingRecord.limitations.join(" ") || "None listed."}</dd></div>
+          </dl>
+        )}
+      </AppleDetailModal>
+    </section>
+  );
 }

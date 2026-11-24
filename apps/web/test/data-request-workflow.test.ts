@@ -69,7 +69,8 @@ test("analyst-created requests start selected with reversible Brief inclusion", 
   assert.match(context, /toggleDataRequestForBrief/);
   assert.match(context, /selectedDataRequests/);
   assert.match(requests, /Include in Planning Brief/);
-  assert.match(requests, /Selected by default for convenience/);
+  assert.match(requests, /selectAllDataRequestsForBrief/);
+  assert.match(requests, /clearDataRequestsForBrief/);
   assert.match(context, /selectAllDataRequestsForBrief/);
   assert.match(context, /clearDataRequestsForBrief/);
   assert.match(brief, /dataRequests:\s*selectedDataRequests/);
@@ -128,8 +129,7 @@ test("stale selected sensitivity requests are excluded from Brief/export until r
   assert.match(context, /\[availableDataRequests, briefDataRequestIds, scenario\]/);
   assert.match(sensitivity, /Refresh data request/);
   assert.match(requests, /Stale for applied scenario/);
-  assert.match(requests, /Selected state is preserved/);
-  assert.match(requests, /this stale request is excluded from export until refreshed/);
+  assert.match(requests, /isDataRequestCurrentForScenario\(request, scenario\)/);
   assert.match(requests, /createSensitivityDataRequest\(scenario, sensitivityField\)/);
   assert.match(brief, /withStaleSelectedDataRequestWarning/);
   assert.match(staleSelectedDataRequestExclusionWarning(1)!, /stale for the current scenario/);
@@ -324,7 +324,7 @@ test("DataRequestsPage blocks sensitivity-request refresh while scenario result 
   );
   assert.match(
     requests,
-    /Fix the Pilot planner inputs before refreshing this request\./
+    /Fix Pilot inputs before refreshing\./
   );
   assert.match(
     requests,

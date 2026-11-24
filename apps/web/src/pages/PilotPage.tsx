@@ -1,13 +1,8 @@
-import { formatPlanningCurrency, formatPlanningNumber } from "../data/planningNumberFormatting.ts";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import type { Scenario, ScenarioResult } from "@diagnostic-odyssey/contracts";
-import { WorkspaceDisclosure } from "../components/WorkspaceDisclosure";
-import { SensitivityPreview } from "../components/SensitivityPreview";
-import { formatAppliedAssumption } from "./briefAssumptions";
-import { ContextBar } from "../components/ContextBar";
+import { AppleDetailModal } from "../components/AppleDetailModal";
 import { DecisionTrace } from "../components/DecisionTrace";
-import { InterpretationGuide } from "../components/InterpretationGuide";
 import { PilotDecisionVisuals } from "../components/PilotDecisionVisuals";
 import { SensitivityExplorer } from "../components/SensitivityExplorer";
 import { useArtifact } from "../data/ArtifactContext";
@@ -17,6 +12,10 @@ import {
   isDataRequestCurrentForScenario
 } from "../data/dataRequestTemplates";
 import type { SensitivityField } from "../data/decisionVisuals";
+import { formatLocalContextValue } from "../data/formatLocalContextValue";
+import { formatPublishedLocalContextUncertainty } from "../data/localContextPresentation";
+import { getPathwayBoundaryPresentation } from "../data/pathwayBoundary";
+import { getPilotFragmentTargetId } from "../data/pilotFragmentScroll";
 import {
   createPilotInputDraft,
   evaluatePilotInputDraft,
@@ -27,64 +26,86 @@ import {
   type PilotInputDraft,
   type PilotNumericField
 } from "../data/pilotInputDraft";
-import { getPilotFragmentTargetId } from "../data/pilotFragmentScroll";
-import { formatLocalContextValue } from "../data/formatLocalContextValue";
-import { formatPublishedLocalContextUncertainty } from "../data/localContextPresentation";
+import { formatPlanningCurrency, formatPlanningNumber } from "../data/planningNumberFormatting";
 import {
+  PILOT_STRATEGY_PRESETS,
   PLANNING_DEFAULTS_DESCRIPTION,
   PLANNING_DEFAULTS_LABEL
 } from "../data/planningScenarioDefaults";
-import { getPathwayBoundaryPresentation } from "../data/pathwayBoundary";
+import { formatAppliedAssumption } from "./briefAssumptions";
 import "./PilotPage.css";
 
 const resultNumber = new Intl.NumberFormat("en-US");
 
-const assumptionGroups: ReadonlyArray<{
-  title: string;
-  description: string;
-  fields: readonly PilotNumericField[];
-}> = [
-  {
-    title: "Population and reach",
-    description: "Who the pilot could serve, and the share it intends to reach.",
-    fields: ["eligible_population", "reach"]
+type PilotSubView = "visuals" | "sensitivity" | "data";
+
+const SLIDER_CONFIG: Partial<Record<PilotNumericField, {
+  min: number;
+  max: number;
+  step: number;
+  toSlider: (scenario: Scenario) => number;
+  fromSlider: (val: number) => string;
+  formatBubble: (scenario: Scenario) => string;
+}>> = {
+  eligible_population: {
+    min: 1000,
+    max: 30000,
+    step: 500,
+    toSlider: s => s.eligible_population,
+    fromSlider: v => String(v),
+    formatBubble: s => `${resultNumber.format(s.eligible_population)} adults`
   },
-  {
-    title: "Delivery and timing",
-    description: "Operational capacity and the recognition windows used in the scenario.",
-    fields: ["capacity", "baseline_window_months", "alternative_window_months", "horizon_months"]
+  reach: {
+    min: 5,
+    max: 60,
+    step: 1,
+    toSlider: s => Math.round(s.reach * 100),
+    fromSlider: v => String(v),
+    formatBubble: s => `${Math.round(s.reach * 100)}%`
   },
-  {
-    title: "Program resources",
-    description: "Budget inputs for this planning scenario; these are not savings or ROI.",
-    fields: ["fixed_cost", "per_participant_cost"]
+  capacity: {
+    min: 200,
+    max: 10000,
+    step: 100,
+    toSlider: s => s.capacity,
+    fromSlider: v => String(v),
+    formatBubble: s => `${resultNumber.format(s.capacity)} slots`
+  },
+  alternative_window_months: {
+    min: 1,
+    max: 18,
+    step: 1,
+    toSlider: s => s.alternative_window_months,
+    fromSlider: v => String(v),
+    formatBubble: s => `${s.alternative_window_months} mo`
   }
-];
+};
 
 export function PilotPage() {
-  const {scenario, scenarioResult} = useArtifact();
+  const { scenario, scenarioResult } = useArtifact();
   const location = useLocation();
   const sensitivityReady = scenario !== null && scenarioResult !== null;
 
   useEffect(() => {
     const targetId = getPilotFragmentTargetId(location.hash);
     if (!targetId || !sensitivityReady) return;
-    document.getElementById(targetId)?.scrollIntoView({block: "start"});
+    document.getElementById(targetId)?.scrollIntoView({ block: "start" });
   }, [location.hash, sensitivityReady]);
 
   if (!scenario || !scenarioResult) {
-    return <section className="page page-stack">
-      <ContextBar />
-      <header className="page-heading">
-        <p className="eyebrow">PILOT PLANNER</p>
-        <h1>Scope a feasible pilot</h1>
-        <p>Planning assumptions are currently unavailable or invalid. Reviewed national burden remains available; no causal effect or savings estimate is inferred.</p>
-      </header>
-      <div className="empty-state">
-        <strong>No valid planning scenario result is available.</strong>
-        <p>Planning inputs are separate from reviewed analytical evidence and can be restored without changing the MEPS burden artifact.</p>
-      </div>
-    </section>;
+    return (
+      <section className="page page-stack">
+        <header className="apple-page-header">
+          <p className="apple-kicker">Edition 01 · Simulator</p>
+          <h1>Test a care pilot.</h1>
+          <p className="apple-subtitle">Planning assumptions are currently unavailable.</p>
+        </header>
+        <div className="empty-state">
+          <strong>No valid planning scenario result is available.</strong>
+          <p>National MEPS burden remains available without inferring savings or ROI.</p>
+        </div>
+      </section>
+    );
   }
 
   return <PilotPlannerWorkspace scenario={scenario} scenarioResult={scenarioResult} />;
@@ -108,8 +129,17 @@ function PilotPlannerWorkspace({
     localContextStatus,
     clearPilotLocalContext
   } = useArtifact();
-  // Keep unfinished edits in the workspace across route changes. Only a valid
-  // candidate updates the applied scenario used by the Brief and its exports.
+  const location = useLocation();
+
+  const [subView, setSubView] = useState<PilotSubView>(() =>
+    location.hash === "#sensitivity" ? "sensitivity" : "visuals"
+  );
+  const [boundaryModalOpen, setBoundaryModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (location.hash === "#sensitivity") setSubView("sensitivity");
+  }, [location.hash]);
+
   const draft: PilotInputDraft = pilotInputDraft ?? createPilotInputDraft(scenario);
   const evaluation = useMemo(
     () => evaluatePilotInputDraft(draft, scenario),
@@ -134,13 +164,39 @@ function PilotPlannerWorkspace({
   }, [scenarioResult]);
 
   const updateDraft = (key: PilotNumericField, raw: string) => {
-    const nextDraft = {...draft, [key]: raw};
+    const nextDraft = { ...draft, [key]: raw };
     setPilotInputDraft(nextDraft);
     const nextEvaluation = evaluatePilotInputDraft(nextDraft, scenario);
     if (nextEvaluation.candidate) {
       setScenario(nextEvaluation.candidate);
     }
   };
+
+  const applyPreset = (presetId: string) => {
+    const preset = PILOT_STRATEGY_PRESETS.find(item => item.id === presetId);
+    if (!preset) return;
+    const nextScenario: Scenario = { ...scenario, ...preset.values };
+    setScenario(nextScenario);
+    setPilotInputDraft(createPilotInputDraft(nextScenario));
+  };
+
+  const activePresetId = PILOT_STRATEGY_PRESETS.find(preset =>
+    Object.entries(preset.values).every(([k, v]) => scenario[k as keyof Scenario] === v)
+  )?.id ?? null;
+
+  const primaryFields: readonly PilotNumericField[] = [
+    "eligible_population",
+    "reach",
+    "capacity",
+    "alternative_window_months"
+  ];
+  const secondaryFields: readonly PilotNumericField[] = [
+    "baseline_window_months",
+    "horizon_months",
+    "fixed_cost",
+    "per_participant_cost"
+  ];
+  const hasSecondaryError = secondaryFields.some(k => Boolean(evaluation.errors[k])) || Boolean(evaluation.formError);
 
   const addSensitivityDataRequest = (field: SensitivityField) => {
     upsertAnalystDataRequest(createSensitivityDataRequest(scenario, field));
@@ -149,176 +205,275 @@ function PilotPlannerWorkspace({
   const sensitivityDataRequestStatus = (field: SensitivityField) =>
     getSensitivityDataRequestStatus(scenario, field, analystDataRequests);
 
-  return <section className="page page-stack pilot-page">
-    <ContextBar />
-    <div className="heading-row">
-      <header className="page-heading"><p className="eyebrow">PILOT PLANNER</p><h1>Scope a feasible pilot</h1><p>Transparent recognition/navigation arithmetic from analyst-supplied assumptions. This is not a prediction or causal ROI estimate.</p></header>
-      <div className="caution cool"><strong>Plan · Test · Learn</strong><span>Every scenario names the pathway step and mechanism it is allowed to change.</span></div>
-    </div>
-    <nav className="pilot-section-nav" aria-label="Pilot planner sections">
-      <a href="#pilot-assumptions">Assumptions</a>
-      <a href="#pilot-results">Results</a>
-      <a href="#sensitivity">Sensitivity</a>
-    </nav>
-    <div className="pilot-grid">
-      <article id="pilot-results" className="card result-card pilot-summary">
-        <p className="visual-kicker pilot-result-kicker">APPLIED PLANNING SCENARIO</p>
-        <h2>Baseline vs recognition/<wbr />navigation scenario</h2>
-        <p className="subtle">Deterministic planning arithmetic · not observed evidence or an evidence-derived effect</p>
-        {invalidDraft && <div className="draft-not-applied" role="status">
-          <strong>Draft not applied</strong>
-          <span>These results still reflect the last valid planning assumptions. Fix the highlighted inputs to apply this draft.</span>
-        </div>}
-        <WorkspaceDisclosure id="pilot-reading-guide" title="How to read these results"><InterpretationGuide
-          id="pilot-result-interpretation"
-          title="How to read these results"
-          whatThisShows="The mechanical planning consequences of the currently applied assumptions."
-          whyItMatters="Whether intended reach, capacity, recognition-window assumptions, and program resources appear operationally feasible together."
-          whatItDoesNotShow="A forecast, observed improvement, treatment effectiveness, causal effect, savings, or ROI."
-          whatToDoNext={invalidDraft
-            ? "Fix the draft inputs, then stress-test an assumption and create a structured data request where uncertainty matters."
-            : "Stress-test an assumption and create a structured data request where uncertainty matters."}
-        />
-        </WorkspaceDisclosure>
-        <dl className="pilot-headlines" aria-label="Four applied planning quantities">
-          {[
-            ["Participants served within capacity", scenarioResult.reached_participants, false],
-            ["Capacity gap", scenarioResult.capacity_gap, false],
-            ["Person-month exposure difference", scenarioResult.difference_person_months, false],
-            ["Program-resource requirement", scenarioResult.program_resource_requirement, true]
-          ].map(([label, value, isCurrency]) => <div key={String(label)} className={Math.abs(Number(value)) >= 1e12 ? "pilot-headline-scientific" : ""}>
-            <dt>{label}</dt><dd className={Math.abs(Number(value)) >= 1e12 ? "scientific-value" : ""}>{isCurrency ? formatPlanningCurrency(Number(value)) : formatPlanningNumber(Number(value), resultNumber)}</dd>
-          </div>)}
-        </dl>
-        <p className="visual-note">Participants and person-months are modeled planning quantities, not observed improvements or forecasts. Program resources are requirements, not savings or ROI.</p>
-        <div className="pilot-next-actions">
-          {invalidDraft && <p className="field-error">Apply valid planning inputs before continuing from this draft.</p>}
-          {invalidDraft ? <button className="button" type="button" disabled>Review planning brief</button> : <Link className="button" to="/brief">Review planning brief</Link>}
-          <Link className="text-button" to="/data-requests">Review unresolved data needs</Link>
+  return (
+    <section className="page page-stack pilot-page">
+      <header className="apple-page-header centered">
+        <p className="apple-kicker">Edition 01 · Care Pilot Simulator</p>
+        <h1>Test a care pilot.</h1>
+        <p className="apple-subtitle">
+          Adjust reach, capacity, timing, and budget to test feasibility.
+        </p>
+        <p className="micro-caption">Planning math · Not savings or ROI</p>
+      </header>
+
+      {/* 3 Segmented Presets */}
+      <div className="pilot-presets-bar">
+        <div className="apple-segmented" role="group" aria-label="Strategy presets">
+          {PILOT_STRATEGY_PRESETS.map(preset => (
+            <button
+              key={preset.id}
+              type="button"
+              aria-pressed={activePresetId === preset.id}
+              onClick={() => applyPreset(preset.id)}
+            >
+              {preset.label}
+            </button>
+          ))}
         </div>
-        <SensitivityPreview scenario={scenario} paused={invalidDraft} />
-      </article>
-      <div className="pilot-input-column">
-      <form id="pilot-assumptions" className="card assumption-card" onSubmit={event => event.preventDefault()}>
-        <h2>Planning assumptions</h2>
-        <p className="subtle"><strong>{PLANNING_DEFAULTS_LABEL}</strong><br />{PLANNING_DEFAULTS_DESCRIPTION}</p>
-        {assumptionGroups.map((group, index) => <WorkspaceDisclosure id={`pilot-input-group-${index}`} key={group.title}
-          title={group.title} defaultOpen={index === 0}
-          forceOpen={group.fields.some(key => Boolean(evaluation.errors[key])) || Boolean(evaluation.formError)}
-          summary={<span className="pilot-group-values"><span>Applied values</span>{pilotInputFields.filter(field => group.fields.includes(field.key)).map(field =>
-            <span key={field.key}>{field.label}: <strong>{formatAppliedAssumption(scenario, field)}</strong></span>)}</span>}>
-          <fieldset className="pilot-assumption-group">
-          <legend>{group.title}</legend>
-          <p>{group.description}</p>
-          {pilotInputFields.filter(field => group.fields.includes(field.key)).map(field => {
-          const inputId = "pilot-" + field.key;
-          const helperId = inputId + "-helper";
-          const errorId = inputId + "-error";
-          const error = evaluation.errors[field.key];
-          const helper = error ? null : formatPilotInputHelper(field.key, draft[field.key]);
-
-          return <div className="pilot-field" key={field.key}>
-            <label className="pilot-field-label" htmlFor={inputId}>{field.label}</label>
-            <div className="pilot-field-control">
-              <span className={"input-wrap" + (error ? " invalid" : "")}>
-                <input
-                  id={inputId}
-                  type="text"
-                  inputMode="decimal"
-                  value={draft[field.key]}
-                  onChange={event => updateDraft(field.key, event.target.value)}
-                  aria-invalid={Boolean(error)}
-                  aria-describedby={helperId + " " + errorId}
-                />
-                {field.suffix && <small aria-hidden="true">{field.suffix}</small>}
-              </span>
-              <span id={helperId} className="input-helper">{helper}</span>
-              <span id={errorId} className="field-error" aria-live="polite">{error ?? ""}</span>
-            </div>
-          </div>;
-        })}
-        </fieldset></WorkspaceDisclosure>)}
-        {evaluation.formError && <p className="field-error form-error" aria-live="polite">{evaluation.formError}</p>}
-      </form>
-        <section className="pathway-boundary" aria-labelledby="pilot-pathway-boundary-title">
-          <div>
-            <p className="visual-kicker">SCIENTIFIC BOUNDARY</p>
-            <h2 id="pilot-pathway-boundary-title">Modeled pathway boundary</h2>
-          </div>
-          <dl className="pathway-boundary-facts">
-            <div><dt>Target step</dt><dd>{pathwayBoundary.pathwayStepLabel}</dd></div>
-            <div><dt>Assumed mechanism</dt><dd>{pathwayBoundary.mechanismLabel}</dd></div>
-          </dl>
-          <p>{pathwayBoundary.modeledBoundaryStatement}</p>
-          <p>{pathwayBoundary.assumptionBoundaryStatement}</p>
-          <p><strong>Outside this model:</strong> {pathwayBoundary.outsideModelItems.join("; ")}.</p>
-          <div className="pathway-boundary-actions" role="group" aria-label="Pathway boundary follow-up">
-            <Link className="text-button" to="/pilot#sensitivity">Stress-test these assumptions</Link>
-            <Link className="text-button" to="/evidence">Review evidence limits</Link>
-          </div>
-        </section>
       </div>
-      <article className="card result-card pilot-detail-results">
-        <h2>Decision visuals &amp; sensitivity</h2>
-        <PilotDecisionVisuals scenario={scenario} result={scenarioResult} />
-        <WorkspaceDisclosure id="pilot-all-results" title="All modeled quantities">
-        <dl className="result-list pilot-result-ledger">
-          <div className={Math.abs(scenarioResult.intended_reach) >= 1e12 ? "pilot-result-scientific" : undefined}><dt>Intended reach</dt><dd>{formatPlanningNumber(scenarioResult.intended_reach, resultNumber)}</dd></div>
-          <div className={Math.abs(scenarioResult.reached_participants) >= 1e12 ? "pilot-result-scientific" : undefined}><dt>Reached participants</dt><dd>{formatPlanningNumber(scenarioResult.reached_participants, resultNumber)}</dd></div>
-          <div className={Math.abs(scenarioResult.capacity_gap) >= 1e12 ? "pilot-result-scientific" : undefined}><dt>Capacity gap</dt><dd>{formatPlanningNumber(scenarioResult.capacity_gap, resultNumber)}</dd></div>
-          <div className={Math.abs(scenarioResult.baseline_person_months) >= 1e12 ? "pilot-result-scientific" : undefined}><dt>Baseline person-month exposure</dt><dd>{formatPlanningNumber(scenarioResult.baseline_person_months, resultNumber)}</dd></div>
-          <div className={Math.abs(scenarioResult.alternative_person_months) >= 1e12 ? "pilot-result-scientific" : undefined}><dt>Planning person-month exposure</dt><dd>{formatPlanningNumber(scenarioResult.alternative_person_months, resultNumber)}</dd></div>
-          <div className={Math.abs(scenarioResult.difference_person_months) >= 1e12 ? "pilot-result-scientific" : undefined}><dt>Difference in person-month exposure</dt><dd>{formatPlanningNumber(scenarioResult.difference_person_months, resultNumber)}</dd></div>
-          <div className={Math.abs(scenarioResult.program_resource_requirement) >= 1e12 ? "pilot-result-scientific" : undefined}><dt>Program-resource requirement</dt><dd>{formatPlanningCurrency(scenarioResult.program_resource_requirement)}</dd></div>
-        </dl>
-        </WorkspaceDisclosure>
-        <div className="sr-only" aria-live="polite" aria-atomic="true">{resultAnnouncement}</div>
-        {invalidDraft ? <section id="sensitivity" className="sensitivity-paused-state" aria-labelledby="sensitivity-paused-title">
-          <h3 id="sensitivity-paused-title">Sensitivity analysis paused</h3>
-          <p>Fix the Pilot planner inputs before running sensitivity analysis or creating data requests.</p>
-        </section> : <SensitivityExplorer
-          scenario={scenario}
-          onUpsertDataRequest={addSensitivityDataRequest}
-          dataRequestStatus={sensitivityDataRequestStatus}
-        />}
-        <div className="guardrail compact"><strong>Not savings or ROI.</strong><p>The resource requirement is a program input. The person-month difference is a planning exposure quantity, not observed improvement.</p></div>
-        <p className="pilot-request-loop">An assumption still needs checking? <Link to="/data-requests">Review data requests</Link> before finalizing your brief. <Link to="/evidence">Intervention evidence &amp; limits</Link>.</p>
-      </article>
-    </div>
 
-        <section id="pilot-context" className="pilot-local-context" aria-labelledby="pilot-local-context-title">
-          <div className="pilot-local-context-heading">
-            <div>
-              <p className="visual-kicker">ANALYST-SELECTED CONTEXT</p>
-              <h2 id="pilot-local-context-title">Local planning context</h2>
-            </div>
-            <Link className="text-button" to="/local-context">
-              {pilotLocalContext ? "Replace in Local Context" : "Review Local Context"}
-            </Link>
+      {/* 4 Giant Clean KPI Squircle Tiles */}
+      <dl className="pilot-kpi-grid" id="pilot-results" aria-label="Four applied planning quantities">
+        <div className="apple-card pilot-kpi-tile">
+          <dt>Served within capacity</dt>
+          <dd className="mono-figure">{formatPlanningNumber(scenarioResult.reached_participants, resultNumber)}</dd>
+        </div>
+        <div className={`apple-card pilot-kpi-tile${scenarioResult.capacity_gap > 0 ? " is-gap" : ""}`}>
+          <dt>Capacity gap</dt>
+          <dd className="mono-figure">{formatPlanningNumber(scenarioResult.capacity_gap, resultNumber)}</dd>
+        </div>
+        <div className="apple-card pilot-kpi-tile">
+          <dt>Exposure difference</dt>
+          <dd className="mono-figure">{formatPlanningNumber(scenarioResult.difference_person_months, resultNumber)} mo</dd>
+        </div>
+        <div className="apple-card pilot-kpi-tile">
+          <dt>Program budget</dt>
+          <dd className="mono-figure">{formatPlanningCurrency(scenarioResult.program_resource_requirement)}</dd>
+        </div>
+      </dl>
+
+      {invalidDraft && (
+        <div className="apple-card pilot-draft-warning" role="status">
+          <strong>Draft not applied</strong>
+          <span>Fix the highlighted input below to update the applied scenario.</span>
+        </div>
+      )}
+
+      {/* Silky Sliders + Synchronized Inputs */}
+      <form id="pilot-assumptions" className="apple-card pilot-controls-card" onSubmit={e => e.preventDefault()}>
+        <div className="pilot-controls-head">
+          <div>
+            <h2>Program levers</h2>
+            <p className="micro-caption">{PLANNING_DEFAULTS_LABEL}</p>
           </div>
-          {pilotLocalContext ? <>
-            <div className="pilot-local-context-record">
-              <strong>{pilotLocalContext.label}</strong>
-              <span className="pilot-local-context-value">{formatLocalContextValue(pilotLocalContext)}</span>
-              <span>{pilotLocalContext.geography_name} ({pilotLocalContext.geography_type})</span>
-              <span><b>Source:</b> {pilotLocalContext.source_agency} · {pilotLocalContext.source_release_vintage}</span>
-              <span><b>Published uncertainty:</b> {formatPublishedLocalContextUncertainty(pilotLocalContext)}</span>
-              <span><b>Allowed interpretation:</b> {pilotLocalContext.allowed_interpretation}</span>
-            </div>
-            <div className="pilot-local-context-actions">
-              <button className="text-button" type="button" onClick={clearPilotLocalContext}>Remove from Pilot</button>
-            </div>
-          </> : <div className="empty-state compact">
-            <strong>No local implementation context is currently attached to this Pilot scenario.</strong>
-            <p>Absence of a selected record does not mean there is no implementation constraint.</p>
-          </div>}
-          <p className="subtle">
-            Reviewed local implementation context is for analyst judgment only. Attaching, replacing, or removing it does not alter reach, capacity, timing, cost, pathway, or mechanism parameters.
-          </p>
-        </section>
+          <button
+            type="button"
+            className="apple-info-btn"
+            aria-label="Inspect pathway boundary and defaults"
+            onClick={() => setBoundaryModalOpen(true)}
+          >
+            i
+          </button>
+        </div>
 
-        <WorkspaceDisclosure id="pilot-decision-details" title="Follow the decision trace"><section id="pilot-trace" className="pilot-decision-trace" aria-labelledby="pilot-decision-trace-title">
-          <h2 id="pilot-decision-trace-title">Decision trace</h2>
+        <div className="pilot-slider-grid">
+          {primaryFields.map(key => {
+            const field = pilotInputFields.find(f => f.key === key)!;
+            const slider = SLIDER_CONFIG[key]!;
+            const inputId = "pilot-" + key;
+            const sliderId = inputId + "-slider";
+            const error = evaluation.errors[key];
+            const helper = error ? null : formatPilotInputHelper(key, draft[key]);
+            const sliderValue = Math.max(slider.min, Math.min(slider.max, slider.toSlider(scenario)));
+
+            return (
+              <div className="pilot-slider-item" key={key}>
+                <div className="pilot-slider-label-row">
+                  <label htmlFor={inputId}>{field.label}</label>
+                  <span className="pilot-value-bubble mono-figure">{slider.formatBubble(scenario)}</span>
+                </div>
+                <input
+                  id={sliderId}
+                  className="apple-slider"
+                  type="range"
+                  min={slider.min}
+                  max={slider.max}
+                  step={slider.step}
+                  value={sliderValue}
+                  aria-label={`${field.label} slider`}
+                  aria-valuetext={slider.formatBubble(scenario)}
+                  onChange={e => updateDraft(key, slider.fromSlider(Number(e.target.value)))}
+                />
+                <div className="pilot-exact-row">
+                  <span className={"input-wrap" + (error ? " invalid" : "")}>
+                    <input
+                      id={inputId}
+                      type="text"
+                      inputMode="decimal"
+                      value={draft[key]}
+                      onChange={e => updateDraft(key, e.target.value)}
+                      aria-invalid={Boolean(error)}
+                      aria-describedby={`${inputId}-helper ${inputId}-error`}
+                    />
+                    {field.suffix && <small aria-hidden="true">{field.suffix}</small>}
+                  </span>
+                  <span id={`${inputId}-helper`} className="micro-caption">{helper}</span>
+                </div>
+                <span id={`${inputId}-error`} className="field-error" aria-live="polite">{error ?? ""}</span>
+              </div>
+            );
+          })}
+        </div>
+
+        <details className="apple-accordion" open={hasSecondaryError || undefined}>
+          <summary>Timing &amp; budget inputs</summary>
+          <div className="pilot-secondary-grid">
+            {secondaryFields.map(key => {
+              const field = pilotInputFields.find(f => f.key === key)!;
+              const inputId = "pilot-" + key;
+              const error = evaluation.errors[key];
+              const helper = error ? null : formatPilotInputHelper(key, draft[key]);
+
+              return (
+                <div className="pilot-exact-field" key={key}>
+                  <label htmlFor={inputId}>{field.label}</label>
+                  <span className={"input-wrap" + (error ? " invalid" : "")}>
+                    <input
+                      id={inputId}
+                      type="text"
+                      inputMode="decimal"
+                      value={draft[key]}
+                      onChange={e => updateDraft(key, e.target.value)}
+                      aria-invalid={Boolean(error)}
+                      aria-describedby={`${inputId}-helper ${inputId}-error`}
+                    />
+                    {field.suffix && <small aria-hidden="true">{field.suffix}</small>}
+                  </span>
+                  <span id={`${inputId}-helper`} className="micro-caption">{helper}</span>
+                  <span id={`${inputId}-error`} className="field-error" aria-live="polite">{error ?? ""}</span>
+                </div>
+              );
+            })}
+          </div>
+        </details>
+
+        {evaluation.formError && <p className="field-error" aria-live="polite">{evaluation.formError}</p>}
+      </form>
+
+      {/* Segmented Sub-View */}
+      <div className="pilot-subview-header">
+        <div className="apple-segmented" role="tablist" aria-label="Simulator analysis views">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={subView === "visuals"}
+            onClick={() => setSubView("visuals")}
+          >
+            Visual Impact
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={subView === "sensitivity"}
+            onClick={() => setSubView("sensitivity")}
+          >
+            What-If Sensitivity
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={subView === "data"}
+            onClick={() => setSubView("data")}
+          >
+            Data Needs ({currentOperationalDataRequests.length})
+          </button>
+        </div>
+
+        <div className="pilot-next-cta">
+          {invalidDraft ? (
+            <button className="button" type="button" disabled>Review planning brief</button>
+          ) : (
+            <Link className="button" to="/brief">Review planning brief</Link>
+          )}
+        </div>
+      </div>
+
+      {/* Sub-view panels */}
+      {subView === "visuals" && (
+        <div className="pilot-subview-panel">
+          <div className="apple-card">
+            <PilotDecisionVisuals scenario={scenario} result={scenarioResult} />
+          </div>
+
+          <details className="apple-accordion" id="pilot-all-results">
+            <summary>All 7 modeled quantities</summary>
+            <dl className="pilot-all-grid">
+              <div><dt>Intended reach</dt><dd className="mono-figure">{formatPlanningNumber(scenarioResult.intended_reach, resultNumber)}</dd></div>
+              <div><dt>Reached participants</dt><dd className="mono-figure">{formatPlanningNumber(scenarioResult.reached_participants, resultNumber)}</dd></div>
+              <div><dt>Capacity gap</dt><dd className="mono-figure">{formatPlanningNumber(scenarioResult.capacity_gap, resultNumber)}</dd></div>
+              <div><dt>Baseline exposure</dt><dd className="mono-figure">{formatPlanningNumber(scenarioResult.baseline_person_months, resultNumber)}</dd></div>
+              <div><dt>Planning exposure</dt><dd className="mono-figure">{formatPlanningNumber(scenarioResult.alternative_person_months, resultNumber)}</dd></div>
+              <div><dt>Exposure difference</dt><dd className="mono-figure">{formatPlanningNumber(scenarioResult.difference_person_months, resultNumber)}</dd></div>
+              <div><dt>Program budget</dt><dd className="mono-figure">{formatPlanningCurrency(scenarioResult.program_resource_requirement)}</dd></div>
+            </dl>
+          </details>
+
+          <section id="pilot-context" className="apple-card pilot-local-context-card" aria-labelledby="pilot-local-context-title">
+            <div className="pilot-controls-head">
+              <div>
+                <p className="apple-kicker">Reference Context</p>
+                <h2 id="pilot-local-context-title">Selected local terrain</h2>
+              </div>
+              <Link className="text-button" to="/local-context">
+                {pilotLocalContext ? "Change in Terrain" : "Select in Terrain"}
+              </Link>
+            </div>
+            {pilotLocalContext ? (
+              <div className="pilot-context-selected">
+                <div>
+                  <strong>{pilotLocalContext.label}</strong>
+                  <p className="micro-caption">
+                    {pilotLocalContext.source_agency} · {formatPublishedLocalContextUncertainty(pilotLocalContext)}
+                  </p>
+                </div>
+                <div className="pilot-context-right">
+                  <strong className="mono-figure">{formatLocalContextValue(pilotLocalContext)}</strong>
+                  <button className="text-button" type="button" onClick={clearPilotLocalContext}>Remove</button>
+                </div>
+              </div>
+            ) : (
+              <p className="subtle">No local context attached. Selecting one never alters numeric levers.</p>
+            )}
+          </section>
+        </div>
+      )}
+
+      {subView === "sensitivity" && (
+        <div className="apple-card pilot-subview-panel">
+          {invalidDraft ? (
+            <section id="sensitivity" className="empty-state" aria-labelledby="sensitivity-paused-title">
+              <strong id="sensitivity-paused-title">Sensitivity analysis paused</strong>
+              <p>Fix the highlighted inputs above to run sensitivity analysis.</p>
+            </section>
+          ) : (
+            <SensitivityExplorer
+              scenario={scenario}
+              onUpsertDataRequest={addSensitivityDataRequest}
+              dataRequestStatus={sensitivityDataRequestStatus}
+            />
+          )}
+        </div>
+      )}
+
+      {subView === "data" && (
+        <div className="apple-card pilot-subview-panel" id="pilot-trace">
+          <div className="pilot-controls-head">
+            <div>
+              <h2>Decision trace &amp; data requests</h2>
+              <p className="micro-caption">{currentOperationalDataRequests.length} current operational request(s)</p>
+            </div>
+            <Link className="button secondary" to="/data-requests">Manage data requests</Link>
+          </div>
           <DecisionTrace
             burdenEstimateCount={burdenEstimateCount}
             pilotLocalContext={pilotLocalContext}
@@ -328,6 +483,45 @@ function PilotPlannerWorkspace({
             evidence={bundle?.evidence ?? []}
             dataRequestHref="/pilot#sensitivity"
           />
-        </section></WorkspaceDisclosure>
-  </section>;
+        </div>
+      )}
+
+      <div className="sr-only" aria-live="polite" aria-atomic="true">{resultAnnouncement}</div>
+
+      <AppleDetailModal
+        open={boundaryModalOpen}
+        kicker="Scientific Boundary"
+        title="Modeled pathway & assumptions"
+        onClose={() => setBoundaryModalOpen(false)}
+      >
+        <p>{PLANNING_DEFAULTS_DESCRIPTION}</p>
+        <dl className="apple-detail-list">
+          <div>
+            <dt>Target pathway step</dt>
+            <dd>{pathwayBoundary.pathwayStepLabel}</dd>
+          </div>
+          <div>
+            <dt>Assumed mechanism</dt>
+            <dd>{pathwayBoundary.mechanismLabel}</dd>
+          </div>
+          <div>
+            <dt>Modeled boundary</dt>
+            <dd>{pathwayBoundary.modeledBoundaryStatement}</dd>
+          </div>
+          <div>
+            <dt>Assumption boundary</dt>
+            <dd>{pathwayBoundary.assumptionBoundaryStatement}</dd>
+          </div>
+          <div>
+            <dt>Outside this model</dt>
+            <dd>{pathwayBoundary.outsideModelItems.join("; ")}</dd>
+          </div>
+          <div>
+            <dt>Applied inputs</dt>
+            <dd>{pilotInputFields.map(f => `${f.label}: ${formatAppliedAssumption(scenario, f)}`).join(" · ")}</dd>
+          </div>
+        </dl>
+      </AppleDetailModal>
+    </section>
+  );
 }

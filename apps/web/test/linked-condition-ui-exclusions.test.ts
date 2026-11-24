@@ -67,7 +67,7 @@ test("medical route composes Candidate A only as separate secondary evidence", (
   const medical = readSource("../src/pages/MedicalBurdenPage.tsx");
   const domain = readSource("../src/pages/DomainPage.tsx");
   const component = readSource("../src/components/LinkedConditionServiceUseFootprint.tsx");
-  const styles = readSource("../src/styles.css");
+  const styles = readSource("../src/pages/Ledger.css");
 
   assert.match(app, /path="burden\/medical" element=\{<MedicalBurdenPage \/>\}/);
   assert.match(medical, /tryLoadReviewedLinkedConditionSecondaryEvidence\(\)/);
@@ -93,8 +93,8 @@ test("medical route composes Candidate A only as separate secondary evidence", (
   );
   assert.doesNotMatch(component, /tooltip|onMouseEnter|onMouseOver/i);
 
-  assert.match(styles, /\.linked-condition-secondary-evidence\{/);
-  assert.match(styles, /@media\(max-width:640px\).*linked-condition-secondary-measure/s);
+  assert.match(styles, /\.linked-condition-secondary-evidence\s*\{/);
+  assert.match(styles, /@media \(max-width: 640px\)[\s\S]*\.linked-condition-secondary-measure/s);
 });
 
 test("active runtime view model contains no non-A candidate or generic Estimate semantics", () => {

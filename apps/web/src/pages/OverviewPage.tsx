@@ -1,182 +1,302 @@
-import { Link } from "react-router-dom";
+import { useMemo, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { canExportEstimate } from "@diagnostic-odyssey/contracts";
+import { calculateScenario } from "@diagnostic-odyssey/scenario-engine";
 import { useArtifact } from "../data/ArtifactContext";
-import { OpeningProvenance, useOpeningMotion } from "./OpeningProvenance";
-import { HeadlineFindings } from "../components/HeadlineFindings";
-import { LandingJourney } from "../components/LandingJourney";
-import { planningInsightsEnabled } from "../data/planningInsightsEnabled";
+import { COVERAGE_CATALOG, type CoverageCatalogEntry } from "../data/coverageCatalog";
+import { formatEstimateInterval, formatEstimateValue } from "../data/formatEstimateValue";
+import { createPilotInputDraft } from "../data/pilotInputDraft";
+import { formatPlanningCurrency, formatPlanningNumber } from "../data/planningNumberFormatting";
+import { createPlanningScenarioDefaults } from "../data/planningScenarioDefaults";
+import { AppleDetailModal } from "../components/AppleDetailModal";
 import "./OverviewPage.css";
 
-const journey: ReadonlyArray<readonly [
-  step: string,
-  title: string,
-  outcome: string,
-  to: string
-]> = [
-  ["1", "Describe burden", "Review national burden estimates with survey uncertainty and explicit interpretation boundaries.", "/burden"],
-  ["2", "Review local constraints", "Inspect implementation and access context without turning national burden into a local disease estimate.", "/local-context"],
-  ["3", "Scope a feasible pilot", "Set explicit planning assumptions and stress-test reach, capacity, timing, and resources.", "/pilot"],
-  ["4", "Create a planning brief", "Export reviewed evidence, selected context, assumptions, boundaries, and remaining gaps.", "/brief"]
-];
+const integers = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
 
 export function OverviewPage() {
-  const opening = useOpeningMotion();
-  const {bundle, localContext, localContextStatus} = useArtifact();
-  const reviewedCount = bundle?.burden_domains
-    .flatMap(domain => domain.measures)
-    .filter(canExportEstimate).length ?? 0;
-  const localIndicatorCount = localContextStatus === "loaded"
-    ? localContext?.indicators.length ?? 0
-    : null;
+  const navigate = useNavigate();
+  const { bundle, localContext, localContextStatus, scenario, setScenario, setPilotInputDraft } = useArtifact();
+
+  const baseScenario = useMemo(() => scenario ?? createPlanningScenarioDefaults(), [scenario]);
+  const [teaserReachPct, setTeaserReachPct] = useState(() => Math.round(baseScenario.reach * 100));
+  const [realityModalOpen, setRealityModalOpen] = useState(false);
+  const [selectedEdition, setSelectedEdition] = useState<CoverageCatalogEntry | null>(null);
+
+  const teaserScenario = useMemo(
+    () => ({ ...baseScenario, reach: Math.max(0.05, Math.min(0.5, teaserReachPct / 100)) }),
+    [baseScenario, teaserReachPct]
+  );
+
+  const teaserResult = useMemo(() => {
+    try {
+      return calculateScenario(teaserScenario);
+    } catch {
+      return null;
+    }
+  }, [teaserScenario]);
+
+  const measures = useMemo(
+    () => bundle?.burden_domains.flatMap(domain => domain.measures).filter(canExportEstimate) ?? [],
+    [bundle]
+  );
+
+  const meanSpending = measures.find(m => m.estimate_id === "meps24-gross-all-cause-spending-mean");
+  const adminTime = measures.find(m => m.estimate_id === "meps24-healthcare-paperwork-time-mean");
+  const localCount = localContextStatus === "loaded" ? localContext?.indicators.length ?? 0 : 0;
+
+  const capacityCoveragePct = teaserResult && teaserResult.intended_reach > 0
+    ? Math.min(100, Math.round((teaserResult.reached_participants / teaserResult.intended_reach) * 100))
+    : 100;
+  const ringRadius = 46;
+  const ringCircumference = 2 * Math.PI * ringRadius;
+  const ringOffset = ringCircumference * (1 - capacityCoveragePct / 100);
+
+  const openInSimulate = () => {
+    setScenario(teaserScenario);
+    setPilotInputDraft(createPilotInputDraft(teaserScenario));
+    navigate("/pilot");
+  };
 
   return (
-    <section className={"page page-stack overview-page" + (opening.playing ? " is-opening" : "")}>
-      <section className="overview-hero" aria-labelledby="overview-title">
-        <div className="overview-hero-grid" aria-hidden="true" />
-        <div className="overview-hero-intro">
-          <p className="overview-kicker">Evidence into planning, with boundaries intact.</p>
-          <h1 id="overview-title">
-            Chart the road from <em>data</em> to <em>action.</em>
-          </h1>
+    <section className="page page-stack overview-cupertino">
+      <header className="cupertino-hero">
+        <p className="apple-kicker">Edition 01 · Long COVID · West Virginia</p>
+        <h1>Health costs, finally clear.</h1>
+        <p className="cupertino-subtitle">
+          National evidence, local terrain, and pilot math—kept strictly separate.
+        </p>
+        <div className="cupertino-hero-ctas">
+          <Link className="button" to="/burden">Start Exploring</Link>
+          <Link className="button secondary" to="/pilot">Try Simulator</Link>
         </div>
-        <div className="overview-hero-details">
-          <p className="overview-lede">
-            <strong className="overview-audience">For state health departments and Medicaid programs scoping Long COVID care-navigation pilots.</strong> Understand what the evidence shows, see the conditions on the ground, test a response—and carry a brief you can defend into the room.
-          </p>
-          <div className="overview-hero-actions" role="group" aria-label="Start exploring Diagnostic Odyssey">
-            <Link className="button overview-primary-cta" to="/burden">Explore reviewed burden <span aria-hidden="true">↗</span></Link>
-            <Link className="overview-secondary-cta" to="/pilot">Open the planner <span aria-hidden="true">→</span></Link>
-            {planningInsightsEnabled && <Link className="overview-tertiary-cta" to="/brief#planning-insights">See planning insights <span aria-hidden="true">→</span></Link>}
-          </div>
-        </div>
-        <div className="overview-hero-journey">
-          <LandingJourney />
-        </div>
-        <div className="overview-hero-state">
-          <span>Now charting</span>
-          <span>Long COVID</span>
-          <span>West Virginia</span>
-          <span>Reviewed national evidence + local implementation context</span>
-        </div>
-      </section>
+      </header>
 
-      <section className="overview-story" aria-label="How Diagnostic Odyssey moves from data to planning">
-        <div className="overview-story-copy">
-          <p className="overview-kicker">Try the pathway, not just the dashboard</p>
-          <h2>Dashboards stop at the statistic. <em>Planning starts after it.</em></h2>
-          <p>Long COVID&rsquo;s burden goes beyond the bill. Review national evidence and its uncertainty, understand local constraints, then test explicit pilot assumptions without confusing them with observed effects.</p>
-          <dl className="overview-proof" aria-label="Current workspace evidence">
+      <div className="bento-grid" aria-label="Interactive workspace overview">
+        {/* 1. Interactive 1-slider Strategy Simulator card */}
+        <article className="apple-card bento-simulator">
+          <div className="bento-card-head">
             <div>
-              <dt>{reviewedCount || "—"}</dt>
-              <dd>reviewed national estimates</dd>
+              <p className="bento-eyebrow amber">Strategy Simulator</p>
+              <h2>Test program reach live</h2>
             </div>
+            <span className="status status-assumption mono-figure">{teaserReachPct}% reach</span>
+          </div>
+
+          <div className="bento-sim-body">
+            <div className="bento-ring-wrap" aria-hidden="true">
+              <svg viewBox="0 0 120 120" className="bento-ring-svg">
+                <circle cx="60" cy="60" r={ringRadius} className="bento-ring-track" />
+                <circle
+                  cx="60"
+                  cy="60"
+                  r={ringRadius}
+                  className="bento-ring-fill"
+                  strokeDasharray={ringCircumference}
+                  strokeDashoffset={ringOffset}
+                  transform="rotate(-90 60 60)"
+                />
+                <text x="60" y="57" textAnchor="middle" className="bento-ring-value">{capacityCoveragePct}%</text>
+                <text x="60" y="73" textAnchor="middle" className="bento-ring-label">capacity fit</text>
+              </svg>
+            </div>
+
+            <div className="bento-sim-metrics">
+              <div className="bento-stat">
+                <span>Program budget</span>
+                <strong className="mono-figure">
+                  {teaserResult ? formatPlanningCurrency(teaserResult.program_resource_requirement) : "—"}
+                </strong>
+              </div>
+              <div className="bento-stat">
+                <span>Served within capacity</span>
+                <strong className="mono-figure">
+                  {teaserResult ? formatPlanningNumber(teaserResult.reached_participants, integers) : "—"}
+                </strong>
+              </div>
+            </div>
+          </div>
+
+          <label className="bento-slider-control" htmlFor="overview-reach-slider">
+            <span>Adjust target reach ({formatPlanningNumber(teaserScenario.eligible_population, integers)} eligible)</span>
+            <input
+              id="overview-reach-slider"
+              className="apple-slider"
+              type="range"
+              min={5}
+              max={50}
+              step={1}
+              value={teaserReachPct}
+              aria-valuetext={`${teaserReachPct}% reach`}
+              onChange={event => setTeaserReachPct(Number(event.target.value))}
+            />
+          </label>
+
+          <div className="bento-card-foot">
+            <p className="micro-caption">Planning math · Not savings</p>
+            <button type="button" className="text-button" onClick={openInSimulate}>
+              Open in Simulate →
+            </button>
+          </div>
+        </article>
+
+        {/* 2. Giant Live Reality card */}
+        <article className="apple-card bento-reality">
+          <div className="bento-card-head">
             <div>
-              <dt>{localIndicatorCount ?? "—"}</dt>
-              <dd>reviewed local-context indicators</dd>
+              <p className="bento-eyebrow cobalt">2024 MEPS Reality</p>
+              <h2>Observed national burden</h2>
             </div>
-          </dl>
-          <p className="overview-source-note">Grounded in <strong>MEPS</strong>, <strong>HRSA</strong> and <strong>ACS</strong> · source boundaries stay visible.</p>
-          <Link className="overview-story-link" to="/pilot">Explore the pilot planning workspace <span aria-hidden="true">↗</span></Link>
-        </div>
-        <div className="overview-hero-motion">
-          <OpeningProvenance playing={opening.playing} runId={opening.runId} onReplay={opening.replay} reducedMotion={opening.reducedMotion} announcement={opening.announcement} />
-        </div>
-      </section>
-
-      <HeadlineFindings />
-
-      <section className="overview-value-prop" aria-labelledby="overview-value-title">
-        <div className="overview-section-heading">
-          <p className="visual-kicker">HOW EVIDENCE TRAVELS</p>
-          <h2 id="overview-value-title">Different evidence, distinct purposes.</h2>
-          <p>MEPS describes national burden; HRSA and ACS describe local implementation context, not local Long COVID prevalence; analyst inputs are planning assumptions, not observed effects. The three are never blended into one estimate.</p>
-        </div>
-        <div className="overview-role-grid" role="list" aria-label="How to read evidence and planning information">
-          <div className="overview-role-card reviewed" role="listitem">
-            <p>01 / REVIEWED · NATIONAL</p>
-            <h3>Observed burden</h3>
-            <span>Reviewed survey estimates retain their population, units, uncertainty and release conditions.</span>
+            <button
+              type="button"
+              className="apple-info-btn"
+              aria-label="Inspect national burden provenance and limits"
+              onClick={() => setRealityModalOpen(true)}
+            >
+              i
+            </button>
           </div>
-          <div className="overview-role-card context" role="listitem">
-            <p>02 / REVIEWED · LOCAL</p>
-            <h3>Delivery context</h3>
-            <span>HRSA and ACS describe implementation conditions. They do not create local illness-burden estimates.</span>
-          </div>
-          <div className="overview-role-card assumption" role="listitem">
-            <p>03 / EDITABLE · HYPOTHETICAL</p>
-            <h3>Planning assumptions</h3>
-            <span>Reach, capacity and resources are inputs to a scenario, not observations or measured intervention effects.</span>
-          </div>
-          <div className="overview-role-card gap" role="listitem">
-            <p>04 / UNRESOLVED · NEXT STEP</p>
-            <h3>Evidence and data gaps</h3>
-            <span>Outstanding questions can become explicit data requests when the analyst chooses to include them.</span>
-          </div>
-        </div>
-        <p className="overview-value-echo">The opening provenance circuit connects each evidence role to a documented planning artifact—not to a pooled estimate or invented effect.</p>
-      </section>
 
-      <section className="overview-two-lenses" aria-labelledby="overview-lenses-title">
-        <div className="overview-section-heading">
-          <p className="visual-kicker">TWO LENSES, KEPT APART</p>
-          <h2 id="overview-lenses-title">National evidence describes the burden. <em>Local data describes the ground.</em></h2>
-          <p>These sources answer different questions. Neither a national contrast nor a local workforce indicator automatically establishes a state-level disease burden.</p>
-        </div>
-        <div className="overview-lenses-grid">
-          <Link to="/burden" className="overview-lens is-national">
-            <span className="overview-lens-label">Reviewed evidence · national</span>
-            <strong className="overview-lens-count">{reviewedCount || "—"}</strong>
-            <h3>National burden estimates</h3>
-            <p>MEPS measures retain source, population, native units, survey uncertainty and release conditions.</p>
-            <span className="overview-lens-action">Explore reviewed burden <span aria-hidden="true">↗</span></span>
-          </Link>
-          <span className="overview-lens-separator" aria-hidden="true">Never blended</span>
-          <Link to="/local-context" className="overview-lens is-local">
-            <span className="overview-lens-label">Reviewed implementation context · state</span>
-            <strong className="overview-lens-count">{localIndicatorCount ?? "—"}</strong>
-            <h3>Local delivery indicators</h3>
-            <p>HRSA and ACS describe access, service supply and community conditions without inventing local prevalence.</p>
-            <span className="overview-lens-action">Read local context <span aria-hidden="true">↗</span></span>
-          </Link>
-        </div>
-      </section>
+          <div className="bento-reality-stats">
+            <div className="bento-giant-metric">
+              <strong className="mono-figure">
+                {meanSpending ? formatEstimateValue(meanSpending) : "—"}
+              </strong>
+              <span>Mean annual all-cause spending</span>
+            </div>
+            <div className="bento-giant-metric">
+              <strong className="mono-figure">
+                {adminTime ? formatEstimateValue(adminTime) : "—"}
+              </strong>
+              <span>Annual bills &amp; insurance time</span>
+            </div>
+          </div>
 
-      <nav className="overview-destinations" aria-label="Workspace navigation">
-        <div className="overview-section-heading overview-destinations-heading">
-          <p className="visual-kicker">HOW IT WORKS</p>
-          <h2>A clear path from evidence to a plan.</h2>
-          <p>Start where you need. Review the evidence, test assumptions, and capture what you still need to know.</p>
-        </div>
-        <div className="journey-grid">
-          {journey.map(([step, title, outcome, to]) => (
-            <Link key={step} className="journey-card" to={to}>
-              <span className="journey-index" aria-hidden="true">{step.padStart(2, "0")}</span>
-              <strong>{title}</strong>
-              <small>{outcome}</small>
-              <span className="journey-arrow" aria-hidden="true">→</span>
-            </Link>
-          ))}
-        </div>
-        <p className="overview-workflow-note">Within your pilot: <Link to="/pilot#sensitivity">test sensitivity</Link> → <Link to="/data-requests">capture data needs</Link> → review your brief. <Link to="/evidence">Intervention evidence &amp; limits</Link> stays separate from descriptive burden.</p>
-      </nav>
+          <div className="bento-card-foot">
+            <p className="micro-caption">National descriptive · Not causal</p>
+            <Link className="text-button" to="/burden">All {measures.length} measures →</Link>
+          </div>
+        </article>
 
-      <section className="overview-closing" aria-labelledby="overview-closing-title">
-        <div>
-          <p className="overview-kicker">THE ACTION-READY PLAN</p>
-          <h2 id="overview-closing-title">Leave with a brief, <em>not just a chart.</em></h2>
-          <p>Reviewed evidence, implementation context, explicit scenario assumptions, data needs and next steps—assembled with their boundaries intact.</p>
-          <Link className="button overview-closing-cta" to="/brief">Open the Planning Brief <span aria-hidden="true">↗</span></Link>
-        </div>
-        <div className="overview-paper-illustration" aria-hidden="true">
-          <span className="overview-paper-sheet back" />
-          <span className="overview-paper-sheet middle" />
-          <span className="overview-paper-sheet front">
-            <i className="paper-mark" /><i className="paper-line title" /><i className="paper-line" />
-            <i className="paper-line short" /><i className="paper-bar" />
-            <i className="paper-line" /><i className="paper-line" /><i className="paper-line short" />
-          </span>
-        </div>
-      </section>
+        {/* 3. Edition Pill Rail */}
+        <article className="apple-card bento-editions" aria-label="Platform editions">
+          <div className="bento-editions-head">
+            <p className="bento-eyebrow">Platform Editions</p>
+            <span className="micro-caption">Zero cross-condition borrowing</span>
+          </div>
+          <div className="edition-pill-rail" role="list">
+            {COVERAGE_CATALOG.map(entry => (
+              <button
+                key={entry.id}
+                type="button"
+                role="listitem"
+                className={`edition-pill${entry.status === "live" ? " is-live" : ""}`}
+                onClick={() => setSelectedEdition(entry)}
+              >
+                <span className="edition-pill-title">
+                  {entry.id === "edition-01-long-covid"
+                    ? "Long COVID · WV"
+                    : entry.id === "additional-geographies"
+                      ? "More States"
+                      : entry.id === "complex-chronic-pathways"
+                        ? "Chronic Care"
+                        : entry.title}
+                </span>
+                <span className={`edition-pill-badge${entry.status === "live" ? " live" : ""}`}>
+                  {entry.status === "live" ? "Live" : "Soon"}
+                </span>
+              </button>
+            ))}
+          </div>
+        </article>
+
+        {/* 4. Three crisp feature tiles (<= 10 words each) */}
+        <Link to="/burden" className="apple-card bento-tile">
+          <p className="bento-eyebrow cobalt">Costs</p>
+          <h3>National burden</h3>
+          <p>{measures.length || 21} reviewed MEPS measures with 95% intervals.</p>
+        </Link>
+
+        <Link to="/local-context" className="apple-card bento-tile">
+          <p className="bento-eyebrow reviewed">Terrain</p>
+          <h3>Local access</h3>
+          <p>{localCount || 34} West Virginia HRSA and ACS indicators.</p>
+        </Link>
+
+        <Link to="/brief" className="apple-card bento-tile">
+          <p className="bento-eyebrow indigo">Brief &amp; AI</p>
+          <h3>Actionable deck</h3>
+          <p>Export PDF, JSON, or Strategy AI prompts.</p>
+        </Link>
+      </div>
+
+      {/* Live Reality provenance modal */}
+      <AppleDetailModal
+        open={realityModalOpen}
+        kicker="2024 MEPS · National Descriptive Evidence"
+        title="Observed burden provenance"
+        onClose={() => setRealityModalOpen(false)}
+      >
+        <p>
+          These figures come directly from reviewed 2024 Medical Expenditure Panel Survey (MEPS) estimates.
+          They are never rescaled by West Virginia indicators or simulator assumptions.
+        </p>
+        <dl className="apple-detail-list">
+          {meanSpending && (
+            <div>
+              <dt>{meanSpending.label}</dt>
+              <dd>{formatEstimateValue(meanSpending)} ({formatEstimateInterval(meanSpending)}) · {meanSpending.source_ref}</dd>
+            </div>
+          )}
+          {adminTime && (
+            <div>
+              <dt>{adminTime.label}</dt>
+              <dd>{formatEstimateValue(adminTime)} ({formatEstimateInterval(adminTime)}) · {adminTime.source_ref}</dd>
+            </div>
+          )}
+          <div>
+            <dt>Boundary</dt>
+            <dd>All-cause spending and time are descriptive; they do not measure Long COVID-attributable cost or savings.</dd>
+          </div>
+        </dl>
+      </AppleDetailModal>
+
+      {/* Edition catalog modal */}
+      <AppleDetailModal
+        open={selectedEdition !== null}
+        kicker={selectedEdition?.editionLabel}
+        title={selectedEdition?.title ?? ""}
+        onClose={() => setSelectedEdition(null)}
+      >
+        {selectedEdition && (
+          <>
+            <p>{selectedEdition.plannedScope}</p>
+            <dl className="apple-detail-list">
+              <div>
+                <dt>Status</dt>
+                <dd>{selectedEdition.badgeLabel}</dd>
+              </div>
+              <div>
+                <dt>Scope &amp; geography</dt>
+                <dd>{selectedEdition.geographyLabel}</dd>
+              </div>
+              <div>
+                <dt>Scientific boundary</dt>
+                <dd>{selectedEdition.whyNotBorrowed}</dd>
+              </div>
+              {selectedEdition.sourceHighlights.length > 0 && (
+                <div>
+                  <dt>Reviewed sources</dt>
+                  <dd>{selectedEdition.sourceHighlights.join(" · ")}</dd>
+                </div>
+              )}
+              <div>
+                <dt>Limitations</dt>
+                <dd>{selectedEdition.limitations.join(" ")}</dd>
+              </div>
+            </dl>
+          </>
+        )}
+      </AppleDetailModal>
     </section>
   );
 }

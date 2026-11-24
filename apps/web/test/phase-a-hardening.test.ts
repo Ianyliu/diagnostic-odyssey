@@ -36,7 +36,7 @@ test("Planning Brief print contract hides chrome but retains substantive content
     "\\.site-header",
     "\\.prototype-strip",
     "footer",
-    "\\.planning-brief-page>\\.context-bar",
+    "\\.planning-brief-page\\s*>\\s*\\.context-bar",
     "\\.brief-export-actions"
   ]) {
     assert.match(styles, new RegExp(selector));
@@ -46,7 +46,7 @@ test("Planning Brief print contract hides chrome but retains substantive content
   assert.match(tokens, /--do-canvas:\s*#ffffff/);
   assert.match(briefStyles, /@media print\s*\{/);
   assert.match(briefStyles, /\.planning-brief-page \.brief-burden-table-wrap\s*\{\s*overflow:\s*visible/);
-  assert.match(briefStyles, /\.planning-brief-page \.brief-burden-table\s*\{[^}]*table-layout:\s*fixed/);
+  assert.match(briefStyles, /\.planning-brief-page \.brief-burden-table\s*\{[\s\S]*?table-layout:\s*fixed/);
   assert.match(briefStyles, /\.planning-brief-page \.brief-burden-group,[\s\S]*?break-inside:\s*auto/);
   assert.match(briefStyles, /\.planning-brief-page \.brief-burden-details::details-content\s*\{\s*content-visibility:\s*visible\s*!important/);
   assert.match(brief, /className="print-provenance"/);
@@ -65,23 +65,20 @@ test("JSON companion remains derived from the same gated brief object and artifa
   assert.match(brief, /withStaleSelectedDataRequestWarning/);
 });
 
-test("shell keeps navigation and context available at narrow widths without sticky overlap", () => {
+test("shell keeps frosted pill navigation and theme toggle accessible without drawer clutter", () => {
   const shell = readSource("../src/components/AppShell.tsx");
-  const workspace = readSource("../src/workspace.css");
+  const navCss = readSource("../src/components/WorkspaceNavigation.css");
   const styles = readSource("../src/styles.css");
   const main = readSource("../src/main.tsx");
 
-  assert.match(shell, /aria-expanded=\{menuOpen\}/);
-  assert.match(shell, /aria-controls="workspace-tools"/);
-  assert.match(shell, /event\.key !== "Escape"/);
-  assert.match(shell, /menuToggle\.current\?\.focus\(\)/);
-  assert.match(workspace, /@media \(max-width: 767px\)\s*\{/);
-  assert.match(workspace, /\.primary-nav\.open\s*\{[^}]*display:\s*grid/);
-  assert.match(workspace, /\.context-bar\s*\{[^}]*grid-template-columns:\s*1fr;[^}]*overflow:\s*visible;[^}]*white-space:\s*normal/);
-  assert.match(workspace, /@media \(min-width: 1200px\) and \(min-height: 800px\)\s*\{/);
+  assert.match(shell, /aria-label="Primary navigation"/);
+  assert.match(shell, /<ThemeControl \/>/);
+  assert.match(navCss, /backdrop-filter:\s*saturate\(180%\) blur\(20px\)/);
+  assert.match(navCss, /@media \(max-width: 900px\)/);
+  assert.match(navCss, /\.primary-nav\s*\{[\s\S]*border-radius:\s*999px/);
   assert.ok(main.indexOf('import "./styles.css"') < main.indexOf('import "./workspace.css"'));
-  assert.match(styles, /@media\(prefers-reduced-motion:reduce\)/);
-  assert.match(styles, /scroll-behavior:auto!important/);
+  assert.match(styles, /@media \(prefers-reduced-motion: reduce\)/);
+  assert.match(styles, /scroll-behavior:\s*auto\s*!important/);
 });
 
 test("focusable Brief burden tables expose a named scroll region and table caption", () => {

@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import { Link, NavLink, Outlet, useLocation, useNavigationType } from "react-router-dom";
 import { workspaceStages, workspaceStageForPath } from "../data/workspaceNavigation";
 import { DisclosureProvider } from "./WorkspaceDisclosure";
@@ -11,26 +11,14 @@ import { displayBuildProvenance, type BuildProvenance } from "../data/buildProve
 declare const __DO_BUILD_PROVENANCE__: BuildProvenance;
 
 const savedScroll = new Map<string, number>();
+const advisorEnabled = import.meta.env.VITE_FUTURE_AI_EXPERIENCE_DEMO !== "off";
 
 export function AppShell() {
   const location = useLocation();
   const navigationType = useNavigationType();
-  const [menuOpen, setMenuOpen] = useState(false);
   const initialRoute = useRef(true);
-  const menuToggle = useRef<HTMLButtonElement>(null);
   const preFragmentScroll = useRef<number | null>(null);
   const lastScrollY = useRef(0);
-
-  useEffect(() => {
-    if (!menuOpen) return;
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key !== "Escape") return;
-      setMenuOpen(false);
-      menuToggle.current?.focus();
-    };
-    window.addEventListener("keydown", closeOnEscape);
-    return () => window.removeEventListener("keydown", closeOnEscape);
-  }, [menuOpen]);
 
   useEffect(() => {
     const previous = window.history.scrollRestoration;
@@ -76,11 +64,8 @@ export function AppShell() {
   }, [location.key]);
 
   useEffect(() => {
-    setMenuOpen(false);
     const frame = requestAnimationFrame(() => {
       if (navigationType === "POP" && savedScroll.has(location.key)) {
-        // A different history entry may have closed the destination's disclosure.
-        // Reveal and focus it before restoring this entry's saved position.
         scrollToFragment(location.hash);
         window.scrollTo(0, savedScroll.get(location.key) ?? 0);
       } else if (scrollToFragment(location.hash)) {
@@ -99,6 +84,9 @@ export function AppShell() {
 
   const activeStage = workspaceStageForPath(location.pathname);
   const buildIdentity = displayBuildProvenance(__DO_BUILD_PROVENANCE__);
+  const stages = advisorEnabled
+    ? workspaceStages
+    : workspaceStages.filter(stage => stage.to !== "/advisor");
 
   return (
     <div className="app-shell">
@@ -107,50 +95,44 @@ export function AppShell() {
         <div className="header-inner">
           <Link className="brand" to="/" aria-label="Diagnostic Odyssey, Overview">
             <span className="brand-mark" aria-hidden="true">
-              <img src="/diagnostic-odyssey-icon.png" width="192" height="192" alt="" />
+              <img src="/diagnostic-odyssey-mark.svg" width="28" height="28" alt="" />
             </span>
             <span className="brand-copy">
               <strong>Diagnostic Odyssey</strong>
-              <span>Evidence workspace</span>
             </span>
           </Link>
-          <button
-            ref={menuToggle}
-            className="menu-toggle"
-            type="button"
-            aria-expanded={menuOpen}
-            aria-controls="workspace-tools"
-            onClick={() => setMenuOpen(open => !open)}
-          >{menuOpen ? "Close menu" : "Menu"}</button>
-          <nav
-            id="primary-navigation"
-            aria-label="Primary navigation"
-            className={"primary-nav" + (menuOpen ? " open" : "")}
-          >
-            {workspaceStages.map(({to, label, shortLabel}, index) => (
-              <NavLink key={to} to={to} className={activeStage === to ? "active" : ""}>
-                <span className="stage-number" aria-hidden="true">{index + 1}</span>
-                <span className="stage-label">{label}</span><span className="stage-short" aria-hidden="true">{shortLabel}</span>
+
+          <nav id="primary-navigation" aria-label="Primary navigation" className="primary-nav">
+            {stages.map(({to, label}) => (
+              <NavLink
+                key={to}
+                to={to}
+                end={to === "/"}
+                className={activeStage === to ? "active" : ""}
+              >
+                {label}
               </NavLink>
             ))}
           </nav>
-          <div id="workspace-tools" className={"header-controls" + (menuOpen ? " open" : "")} hidden={!menuOpen}>
-            <nav aria-label="Supporting navigation">
-              <Link to="/">Overview</Link>
-              <Link to="/evidence">Intervention evidence &amp; limits</Link>
-              <Link to="/data-requests">Data requests</Link>
-            </nav>
+
+          <div className="header-controls">
             <ThemeControl />
           </div>
         </div>
       </header>
-      <DisclosureProvider><main id="main-content" tabIndex={-1} data-navigation={navigationType}>
-        <Outlet />
-      </main></DisclosureProvider>
-      <footer>
-        <span>Diagnostic Odyssey</span>
-        <span>Built on public federal data: AHRQ MEPS, HRSA and Census ACS · aggregate estimates only; no patient-level records</span>
-        <small className="source-revision" aria-label="Application source revision">{buildIdentity.url ? <a href={buildIdentity.url} target="_blank" rel="noopener noreferrer">{buildIdentity.label}</a> : buildIdentity.label}</small>
+      <DisclosureProvider>
+        <main id="main-content" tabIndex={-1} data-navigation={navigationType}>
+          <Outlet />
+        </main>
+      </DisclosureProvider>
+      <footer className="site-footer">
+        <span>Diagnostic Odyssey · Edition 01: Long COVID · West Virginia</span>
+        <span>AHRQ MEPS · HRSA · Census ACS · Aggregate only</span>
+        <small className="source-revision" aria-label="Application source revision">
+          {buildIdentity.url ? (
+            <a href={buildIdentity.url} target="_blank" rel="noopener noreferrer">{buildIdentity.label}</a>
+          ) : buildIdentity.label}
+        </small>
       </footer>
     </div>
   );

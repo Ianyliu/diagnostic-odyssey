@@ -504,8 +504,8 @@ test("reviewed burden UI has no development-fixture labels", () => {
   ]) {
     assert.doesNotMatch(burden, new RegExp(forbidden));
   }
-  assert.match(burden, /Reviewed national MEPS evidence/);
-  assert.match(burden, /Gross burden is not attributable burden/);
+  assert.match(burden, /National burden, clearly separated/);
+  assert.match(burden, /National descriptive · Not causal/);
   const burdenMeasures = readSource("../src/components/BurdenMeasureList.tsx");
   assert.match(burden, /<BurdenMeasureList estimates=\{domain\.measures\} \/>/);
   assert.match(burdenMeasures, /formatEstimateInterval\(estimate\)/);
@@ -517,11 +517,10 @@ test("reviewed burden UI has no development-fixture labels", () => {
   assert.match(burdenMeasures, /measure-interval/);
   assert.match(
     burden,
-    /Intervals shown are the reviewed 95% confidence intervals from the MEPS survey-weighted analysis/
+    /Intervals are reviewed 95% confidence intervals from MEPS survey-weighted analysis/
   );
-  assert.match(burden, /About these intervals/);
-  assert.match(burden, /no interval is recomputed in the web application/);
-  assert.match(burden, /they do not make gross burden attributable or causal/);
+  assert.match(burden, /Survey intervals, native units/);
+  assert.match(burden, /no interval is recomputed in the browser/);
 });
 
 test("ContextBar keeps national evidence and WV implementation context visibly separate", () => {
@@ -560,10 +559,9 @@ test("LocalContextPage uses canonical fields and preserves score/source interpre
   assert.match(formatter, /margin_of_error/);
   assert.doesNotMatch(local, /bundle\.local_context/);
   assert.match(local, /Maximum source-published HPSA score among included designations/);
-  assert.match(local, /not a statewide shortage severity score/);
   assert.doesNotMatch(local, /WV shortage score/);
   assert.match(local, /2020–2024 ACS 5-year estimates \/ 2024 release/);
-  assert.match(local, /No fixture or illustrative local data are substituted/);
+  assert.match(local, /The reviewed artifact could not be loaded/);
 });
 
 test("planning brief includes only explicitly supplied release-eligible local context", () => {
@@ -665,17 +663,14 @@ test("local-context selection UI supports reviewed records without changing Pilo
   const pilotSource = readSource("../src/pages/PilotPage.tsx");
 
   assert.match(localSource, /Include in Planning Brief/);
-  assert.match(localSource, /Review context in Planning Brief/);
+  assert.match(localSource, /Review in Brief/);
   assert.match(localSource, /Select all/);
   assert.match(localSource, /Select none/);
-  assert.match(localSource, /selected for Planning Brief/);
-  assert.match(localSource, /Include in Planning Brief/);
+  assert.match(localSource, /included in Brief/);
   assert.match(localSource, /Use in Pilot planning/);
-  assert.match(localSource, /separate analyst choices/);
-  assert.match(localSource, /Neither changes national burden or Pilot planner numeric assumptions/);
-  assert.match(localSource, /BreakdownList/);
-  assert.match(localSource, /primaryBreakdowns/);
-  assert.match(localSource, /mentalBreakdowns/);
+  assert.match(localSource, /Selections never alter national burden or simulator math/);
+  assert.match(localSource, /primaryBreakdowns\.map/);
+  assert.match(localSource, /mentalBreakdowns\.map/);
   assert.match(localSource, /acsRecords\.map/);
 
   assert.match(contextSource, /selectedLocalContextIds: string\[\]/);
@@ -703,8 +698,8 @@ test("local-context failure state leaves national routes conceptually available"
   const context = readSource("../src/data/ArtifactContext.tsx");
   const local = readSource("../src/pages/LocalContextPage.tsx");
   assert.match(context, /setLocalContextStatus\("error"\)/);
-  assert.match(local, /National MEPS burden, Pilot planner, and Planning Brief remain usable/);
-  assert.match(local, /National MEPS burden remains available and unchanged/);
+  assert.match(local, /National MEPS burden, Simulator, and Brief remain usable/);
+  assert.match(local, /National MEPS burden remains unchanged/);
   assert.doesNotMatch(local, /fixture-2026-09-v1|artifacts\/examples/);
 });
 

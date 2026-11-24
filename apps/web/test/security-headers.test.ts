@@ -12,7 +12,11 @@ const html = get("../index.html");
 const bootstrap = get("../public/theme-init.js");
 
 function validate(input: any): void {
-  assert.deepEqual(input.rewrites, [{ source: "/(.*)", destination: "/index.html" }], "SPA catch-all must remain intact");
+  assert.deepEqual(
+    input.rewrites,
+    [{ source: "/:path((?!api/).*)", destination: "/index.html" }],
+    "SPA deep links must stay available without consuming /api/* functions"
+  );
   assert.equal(input.headers?.length, 1, "one unconditional header rule");
   assert.equal(input.headers[0].source, "/(.*)", "cover documents, routes, JS, CSS, and images");
   assert.equal(input.headers[0].has, undefined);
@@ -47,6 +51,7 @@ function validate(input: any): void {
 test("exact Vercel security configuration, source lists and SPA fallback", () => {
   validate(config);
 });
+
 test("first-paint bootstrap is blocking, same-origin and not inline", () => {
   assert.match(html, /<script src="\/theme-init\.js"><\/script>/);
   assert.doesNotMatch(html, /<script(?:\s|>)(?![^>]*\bsrc=)[^>]*>/i);
@@ -56,6 +61,7 @@ test("first-paint bootstrap is blocking, same-origin and not inline", () => {
   assert.match(bootstrap, /diagnostic-odyssey\.theme/);
   assert.match(bootstrap, /prefers-color-scheme: dark/);
 });
+
 test("bootstrap retains storage, system, light/dark and fallback behavior", () => {
   for (const entry of [
     { stored: "dark", system: false, expected: "dark", preference: "dark" },
@@ -64,44 +70,47 @@ test("bootstrap retains storage, system, light/dark and fallback behavior", () =
     { stored: "system", system: false, expected: "light", preference: "system" },
     { stored: "nonsense", system: true, expected: "dark", preference: "system" }
   ]) {
-    const dataset: Record<string,string> = {};
-    const meta = {content:""};
-    runInNewContext(bootstrap,{
-      localStorage: {getItem: () => entry.stored},
-      matchMedia: () => ({matches: entry.system}),
-      document: {documentElement: {dataset}, querySelector: () => meta}
+    const dataset: Record<string, string> = {};
+    const meta = { content: "" };
+    runInNewContext(bootstrap, {
+      localStorage: { getItem: () => entry.stored },
+      matchMedia: () => ({ matches: entry.system }),
+      document: { documentElement: { dataset }, querySelector: () => meta }
     });
-    assert.deepEqual({theme:dataset.theme, preference:dataset.themePreference, color:meta.content},
-      {theme:entry.expected, preference:entry.preference, color:entry.expected === "dark" ? "#09131b" : "#f5f2eb"});
+    assert.deepEqual(
+      { theme: dataset.theme, preference: dataset.themePreference, color: meta.content },
+      { theme: entry.expected, preference: entry.preference, color: entry.expected === "dark" ? "#000000" : "#f5f5f7" }
+    );
   }
-  const dataset: Record<string,string> = {};
-  const meta={content:""};
-  runInNewContext(bootstrap,{
-    localStorage:{getItem(){throw Error("blocked storage");}},
-    matchMedia(){throw Error("missing API");},
-    document:{documentElement:{dataset}, querySelector:()=>meta}
+  const dataset: Record<string, string> = {};
+  const meta = { content: "" };
+  runInNewContext(bootstrap, {
+    localStorage: { getItem() { throw Error("blocked storage"); } },
+    matchMedia() { throw Error("missing API"); },
+    document: { documentElement: { dataset }, querySelector: () => meta }
   });
-  assert.equal(dataset.theme,"light");
-  assert.equal(dataset.themePreference,"system");
-  assert.equal(meta.content,"#f5f2eb");
+  assert.equal(dataset.theme, "light");
+  assert.equal(dataset.themePreference, "system");
+  assert.equal(meta.content, "#f5f5f7");
 });
+
 test("fail closed on missing headers, policy weakening, and route gaps", () => {
   const mutate = (change: (copy: any, values: Map<string, any>) => void) => {
     const copy = structuredClone(config);
-    const map = new Map(copy.headers[0].headers.map((h: any) => [h.key,h]));
+    const map = new Map(copy.headers[0].headers.map((h: any) => [h.key, h]));
     change(copy, map);
     assert.throws(() => validate(copy));
   };
-  mutate((copy) => {delete copy.headers;});
-  mutate((copy) => {copy.headers[0].source="/";});
-  mutate((copy) => {copy.rewrites=[];});
-  mutate((_copy,headers)=>{headers.get("Content-Security-Policy").value="default-src 'self'";});
-  mutate((_copy,headers)=>{headers.get("Content-Security-Policy").value+= "; script-src 'self' 'unsafe-inline'";});
-  mutate((_copy,headers)=>{headers.get("Content-Security-Policy").value=headers.get("Content-Security-Policy").value.replace("frame-ancestors 'none'","frame-ancestors 'self'");});
-  mutate((_copy,headers)=>{headers.get("Content-Security-Policy").value=headers.get("Content-Security-Policy").value.replace("style-src-attr 'none'","style-src-attr 'unsafe-inline'");});
-  mutate((_copy,headers)=>{headers.get("Content-Security-Policy").value=headers.get("Content-Security-Policy").value.replace("connect-src 'self'","connect-src *");});
-  mutate((_copy,headers)=>{headers.get("X-Frame-Options").value="SAMEORIGIN";});
-  mutate((_copy,headers)=>{headers.get("X-Content-Type-Options").value="off";});
-  mutate((_copy,headers)=>{headers.get("Referrer-Policy").value="unsafe-url";});
-  mutate((copy)=>{copy.headers[0].headers.push({key:"content-security-policy",value:"default-src *"});});
+  mutate(copy => { delete copy.headers; });
+  mutate(copy => { copy.headers[0].source = "/"; });
+  mutate(copy => { copy.rewrites = []; });
+  mutate((_copy, headers) => { headers.get("Content-Security-Policy").value = "default-src 'self'"; });
+  mutate((_copy, headers) => { headers.get("Content-Security-Policy").value += "; script-src 'self' 'unsafe-inline'"; });
+  mutate((_copy, headers) => { headers.get("Content-Security-Policy").value = headers.get("Content-Security-Policy").value.replace("frame-ancestors 'none'", "frame-ancestors 'self'"); });
+  mutate((_copy, headers) => { headers.get("Content-Security-Policy").value = headers.get("Content-Security-Policy").value.replace("style-src-attr 'none'", "style-src-attr 'unsafe-inline'"); });
+  mutate((_copy, headers) => { headers.get("Content-Security-Policy").value = headers.get("Content-Security-Policy").value.replace("connect-src 'self'", "connect-src *"); });
+  mutate((_copy, headers) => { headers.get("X-Frame-Options").value = "SAMEORIGIN"; });
+  mutate((_copy, headers) => { headers.get("X-Content-Type-Options").value = "off"; });
+  mutate((_copy, headers) => { headers.get("Referrer-Policy").value = "unsafe-url"; });
+  mutate(copy => { copy.headers[0].headers.push({ key: "content-security-policy", value: "default-src *" }); });
 });

@@ -14,10 +14,12 @@ export function MedicalBurdenPage() {
     ? <LinkedConditionServiceUseFootprint evidence={linkedCondition.evidence} />
     : <LinkedConditionServiceUseUnavailable />;
 
-  return <DomainPage
-    domainId="economic-healthcare"
-    title="Economic / healthcare burden"
-    description="Gross all-cause burden with explicit boundaries and release state."
-    secondaryContent={secondaryContent}
-  />;
+  return (
+    <DomainPage
+      domainId="economic-healthcare"
+      title="Spending & healthcare use"
+      description="Gross all-cause spending with 95% intervals."
+      secondaryContent={secondaryContent}
+    />
+  );
 }

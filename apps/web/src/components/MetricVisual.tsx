@@ -23,7 +23,6 @@ export function MetricVisual({
   pointLabel?: string;
   source?: string | null;
   universe?: string | null;
-  /** Descriptive spread is never encoded as a sampling confidence interval. */
   intervalStyle?: "confidence" | "range";
 }) {
   const geometry = metricGeometry(value, unit, low, high);
@@ -32,22 +31,54 @@ export function MetricVisual({
     narrowInterval: geometry.narrowInterval
   });
 
-  return <div className="metric-visual">
-    <div className="metric-visual-track" role="img" aria-label={aria}>
-      <span className="metric-visual-zero" style={{left: `${geometry.zeroPercent}%`}} />
-      {geometry.hasInterval && (geometry.narrowInterval
-        ? <span aria-hidden="true" className={"metric-visual-narrow-interval" + (intervalStyle === "range" ? " is-range" : "")} style={{left: `${geometry.intervalMidpointPercent}%`}} />
-        : <span aria-hidden="true" className={"metric-visual-interval" + (intervalStyle === "range" ? " is-range" : "")} style={{left: `${geometry.intervalLeftPercent}%`, width: `${geometry.intervalWidthPercent}%`}} />)}
-      <span className="metric-visual-point" style={{left: `${geometry.pointPercent}%`}} />
+  const W = 240;
+  const xZero = (geometry.zeroPercent / 100) * W;
+  const xPoint = Math.max(4, Math.min(W - 4, (geometry.pointPercent / 100) * W));
+  const xIntLeft = (geometry.intervalLeftPercent / 100) * W;
+  const wInt = Math.max(2, (geometry.intervalWidthPercent / 100) * W);
+  const xIntMid = (geometry.intervalMidpointPercent / 100) * W;
+
+  return (
+    <div className="metric-visual">
+      <svg
+        className="metric-visual-svg"
+        viewBox={`0 0 ${W} 16`}
+        role="img"
+        aria-label={aria}
+        preserveAspectRatio="none"
+      >
+        <rect x={0} y={5} width={W} height={6} rx={3} className="mv-track" />
+        <line x1={xZero} y1={2} x2={xZero} y2={14} className="mv-zero" />
+        {geometry.hasInterval && (geometry.narrowInterval ? (
+          <line
+            x1={xIntMid}
+            y1={3}
+            x2={xIntMid}
+            y2={13}
+            className={intervalStyle === "range" ? "mv-narrow is-range" : "mv-narrow"}
+          />
+        ) : (
+          <rect
+            x={xIntLeft}
+            y={5}
+            width={wInt}
+            height={6}
+            rx={3}
+            className={intervalStyle === "range" ? "mv-interval is-range" : "mv-interval"}
+          />
+        ))}
+        <circle cx={xPoint} cy={8} r={4.2} className="mv-point" />
+      </svg>
+      <div className="metric-visual-axis" aria-hidden="true">
+        <span>{formatMetricTick(geometry.min, unit, false)}</span>
+        <span>{formatMetricTick(geometry.max, unit, true)}</span>
+      </div>
+      {(source || universe) && (
+        <div className="metric-visual-meta">
+          <span>{pointLabel}{geometry.hasInterval ? ` · ${intervalLabel ?? "Published interval"}` : " · No interval"}</span>
+          {source && <span>{source}</span>}
+        </div>
+      )}
     </div>
-    <div className="metric-visual-axis" aria-hidden="true">
-      <span>{formatMetricTick(geometry.min, unit, false)}</span>
-      <span>{formatMetricTick(geometry.max, unit, true)}</span>
-    </div>
-    <div className="metric-visual-meta">
-      <span>{pointLabel}{geometry.hasInterval ? ` · ${intervalLabel ?? "Published interval"}` : " · Interval not available"}</span>
-      {source && <span>{source}</span>}
-      {universe && <span>{universe}</span>}
-    </div>
-  </div>;
+  );
 }

@@ -20,11 +20,11 @@ test("theme preference accepts only explicit modes and System follows OS", () =>
   assert.equal(resolveTheme("dark", false), "dark");
 });
 
-test("browser theme color uses the resolved appearance rather than the preference", () => {
-  assert.equal(getThemeColor(resolveTheme("system", false)), "#f5f2eb");
-  assert.equal(getThemeColor(resolveTheme("system", true)), "#09131b");
-  assert.equal(getThemeColor(resolveTheme("light", true)), "#f5f2eb");
-  assert.equal(getThemeColor(resolveTheme("dark", false)), "#09131b");
+test("browser theme color uses Cupertino Clarity light/dark canvas tokens", () => {
+  assert.equal(getThemeColor(resolveTheme("system", false)), "#f5f5f7");
+  assert.equal(getThemeColor(resolveTheme("system", true)), "#000000");
+  assert.equal(getThemeColor(resolveTheme("light", true)), "#f5f5f7");
+  assert.equal(getThemeColor(resolveTheme("dark", false)), "#000000");
 });
 
 test("unavailable storage cannot block theme selection", () => {
@@ -35,9 +35,11 @@ test("unavailable storage cannot block theme selection", () => {
   assert.equal(readThemePreference(unavailable), "system");
   assert.doesNotThrow(() => persistThemePreference(unavailable, "dark"));
   let saved = "";
-  persistThemePreference({ setItem: (key, value) => {
-    assert.equal(key, THEME_STORAGE_KEY);
-    saved = value;
-  } }, "light");
+  persistThemePreference({
+    setItem: (key, value) => {
+      assert.equal(key, THEME_STORAGE_KEY);
+      saved = value;
+    }
+  }, "light");
   assert.equal(saved, "light");
 });

@@ -126,16 +126,16 @@ test("Burden and Domain pages share plain-language measure presentation", () => 
 
   assert.match(measures, /formatEstimateValue\(estimate\)/);
   assert.match(measures, /formatEstimateInterval\(estimate\)/);
-  assert.match(measures, /<details className="burden-measure-details technical-disclosure">/);
-  assert.match(measures, /Interpretation and technical details/);
-  assert.match(measures, /estimate\.allowed_interpretation/);
-  assert.match(measures, /estimate\.universe/);
-  assert.match(measures, /estimate\.denominator/);
-  assert.match(measures, /estimate\.system_boundary/);
-  assert.match(measures, /estimate\.source_ref/);
-  assert.match(measures, /formatReleaseStatusLabel\(estimate\.release_status\)/);
+  assert.match(measures, /<AppleDetailModal/);
+  assert.match(measures, /Allowed interpretation/);
+  assert.match(measures, /activeEstimate\.allowed_interpretation/);
+  assert.match(measures, /activeEstimate\.universe/);
+  assert.match(measures, /activeEstimate\.denominator/);
+  assert.match(measures, /activeEstimate\.system_boundary/);
+  assert.match(measures, /activeEstimate\.source_ref/);
+  assert.match(measures, /formatReleaseStatusLabel\(activeEstimate\.release_status\)/);
   assert.match(measures, /estimate\.component_of_measure_id/);
-  assert.match(measures, /do not add this value to the parent total/);
+  assert.match(measures, /Do not add/);
 });
 
 test("Planning Brief uses semantic grouped tables and promotes every warning", () => {
@@ -166,15 +166,15 @@ test("Planning Brief uses semantic grouped tables and promotes every warning", (
 
 test("new grouped Brief presentation remains print-safe without hiding critical boundaries", () => {
   const styles = readSource("../src/styles.css");
+  const briefStyles = readSource("../src/pages/BriefPage.css");
 
-  assert.match(styles, /\.brief-burden-table-wrap\{[^}]*overflow-x:auto/);
-  assert.match(styles, /\.brief-burden-table\{[^}]*border-collapse:collapse/);
+  assert.match(briefStyles, /\.brief-burden-table-wrap\s*\{[\s\S]*overflow-x:\s*auto/);
+  assert.match(briefStyles, /\.brief-burden-table\s*\{[\s\S]*border-collapse:\s*collapse/);
   assert.match(styles, /@media print/);
-  assert.match(styles, /\.brief-burden-table-wrap\{overflow:visible/);
-  assert.match(styles, /thead\{display:table-header-group\}/);
-  assert.match(styles, /\.brief-burden-table tr\{break-inside:avoid/);
-  assert.doesNotMatch(styles, /\.interpretation-boundaries\s*\{[^}]*display:none/i);
-  assert.doesNotMatch(styles, /\.brief-burden-table\s*\{[^}]*display:none/i);
-  assert.match(styles, /\.brief-export-actions/);
+  assert.match(styles, /\.brief-burden-table-wrap\s*\{\s*overflow:\s*visible/);
+  assert.match(styles, /thead\s*\{\s*display:\s*table-header-group/);
+  assert.match(styles, /\.brief-burden-table tr\s*\{\s*break-inside:\s*avoid/);
+  assert.doesNotMatch(styles, /\.interpretation-boundaries\s*\{[^}]*display:\s*none/i);
+  assert.doesNotMatch(styles, /\.brief-burden-table\s*\{[^}]*display:\s*none/i);
   assert.match(styles, /\.print-provenance/);
 });

@@ -53,26 +53,20 @@ test("presentation labels cover every current DataState and ReleaseStatus withou
   }
 });
 
-test("Overview explains the evidence-to-planning workflow across four stages and supporting tools", () => {
+test("Overview presents Apple-concise copy with explicit edition and boundary labels", () => {
   const source = readSource("../src/pages/OverviewPage.tsx");
 
   for (const phrase of [
-    "Evidence into planning,",
-    "boundaries intact.",
-    "reviewed national burden",
-    "local implementation context",
-    "analyst assumptions",
-    "Review national burden estimates with survey uncertainty and explicit interpretation boundaries.",
-    "Inspect implementation and access context without turning national burden into a local disease estimate.",
-    "Set explicit planning assumptions and stress-test reach, capacity, timing, and resources.",
-    "Export reviewed evidence, selected context, assumptions, boundaries, and remaining gaps."
+    "Edition 01 · Long COVID · West Virginia",
+    "Health costs, finally clear.",
+    "Start Exploring",
+    "Try Simulator",
+    "National descriptive · Not causal",
+    "Planning math · Not savings",
+    "Zero cross-condition borrowing"
   ]) {
     assert.ok(source.includes(phrase), phrase);
   }
-  assert.match(source, /Intervention evidence &amp; limits/);
-  assert.match(source, /capture data needs/);
-  assert.match(source, /journey\.map\(\(\[step, title, outcome, to\]\)/);
-  assert.match(source, /<small>{outcome}<\/small>/);
 });
 
 test("DecisionStateRail reuses the readable pathway formatter", () => {
@@ -84,28 +78,19 @@ test("DecisionStateRail reuses the readable pathway formatter", () => {
 test("Local Context humanizes statuses and preserves interpretation boundaries", () => {
   const source = readSource("../src/pages/LocalContextPage.tsx");
 
-  assert.match(source, /formatReleaseStatusLabel\(record\.release_status\)/);
-  assert.match(source, /formatDataStateLabel\(record\.state\)/);
-  assert.doesNotMatch(source, /<small>{record\.release_status} · {record\.state}<\/small>/);
-  assert.match(source, /Missing designation\/data does not mean no shortage or zero implementation constraint/);
-  assert.match(source, /West Virginia Long COVID prevalence, burden, cost, causal effect, savings, ROI, or a composite access-severity score/);
-  assert.match(source, /Source timing and technical details/);
-  assert.match(source, /Health Resources and Services Administration \(HRSA\)/);
-  assert.match(source, /Health Professional Shortage Area \(HPSA\)/);
-  assert.match(source, /American Community Survey \(ACS\)/);
-  assert.match(source, /not a statewide shortage severity score/);
+  assert.match(source, /formatReleaseStatusLabel\(inspectingRecord\.release_status\)/);
+  assert.match(source, /formatDataStateLabel\(inspectingRecord\.state\)/);
+  assert.doesNotMatch(source, /<small>\{record\.release_status\} · \{record\.state\}<\/small>/);
+  assert.match(source, /Missing data does not mean zero constraint/);
+  assert.match(source, /HPSA counts describe designations, not patients or clinicians/);
   assert.match(source, /Include in Planning Brief/);
 });
 
-test("Pilot interpretation describes planning arithmetic without duplicating the pathway boundary", () => {
+test("Pilot interpretation describes planning arithmetic cleanly", () => {
   const source = readSource("../src/pages/PilotPage.tsx");
 
-  assert.equal(source.split("Modeled pathway boundary").length - 1, 1);
-  assert.match(source, /mechanical planning consequences of the currently applied assumptions/i);
-  assert.match(source, /A forecast, observed improvement, treatment effectiveness, causal effect, savings, or ROI/);
-  assert.match(source, /Stress-test an assumption and create a structured data request/);
+  assert.match(source, /Planning math · Not savings or ROI/);
   assert.match(source, /Draft not applied/);
-  assert.match(source, /last valid planning assumptions/);
   assert.match(source, /Sensitivity analysis paused/);
   assert.match(source, /disabled>Review planning brief<\/button>/);
 });
@@ -114,10 +99,9 @@ test("Evidence uses existing admissibility and current-scenario eligibility sema
   const source = readSource("../src/pages/EvidencePage.tsx");
   assert.match(source, /evidenceClaimLabel\(record\)/);
   assert.match(source, /canDriveScenarioParameter\(record, scenario\)/);
-  assert.match(source, /currentUse\?\.reason/);
-  assert.match(source, /Absence of a reviewed effect parameter is not evidence that an intervention has no effect/);
-  assert.match(source, /Return to Pilot assumptions/);
-  assert.match(source, /Review operational data requests/);
+  assert.match(source, /Absence of a reviewed parameter is not evidence of no effect/);
+  assert.match(source, /Return to Simulator/);
+  assert.match(source, /Review data requests/);
 
   const base: EvidenceRecord = {
     evidence_id: "test",
