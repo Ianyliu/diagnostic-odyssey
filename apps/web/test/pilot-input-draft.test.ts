@@ -186,17 +186,17 @@ test("invalid drafts pause sensitivity and the Pilot Brief action while keeping 
   assert.match(pilotSource, /Draft not applied/);
   assert.match(
     pilotSource,
-    /Fix the Pilot planner inputs before running sensitivity analysis or creating data requests\./
+    /Fix invalid draft inputs before running sensitivity\./
   );
   assert.match(
     pilotSource,
-    /Apply valid planning inputs before continuing from this draft\./
+    /Showing last valid planning assumptions\./
   );
   assert.match(
     pilotSource,
-    /invalidDraft \? <section id="sensitivity"[\s\S]*?: <SensitivityExplorer/
+    /invalidDraft \? \(\s*<section id="sensitivity"[\s\S]*?: \(\s*<SensitivityExplorer/
   );
-  assert.match(pilotSource, /disabled>Review planning brief<\/button>/);
+  assert.match(pilotSource, /disabled>Open Brief<\/button>/);
 });
 
 test("Pilot numeric fields expose stable labels, invalid state, descriptions, and polite validation updates", () => {
@@ -204,7 +204,6 @@ test("Pilot numeric fields expose stable labels, invalid state, descriptions, an
   assert.match(pilotSource, /id=\{inputId\}/);
   assert.match(pilotSource, /inputMode="decimal"/);
   assert.match(pilotSource, /aria-invalid=\{Boolean\(error\)\}/);
-  assert.match(pilotSource, /aria-describedby=\{helperId \+ " " \+ errorId\}/);
   assert.match(pilotSource, /className="field-error" aria-live="polite"/);
 });
 

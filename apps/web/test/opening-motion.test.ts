@@ -123,19 +123,13 @@ test("manual replay is independent of the once-per-session flag", async () => {
   assert.ok(OPENING_DURATION_MS >= 3500 && OPENING_DURATION_MS < 5000);
 });
 
-test("first-screen panel and all interpretation boundaries survive compact styling", () => {
+test("first-screen hero and reduced-motion choreography stay intact", () => {
   const overview = readFileSync(fileURLToPath(new URL("../src/pages/OverviewPage.tsx", import.meta.url)), "utf8");
-  const panel = readFileSync(fileURLToPath(new URL("../src/pages/OpeningProvenance.tsx", import.meta.url)), "utf8");
-  const css = readFileSync(fileURLToPath(new URL("../src/pages/OverviewPage.css", import.meta.url)), "utf8");
-  assert.match(overview,/className="overview-hero-motion"/);
-  assert.equal((overview.match(/<OpeningProvenance /g)??[]).length,1);
-  assert.match(overview,/<HeadlineFindings \/>/);
-  for(const label of ["Reviewed evidence","Local context","Analyst assumptions","Planning Brief"])
-    assert.ok(panel.includes(label),label);
-  for(const label of ["Replay animation","visibilitychange","pagehide","not a combined scientific score"])
-    assert.ok(panel.includes(label),label);
-  assert.match(css,/@keyframes circuit-route/);
-  assert.match(css,/@keyframes workspace-unfold-replay/);
-  assert.match(css,/@media \(prefers-reduced-motion: reduce\)/);
-  assert.match(css,/\.preview-output \{ display: grid;/);
+  const motionCss = readFileSync(fileURLToPath(new URL("../src/motion.css", import.meta.url)), "utf8");
+  assert.match(overview, /useOpeningMotion\(\)/);
+  assert.match(overview, /<LandingJourney \/>/);
+  assert.match(overview, /<EditionDrawer/);
+  assert.match(overview, /Never blended/);
+  assert.match(motionCss, /@keyframes atlas-rise/);
+  assert.match(motionCss, /@media \(prefers-reduced-motion: reduce\)/);
 });

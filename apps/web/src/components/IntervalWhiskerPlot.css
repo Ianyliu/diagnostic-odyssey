@@ -1,110 +1,53 @@
 .interval-figure {
-  margin: 1rem 0 1.25rem;
-  padding: 1rem 0;
-  border-block: 1px solid var(--do-border);
+  margin: 0;
+  padding: 16px 20px;
+  border: 1px solid var(--do-border);
+  border-radius: var(--do-radius-card);
+  background: var(--do-surface);
   display: grid;
-  gap: 0.7rem;
+  gap: 12px;
   min-width: 0;
 }
 
-.interval-figure figcaption { max-width: 70ch; }
-
-.interval-figure h3 {
-  margin: 0.2rem 0;
-  color: var(--do-text);
-  font-size: 1rem;
-}
-
-.interval-figure .visual-kicker {
-  margin: 0;
-  color: var(--do-accent);
-  font-size: 0.7rem;
-  font-weight: 750;
-  letter-spacing: 0.1em;
-}
-
+.interval-figure figcaption { max-width: 68ch; display: grid; gap: 4px; }
+.interval-figure h3 { margin: 0; color: var(--do-text); font-size: 1rem; }
 .interval-figure figcaption p:not(.visual-kicker),
-.interval-figure .visual-note {
-  margin: 0;
-  color: var(--do-text-muted);
-  font-size: 0.8rem;
-  line-height: 1.5;
-}
+.interval-figure .visual-note { margin: 0; color: var(--do-text-muted); font-size: 0.8rem; line-height: 1.45; }
 
 .whisker-axis-row,
 .whisker-row {
   display: grid;
-  grid-template-columns: minmax(12rem, 34%) minmax(0, 1fr);
-  gap: 1rem;
+  grid-template-columns: minmax(12rem, 36%) minmax(0, 1fr);
+  gap: 16px;
+  align-items: center;
 }
-
-.whisker-axis-row { align-items: end; }
 
 .whisker-axis {
   display: flex;
   justify-content: space-between;
   color: var(--do-text-muted);
-  font-size: 0.72rem;
-  font-variant-numeric: tabular-nums;
+  font-family: var(--do-font-mono);
+  font-size: 0.7rem;
 }
 
-.whisker-plot { display: grid; gap: 0.85rem; }
-.whisker-row { align-items: center; }
-.whisker-label { display: grid; gap: 0.15rem; min-width: 0; }
+.whisker-plot { display: grid; gap: 10px; }
+.whisker-label { display: grid; gap: 2px; min-width: 0; }
+.whisker-label strong { color: var(--do-text); font-size: 0.82rem; line-height: 1.3; }
+.whisker-label small { color: var(--do-text-muted); font-size: 0.72rem; }
 
-.whisker-label strong {
-  color: var(--do-text);
-  font-size: 0.8rem;
-  line-height: 1.35;
+.whisker-svg {
+  display: block;
+  width: 100%;
+  height: 22px;
+  overflow: visible;
 }
-
-.whisker-label small {
-  color: var(--do-text-muted);
-  font-size: 0.72rem;
-  font-variant-numeric: tabular-nums;
-}
-
-.whisker-track {
-  position: relative;
-  height: 1.45rem;
-  border-inline: 1px solid var(--do-border);
-  background: repeating-linear-gradient(
-    to right,
-    var(--do-border) 0 1px,
-    transparent 1px 25%
-  );
-}
-
-.whisker-interval {
-  position: absolute;
-  top: calc(50% - 2px);
-  height: 4px;
-  background: var(--do-chart-1);
-}
-
-.whisker-point {
-  position: absolute;
-  top: calc(50% - 6px);
-  width: 12px;
-  height: 12px;
-  border: 2px solid var(--do-surface-elevated);
-  border-radius: 50%;
-  background: var(--do-chart-2);
-  box-shadow: 0 0 0 1px var(--do-chart-2);
-  transform: translateX(-50%);
-}
+.whisker-svg-track { fill: var(--do-chart-track); }
+.whisker-svg-grid { stroke: var(--do-chart-grid); stroke-width: 1.5; }
+.whisker-svg-interval { fill: var(--do-chart-1); }
+.whisker-svg-point { fill: var(--do-chart-2); stroke: var(--do-surface); stroke-width: 2.5; }
 
 @media (max-width: 700px) {
   .whisker-axis-row,
-  .whisker-row {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 0.35rem;
-  }
-
+  .whisker-row { grid-template-columns: minmax(0, 1fr); gap: 6px; }
   .whisker-axis-row > span { display: none; }
-}
-
-@media (forced-colors: active) {
-  .whisker-interval { background: Highlight; }
-  .whisker-point { background: Highlight; border-color: Canvas; box-shadow: 0 0 0 1px Highlight; }
 }

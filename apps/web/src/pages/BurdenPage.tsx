@@ -1,17 +1,35 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { canExportEstimate } from "@diagnostic-odyssey/contracts";
 import { BurdenMeasureList } from "../components/BurdenMeasureList";
-import { WorkspaceDisclosure } from "../components/WorkspaceDisclosure";
-import { ContextBar } from "../components/ContextBar";
+import { DetailDrawer } from "../components/DetailDrawer";
 import { IntervalWhiskerPlot } from "../components/IntervalWhiskerPlot";
 import { useArtifact } from "../data/ArtifactContext";
+import { formatEstimateValue } from "../data/formatEstimateValue";
+import { selectHeadlineFindings } from "../data/headlineFindings";
 import { formatDataStateLabel } from "../data/presentationLabels";
 import "./Ledger.css";
-import "./BurdenSpotlight.css";
+
+type DomainTab = "all" | "economic-healthcare" | "healthcare-work-admin" | "mental-human";
+
+const TABS: ReadonlyArray<{ id: DomainTab; label: string }> = [
+  { id: "all", label: "All" },
+  { id: "economic-healthcare", label: "Medical" },
+  { id: "healthcare-work-admin", label: "Time" },
+  { id: "mental-human", label: "Human" }
+];
 
 export function BurdenPage() {
-  const {bundle} = useArtifact();
+  const { bundle } = useArtifact();
+  const [activeTab, setActiveTab] = useState<DomainTab>("all");
+  const [methodOpen, setMethodOpen] = useState(false);
+
   if (!bundle) return null;
+
+  const headlines = selectHeadlineFindings(bundle);
+  const visibleDomains = activeTab === "all"
+    ? bundle.burden_domains
+    : bundle.burden_domains.filter(domain => domain.domain_id === activeTab);
 
   const intervalMethods = Array.from(new Set(
     bundle.burden_domains
@@ -21,90 +39,139 @@ export function BurdenPage() {
       .filter((intervalType): intervalType is string => intervalType !== null)
   ));
 
-  return <section className="page page-stack burden-ledger-page">
-    <ContextBar />
-    <div className="heading-row">
-      <header className="page-heading">
-        <p className="eyebrow">BURDEN</p>
-        <h1>Burden overview</h1>
-        <p>Reviewed national MEPS evidence makes economic, healthcare-work, and human burden visible without turning descriptive burden into attributable cost.</p>
-      </header>
-      <div className="caution">
-        <strong>Gross burden is not attributable burden.</strong>
-        <span>Reviewed MEPS estimates are national and descriptive—not diagnostic-delay cost, local prevalence, preventable spending, or savings.</span>
+  return (
+    <section className="page page-stack burden-ledger-page">
+      <div className="atlas-page-top">
+        <header className="page-heading">
+          <p className="eyebrow">01 · COSTS &amp; BURDEN</p>
+          <h1>National burden overview</h1>
+          <p>U.S. adults with current Long COVID · 2024 AHRQ MEPS.</p>
+        </header>
+        <button
+          type="button"
+          className="button secondary"
+          onClick={() => setMethodOpen(true)}
+        >
+          Methods &amp; Limits
+        </button>
       </div>
-    </div>
 
-    <div className="uncertainty-note">
-      <strong>Survey uncertainty</strong>
-      <p>Intervals shown are the reviewed 95% confidence intervals from the MEPS survey-weighted analysis.</p>
-      <details className="interval-disclosure">
-        <summary>About these intervals</summary>
-        <p>Confidence intervals come directly from the reviewed MEPS artifact; no interval is recomputed in the web application. Survey weighting and design are preserved in the reviewed artifact metadata. These intervals describe sampling uncertainty for the descriptive survey estimates; they do not make gross burden attributable or causal.</p>
-        {intervalMethods.length > 0 && <>
-          <p><strong>Exact interval method metadata:</strong></p>
-          <ul>{intervalMethods.map(method => <li key={method}>{method}</li>)}</ul>
-        </>}
-      </details>
-    </div>
+      {headlines.length > 0 && (
+        <div className="atlas-hero-bento" aria-label="Headline burden figures">
+          {headlines.slice(1, 4).map(({ spec, estimate }) => (
+            <article className="atlas-bento-card" key={spec.estimateId}>
+              <span>{estimate.label}</span>
+              <strong>
+                {estimate.unit === "hours/person/year" && typeof estimate.value === "number"
+                  ? `${estimate.value.toLocaleString("en-US", { maximumFractionDigits: 1 })} hrs`
+                  : formatEstimateValue(estimate)}
+              </strong>
+              <p className="micro-caption">National descriptive · Not causal</p>
+            </article>
+          ))}
+        </div>
+      )}
 
-    <nav className="burden-spotlight" aria-label="Explore nonfinancial burden">
-      <p className="burden-spotlight-intro">Beyond spending</p>
-      <div>
-        <Link to="/burden/admin">
-          <strong>Administrative work <span aria-hidden="true">→</span></strong>
-          <span>Time spent on bills, insurance and care navigation</span>
-        </Link>
-        <Link to="/burden/human">
-          <strong>Psychological burden <span aria-hidden="true">→</span></strong>
-          <span>K6 distress and PHQ-2 screening—not diagnoses</span>
-        </Link>
+      <div className="atlas-tab-bar" role="tablist" aria-label="Burden categories">
+        {TABS.map(tab => (
+          <button
+            key={tab.id}
+            type="button"
+            role="tab"
+            aria-selected={activeTab === tab.id}
+            className={`atlas-tab${activeTab === tab.id ? " is-active" : ""}`}
+            onClick={() => setActiveTab(tab.id)}
+          >
+            {tab.label}
+          </button>
+        ))}
       </div>
-    </nav>
-    <div className="ledger-layout">
-      <nav className="ledger-section-nav" aria-label="Burden sections">
-        <p className="ledger-index-heading">On this page</p>
-        <ol>{bundle.burden_domains.map(domain =>
-          <li key={domain.domain_id}><a href={`#burden-${domain.domain_id}`}>{domain.label}</a></li>
-        )}</ol>
-      </nav>
+
       <div className="burden-domain-stack">
-        {bundle.burden_domains.map(domain => {
-        const reviewed = domain.measures.length > 0 && domain.measures.every(canExportEstimate);
-        const administrativeHourMeasures = domain.domain_id === "healthcare-work-admin"
-          ? domain.measures.filter(estimate => estimate.unit === "hours/person/year")
-          : [];
+        {visibleDomains.map(domain => {
+          const reviewed = domain.measures.length > 0 && domain.measures.every(canExportEstimate);
+          const administrativeHourMeasures = domain.domain_id === "healthcare-work-admin"
+            ? domain.measures.filter(estimate => estimate.unit === "hours/person/year")
+            : [];
 
-        return <WorkspaceDisclosure key={domain.domain_id} id={`burden-group-${domain.domain_id}`} title={domain.label}
-          summary={`${formatDataStateLabel(domain.availability_state)} · ${domain.measures.length} ${domain.measures.length === 1 ? "measure" : "measures"} · ${reviewed ? "Reviewed national evidence" : "Not release-eligible"}`}
-          defaultOpen={domain.domain_id === "healthcare-work-admin"} className="evidence-category"><article className="card domain-card ledger-panel" id={`burden-${domain.domain_id}`} key={domain.domain_id}>
-          <h2 className="sr-only">{domain.label}</h2>
+          return (
+            <article
+              className="card domain-card ledger-panel"
+              id={`burden-${domain.domain_id}`}
+              key={domain.domain_id}
+            >
+              <div className="card-title-row">
+                <div>
+                  <h2>{domain.label}</h2>
+                  <p className="subtle">
+                    {formatDataStateLabel(domain.availability_state)} · {domain.measures.length}{" "}
+                    {domain.measures.length === 1 ? "measure" : "measures"}
+                  </p>
+                </div>
+                <span className={`status ${reviewed ? "status-reviewed" : "status-unavailable"}`}>
+                  {reviewed ? "Reviewed" : "Restricted"}
+                </span>
+              </div>
 
-          {administrativeHourMeasures.length > 1 && <IntervalWhiskerPlot
-            estimates={administrativeHourMeasures}
-            title="Annual healthcare-work time with survey uncertainty"
-            description="Comparable reviewed ESAQ time measures shown together because they share hours/person/year and the same respondent universe."
-          />}
+              {administrativeHourMeasures.length > 1 && (
+                <IntervalWhiskerPlot
+                  estimates={administrativeHourMeasures}
+                  title="Healthcare-work hours per year"
+                  description="ESAQ annualized hours across comparable measures."
+                />
+              )}
 
-          <BurdenMeasureList estimates={domain.measures} />
-
-          {domain.limitations.length > 0 && <details className="domain-limitations technical-disclosure">
-            <summary>Domain interpretation boundaries</summary>
-            <p>{domain.limitations.join(" ")}</p>
-          </details>}
-        </article></WorkspaceDisclosure>;
+              <BurdenMeasureList estimates={domain.measures} />
+            </article>
+          );
         })}
       </div>
-    </div>
 
-    <aside className="guardrail" aria-label="Separately reviewed secondary evidence">
-      <strong>Additional documentation-linked evidence</strong>
-      <p>A separately governed service-use finding has a different denominator and interpretation from the 21 ordinary national estimates. <Link to="/burden/medical#linked-condition-secondary-heading">Read the secondary evidence and its limitations</Link>.</p>
-    </aside>
-    <div className="guardrail">
-      <strong>Native units stay separate.</strong>
-      <p>Administrative time, spending, screening measures, utilization, and access experience are not added into one opaque score. Out-of-pocket spending remains nested within total spending, and K6/PHQ-2 remain screening/distress measures rather than diagnoses.</p>
-    </div>
-    <div className="workflow-next"><Link className="button" to="/local-context">Continue to Local context</Link><Link to="/evidence">Intervention evidence &amp; limits</Link></div>
-  </section>;
+      <div className="atlas-page-footer-bar">
+        <div className="atlas-footer-links">
+          <Link className="text-button" to="/burden/medical#linked-condition-secondary-heading">
+            Linked-condition secondary note →
+          </Link>
+          <Link className="text-button" to="/evidence">
+            Evidence limits →
+          </Link>
+        </div>
+        <Link className="button" to="/local-context">
+          Continue to Terrain →
+        </Link>
+      </div>
+
+      <DetailDrawer
+        open={methodOpen}
+        eyebrow="METHODOLOGY & BOUNDARIES"
+        title="How to read these figures"
+        onClose={() => setMethodOpen(false)}
+      >
+        <dl className="atlas-drawer-list">
+          <div>
+            <dt>Gross vs. attributable cost</dt>
+            <dd>All-cause MEPS spending and service use are descriptive for adults with current Long COVID—not causal or diagnostic-delay costs.</dd>
+          </div>
+          <div>
+            <dt>Native units stay separate</dt>
+            <dd>Spending, time, utilization, and K6/PHQ-2 screening are never added into a single score. Out-of-pocket costs remain nested inside total spending.</dd>
+          </div>
+          <div>
+            <dt>Survey uncertainty</dt>
+            <dd>95% confidence intervals come directly from survey-weighted MEPS analysis without browser recomputation.</dd>
+          </div>
+          {intervalMethods.length > 0 && (
+            <div>
+              <dt>Interval methods</dt>
+              <dd>
+                <ul className="atlas-compact-list">
+                  {intervalMethods.map(method => <li key={method}>{method}</li>)}
+                </ul>
+              </dd>
+            </div>
+          )}
+        </dl>
+      </DetailDrawer>
+    </section>
+  );
 }

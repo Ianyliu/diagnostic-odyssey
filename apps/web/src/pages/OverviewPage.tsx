@@ -1,182 +1,167 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { canExportEstimate } from "@diagnostic-odyssey/contracts";
+import { canExportEstimate, type Estimate } from "@diagnostic-odyssey/contracts";
 import { useArtifact } from "../data/ArtifactContext";
-import { OpeningProvenance, useOpeningMotion } from "./OpeningProvenance";
-import { HeadlineFindings } from "../components/HeadlineFindings";
+import { COVERAGE_CATALOG } from "../data/coverageCatalog";
+import { selectHeadlineFindings } from "../data/headlineFindings";
+import { formatEstimateValue } from "../data/formatEstimateValue";
 import { LandingJourney } from "../components/LandingJourney";
-import { planningInsightsEnabled } from "../data/planningInsightsEnabled";
+import { EditionDrawer } from "../components/EditionDrawer";
+import { useOpeningMotion } from "./OpeningProvenance";
 import "./OverviewPage.css";
 
-const journey: ReadonlyArray<readonly [
-  step: string,
-  title: string,
-  outcome: string,
-  to: string
-]> = [
-  ["1", "Describe burden", "Review national burden estimates with survey uncertainty and explicit interpretation boundaries.", "/burden"],
-  ["2", "Review local constraints", "Inspect implementation and access context without turning national burden into a local disease estimate.", "/local-context"],
-  ["3", "Scope a feasible pilot", "Set explicit planning assumptions and stress-test reach, capacity, timing, and resources.", "/pilot"],
-  ["4", "Create a planning brief", "Export reviewed evidence, selected context, assumptions, boundaries, and remaining gaps.", "/brief"]
-];
+function heroFigure(estimate: Estimate): string {
+  if (estimate.unit === "hours/person/year" && typeof estimate.value === "number") {
+    return `${estimate.value.toLocaleString("en-US", { maximumFractionDigits: 1 })} hrs`;
+  }
+  return formatEstimateValue(estimate);
+}
 
 export function OverviewPage() {
   const opening = useOpeningMotion();
-  const {bundle, localContext, localContextStatus} = useArtifact();
+  const [editionOpen, setEditionOpen] = useState(false);
+  const { bundle, localContext, localContextStatus } = useArtifact();
+
   const reviewedCount = bundle?.burden_domains
     .flatMap(domain => domain.measures)
     .filter(canExportEstimate).length ?? 0;
+
   const localIndicatorCount = localContextStatus === "loaded"
     ? localContext?.indicators.length ?? 0
     : null;
 
+  const headlines = bundle ? selectHeadlineFindings(bundle) : [];
+
   return (
-    <section className={"page page-stack overview-page" + (opening.playing ? " is-opening" : "")}>
-      <section className="overview-hero" aria-labelledby="overview-title">
-        <div className="overview-hero-grid" aria-hidden="true" />
-        <div className="overview-hero-intro">
-          <p className="overview-kicker">Evidence into planning, with boundaries intact.</p>
-          <h1 id="overview-title">
-            Chart the road from <em>data</em> to <em>action.</em>
-          </h1>
-        </div>
-        <div className="overview-hero-details">
-          <p className="overview-lede">
-            <strong className="overview-audience">For state health departments and Medicaid programs scoping Long COVID care-navigation pilots.</strong> Understand what the evidence shows, see the conditions on the ground, test a response—and carry a brief you can defend into the room.
-          </p>
-          <div className="overview-hero-actions" role="group" aria-label="Start exploring Diagnostic Odyssey">
-            <Link className="button overview-primary-cta" to="/burden">Explore reviewed burden <span aria-hidden="true">↗</span></Link>
-            <Link className="overview-secondary-cta" to="/pilot">Open the planner <span aria-hidden="true">→</span></Link>
-            {planningInsightsEnabled && <Link className="overview-tertiary-cta" to="/brief#planning-insights">See planning insights <span aria-hidden="true">→</span></Link>}
-          </div>
-        </div>
-        <div className="overview-hero-journey">
-          <LandingJourney />
-        </div>
-        <div className="overview-hero-state">
-          <span>Now charting</span>
-          <span>Long COVID</span>
-          <span>West Virginia</span>
-          <span>Reviewed national evidence + local implementation context</span>
-        </div>
-      </section>
-
-      <section className="overview-story" aria-label="How Diagnostic Odyssey moves from data to planning">
-        <div className="overview-story-copy">
-          <p className="overview-kicker">Try the pathway, not just the dashboard</p>
-          <h2>Dashboards stop at the statistic. <em>Planning starts after it.</em></h2>
-          <p>Long COVID&rsquo;s burden goes beyond the bill. Review national evidence and its uncertainty, understand local constraints, then test explicit pilot assumptions without confusing them with observed effects.</p>
-          <dl className="overview-proof" aria-label="Current workspace evidence">
-            <div>
-              <dt>{reviewedCount || "—"}</dt>
-              <dd>reviewed national estimates</dd>
+    <div className={"overview-page" + (opening.playing ? " is-opening" : "")}>
+      {/* Band 1: Full-bleed Midnight Ink Hero */}
+      <section className="atlas-hero-band" aria-labelledby="overview-title">
+        <div className="atlas-hero-grid" aria-hidden="true" />
+        <div className="atlas-band-inner">
+          <div className="atlas-hero-header">
+            <p className="atlas-hero-eyebrow">Edition 01 · Long COVID (U.S.) · West Virginia</p>
+            <h1 id="overview-title" className="atlas-hero-title">
+              Lower the hidden cost of care.
+            </h1>
+            <p className="atlas-hero-sub">
+              National burden, local access, and pilot math—kept strictly separate.
+            </p>
+            <div className="atlas-hero-ctas">
+              <Link className="button" to="/burden">
+                Explore Costs <span aria-hidden="true">→</span>
+              </Link>
+              <Link className="atlas-ghost-cta" to="/pilot">
+                Open Simulator
+              </Link>
+              <Link className="atlas-ghost-cta" to="/advisor">
+                Strategy AI
+              </Link>
             </div>
-            <div>
-              <dt>{localIndicatorCount ?? "—"}</dt>
-              <dd>reviewed local-context indicators</dd>
-            </div>
-          </dl>
-          <p className="overview-source-note">Grounded in <strong>MEPS</strong>, <strong>HRSA</strong> and <strong>ACS</strong> · source boundaries stay visible.</p>
-          <Link className="overview-story-link" to="/pilot">Explore the pilot planning workspace <span aria-hidden="true">↗</span></Link>
-        </div>
-        <div className="overview-hero-motion">
-          <OpeningProvenance playing={opening.playing} runId={opening.runId} onReplay={opening.replay} reducedMotion={opening.reducedMotion} announcement={opening.announcement} />
+          </div>
+
+          <div className="atlas-hero-pathway">
+            <LandingJourney />
+          </div>
         </div>
       </section>
 
-      <HeadlineFindings />
+      {/* Band 2: Warm Gallery Paper — Monumental Two-Lens Showcase */}
+      <section className="atlas-paper-band" aria-labelledby="overview-lenses-title">
+        <div className="atlas-band-inner atlas-lenses-section">
+          <div className="atlas-section-head">
+            <p className="eyebrow">TWO LENSES</p>
+            <h2 id="overview-lenses-title">National reality. Local ground.</h2>
+          </div>
 
-      <section className="overview-value-prop" aria-labelledby="overview-value-title">
-        <div className="overview-section-heading">
-          <p className="visual-kicker">HOW EVIDENCE TRAVELS</p>
-          <h2 id="overview-value-title">Different evidence, distinct purposes.</h2>
-          <p>MEPS describes national burden; HRSA and ACS describe local implementation context, not local Long COVID prevalence; analyst inputs are planning assumptions, not observed effects. The three are never blended into one estimate.</p>
-        </div>
-        <div className="overview-role-grid" role="list" aria-label="How to read evidence and planning information">
-          <div className="overview-role-card reviewed" role="listitem">
-            <p>01 / REVIEWED · NATIONAL</p>
-            <h3>Observed burden</h3>
-            <span>Reviewed survey estimates retain their population, units, uncertainty and release conditions.</span>
-          </div>
-          <div className="overview-role-card context" role="listitem">
-            <p>02 / REVIEWED · LOCAL</p>
-            <h3>Delivery context</h3>
-            <span>HRSA and ACS describe implementation conditions. They do not create local illness-burden estimates.</span>
-          </div>
-          <div className="overview-role-card assumption" role="listitem">
-            <p>03 / EDITABLE · HYPOTHETICAL</p>
-            <h3>Planning assumptions</h3>
-            <span>Reach, capacity and resources are inputs to a scenario, not observations or measured intervention effects.</span>
-          </div>
-          <div className="overview-role-card gap" role="listitem">
-            <p>04 / UNRESOLVED · NEXT STEP</p>
-            <h3>Evidence and data gaps</h3>
-            <span>Outstanding questions can become explicit data requests when the analyst chooses to include them.</span>
-          </div>
-        </div>
-        <p className="overview-value-echo">The opening provenance circuit connects each evidence role to a documented planning artifact—not to a pooled estimate or invented effect.</p>
-      </section>
-
-      <section className="overview-two-lenses" aria-labelledby="overview-lenses-title">
-        <div className="overview-section-heading">
-          <p className="visual-kicker">TWO LENSES, KEPT APART</p>
-          <h2 id="overview-lenses-title">National evidence describes the burden. <em>Local data describes the ground.</em></h2>
-          <p>These sources answer different questions. Neither a national contrast nor a local workforce indicator automatically establishes a state-level disease burden.</p>
-        </div>
-        <div className="overview-lenses-grid">
-          <Link to="/burden" className="overview-lens is-national">
-            <span className="overview-lens-label">Reviewed evidence · national</span>
-            <strong className="overview-lens-count">{reviewedCount || "—"}</strong>
-            <h3>National burden estimates</h3>
-            <p>MEPS measures retain source, population, native units, survey uncertainty and release conditions.</p>
-            <span className="overview-lens-action">Explore reviewed burden <span aria-hidden="true">↗</span></span>
-          </Link>
-          <span className="overview-lens-separator" aria-hidden="true">Never blended</span>
-          <Link to="/local-context" className="overview-lens is-local">
-            <span className="overview-lens-label">Reviewed implementation context · state</span>
-            <strong className="overview-lens-count">{localIndicatorCount ?? "—"}</strong>
-            <h3>Local delivery indicators</h3>
-            <p>HRSA and ACS describe access, service supply and community conditions without inventing local prevalence.</p>
-            <span className="overview-lens-action">Read local context <span aria-hidden="true">↗</span></span>
-          </Link>
-        </div>
-      </section>
-
-      <nav className="overview-destinations" aria-label="Workspace navigation">
-        <div className="overview-section-heading overview-destinations-heading">
-          <p className="visual-kicker">HOW IT WORKS</p>
-          <h2>A clear path from evidence to a plan.</h2>
-          <p>Start where you need. Review the evidence, test assumptions, and capture what you still need to know.</p>
-        </div>
-        <div className="journey-grid">
-          {journey.map(([step, title, outcome, to]) => (
-            <Link key={step} className="journey-card" to={to}>
-              <span className="journey-index" aria-hidden="true">{step.padStart(2, "0")}</span>
-              <strong>{title}</strong>
-              <small>{outcome}</small>
-              <span className="journey-arrow" aria-hidden="true">→</span>
+          <div className="atlas-lenses-grid">
+            <Link to="/burden" className="atlas-lens-card is-national">
+              <span className="atlas-lens-kicker">AHRQ MEPS · U.S. National</span>
+              <strong className="atlas-lens-figure">{reviewedCount || "—"}</strong>
+              <h3>Reviewed burden measures</h3>
+              <p>Spending, time, and distress with 95% intervals.</p>
+              <span className="atlas-lens-link">Open Costs ↗</span>
             </Link>
-          ))}
-        </div>
-        <p className="overview-workflow-note">Within your pilot: <Link to="/pilot#sensitivity">test sensitivity</Link> → <Link to="/data-requests">capture data needs</Link> → review your brief. <Link to="/evidence">Intervention evidence &amp; limits</Link> stays separate from descriptive burden.</p>
-      </nav>
 
-      <section className="overview-closing" aria-labelledby="overview-closing-title">
-        <div>
-          <p className="overview-kicker">THE ACTION-READY PLAN</p>
-          <h2 id="overview-closing-title">Leave with a brief, <em>not just a chart.</em></h2>
-          <p>Reviewed evidence, implementation context, explicit scenario assumptions, data needs and next steps—assembled with their boundaries intact.</p>
-          <Link className="button overview-closing-cta" to="/brief">Open the Planning Brief <span aria-hidden="true">↗</span></Link>
-        </div>
-        <div className="overview-paper-illustration" aria-hidden="true">
-          <span className="overview-paper-sheet back" />
-          <span className="overview-paper-sheet middle" />
-          <span className="overview-paper-sheet front">
-            <i className="paper-mark" /><i className="paper-line title" /><i className="paper-line" />
-            <i className="paper-line short" /><i className="paper-bar" />
-            <i className="paper-line" /><i className="paper-line" /><i className="paper-line short" />
-          </span>
+            <span className="atlas-never-blended" aria-label="National and local data are never combined into a single score">
+              Never blended
+            </span>
+
+            <Link to="/local-context" className="atlas-lens-card is-local">
+              <span className="atlas-lens-kicker">HRSA &amp; Census ACS · West Virginia</span>
+              <strong className="atlas-lens-figure">{localIndicatorCount ?? "—"}</strong>
+              <h3>Local terrain indicators</h3>
+              <p>Care supply, broadband, and transit conditions.</p>
+              <span className="atlas-lens-link">Open Terrain ↗</span>
+            </Link>
+          </div>
+
+          {headlines.length > 0 && (
+            <div className="atlas-metrics-strip" aria-label="Key national figures">
+              {headlines.map(({ spec, estimate }) => (
+                <div className="atlas-metric-pill" key={spec.estimateId}>
+                  <strong>{heroFigure(estimate)}</strong>
+                  <span>{estimate.label}</span>
+                </div>
+              ))}
+              <p className="micro-caption atlas-strip-caption">National descriptive · Not causal</p>
+            </div>
+          )}
+
+          <div className="atlas-editions-bar" aria-label="Platform editions">
+            <div className="atlas-editions-chips">
+              {COVERAGE_CATALOG.map(entry => (
+                <button
+                  key={entry.id}
+                  type="button"
+                  className={`atlas-edition-chip ${entry.status === "live" ? "is-live" : "is-soon"}`}
+                  onClick={() => setEditionOpen(true)}
+                >
+                  <span>{entry.status === "live" ? "Live" : "Soon"}</span>
+                  <strong>{entry.title}</strong>
+                </button>
+              ))}
+            </div>
+            <button type="button" className="text-button" onClick={() => setEditionOpen(true)}>
+              Edition details ▾
+            </button>
+          </div>
         </div>
       </section>
-    </section>
+
+      {/* Band 3: Midnight Ink Closing — Tactile Fanned Brief Finale */}
+      <section className="atlas-closing-band" aria-labelledby="overview-closing-title">
+        <div className="atlas-band-inner atlas-closing-grid">
+          <div className="atlas-closing-copy">
+            <p className="atlas-hero-eyebrow">EXECUTIVE BRIEF</p>
+            <h2 id="overview-closing-title">Leave with a defensible brief.</h2>
+            <p>Reviewed metrics, selected terrain, and explicit pilot math.</p>
+            <div className="atlas-hero-ctas">
+              <Link className="button" to="/brief">
+                Open Brief <span aria-hidden="true">→</span>
+              </Link>
+              <Link className="atlas-ghost-cta" to="/evidence">
+                Evidence limits
+              </Link>
+            </div>
+          </div>
+
+          <div className="atlas-paper-fan" aria-hidden="true">
+            <span className="fan-sheet back" />
+            <span className="fan-sheet middle" />
+            <span className="fan-sheet front">
+              <i className="fan-mark" />
+              <i className="fan-line title" />
+              <i className="fan-line" />
+              <i className="fan-line short" />
+              <i className="fan-bar" />
+              <i className="fan-line" />
+              <i className="fan-line short" />
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <EditionDrawer open={editionOpen} onClose={() => setEditionOpen(false)} />
+    </div>
   );
 }

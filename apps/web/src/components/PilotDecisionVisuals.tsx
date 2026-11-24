@@ -7,7 +7,7 @@ import {
 } from "../data/pilotDecisionPresentation";
 import { formatPathwayStepLabel } from "../data/pathwayBoundary";
 
-const integer = new Intl.NumberFormat("en-US", {maximumFractionDigits: 0});
+const integer = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
 const currency = new Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "USD",
@@ -26,6 +26,7 @@ export function PilotDecisionVisuals({
   result: ScenarioResult;
 }) {
   const capacityCoverage = getCapacityCoveragePresentation(result);
+  const coveragePct = clampPercent(capacityCoverage.coveragePercent ?? 0);
   const windowScale = Math.max(
     scenario.baseline_window_months,
     scenario.alternative_window_months,
@@ -43,80 +44,116 @@ export function PilotDecisionVisuals({
     ? clampPercent((result.variable_program_cost / resourceTotal) * 100)
     : 0;
 
-  return <div className="pilot-visual-stack">
-    <section className="decision-visual" aria-labelledby="capacity-coverage-title">
-      <div className="decision-visual-heading">
-        <div>
-          <p className="visual-kicker">FEASIBILITY</p>
-          <h3 id="capacity-coverage-title">Capacity coverage</h3>
-        </div>
-        <strong className="visual-headline">{capacityCoverage.headline}</strong>
-      </div>
-      <div
-        className="capacity-track"
-        role="img"
-        aria-label={capacityCoverage.ariaLabel}
-      >
-        <span
-          className="capacity-fill"
-          style={{width: `${capacityCoverage.coveragePercent ?? 0}%`}}
-        />
-      </div>
-      <div className="visual-stat-row">
-        <span><strong>{formatPlanningNumber(result.reached_participants, integer)}</strong> within capacity</span>
-        <span><strong>{formatPlanningNumber(result.capacity_gap, integer)}</strong> capacity gap</span>
-      </div>
-      {capacityCoverage.noDemandCopy && <p className="visual-note"><strong>{capacityCoverage.noDemandCopy}</strong></p>}
-      <p className="visual-note">This compares analyst-entered reach and capacity assumptions. It is not an observed access rate or forecast.</p>
-    </section>
+  // Gauge arc math (semi-circle radius 56, circumference PI*56 = 175.93)
+  const radius = 56;
+  const halfCircumference = Math.PI * radius;
+  const gaugeFilled = (coveragePct / 100) * halfCircumference;
 
-    <section className="decision-visual" aria-labelledby="recognition-window-title">
-      <div className="decision-visual-heading">
-        <div>
-          <p className="visual-kicker">TARGETED PATHWAY ASSUMPTION</p>
-          <h3 id="recognition-window-title">Recognition-window comparison</h3>
+  return (
+    <div className="pilot-visual-stack">
+      <section className="decision-visual" aria-labelledby="capacity-coverage-title">
+        <div className="decision-visual-heading">
+          <div>
+            <p className="visual-kicker">FEASIBILITY</p>
+            <h3 id="capacity-coverage-title">Capacity coverage</h3>
+          </div>
+          <strong className="visual-headline">{capacityCoverage.headline}</strong>
         </div>
-        <strong className="visual-headline visual-headline-compact">{formatRecognitionWindowDifference(
-          scenario.baseline_window_months,
-          scenario.alternative_window_months
-        )} mo</strong>
-      </div>
-      <div className="window-bars">
-        <div className="window-row">
-          <span>Baseline assumption</span>
-          <div className="window-track" aria-hidden="true"><span className="window-bar baseline" style={{width: `${baselineWidth}%`}} /></div>
-          <strong>{scenario.baseline_window_months} mo</strong>
-        </div>
-        <div className="window-row">
-          <span>Planning assumption</span>
-          <div className="window-track" aria-hidden="true"><span className="window-bar planning" style={{width: `${planningWidth}%`}} /></div>
-          <strong>{scenario.alternative_window_months} mo</strong>
-        </div>
-      </div>
-      <p className="visual-note">The difference is a scenario assumption tied to <strong>{formatPathwayStepLabel(scenario.target_pathway_step)}</strong>; it is not an observed program effect.</p>
-    </section>
 
-    <section className="decision-visual" aria-labelledby="resource-composition-title">
-      <div className={`decision-visual-heading${scientificResource ? " decision-visual-heading-scientific" : ""}`}>
-        <div>
-          <p className="visual-kicker">PROGRAM INPUT</p>
-          <h3 id="resource-composition-title">Resource requirement composition</h3>
+        <div className="capacity-gauge-wrap">
+          <svg
+            className="capacity-gauge-svg"
+            viewBox="0 0 140 82"
+            role="img"
+            aria-label={capacityCoverage.ariaLabel}
+          >
+            <path
+              d="M 14 70 A 56 56 0 0 1 126 70"
+              fill="none"
+              className="gauge-track"
+              strokeWidth="12"
+              strokeLinecap="round"
+            />
+            <path
+              d="M 14 70 A 56 56 0 0 1 126 70"
+              fill="none"
+              className={`gauge-fill${result.capacity_gap > 0 ? " has-gap" : ""}`}
+              strokeWidth="12"
+              strokeLinecap="round"
+              strokeDasharray={`${gaugeFilled} ${halfCircumference}`}
+            />
+            <text x="70" y="64" textAnchor="middle" className="gauge-value">
+              {Math.round(coveragePct)}%
+            </text>
+          </svg>
         </div>
-        <strong className={`visual-headline${scientificResource ? " visual-headline-scientific" : ""}`}>{resourceLabel}</strong>
-      </div>
-      <div
-        className="resource-track"
-        role="img"
-        aria-label={`Program-resource requirement ${formatPlanningCurrency(resourceTotal, currency)}: fixed ${formatPlanningCurrency(result.fixed_program_cost, currency)}, participant-dependent ${formatPlanningCurrency(result.variable_program_cost, currency)}.`}
-      >
-        <span className="resource-fixed" style={{width: `${fixedShare}%`}} />
-        <span className="resource-variable" style={{width: `${variableShare}%`}} />
-      </div>
-      <div className="resource-legend">
-        <span><i className="legend-swatch fixed" aria-hidden="true" />Fixed {formatPlanningCurrency(result.fixed_program_cost, currency)}</span>
-        <span><i className="legend-swatch variable" aria-hidden="true" />Participant-dependent {formatPlanningCurrency(result.variable_program_cost, currency)}</span>
-      </div>
-      <p className="visual-note">Resource requirement is a planning input, not savings, ROI, or attributable cost.</p>
-    </section>
-  </div>;
+
+        <div className="visual-stat-row">
+          <span><strong>{formatPlanningNumber(result.reached_participants, integer)}</strong> served</span>
+          <span><strong>{formatPlanningNumber(result.capacity_gap, integer)}</strong> gap</span>
+        </div>
+        {capacityCoverage.noDemandCopy && <p className="visual-note"><strong>{capacityCoverage.noDemandCopy}</strong></p>}
+      </section>
+
+      <section className="decision-visual" aria-labelledby="recognition-window-title">
+        <div className="decision-visual-heading">
+          <div>
+            <p className="visual-kicker">PATHWAY WINDOW</p>
+            <h3 id="recognition-window-title">Recognition window</h3>
+          </div>
+          <strong className="visual-headline visual-headline-compact">
+            {formatRecognitionWindowDifference(
+              scenario.baseline_window_months,
+              scenario.alternative_window_months
+            )} mo
+          </strong>
+        </div>
+        <div className="window-bars">
+          <div className="window-row">
+            <span>Baseline</span>
+            <svg className="window-svg" viewBox="0 0 1000 12" preserveAspectRatio="none" aria-hidden="true">
+              <rect x="0" y="0" width="1000" height="12" rx="6" className="bar-svg-track" />
+              <rect x="0" y="0" width={baselineWidth * 10} height="12" rx="6" className="bar-svg-baseline" />
+            </svg>
+            <strong>{scenario.baseline_window_months} mo</strong>
+          </div>
+          <div className="window-row">
+            <span>Planning</span>
+            <svg className="window-svg" viewBox="0 0 1000 12" preserveAspectRatio="none" aria-hidden="true">
+              <rect x="0" y="0" width="1000" height="12" rx="6" className="bar-svg-track" />
+              <rect x="0" y="0" width={planningWidth * 10} height="12" rx="6" className="bar-svg-planning" />
+            </svg>
+            <strong>{scenario.alternative_window_months} mo</strong>
+          </div>
+        </div>
+        <p className="micro-caption">Target: {formatPathwayStepLabel(scenario.target_pathway_step)}</p>
+      </section>
+
+      <section className="decision-visual" aria-labelledby="resource-composition-title">
+        <div className={`decision-visual-heading${scientificResource ? " decision-visual-heading-scientific" : ""}`}>
+          <div>
+            <p className="visual-kicker">BUDGET INPUT</p>
+            <h3 id="resource-composition-title">Resource split</h3>
+          </div>
+          <strong className={`visual-headline${scientificResource ? " visual-headline-scientific" : ""}`}>{resourceLabel}</strong>
+        </div>
+        <svg
+          className="resource-svg"
+          viewBox="0 0 1000 14"
+          preserveAspectRatio="none"
+          role="img"
+          aria-label={`Program-resource requirement ${formatPlanningCurrency(resourceTotal, currency)}: fixed ${formatPlanningCurrency(result.fixed_program_cost, currency)}, participant-dependent ${formatPlanningCurrency(result.variable_program_cost, currency)}.`}
+        >
+          <rect x="0" y="0" width="1000" height="14" rx="7" className="bar-svg-track" />
+          <rect x="0" y="0" width={fixedShare * 10} height="14" className="bar-svg-fixed" />
+          <rect x={fixedShare * 10} y="0" width={variableShare * 10} height="14" className="bar-svg-variable" />
+        </svg>
+        <div className="resource-legend">
+          <span><i className="legend-swatch fixed" aria-hidden="true" />Fixed {formatPlanningCurrency(result.fixed_program_cost, currency)}</span>
+          <span><i className="legend-swatch variable" aria-hidden="true" />Variable {formatPlanningCurrency(result.variable_program_cost, currency)}</span>
+        </div>
+        <p className="micro-caption">Planning math · Not savings or ROI.</p>
+      </section>
+    </div>
+  );
 }

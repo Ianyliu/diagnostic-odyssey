@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link, NavLink, Outlet, useLocation, useNavigationType } from "react-router-dom";
 import { workspaceStages, workspaceStageForPath } from "../data/workspaceNavigation";
 import { DisclosureProvider } from "./WorkspaceDisclosure";
-import "./WorkspaceNavigation.css";
+import { EditionDrawer } from "./EditionDrawer";
 import { focusTarget, scrollToFragment } from "../data/fragmentNavigation";
 import { ThemeControl } from "./ThemeControl";
 import { displayBuildProvenance, type BuildProvenance } from "../data/buildProvenance";
@@ -16,6 +16,7 @@ export function AppShell() {
   const location = useLocation();
   const navigationType = useNavigationType();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [editionOpen, setEditionOpen] = useState(false);
   const initialRoute = useRef(true);
   const menuToggle = useRef<HTMLButtonElement>(null);
   const preFragmentScroll = useRef<number | null>(null);
@@ -68,7 +69,7 @@ export function AppShell() {
   useLayoutEffect(() => {
     const recordScroll = () => { lastScrollY.current = window.scrollY; };
     recordScroll();
-    window.addEventListener("scroll", recordScroll, {passive: true});
+    window.addEventListener("scroll", recordScroll, { passive: true });
     return () => {
       window.removeEventListener("scroll", recordScroll);
       savedScroll.set(location.key, lastScrollY.current);
@@ -79,12 +80,10 @@ export function AppShell() {
     setMenuOpen(false);
     const frame = requestAnimationFrame(() => {
       if (navigationType === "POP" && savedScroll.has(location.key)) {
-        // A different history entry may have closed the destination's disclosure.
-        // Reveal and focus it before restoring this entry's saved position.
         scrollToFragment(location.hash);
         window.scrollTo(0, savedScroll.get(location.key) ?? 0);
       } else if (scrollToFragment(location.hash)) {
-        // Anchor focus and scrolling were handled together.
+        // Anchor focus and scrolling handled together.
       } else if (!initialRoute.current) {
         const main = document.getElementById("main-content");
         if (main) focusTarget(main);
@@ -98,6 +97,7 @@ export function AppShell() {
   }, [location.key, location.hash, navigationType]);
 
   const activeStage = workspaceStageForPath(location.pathname);
+  const advisorActive = location.pathname === "/advisor" || location.pathname === "/concept/future-ai";
   const buildIdentity = displayBuildProvenance(__DO_BUILD_PROVENANCE__);
 
   return (
@@ -107,51 +107,80 @@ export function AppShell() {
         <div className="header-inner">
           <Link className="brand" to="/" aria-label="Diagnostic Odyssey, Overview">
             <span className="brand-mark" aria-hidden="true">
-              <img src="/diagnostic-odyssey-icon.png" width="192" height="192" alt="" />
+              <img src="/diagnostic-odyssey-mark.svg" width="32" height="32" alt="" />
             </span>
-            <span className="brand-copy">
-              <strong>Diagnostic Odyssey</strong>
-              <span>Evidence workspace</span>
-            </span>
+            <strong className="brand-name">Diagnostic Odyssey</strong>
           </Link>
-          <button
-            ref={menuToggle}
-            className="menu-toggle"
-            type="button"
-            aria-expanded={menuOpen}
-            aria-controls="workspace-tools"
-            onClick={() => setMenuOpen(open => !open)}
-          >{menuOpen ? "Close menu" : "Menu"}</button>
+
           <nav
             id="primary-navigation"
             aria-label="Primary navigation"
             className={"primary-nav" + (menuOpen ? " open" : "")}
           >
-            {workspaceStages.map(({to, label, shortLabel}, index) => (
+            {workspaceStages.map(({ to, label }) => (
               <NavLink key={to} to={to} className={activeStage === to ? "active" : ""}>
-                <span className="stage-number" aria-hidden="true">{index + 1}</span>
-                <span className="stage-label">{label}</span><span className="stage-short" aria-hidden="true">{shortLabel}</span>
+                {label}
               </NavLink>
             ))}
           </nav>
-          <div id="workspace-tools" className={"header-controls" + (menuOpen ? " open" : "")} hidden={!menuOpen}>
-            <nav aria-label="Supporting navigation">
-              <Link to="/">Overview</Link>
-              <Link to="/evidence">Intervention evidence &amp; limits</Link>
-              <Link to="/data-requests">Data requests</Link>
-            </nav>
+
+          <div id="workspace-tools" className={"header-controls" + (menuOpen ? " open" : "")}>
+            <Link
+              to="/advisor"
+              className={"header-ai-pill" + (advisorActive ? " active" : "")}
+              aria-label="Strategy AI Studio"
+            >
+              AI
+            </Link>
+            <button
+              type="button"
+              className="edition-trigger"
+              onClick={() => setEditionOpen(true)}
+              aria-haspopup="dialog"
+            >
+              Edition 01 <span aria-hidden="true">▾</span>
+            </button>
             <ThemeControl />
           </div>
+
+          <button
+            ref={menuToggle}
+            className="menu-toggle"
+            type="button"
+            aria-expanded={menuOpen}
+            aria-controls="primary-navigation workspace-tools"
+            onClick={() => setMenuOpen(open => !open)}
+          >
+            {menuOpen ? "Close" : "Menu"}
+          </button>
         </div>
       </header>
-      <DisclosureProvider><main id="main-content" tabIndex={-1} data-navigation={navigationType}>
-        <Outlet />
-      </main></DisclosureProvider>
-      <footer>
-        <span>Diagnostic Odyssey</span>
-        <span>Built on public federal data: AHRQ MEPS, HRSA and Census ACS · aggregate estimates only; no patient-level records</span>
-        <small className="source-revision" aria-label="Application source revision">{buildIdentity.url ? <a href={buildIdentity.url} target="_blank" rel="noopener noreferrer">{buildIdentity.label}</a> : buildIdentity.label}</small>
+
+      <DisclosureProvider>
+        <main id="main-content" tabIndex={-1} data-navigation={navigationType}>
+          <Outlet />
+        </main>
+      </DisclosureProvider>
+
+      <footer className="site-footer">
+        <div className="footer-inner">
+          <span>Diagnostic Odyssey · Edition 01: Long COVID (U.S.) · West Virginia</span>
+          <nav className="footer-links" aria-label="Supporting navigation">
+            <Link to="/evidence">Evidence</Link>
+            <Link to="/data-requests">Data Requests</Link>
+            <Link to="/advisor">Strategy AI</Link>
+          </nav>
+          <small className="source-revision" aria-label="Application source revision">
+            {buildIdentity.url ? (
+              <a href={buildIdentity.url} target="_blank" rel="noopener noreferrer">{buildIdentity.label}</a>
+            ) : (
+              buildIdentity.label
+            )}
+          </small>
+        </div>
       </footer>
+
+      <EditionDrawer open={editionOpen} onClose={() => setEditionOpen(false)} />
     </div>
   );
 }
