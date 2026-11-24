@@ -59,6 +59,12 @@ test("landing, burden tabs, coverage catalog, OG metadata, and README never over
 
   assert.doesNotMatch(overview, /across county geography/i);
   assert.doesNotMatch(overview, /limitations, and work loss/i);
+  assert.doesNotMatch(overview, /health-status limitations/i);
+  assert.doesNotMatch(overview, /care supply/i);
+  assert.doesNotMatch(overview, /\btransit\b/i);
+  assert.match(overview, /13 economic\/healthcare, 4 administrative, 4 mental-health/i);
+  assert.match(overview, /HRSA shortage designations/i);
+  assert.match(overview, /household vehicle/i);
   assert.match(overview, /statewide West Virginia/i);
   assert.match(overview, /work-loss measures remain unavailable/i);
 
