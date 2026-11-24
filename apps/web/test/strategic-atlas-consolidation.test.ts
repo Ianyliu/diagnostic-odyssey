@@ -34,8 +34,10 @@ test("teaser remains independent until explicitly applied; journey precedes lowe
   assert.match(teaser, /calculateScenario\(previewScenario\)/);
   assert.match(teaser, /const handleLoadIntoLab = \(\) => \{\s*setScenario\(previewScenario\);\s*setPilotInputDraft/);
   assert.match(teaser, /onClick=\{handleLoadIntoLab\}/);
+  assert.ok(page.indexOf("<LandingBurdenStrata") < page.indexOf("<LandingJourney />"));
   assert.ok(page.indexOf("<LandingJourney />") < page.indexOf("<StrategyTeaserSandbox />"));
-  assert.match(route, /viewBox="0 0 1024 260"/);
+  assert.ok(page.indexOf("<StrategyTeaserSandbox />") < page.indexOf("<LandingAiDemo"));
+  assert.match(route, /viewBox="0 0 1024 380"/);
   assert.match(route, /n: "Optional", to: "\/data-requests"/);
   assert.match(routeCss, /prefers-reduced-motion: reduce/);
   assert.doesNotMatch(route, /style=\{\{/);

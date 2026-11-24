@@ -20,21 +20,28 @@ for (const mode of ["normal", "keyboard", "reduced", "deep-link"]) {
       }).observe({type: "layout-shift", buffered: true});
     });
     await page.goto(base + (mode === "deep-link" ? "/?review=1" : "/"));
+    await page.locator("#overview-title").waitFor();
     await page.locator(".atlas-journey").waitFor();
     if (mode === "normal" || mode === "keyboard") {
       assert.equal(await page.locator(".overview-page.is-opening").count(), 1);
-      const animated = await page.evaluate(() => document.getAnimations().map(animation => ({
+      const openingAnimations = await page.evaluate(() => document.getAnimations().map(animation => ({
         name: animation.animationName, frames: animation.effect.getKeyframes()
       })));
-      assert.ok(animated.some(animation => animation.name === "atlas-trace"));
-      assert.ok(animated.some(animation => animation.name === "atlas-rise"));
+      assert.ok(openingAnimations.some(animation => animation.name === "atlas-horizon-draw"));
+      assert.ok(openingAnimations.some(animation => animation.name === "atlas-rise"));
       await page.screenshot({path: `${output}/${mode}-opening.png`, animations: "allow"});
       if (mode === "keyboard") {
         await page.keyboard.press("Tab");
         assert.equal(await page.locator(".overview-page.is-opening").count(), 0);
         assert.equal(await page.locator(".skip-link").evaluate(e => e === document.activeElement), true);
       } else {
-        await page.locator(".overview-page.is-opening").waitFor({state: "detached"});
+        await page.locator(".overview-page.is-opening").waitFor({state: "detached", timeout: 6000});
+        // Independent Chapter IV lifecycle: scrolling down after Chapter I completes still triggers Chapter IV.
+        await page.locator(".atlas-journey").scrollIntoViewIfNeeded();
+        await page.locator(".atlas-journey.is-playing").waitFor({state: "attached", timeout: 3000});
+        const journeyAnimations = await page.evaluate(() => document.getAnimations().map(animation => animation.animationName));
+        assert.ok(journeyAnimations.includes("atlas-trace"));
+        await page.locator(".atlas-journey.is-playing").waitFor({state: "detached", timeout: 6500});
       }
       openingLayoutShift = await page.evaluate(() => window.auditShifts.reduce((sum, value) => sum + value, 0));
       assert.ok(openingLayoutShift < .01, `opening moved the layout: ${openingLayoutShift}`);
@@ -43,7 +50,8 @@ for (const mode of ["normal", "keyboard", "reduced", "deep-link"]) {
       assert.equal(await page.locator(".overview-page.is-opening").count(), 0, "opening runs once per session");
     } else {
       assert.equal(await page.locator(".overview-page.is-opening").count(), 0);
-      assert.equal(await page.evaluate(() => document.getAnimations().filter(a => a.animationName === "atlas-trace" || a.animationName === "atlas-rise").length), 0);
+      assert.equal(await page.locator(".atlas-journey.is-playing").count(), 0);
+      assert.equal(await page.evaluate(() => document.getAnimations().filter(a => a.animationName === "atlas-trace" || a.animationName === "atlas-rise" || a.animationName === "atlas-horizon-draw").length), 0);
     }
     const layoutShift = await page.evaluate(() => window.auditShifts.reduce((sum, value) => sum + value, 0));
     assert.ok(layoutShift < .01, `unexpected layout movement: ${layoutShift}`);

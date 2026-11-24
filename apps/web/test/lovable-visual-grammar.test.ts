@@ -26,13 +26,13 @@ test("Brief editorial styling avoids hiding content during print", () => {
   assert.doesNotMatch(css, /\.atlas-memo-body\s*\{[^}]*display:\s*none/i);
 });
 
-test("Atelier Atlas landing structure keeps real four-stage routes and zero AI-teal", () => {
+test("Scroll story landing structure keeps real four-stage routes and zero AI-teal", () => {
   const overview = source("../src/pages/OverviewPage.tsx");
   const journey = source("../src/components/LandingJourney.tsx");
   const journeyCss = source("../src/components/LandingJourney.css");
-  assert.match(overview, /See the burden\./);
+  assert.match(overview, /What does chronic illness/);
   assert.match(overview, /<LandingJourney \/>/);
-  assert.match(overview, /atlas-hero-pathway/);
+  assert.match(overview, /atlas-inset-stage/);
   assert.match(overview, /atlas-lenses-grid/);
   assert.match(overview, /atlas-closing-band/);
   for (const path of ["/burden", "/local-context", "/pilot", "/data-requests", "/brief"]) {

@@ -25,11 +25,51 @@ function boxesOverlap(a, b) {
   );
 }
 
-async function check(page, label, expected) {
-  await page.locator(".atlas-journey").waitFor();
+async function checkHeroAndScrollJourney(page, label, expectedOpening, expectedJourneyOnScroll) {
   await page.locator("#overview-title").waitFor();
-  const g = await page.evaluate(() => {
+  await page.locator(".atlas-care-horizon").waitFor();
+  await page.locator(".atlas-journey").waitFor();
+
+  const heroMetrics = await page.evaluate(() => {
     const hero = document.querySelector(".atlas-hero-band").getBoundingClientRect();
+    const title = document.querySelector("#overview-title").getBoundingClientRect();
+    const horizon = document.querySelector(".atlas-care-horizon").getBoundingClientRect();
+    const header = document.querySelector(".site-header")?.getBoundingClientRect() ?? { height: 0 };
+    const navWrap = Array.from(document.querySelectorAll(".primary-nav a")).some(a => {
+      const r = a.getBoundingClientRect();
+      return r.height > 54;
+    });
+    return {
+      heroTop: hero.top,
+      heroBottom: hero.bottom,
+      titleBottom: title.bottom,
+      horizonTop: horizon.top,
+      width: document.documentElement.scrollWidth,
+      viewport: innerWidth,
+      viewportHeight: innerHeight,
+      headerHeight: header.height,
+      navWrap
+    };
+  });
+
+  assert.ok(heroMetrics.width <= heroMetrics.viewport + 2, `${label} initial horizontal overflow ${JSON.stringify(heroMetrics)}`);
+  assert.equal(heroMetrics.navWrap, false, `${label} primary nav wrapped`);
+  assert.ok(heroMetrics.headerHeight <= (heroMetrics.viewport <= 980 ? 140 : 88), `${label} header too tall: ${heroMetrics.headerHeight}`);
+  assert.equal(await page.locator(".overview-page.is-opening").count(), expectedOpening ? 1 : 0, `${label} is-opening`);
+  assert.ok(heroMetrics.titleBottom < heroMetrics.viewportHeight, `${label} hero headline clipped below fold`);
+
+  if (expectedOpening) {
+    // Wait for Chapter I to settle or interrupt cleanly via scroll wheel to verify Chapter IV stays independent!
+    await page.locator(".atlas-journey").scrollIntoViewIfNeeded();
+    if (expectedJourneyOnScroll) {
+      await page.locator(".atlas-journey.is-playing").waitFor({ state: "attached", timeout: 3000 });
+    }
+  } else {
+    await page.locator(".atlas-journey").scrollIntoViewIfNeeded();
+    assert.equal(await page.locator(".atlas-journey.is-playing").count(), expectedJourneyOnScroll ? 1 : 0, `${label} unexpected journey playing`);
+  }
+
+  const g = await page.evaluate(() => {
     const journey = document.querySelector(".atlas-journey").getBoundingClientRect();
     const replayEl = document.querySelector(".atlas-journey-replay");
     const btn = replayEl.getBoundingClientRect();
@@ -50,14 +90,7 @@ async function check(page, label, expected) {
     });
     const spur = document.querySelector(".atlas-journey-spur");
     const spurDash = spur ? getComputedStyle(spur).strokeDasharray : "";
-    const header = document.querySelector(".site-header")?.getBoundingClientRect() ?? { height: 0 };
-    const navWrap = Array.from(document.querySelectorAll(".primary-nav a")).some(a => {
-      const r = a.getBoundingClientRect();
-      return r.height > 54;
-    });
     return {
-      heroTop: hero.top,
-      heroBottom: hero.bottom,
       journeyTop: journey.top,
       journeyBottom: journey.bottom,
       left: journey.left,
@@ -71,9 +104,7 @@ async function check(page, label, expected) {
       spurPresent: Boolean(spur),
       spurDash,
       buttonHeight: btn.height,
-      buttonBottom: btn.bottom,
-      headerHeight: header.height,
-      navWrap
+      buttonBottom: btn.bottom
     };
   });
 
@@ -81,10 +112,7 @@ async function check(page, label, expected) {
   assert.ok(g.width <= g.viewport + 2, `${label} horizontal overflow ${JSON.stringify(g)}`);
   assert.ok(g.buttonHeight >= 40, `${label} replay height ${g.buttonHeight}`);
   assert.equal(await page.getByRole("button", { name: "Replay animation" }).count(), 1);
-  assert.equal(await page.locator(".overview-page.is-opening").count(), expected ? 1 : 0, `${label} is-opening`);
   assert.equal(g.spurPresent, true, `${label} missing optional spur`);
-  assert.equal(g.navWrap, false, `${label} primary nav wrapped`);
-  assert.ok(g.headerHeight <= (g.viewport <= 980 ? 140 : 88), `${label} header too tall: ${g.headerHeight}`);
 
   if (g.viewport >= 761) {
     assert.equal(g.desktopVisible, true, `${label} desktop canvas hidden`);
@@ -100,19 +128,15 @@ async function check(page, label, expected) {
         );
       }
     }
-    if (g.viewport >= 1280) {
-      assert.ok(g.heroBottom <= g.viewportHeight + 12, `${label} hero overflows viewport: bottom=${g.heroBottom}, h=${g.viewportHeight}`);
-    }
   } else {
     assert.equal(g.mobileVisible, true, `${label} mobile timeline hidden`);
-    assert.ok(g.journeyTop < g.viewportHeight, `${label} mobile journey starts below fold`);
   }
 
-  return g;
+  return { heroMetrics, g };
 }
 
 async function tabToReplay(page) {
-  for (let i = 0; i < 30; i++) {
+  for (let i = 0; i < 60; i++) {
     await page.keyboard.press("Tab");
     if (await page.evaluate(() => document.activeElement?.matches(".preview-replay"))) return;
   }
@@ -153,7 +177,7 @@ try {
             }).observe({ type: "layout-shift", buffered: true });
           });
           await p.goto(`${base}/`);
-          const geo = await check(p, label, motion === "no-preference");
+          const geo = await checkHeroAndScrollJourney(p, label, motion === "no-preference", motion === "no-preference");
           if (motion === "reduce") {
             assert.equal(
               await p.evaluate(() =>
@@ -163,11 +187,10 @@ try {
             );
           }
           if ([320, 761, 1280, 1440].includes(width) && theme === "light" && motion === "no-preference") {
-            await p.screenshot({ path: `${out}/${label}-entry.png`, animations: "allow" });
-            await p.waitForTimeout(1200);
-            await p.screenshot({ path: `${out}/${label}-mid.png`, animations: "allow" });
+            await p.screenshot({ path: `${out}/${label}-journey-mid.png`, animations: "allow" });
           }
           await p.locator(".overview-page.is-opening").waitFor({ state: "detached", timeout: 9500 });
+          await p.locator(".atlas-journey.is-playing").waitFor({ state: "detached", timeout: 9500 });
           if ([320, 761, 1280, 1440].includes(width) && theme === "light") {
             await p.screenshot({ path: `${out}/${label}-complete.png`, animations: "disabled" });
           }
@@ -186,25 +209,28 @@ try {
   const p = await browser.newPage({ viewport: { width: 390, height: 900 } });
   try {
     await p.goto(`${base}/`);
-    await p.locator(".overview-page.is-opening").waitFor({ state: "detached" });
+    await p.locator(".overview-page.is-opening").waitFor({ state: "detached", timeout: 6000 });
+    await p.locator(".atlas-journey").scrollIntoViewIfNeeded();
+    await p.locator(".atlas-journey.is-playing").waitFor({ state: "attached", timeout: 3000 });
+    await p.locator(".atlas-journey.is-playing").waitFor({ state: "detached", timeout: 6500 });
     await p.reload();
-    await check(p, "seen flag", false);
+    await checkHeroAndScrollJourney(p, "seen flag", false, false);
     await p.getByRole("button", { name: "Replay animation" }).click();
-    await check(p, "replay", true);
+    assert.equal(await p.locator(".atlas-journey.is-playing").count(), 1, "manual replay starts journey");
     assert.ok(
       await p.evaluate(() => document.getAnimations().some(a => a.animationName?.startsWith("atlas-"))),
       "replay must start atlas animation"
     );
     await p.screenshot({ path: `${out}/replay-mobile.png`, animations: "allow" });
     await p.keyboard.press("Tab");
-    await p.locator(".overview-page.is-opening").waitFor({ state: "detached", timeout: 2000 });
+    await p.locator(".atlas-journey.is-playing").waitFor({ state: "detached", timeout: 2000 });
     await p.getByRole("button", { name: "Replay animation" }).focus();
     await p.keyboard.press("Enter");
-    assert.equal(await p.locator(".overview-page.is-opening").count(), 1);
+    assert.equal(await p.locator(".atlas-journey.is-playing").count(), 1);
     await p.emulateMedia({ reducedMotion: "reduce" });
-    await p.locator(".overview-page.is-opening").waitFor({ state: "detached", timeout: 2000 });
+    await p.locator(".atlas-journey.is-playing").waitFor({ state: "detached", timeout: 2000 });
     await p.getByRole("button", { name: "Replay animation" }).click();
-    await check(p, "reduced replay", false);
+    assert.equal(await p.locator(".atlas-journey.is-playing").count(), 0, "reduced replay remains static");
     results.push({ label: "replay-keyboard-reduced-switch", status: "PASS" });
   } catch (e) {
     results.push({ label: "replay-keyboard-reduced-switch", status: "FAIL", error: String(e.stack ?? e) });
@@ -215,6 +241,7 @@ try {
   const focus = await browser.newPage({ viewport: { width: 1280, height: 800 }, reducedMotion: "no-preference" });
   try {
     await focus.goto(`${base}/`);
+    await focus.locator(".preview-replay").scrollIntoViewIfNeeded();
     await focus.locator(".preview-replay").waitFor();
     await tabToReplay(focus);
     await focus.evaluate(() => {
@@ -222,7 +249,7 @@ try {
     });
     assert.equal(await stillFocusedOnSameReplay(focus), true, "Tab must focus Replay");
     await focus.keyboard.press("Enter");
-    assert.equal(await focus.locator(".overview-page.is-opening").count(), 1, "Enter must replay");
+    assert.equal(await focus.locator(".atlas-journey.is-playing").count(), 1, "Enter must replay");
     assert.equal(await stillFocusedOnSameReplay(focus), true, "Enter must not detach the focused node");
     assert.ok(
       await focus.evaluate(() => document.getAnimations().some(a => a.animationName === "atlas-trace")),
@@ -233,14 +260,14 @@ try {
     });
     await focus.keyboard.press("Enter");
     assert.equal(await stillFocusedOnSameReplay(focus), true, "rapid Enter must preserve DOM identity and focus");
-    assert.equal(await focus.locator(".overview-page.is-opening").count(), 1);
+    assert.equal(await focus.locator(".atlas-journey.is-playing").count(), 1);
     assert.equal(
       await focus.evaluate(() => document.querySelector(".atlas-journey-path") !== window.__firstReplayPath),
       true,
       "rapid replay must reconstruct the animated pathway SVG"
     );
     await focus.keyboard.press("Tab");
-    await focus.locator(".overview-page.is-opening").waitFor({ state: "detached", timeout: 2000 });
+    await focus.locator(".atlas-journey.is-playing").waitFor({ state: "detached", timeout: 2000 });
     assert.equal(
       await focus.evaluate(() => document.activeElement !== document.body),
       true,
@@ -251,14 +278,14 @@ try {
     await focus.keyboard.press("Enter");
     assert.equal(await stillFocusedOnSameReplay(focus), true);
     await focus.emulateMedia({ reducedMotion: "reduce" });
-    await focus.locator(".overview-page.is-opening").waitFor({ state: "detached", timeout: 2000 });
+    await focus.locator(".atlas-journey.is-playing").waitFor({ state: "detached", timeout: 2000 });
     assert.equal(await stillFocusedOnSameReplay(focus), true, "motion preference switch preserves keyboard focus");
     await focus.keyboard.press("Enter");
-    assert.equal(await focus.locator(".overview-page.is-opening").count(), 0, "reduced replay remains static");
+    assert.equal(await focus.locator(".atlas-journey.is-playing").count(), 0, "reduced replay remains static");
     assert.equal(await stillFocusedOnSameReplay(focus), true);
     await focus.emulateMedia({ reducedMotion: "no-preference" });
     await focus.keyboard.press("Enter");
-    assert.equal(await focus.locator(".overview-page.is-opening").count(), 1);
+    assert.equal(await focus.locator(".atlas-journey.is-playing").count(), 1);
     assert.equal(await stillFocusedOnSameReplay(focus), true);
     results.push({ label: "keyboard-replay-focus-identity", status: "PASS" });
   } catch (e) {
@@ -279,11 +306,11 @@ try {
   await blockedPage.setViewportSize({ width: 1280, height: 800 });
   try {
     await blockedPage.goto(`${base}/`);
-    await check(blockedPage, "blocked storage initial", false);
+    await checkHeroAndScrollJourney(blockedPage, "blocked storage initial", false, false);
     await blockedPage.getByRole("button", { name: "Replay animation" }).click();
-    await check(blockedPage, "blocked storage manual replay", true);
+    assert.equal(await blockedPage.locator(".atlas-journey.is-playing").count(), 1, "blocked storage manual replay");
     await blockedPage.keyboard.press("Tab");
-    await blockedPage.locator(".overview-page.is-opening").waitFor({ state: "detached", timeout: 2000 });
+    await blockedPage.locator(".atlas-journey.is-playing").waitFor({ state: "detached", timeout: 2000 });
     results.push({ label: "blocked-storage-interrupt", status: "PASS" });
   } catch (e) {
     results.push({ label: "blocked-storage-interrupt", status: "FAIL", error: String(e.stack ?? e) });
@@ -296,7 +323,8 @@ try {
     try {
       await q.goto(`${base}${url}`);
       assert.equal(await q.locator(".overview-page.is-opening").count(), 0);
-      if (url !== "/burden") await check(q, `direct ${url}`, false);
+      assert.equal(await q.locator(".atlas-journey.is-playing").count(), 0);
+      if (url !== "/burden") await checkHeroAndScrollJourney(q, `direct ${url}`, false, false);
       results.push({ label: `direct ${url}`, status: "PASS" });
     } catch (e) {
       results.push({ label: `direct ${url}`, status: "FAIL", error: String(e.stack ?? e) });

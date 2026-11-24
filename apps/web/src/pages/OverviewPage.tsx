@@ -102,9 +102,7 @@ export function OverviewPage({ advisorAvailable = false }: { advisorAvailable?: 
             <div className="atlas-lenses-beat" data-reveal="auto">
               <div className="atlas-section-head">
                 <p className="eyebrow">02 · TWO LENSES, KEPT APART</p>
-                <h2 id="overview-lenses-title">
-                  National reality. <em>Local ground.</em>
-                </h2>
+                <h2 id="overview-lenses-title">National reality. Local ground.</h2>
                 <p className="subtle">
                   National descriptive data illuminates illness burden; statewide indicators illuminate delivery conditions. One never invents prevalence for the other.
                 </p>

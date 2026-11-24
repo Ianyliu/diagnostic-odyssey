@@ -53,13 +53,13 @@ test("presentation labels cover every current DataState and ReleaseStatus withou
   }
 });
 
-test("Overview keeps the workflow visual and concise across four stages", () => {
+test("Overview keeps the workflow visual and narrative-led across four stages", () => {
   const source = readSource("../src/pages/OverviewPage.tsx");
   const journey = readSource("../src/components/LandingJourney.tsx");
 
   for (const phrase of [
-    "See the burden.",
-    "Find the leverage.",
+    "What does chronic illness",
+    "From data to",
     "Never blended",
     "National descriptive · Not causal"
   ]) {

@@ -19,15 +19,19 @@ test("Strategic Atlas palette uses cool ink, cobalt and violet with zero earth-t
   assert.doesNotMatch(tokens, /#0f7476|#2a9d9f|#58c3bd|#276b54|#3f765f|#2c6b58|#c25a3c|#c8923b|#dfab53|#e47b5c/i);
 });
 
-test("overview stays form-first with Midnight Ink bands, Two-Lens showcase, and zero inline styles", () => {
+test("overview follows light-first six-chapter scroll story with inset midnight stages, Two-Lens showcase, and zero inline styles", () => {
   const overview = readSource("../src/pages/OverviewPage.tsx");
   const css = readSource("../src/pages/OverviewPage.css");
-  assert.match(overview, /See the burden\. <em>Find the leverage\.<\/em>/);
+  assert.match(overview, /What does chronic illness <em>really cost us\?<\/em>/);
+  assert.match(overview, /<LandingCareHorizon \/>/);
+  assert.match(overview, /<LandingBurdenStrata /);
   assert.match(overview, /atlas-hero-band/);
+  assert.match(overview, /atlas-inset-stage/);
   assert.match(overview, /atlas-paper-band/);
   assert.match(overview, /atlas-closing-band/);
   assert.match(overview, /atlas-lenses-grid/);
   assert.match(overview, /atlas-paper-fan/);
+  assert.match(overview, /<LandingAiDemo /);
   assert.doesNotMatch(overview, /style=\{\{/);
   assert.match(css, /radial-gradient/);
   assert.doesNotMatch(css, /#0f7476|#2a9d9f|#58c3bd|#276b54|#3f765f|#2c6b58|#c25a3c|#c8923b|#dfab53|#e47b5c/i);
