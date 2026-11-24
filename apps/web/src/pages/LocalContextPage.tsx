@@ -2,6 +2,9 @@ import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import type { LocalContextRecord } from "@diagnostic-odyssey/contracts";
 import { DetailDrawer } from "../components/DetailDrawer";
+import { LedgerGroup } from "../components/LedgerGroup";
+import { PresentationMode, type Presentation } from "../components/PresentationMode";
+import { WorkspaceDisclosure } from "../components/WorkspaceDisclosure";
 import { useEditionDrawer } from "../components/EditionDrawerContext";
 import { HpsaRuralComposition } from "../components/HpsaRuralComposition";
 import { MetricVisual } from "../components/MetricVisual";
@@ -24,13 +27,6 @@ function categoryForRecord(record: LocalContextRecord): Exclude<TerrainCategory,
   if (record.source_ref === "hrsa-hpsa-primary-care-current") return "primary-care";
   if (record.source_ref === "hrsa-hpsa-mental-health-current") return "mental-health";
   return "acs";
-}
-
-function categoryKicker(record: LocalContextRecord): string {
-  const cat = categoryForRecord(record);
-  if (cat === "primary-care") return "PRIMARY CARE HPSA";
-  if (cat === "mental-health") return "MENTAL HEALTH HPSA";
-  return "CENSUS ACS";
 }
 
 function LocalContextProvenanceDetails({ record: inspectRecord }: { record: LocalContextRecord }) {
@@ -101,10 +97,21 @@ export function LocalContextPage() {
   const { openEdition } = useEditionDrawer();
 
   const [category, setCategory] = useState<TerrainCategory>("all");
-  const [inspectedId, setInspectedId] = useState<string>(
-    "wv.hrsa.primary-care.designated-distinct-count"
-  );
+  const [presentation, setPresentation] = useState<Presentation>("focus");
+  const [groups, setGroups] = useState<Partial<Record<TerrainCategory, boolean>>>({});
+  const [inspectedId, setInspectedId] = useState<string | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
+
+  const selectCategory = (next: TerrainCategory) => {
+    setCategory(next);
+    if (next !== "all") setGroups(current => ({ ...current, [next]: true }));
+  };
+
+  const changePresentation = (mode: Presentation) => {
+    setPresentation(mode);
+    setCategory("all");
+    setGroups({});
+  };
 
   const indicators = localContext?.indicators ?? [];
 
@@ -180,24 +187,12 @@ export function LocalContextPage() {
     selectableInView.length > 0 &&
     selectableInView.every(id => selectedLocalContextIds.includes(id));
 
-  const inspectRecord =
-    filtered.find(record => record.indicator_id === inspectedId) ??
-    indicators.find(record => record.indicator_id === inspectedId) ??
-    filtered[0] ??
-    indicators[0] ??
-    null;
-
+  const inspectRecord = indicators.find(record => record.indicator_id === inspectedId) ?? null;
   const upcomingGeographies = COVERAGE_CATALOG.filter(entry => entry.status !== "live");
 
   const handleInspect = (record: LocalContextRecord) => {
     setInspectedId(record.indicator_id);
-    const compactViewport =
-      typeof window !== "undefined" &&
-      typeof window.matchMedia === "function" &&
-      window.matchMedia("(max-width: 1099px)").matches;
-    if (compactViewport) {
-      setDrawerOpen(true);
-    }
+    setDrawerOpen(true);
   };
 
   const renderIndicatorCard = (record: LocalContextRecord) => {
@@ -220,14 +215,10 @@ export function LocalContextPage() {
       >
         <div className="atlas-terrain-row-main">
           <div className="atlas-terrain-row-head">
-            <span className="visual-kicker">
-              {categoryKicker(record)}
-              {isGoverningTotal ? " · GOVERNING TOTAL" : ""}
-            </span>
             <button
               type="button"
               className="atlas-detail-trigger"
-              aria-pressed={isInspected}
+              aria-haspopup="dialog"
               onClick={() => handleInspect(record)}
             >
               Provenance ↗
@@ -241,7 +232,7 @@ export function LocalContextPage() {
 
           <p className="micro-caption">
             {record.source_agency} · {record.observation_as_of_date ?? record.source_release_vintage}
-            {record.margin_of_error !== null && ` · ${formatLocalContextUncertaintyType(record.uncertainty_type)}`}
+            {record.margin_of_error !== null && ` · ${formatPublishedLocalContextUncertainty(record)}`}
           </p>
         </div>
 
@@ -250,7 +241,7 @@ export function LocalContextPage() {
             <strong className="ledger-record-value">{formatLocalContextValue(record)}</strong>
           </div>
 
-          {selectable && typeof record.value === "number" && (
+          {presentation === "overview" && selectable && typeof record.value === "number" && (
             <MetricVisual
               label={accessibility.displayTitle}
               value={record.value}
@@ -315,7 +306,7 @@ export function LocalContextPage() {
   }> = [
     {
       id: "primary-care",
-      title: "Primary Care HPSA (governing total & breakdowns)",
+      title: "Primary care shortage designations",
       subtitle: primaryTotal
         ? `Governing total: ${formatLocalContextValue(primaryTotal)}. Designation type, rural-status, and score breakdowns sit underneath—never add designations to people.`
         : "HRSA Primary Care HPSA statewide designations.",
@@ -323,7 +314,7 @@ export function LocalContextPage() {
     },
     {
       id: "mental-health",
-      title: "Mental Health HPSA (governing total & breakdowns)",
+      title: "Mental health shortage designations",
       subtitle: mentalTotal
         ? `Governing total: ${formatLocalContextValue(mentalTotal)}. Shortage-area designations reflect facility/population-group boundaries, not patient headcounts.`
         : "HRSA Mental Health HPSA statewide designations.",
@@ -331,7 +322,7 @@ export function LocalContextPage() {
     },
     {
       id: "acs",
-      title: "2024 Census ACS statewide access indicators",
+      title: "Census access indicators",
       subtitle: "5-year statewide survey percentages with published 90% margins of error; no county-level data is available.",
       records: filtered.filter(record => categoryForRecord(record) === "acs")
     }
@@ -343,7 +334,8 @@ export function LocalContextPage() {
         <header className="page-heading">
           <p className="eyebrow">02 · LOCAL CONTEXT · EDITION 01</p>
           <h1>West Virginia access conditions</h1>
-          <p>HRSA shortage designations &amp; 2024 Census ACS · Access conditions, not prevalence (statewide only, no county data).</p>
+          <p>Reviewed statewide indicators from HRSA and the 2024 Census ACS describe conditions for delivering care in West Virginia.</p>
+          <p className="ledger-orientation">Open an indicator group to review Brief selections, or attach one indicator as context for your Strategy Lab scenario.</p>
         </header>
 
         <div className="atlas-selection-bar" id="local-selection-summary">
@@ -402,28 +394,14 @@ export function LocalContextPage() {
         <strong>No-rescaling guarantee:</strong> Attaching an indicator via <em>Use in Strategy Lab</em> adds implementation context only; it never rescales national MEPS burden estimates or enters scenario arithmetic. Checkbox selections include up to {eligibleCount} reviewed records in Brief exports.
       </p>
 
-      {(primaryBreakdowns.length > 0 || mentalBreakdowns.length > 0) && (
-        <div className="atlas-composition-grid">
-          {primaryBreakdowns.length > 0 && (
-            <div className="card">
-              <HpsaRuralComposition records={primaryBreakdowns} serviceLabel="Primary Care" />
-            </div>
-          )}
-          {mentalBreakdowns.length > 0 && (
-            <div className="card">
-              <HpsaRuralComposition records={mentalBreakdowns} serviceLabel="Mental Health" />
-            </div>
-          )}
-        </div>
-      )}
-
-      <div className="atlas-toolbar-row">
+      <div className="atlas-toolbar-row ledger-mode-row">
+        <PresentationMode value={presentation} onChange={changePresentation} />
         <div className="atlas-tab-bar" role="group" aria-label="Filter local context indicators">
           <button
             type="button"
             aria-pressed={category === "all"}
             className={`atlas-tab${category === "all" ? " is-active" : ""}`}
-            onClick={() => setCategory("all")}
+            onClick={() => selectCategory("all")}
           >
             All ({counts.all})
           </button>
@@ -431,7 +409,7 @@ export function LocalContextPage() {
             type="button"
             aria-pressed={category === "primary-care"}
             className={`atlas-tab${category === "primary-care" ? " is-active" : ""}`}
-            onClick={() => setCategory("primary-care")}
+            onClick={() => selectCategory("primary-care")}
           >
             Primary Care HPSA ({counts.primary})
           </button>
@@ -439,7 +417,7 @@ export function LocalContextPage() {
             type="button"
             aria-pressed={category === "mental-health"}
             className={`atlas-tab${category === "mental-health" ? " is-active" : ""}`}
-            onClick={() => setCategory("mental-health")}
+            onClick={() => selectCategory("mental-health")}
           >
             Mental Health HPSA ({counts.mental})
           </button>
@@ -447,45 +425,40 @@ export function LocalContextPage() {
             type="button"
             aria-pressed={category === "acs"}
             className={`atlas-tab${category === "acs" ? " is-active" : ""}`}
-            onClick={() => setCategory("acs")}
+            onClick={() => selectCategory("acs")}
           >
             ACS Access ({counts.acs})
           </button>
         </div>
 
         <p className="micro-caption">
-          Designation counts do not measure shortage severity or unmet care volume · Missing does not mean zero.
+          Designations count shortage areas, populations or facilities. They cannot quantify severity or unmet care volume. This release covers statewide access conditions only. Missing information does not mean zero.
         </p>
       </div>
 
-      <div className="atlas-split-workspace">
-        <div className="atlas-constraint-matrix" aria-label={`All ${filtered.length} filtered state indicators`}>
-          {category === "all"
-            ? groupedSections.map(group =>
-                group.records.length > 0 && (
-                  <section className="atlas-local-group" key={group.id} aria-labelledby={`local-group-${group.id}`}>
-                    <header className="atlas-local-group-head">
-                      <h2 id={`local-group-${group.id}`}>{group.title}</h2>
-                      <p className="subtle">{group.subtitle}</p>
-                    </header>
-                    <div className="atlas-local-group-list">
-                      {group.records.map(renderIndicatorCard)}
-                    </div>
-                  </section>
-                )
-              )
-            : filtered.map(renderIndicatorCard)}
-        </div>
-
-        {inspectRecord && (
-          <aside className="atlas-split-inspector" aria-label="Selected local indicator provenance">
-            <div className="atlas-inspector-header">
-              <span className="eyebrow">PROVENANCE INSPECTOR · {inspectRecord.source_agency}</span>
-              <h2>{inspectRecord.label}</h2>
-            </div>
-            <LocalContextProvenanceDetails record={inspectRecord} />
-          </aside>
-        )}
+      <div className="atlas-constraint-matrix" aria-label={`All ${filtered.length} filtered state indicators`}>
+        {groupedSections.filter(group => group.records.length > 0).map(group => {
+          const open = groups[group.id] ?? presentation === "overview";
+          const breakdowns = group.id === "primary-care" ? primaryBreakdowns
+            : group.id === "mental-health" ? mentalBreakdowns : [];
+          return (
+            <LedgerGroup
+              key={group.id}
+              title={group.title}
+              summary={`${group.records.length} indicators`}
+              open={open}
+              onToggle={() => setGroups(current => ({ ...current, [group.id]: !open }))}
+            >
+              <p className="subtle">{group.subtitle}</p>
+              {breakdowns.length > 0 && (
+                <WorkspaceDisclosure id={`local-composition-${group.id}`} title="Rural-status composition">
+                  <HpsaRuralComposition records={breakdowns} serviceLabel={group.id === "primary-care" ? "Primary Care" : "Mental Health"} />
+                </WorkspaceDisclosure>
+              )}
+              <div className="atlas-local-group-list">{group.records.map(renderIndicatorCard)}</div>
+            </LedgerGroup>
+          );
+        })}
       </div>
 
       {upcomingGeographies.length > 0 && (

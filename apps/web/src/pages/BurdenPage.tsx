@@ -1,11 +1,9 @@
 import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { canExportEstimate, type Estimate } from "@diagnostic-odyssey/contracts";
-import {
-  BurdenInspectContext,
-  BurdenMeasureList,
-  EstimateProvenanceDetails
-} from "../components/BurdenMeasureList";
+import { BurdenMeasureList } from "../components/BurdenMeasureList";
+import { LedgerGroup } from "../components/LedgerGroup";
+import { PresentationMode, type Presentation } from "../components/PresentationMode";
 import { DetailDrawer } from "../components/DetailDrawer";
 import { useArtifact } from "../data/ArtifactContext";
 import { formatEstimateInterval, formatEstimateValue } from "../data/formatEstimateValue";
@@ -40,7 +38,10 @@ export function BurdenPage() {
   const { bundle } = useArtifact();
   const [activeTab, setActiveTab] = useState<DomainTab>("all");
   const [methodOpen, setMethodOpen] = useState(false);
-  const [inspectedId, setInspectedId] = useState<string | null>(null);
+  const [presentation, setPresentation] = useState<Presentation>("focus");
+  const [groups, setGroups] = useState<Record<string, boolean>>({});
+  const [focus, setFocus] = useState<{ hash: string; id: string | null } | null>(null);
+  const { hash } = useLocation();
 
   const allMeasures = useMemo(
     () => bundle?.burden_domains.flatMap(domain => domain.measures) ?? [],
@@ -54,14 +55,14 @@ export function BurdenPage() {
     ? bundle.burden_domains
     : bundle.burden_domains.filter(domain => domain.domain_id === activeTab);
 
-  const visibleMeasures = visibleDomains.flatMap(domain => domain.measures);
-  const inspectedEstimate =
-    allMeasures.find(measure => measure.estimate_id === inspectedId) ??
-    visibleMeasures.find(canExportEstimate) ??
-    visibleMeasures[0] ??
-    null;
-
-  const nestedCount = visibleMeasures.filter(measure => Boolean(measure.component_of_measure_id)).length;
+  const linkedMeasure = allMeasures.find(measure => hash === `#burden-measure-${measure.estimate_id}`);
+  const focusedId = focus?.hash === hash ? focus.id : linkedMeasure?.estimate_id ?? null;
+  const changePresentation = (mode: Presentation) => {
+    setPresentation(mode);
+    setActiveTab("all");
+    setGroups(Object.fromEntries(bundle.burden_domains.map(domain => [domain.domain_id, mode === "overview"])));
+    if (mode === "focus") setFocus({ hash, id: null });
+  };
 
   const intervalMethods = Array.from(new Set(
     allMeasures
@@ -76,7 +77,8 @@ export function BurdenPage() {
         <header className="page-heading">
           <p className="eyebrow">01 · BURDEN</p>
           <h1>National burden overview</h1>
-          <p>U.S. adults ages 18–64 with current Long COVID · {bundle.context.evidence_year} AHRQ MEPS.</p>
+          <p>National AHRQ MEPS estimates describe U.S. adults ages 18–64 classified as operational-current Long COVID at the 2024 Round 3/1 interview.</p>
+          <p className="ledger-orientation">Open a topic to see its measures. Use Details for a chart or source, then continue to West Virginia access conditions.</p>
         </header>
         <button
           type="button"
@@ -96,14 +98,18 @@ export function BurdenPage() {
                 <strong>{heroFigure(estimate)}</strong>
                 <span>{spec.label(estimate)}</span>
                 {interval && <small className="measure-interval">{interval}</small>}
-                <p className="micro-caption">National descriptive · Not causal</p>
               </article>
             );
           })}
         </div>
       )}
 
-      <div className="atlas-toolbar-row">
+      <p className="atlas-guardrail-line">
+        <strong>Accounting boundary:</strong> Gross spending covers all causes. Out-of-pocket costs and service subcomponents are already counted in their parent totals.
+      </p>
+
+      <div className="atlas-toolbar-row ledger-mode-row">
+        <PresentationMode value={presentation} onChange={changePresentation} />
         <div className="atlas-tab-bar" role="group" aria-label="Filter burden domains">
           {TABS.map(tab => (
             <button
@@ -111,84 +117,57 @@ export function BurdenPage() {
               type="button"
               aria-pressed={activeTab === tab.id}
               className={`atlas-tab${activeTab === tab.id ? " is-active" : ""}`}
-              onClick={() => setActiveTab(tab.id)}
+              onClick={() => {
+                setActiveTab(tab.id);
+                if (tab.id !== "all") setGroups(current => ({ ...current, [tab.id]: true }));
+              }}
             >
               {tab.label}
             </button>
           ))}
         </div>
 
-        <nav className="atlas-subroute-links" aria-label="Focused domain ledgers">
-          {SUB_ROUTES.map(route => (
-            <Link key={route.to} className="text-button" to={route.to}>
-              {route.label} →
-            </Link>
-          ))}
-        </nav>
       </div>
 
-      {nestedCount > 0 && (
-        <p className="atlas-guardrail-line">
-          <strong>Accounting boundary:</strong> Out-of-pocket costs and service subcomponents are nested inside gross all-cause totals — never add component lines together.
-        </p>
-      )}
+      <div className="burden-domain-stack">
+        {visibleDomains.map(domain => {
+          const id = `burden-${domain.domain_id}`;
+          const open = hash === `#${id}` || domain.measures.some(measure => measure === linkedMeasure)
+            ? groups[domain.domain_id] ?? true
+            : groups[domain.domain_id] ?? presentation === "overview";
 
-      <BurdenInspectContext.Provider value={{
-        selectedEstimateId: inspectedEstimate?.estimate_id ?? null,
-        onInspect: estimate => setInspectedId(estimate.estimate_id)
-      }}>
-      <div className="atlas-split-workspace">
-        <div className="burden-domain-stack">
-          {visibleDomains.map(domain => {
-            const reviewed = domain.measures.length > 0 && domain.measures.every(canExportEstimate);
-            return (
-              <article
-                className="card domain-card ledger-panel"
-                id={`burden-${domain.domain_id}`}
-                key={domain.domain_id}
-              >
-                <div className="card-title-row">
-                  <div>
-                    <h2>{domain.label}</h2>
-                    <p className="subtle">
-                      {formatDataStateLabel(domain.availability_state)} · {domain.measures.length}{" "}
-                      {domain.measures.length === 1 ? "measure" : "measures"}
-                    </p>
-                  </div>
-                  <span className={`status ${reviewed ? "status-reviewed" : "status-unavailable"}`}>
-                    {reviewed ? "Reviewed" : "Restricted"}
-                  </span>
-                </div>
-
-                {domain.limitations.length > 0 && (
-                  <p className="micro-caption domain-limitations">
-                    {domain.limitations.join(" ")}
-                  </p>
-                )}
-
-                {domain.domain_id === "healthcare-work-admin" && (
-                  <p className="micro-caption domain-limitations">
-                    Each time estimate describes the respondents eligible for that question. Read it within that population.
-                  </p>
-                )}
-
-                <BurdenMeasureList estimates={domain.measures} />
-              </article>
-            );
-          })}
-        </div>
-
-        {inspectedEstimate && (
-          <aside className="atlas-split-inspector" aria-label="Selected national burden provenance">
-            <div className="atlas-inspector-header">
-              <span className="eyebrow">PROVENANCE INSPECTOR · MEPS {bundle.context.evidence_year}</span>
-              <h2>{inspectedEstimate.label}</h2>
-            </div>
-            <EstimateProvenanceDetails estimate={inspectedEstimate} />
-          </aside>
-        )}
+          return (
+            <LedgerGroup
+              key={id}
+              id={id}
+              title={domain.label}
+              summary={`${domain.measures.length} ${domain.measures.length === 1 ? "measure" : "measures"} · ${formatDataStateLabel(domain.availability_state)}`}
+              open={open}
+              onToggle={() => setGroups(current => ({ ...current, [domain.domain_id]: !open }))}
+            >
+              {domain.limitations.length > 0 && (
+                <p className="micro-caption domain-limitations">{domain.limitations.join(" ")}</p>
+              )}
+              {domain.domain_id === "healthcare-work-admin" && (
+                <p className="micro-caption domain-limitations">
+                  Each time estimate describes the respondents eligible for that question. Read it within that population.
+                </p>
+              )}
+              <BurdenMeasureList
+                estimates={domain.measures}
+                focusedId={focusedId}
+                onFocus={id => setFocus({ hash, id: focusedId === id ? null : id })}
+              />
+            </LedgerGroup>
+          );
+        })}
       </div>
-      </BurdenInspectContext.Provider>
+
+      <nav className="atlas-subroute-links" aria-label="Focused domain ledgers">
+        {SUB_ROUTES.map(route => (
+          <Link key={route.to} className="text-button" to={route.to}>{route.label} →</Link>
+        ))}
+      </nav>
 
       <div className="atlas-page-footer-bar">
         <div className="atlas-footer-links">

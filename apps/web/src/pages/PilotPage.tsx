@@ -144,7 +144,7 @@ function PilotPlannerWorkspace({
   );
   const [boundaryOpen, setBoundaryOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
-  const [inspectorOpen, setInspectorOpen] = useState(true);
+  const [inspectorOpen, setInspectorOpen] = useState(false);
   const tabButtonRefs = useRef<Partial<Record<BottomTab, HTMLButtonElement | null>>>({});
 
   useEffect(() => {
@@ -227,14 +227,14 @@ function PilotPlannerWorkspace({
         <header className="page-heading">
           <p className="eyebrow">03 · STRATEGY LAB</p>
           <h1>Scope a feasible pilot</h1>
-          <p>Deterministic scenario arithmetic · Not observed effectiveness or savings.</p>
+          <p>Adjust reach, capacity, and costs to see what the pilot would require under your assumptions. These calculations cannot predict effectiveness or savings.</p>
         </header>
         <div className="atlas-page-top-actions">
           <button
             type="button"
             className="button secondary"
             aria-expanded={inspectorOpen}
-            aria-controls="pilot-decision-inspector"
+            aria-controls={inspectorOpen ? "pilot-decision-inspector" : undefined}
             onClick={() => setInspectorOpen(open => !open)}
           >
             {inspectorOpen ? "Hide inspector" : "Show inspector"}

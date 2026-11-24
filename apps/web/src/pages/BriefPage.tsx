@@ -114,6 +114,8 @@ export function BriefPage({
 }: FutureConceptControlProps = {}) {
   const pageRef = useRef<HTMLElement>(null);
   const [includeContextAppendixInPrint, setIncludeContextAppendixInPrint] = useState(false);
+  const [contextDetailsOpen, setContextDetailsOpen] = useState(false);
+  const [nationalDetailsOpen, setNationalDetailsOpen] = useState(false);
   const printDisclosureState = useRef<ReturnType<typeof createBriefPrintDisclosureState> | null>(null);
   const {
     status,
@@ -399,49 +401,57 @@ export function BriefPage({
               </div>
             )}
             {brief.local_context.length > 0 ? (
-              <div className="brief-local-context-list">
-                <h3 className="brief-context-appendix-heading">Detailed included context records ({brief.local_context.length})</h3>
-                {brief.context.local_context_id && (
-                  <p className="subtle">
-                    <strong>Reviewed local-context artifact:</strong> {brief.context.local_context_id}
-                  </p>
-                )}
-                {brief.local_context.map(record => (
-                  <article className="brief-local-context" key={record.indicator_id}>
-                    <div className="brief-local-context-opening">
-                      <div className="card-title-row">
-                        <div>
-                          <strong>{record.label}</strong>
-                          <span>{record.geography_name} ({record.geography_type})</span>
-                          {pilotLocalContext?.indicator_id === record.indicator_id && (
-                            <span className="status status-selection pilot-used-badge">Active in Strategy Lab</span>
-                          )}
+              <>
+                <div className="brief-screen-disclosure">
+                  <p>{brief.local_context.length} reviewed West Virginia records included. The Strategy Lab attachment is listed separately in the summary above.</p>
+                  <button type="button" className="text-button" aria-controls="brief-local-records" aria-expanded={contextDetailsOpen} onClick={() => setContextDetailsOpen(open => !open)}>
+                    {contextDetailsOpen ? "Hide local records" : "Show local records"}
+                  </button>
+                </div>
+                <div id="brief-local-records" className="brief-local-context-list" data-screen-collapsed={!contextDetailsOpen}>
+                  <h3 className="brief-context-appendix-heading">Detailed included context records ({brief.local_context.length})</h3>
+                  {brief.context.local_context_id && (
+                    <p className="subtle">
+                      <strong>Reviewed local-context artifact:</strong> {brief.context.local_context_id}
+                    </p>
+                  )}
+                  {brief.local_context.map(record => (
+                    <article className="brief-local-context" key={record.indicator_id}>
+                      <div className="brief-local-context-opening">
+                        <div className="card-title-row">
+                          <div>
+                            <strong>{record.label}</strong>
+                            <span>{record.geography_name} ({record.geography_type})</span>
+                            {pilotLocalContext?.indicator_id === record.indicator_id && (
+                              <span className="status status-selection pilot-used-badge">Active in Strategy Lab</span>
+                            )}
+                          </div>
+                          <span className={record.state === "partial" ? "status status-partial" : "status status-reviewed"}>
+                            {formatDataStateLabel(record.state)}
+                          </span>
                         </div>
-                        <span className={record.state === "partial" ? "status status-partial" : "status status-reviewed"}>
-                          {formatDataStateLabel(record.state)}
-                        </span>
+                        <p className="brief-local-context-value">{formatLocalContextValue(record)}</p>
                       </div>
-                      <p className="brief-local-context-value">{formatLocalContextValue(record)}</p>
-                    </div>
-                    <p className="subtle">
-                      <strong>Source:</strong> {record.source_agency} · {record.source_release_vintage}
-                    </p>
-                    <p className="subtle">
-                      <strong>Published uncertainty:</strong> {formatPublishedLocalContextUncertainty(record)}
-                    </p>
-                    <p className="subtle">
-                      <strong>Availability:</strong> {formatDataStateLabel(record.state)}
-                    </p>
-                    <p className="limitations"><strong>Allowed interpretation:</strong> {record.allowed_interpretation}</p>
-                    {record.prohibited_interpretation.length > 0 && (
-                      <p className="limitations"><strong>Not supported:</strong> {record.prohibited_interpretation.join("; ")}</p>
-                    )}
-                    {record.limitations.length > 0 && (
-                      <p className="limitations"><strong>Limitations:</strong> {record.limitations.join(" ")}</p>
-                    )}
-                  </article>
-                ))}
-              </div>
+                      <p className="subtle">
+                        <strong>Source:</strong> {record.source_agency} · {record.source_release_vintage}
+                      </p>
+                      <p className="subtle">
+                        <strong>Published uncertainty:</strong> {formatPublishedLocalContextUncertainty(record)}
+                      </p>
+                      <p className="subtle">
+                        <strong>Availability:</strong> {formatDataStateLabel(record.state)}
+                      </p>
+                      <p className="limitations"><strong>Allowed interpretation:</strong> {record.allowed_interpretation}</p>
+                      {record.prohibited_interpretation.length > 0 && (
+                        <p className="limitations"><strong>Not supported:</strong> {record.prohibited_interpretation.join("; ")}</p>
+                      )}
+                      {record.limitations.length > 0 && (
+                        <p className="limitations"><strong>Limitations:</strong> {record.limitations.join(" ")}</p>
+                      )}
+                    </article>
+                  ))}
+                </div>
+              </>
             ) : (
               <div className="empty-state">
                 <strong>
@@ -520,59 +530,67 @@ export function BriefPage({
                 <strong>No reviewed analytical estimate is currently export-eligible.</strong>
               </div>
             ) : (
-              <div className="brief-burden-groups">
-                {burdenGroups.map(group => (
-                  <section
-                    className={`brief-burden-group${group.findings.length <= 8 ? " brief-burden-group-short" : ""}`}
-                    aria-labelledby={`brief-burden-${group.group_id}`}
-                    key={group.group_id}
-                  >
-                    <div className="brief-burden-group-heading">
-                      <h3 id={`brief-burden-${group.group_id}`}>{group.label}</h3>
-                      <span className="status status-ok">{group.findings.length} reviewed</span>
-                    </div>
-                    <div className="brief-burden-table-wrap" role="region" tabIndex={0} aria-label={`${group.label} burden findings table`}>
-                      <table className="brief-burden-table">
-                        <caption className="sr-only">{group.label} reviewed national burden findings</caption>
-                        <thead>
-                          <tr>
-                            <th scope="col">Measure</th>
-                            <th scope="col">Estimate</th>
-                            <th scope="col">Confidence interval</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {group.findings.map(finding => (
-                            <tr key={finding.estimate_id}>
-                              <th scope="row">{finding.label}</th>
-                              <td>
-                                {canDisplayDistributionSummary(finding)
-                                  ? <DistributionSummaryText estimate={finding} />
-                                  : formatEstimateValue(finding)}
-                              </td>
-                              <td><AccessibleEstimateInterval estimate={finding} /></td>
+              <>
+                <div className="brief-screen-disclosure">
+                  <p>{brief.burden_findings.length} released national measures with their reported uncertainty and interpretation.</p>
+                  <button type="button" className="text-button" aria-controls="brief-national-records" aria-expanded={nationalDetailsOpen} onClick={() => setNationalDetailsOpen(open => !open)}>
+                    {nationalDetailsOpen ? "Hide national findings" : "Show national findings"}
+                  </button>
+                </div>
+                <div id="brief-national-records" className="brief-burden-groups" data-screen-collapsed={!nationalDetailsOpen}>
+                  {burdenGroups.map(group => (
+                    <section
+                      className={`brief-burden-group${group.findings.length <= 8 ? " brief-burden-group-short" : ""}`}
+                      aria-labelledby={`brief-burden-${group.group_id}`}
+                      key={group.group_id}
+                    >
+                      <div className="brief-burden-group-heading">
+                        <h3 id={`brief-burden-${group.group_id}`}>{group.label}</h3>
+                        <span className="status status-ok">{group.findings.length} reviewed</span>
+                      </div>
+                      <div className="brief-burden-table-wrap" role="region" tabIndex={0} aria-label={`${group.label} burden findings table`}>
+                        <table className="brief-burden-table">
+                          <caption className="sr-only">{group.label} reviewed national burden findings</caption>
+                          <thead>
+                            <tr>
+                              <th scope="col">Measure</th>
+                              <th scope="col">Estimate</th>
+                              <th scope="col">Confidence interval</th>
                             </tr>
+                          </thead>
+                          <tbody>
+                            {group.findings.map(finding => (
+                              <tr key={finding.estimate_id}>
+                                <th scope="row">{finding.label}</th>
+                                <td>
+                                  {canDisplayDistributionSummary(finding)
+                                    ? <DistributionSummaryText estimate={finding} />
+                                    : formatEstimateValue(finding)}
+                                </td>
+                                <td><AccessibleEstimateInterval estimate={finding} /></td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                      <details className="brief-burden-details technical-disclosure">
+                        <summary>Interpretation &amp; provenance</summary>
+                        {group.limitations.length > 0 && (
+                          <p><strong>Domain limitations:</strong> {group.limitations.join(" ")}</p>
+                        )}
+                        <ul>
+                          {group.findings.map(finding => (
+                            <li key={finding.estimate_id}>
+                              <strong>{finding.label}:</strong> {finding.allowed_interpretation}
+                              {finding.system_boundary && <> <span className="subtle">Boundary: {finding.system_boundary}</span></>}
+                            </li>
                           ))}
-                        </tbody>
-                      </table>
-                    </div>
-                    <details className="brief-burden-details technical-disclosure">
-                      <summary>Interpretation &amp; provenance</summary>
-                      {group.limitations.length > 0 && (
-                        <p><strong>Domain limitations:</strong> {group.limitations.join(" ")}</p>
-                      )}
-                      <ul>
-                        {group.findings.map(finding => (
-                          <li key={finding.estimate_id}>
-                            <strong>{finding.label}:</strong> {finding.allowed_interpretation}
-                            {finding.system_boundary && <> <span className="subtle">Boundary: {finding.system_boundary}</span></>}
-                          </li>
-                        ))}
-                      </ul>
-                    </details>
-                  </section>
-                ))}
-              </div>
+                        </ul>
+                      </details>
+                    </section>
+                  ))}
+                </div>
+              </>
             )}
           </section>
         </article>

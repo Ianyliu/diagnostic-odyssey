@@ -395,3 +395,24 @@
   .planning-brief-page .brief-burden-details::details-content { content-visibility: visible !important; }
   .planning-brief-page .brief-burden-group:last-child .brief-burden-details { break-inside: avoid; }
 }
+
+@media screen {
+  .planning-brief-page [data-screen-collapsed="true"] {
+    display: none;
+  }
+  .brief-screen-disclosure {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0 16px;
+  }
+  .brief-screen-disclosure .text-button {
+    min-height: 44px;
+  }
+}
+
+@media print {
+  .brief-screen-disclosure {
+    display: none !important;
+  }
+}

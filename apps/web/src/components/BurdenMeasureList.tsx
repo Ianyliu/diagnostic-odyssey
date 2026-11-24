@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { useState } from "react";
 import {
   canDisplayDistributionSummary,
   canExportEstimate,
@@ -107,36 +107,17 @@ export function EstimateProvenanceDetails({ estimate: activeEstimate }: { estima
   );
 }
 
-export const BurdenInspectContext = createContext<{
-  selectedEstimateId: string | null;
-  onInspect: (estimate: Estimate) => void;
-} | null>(null);
-
 export function BurdenMeasureList({
-  estimates
+  estimates,
+  focusedId,
+  onFocus
 }: {
   estimates: Estimate[];
+  focusedId?: string | null;
+  onFocus?: (estimateId: string) => void;
 }) {
-  const inspectCtx = useContext(BurdenInspectContext);
   const [activeEstimate, setActiveEstimate] = useState<Estimate | null>(null);
-  const parentLabels = new Map(
-    estimates.map(estimate => [estimate.measure_id, estimate.label])
-  );
-
-  const handleInspectClick = (estimate: Estimate) => {
-    if (inspectCtx) {
-      inspectCtx.onInspect(estimate);
-      const compactViewport =
-        typeof window !== "undefined" &&
-        typeof window.matchMedia === "function" &&
-        window.matchMedia("(max-width: 1099px)").matches;
-      if (compactViewport) {
-        setActiveEstimate(estimate);
-      }
-      return;
-    }
-    setActiveEstimate(estimate);
-  };
+  const parentLabels = new Map(estimates.map(estimate => [estimate.measure_id, estimate.label]));
 
   return (
     <>
@@ -146,29 +127,40 @@ export function BurdenMeasureList({
           const parentLabel = estimate.component_of_measure_id
             ? parentLabels.get(estimate.component_of_measure_id)
             : null;
-          const isInspected = inspectCtx?.selectedEstimateId === estimate.estimate_id;
+          const focused = focusedId === estimate.estimate_id;
+          const showDetail = !onFocus || focused;
+          const titleId = `burden-measure-${estimate.estimate_id}`;
+          const detailId = `${titleId}-details`;
 
           return (
             <article
-              className={`measure burden-measure-row atlas-metric-row${isInspected ? " is-inspected" : ""}`}
-              aria-labelledby={`burden-measure-${estimate.estimate_id}`}
+              className={`measure burden-measure-row atlas-metric-row${onFocus ? " is-compact" : ""}${focused ? " is-inspected" : ""}`}
+              aria-labelledby={titleId}
               key={estimate.estimate_id}
             >
               <div className="burden-measure-summary">
-                <h3 id={`burden-measure-${estimate.estimate_id}`}>{estimate.label}</h3>
+                <h3 id={titleId}>{estimate.label}</h3>
                 {estimate.component_of_measure_id && (
                   <span className="component-note">
                     Nested inside {parentLabel ?? "parent total"} · do not add.
                   </span>
                 )}
-                <button
-                  type="button"
-                  className="atlas-detail-trigger"
-                  aria-pressed={inspectCtx ? isInspected : undefined}
-                  onClick={() => handleInspectClick(estimate)}
-                >
-                  Provenance &amp; 95% CI ↗
-                </button>
+                {onFocus ? (
+                  <button
+                    type="button"
+                    className="atlas-detail-trigger"
+                    aria-expanded={focused}
+                    aria-controls={detailId}
+                    aria-label={`${focused ? "Hide" : "Show"} details for ${estimate.label}`}
+                    onClick={() => onFocus(estimate.estimate_id)}
+                  >
+                    {focused ? "Hide details −" : "Details +"}
+                  </button>
+                ) : (
+                  <button type="button" className="atlas-detail-trigger" onClick={() => setActiveEstimate(estimate)}>
+                    Provenance &amp; 95% CI ↗
+                  </button>
+                )}
               </div>
 
               <div className="measure-value">
@@ -178,37 +170,49 @@ export function BurdenMeasureList({
                     : formatEstimateValue(estimate)}
                 </div>
                 <EstimateIntervalText estimate={estimate} />
-                {reviewed && typeof estimate.value === "number" && (
-                  <MetricVisual
-                    label={estimate.label}
-                    value={estimate.value}
-                    unit={estimate.unit}
-                    low={estimate.distribution_summary?.p25 ?? estimate.interval_low}
-                    high={estimate.distribution_summary?.p75 ?? estimate.interval_high}
-                    intervalLabel={
-                      estimate.distribution_summary
-                        ? "IQR (25th–75th percentile)"
-                        : formatIntervalLabel(estimate.interval_type)
-                    }
-                    intervalStyle={estimate.distribution_summary ? "range" : "confidence"}
-                    pointLabel={estimate.distribution_summary ? "Survey mean" : "Point estimate"}
-                    scaleDomain={getBurdenScaleDomain(estimate, estimates)}
-                    standaloneNote={`Standalone ${estimate.unit} measure · no cross-row comparison bar`}
-                    compact
-                  />
-                )}
-                {reviewed && estimate.distribution_summary && (
-                  <small className="metric-skew-note">
-                    {estimate.value !== null && estimate.value >= estimate.distribution_summary.p25 && estimate.value <= estimate.distribution_summary.p75
-                      ? "The survey mean falls within the interquartile range."
-                      : "The survey mean falls outside the interquartile range."}{" "}
-                    The 25th–75th percentile range describes the middle half of responses. The confidence interval describes sampling uncertainty in the mean.
-                  </small>
-                )}
                 {!reviewed && (
                   <small className="measure-release-status">
                     {formatReleaseStatusLabel(estimate.release_status)}
                   </small>
+                )}
+              </div>
+              <div className="burden-measure-detail" id={detailId} hidden={!showDetail}>
+                {showDetail && (
+                  <>
+                    {onFocus && <p>{estimate.allowed_interpretation}</p>}
+                    {reviewed && typeof estimate.value === "number" && (
+                      <MetricVisual
+                        label={estimate.label}
+                        value={estimate.value}
+                        unit={estimate.unit}
+                        low={estimate.distribution_summary?.p25 ?? estimate.interval_low}
+                        high={estimate.distribution_summary?.p75 ?? estimate.interval_high}
+                        intervalLabel={
+                          estimate.distribution_summary
+                            ? "IQR (25th–75th percentile)"
+                            : formatIntervalLabel(estimate.interval_type)
+                        }
+                        intervalStyle={estimate.distribution_summary ? "range" : "confidence"}
+                        pointLabel={estimate.distribution_summary ? "Survey mean" : "Point estimate"}
+                        scaleDomain={getBurdenScaleDomain(estimate, estimates)}
+                        standaloneNote={`Standalone ${estimate.unit} measure · no cross-row comparison bar`}
+                        compact
+                      />
+                    )}
+                    {reviewed && estimate.distribution_summary && (
+                      <small className="metric-skew-note">
+                        {estimate.value !== null && estimate.value >= estimate.distribution_summary.p25 && estimate.value <= estimate.distribution_summary.p75
+                          ? "The survey mean falls within the interquartile range."
+                          : "The survey mean falls outside the interquartile range."}{" "}
+                        The 25th–75th percentile range describes the middle half of responses. The confidence interval describes sampling uncertainty in the mean.
+                      </small>
+                    )}
+                    {onFocus && (
+                      <button type="button" className="atlas-detail-trigger" onClick={() => setActiveEstimate(estimate)}>
+                        Provenance &amp; 95% CI ↗
+                      </button>
+                    )}
+                  </>
                 )}
               </div>
             </article>

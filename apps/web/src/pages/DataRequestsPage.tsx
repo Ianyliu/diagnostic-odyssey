@@ -49,10 +49,10 @@ export function DataRequestsPage() {
         <p className="eyebrow">COMPANION · DATA REQUESTS</p>
         <h1 id="data-requests-heading" tabIndex={-1}>Turn uncertainty into a concrete request</h1>
         <p>
-          Requests are planning artifacts, not observed evidence. New and loaded requests start automatically selected for Brief inclusion by default; deselect any request below or with the bulk controls before exporting. Stale requests remain excluded from the Brief until refreshed.
+          Use planning requests to identify what to verify with a local data owner. Review which requests to include before exporting the Brief.
         </p>
         <p className="micro-caption">
-          &ldquo;Current&rdquo; means the request matches the applied scenario, not that its source data is up to date. Confirm reporting periods and availability with the local owner.
+          Request status reflects how closely it matches the applied scenario. Confirm source availability and reporting periods with the local owner.
         </p>
       </header>
       <p className="sr-only" role="status" aria-live="polite" aria-atomic="true">{announcement}</p>
@@ -164,7 +164,7 @@ export function DataRequestsPage() {
                         </details>
                       ) : (
                         <p className="request-stale-guidance">
-                          Scenario changed since creation; refresh to include in Brief. Review the applied Strategy Lab inputs before refreshing; refreshing replaces the request wording and preserves its Brief selection. Request currency does not certify source freshness.
+                          The applied scenario changed. Review its inputs before refreshing the request. Refresh updates the wording and keeps your selection.
                         </p>
                       )}
                     </section>
@@ -172,18 +172,18 @@ export function DataRequestsPage() {
 
                   <p className="request-owner"><strong>Likely owner:</strong> {request.likely_source_owner}</p>
 
-                  <section className="request-next-step" aria-labelledby={`request-next-${request.request_id}`}>
-                    <h3 id={`request-next-${request.request_id}`}>Next step with the local data owner</h3>
-                    <ol>
-                      <li>Confirm who owns this question and which local source system can supply the fields and time window below. Availability is unconfirmed.</li>
-                      <li>Agree on the minimum necessary aggregate summary, definitions, reporting period, and small-cell protections before collection. Keep identifiers, row-level dates, and linkage with the local steward; do not send them to this app.</li>
-                      <li>If the summary is unavailable or incomplete, document the gap with the owner and revise the planning assumption or pilot scope. Rerun sensitivity before using the request in the Brief.</li>
-                    </ol>
-                    <p>Collection guidance is a planning checklist, not an approved system mapping or a quantified value-of-information estimate. Including a request in the Brief does not send it to anyone.</p>
-                    <Link className="text-button" to="/pilot#sensitivity">Review assumptions and sensitivity</Link>
-                  </section>
-
                   <WorkspaceDisclosure id={`request-details-${request.request_id}`} title="Request details & collection guidance">
+                    <section className="request-next-step" aria-labelledby={`request-next-${request.request_id}`}>
+                      <h3 id={`request-next-${request.request_id}`}>Next step with the local data owner</h3>
+                      <ol>
+                        <li>Confirm who owns this question and which local source system can supply the fields and time window below. Availability is unconfirmed.</li>
+                        <li>Agree on the minimum necessary aggregate summary, definitions, reporting period, and small-cell protections before collection. Keep identifiers, row-level dates, and linkage with the local steward; do not send them to this app.</li>
+                        <li>If the summary is unavailable or incomplete, document the gap with the owner and revise the planning assumption or pilot scope. Rerun sensitivity before using the request in the Brief.</li>
+                      </ol>
+                      <p>Collection guidance is a planning checklist, not an approved system mapping or a quantified value-of-information estimate. Including a request in the Brief does not send it to anyone.</p>
+                      <Link className="text-button" to="/pilot#sensitivity">Review assumptions and sensitivity</Link>
+                    </section>
+
                     <dl className="data-request-details">
                       <div><dt>Pathway step</dt><dd>{formatPathwayStepLabel(request.pathway_step)}</dd></div>
                       {request.target_mechanism && <div><dt>Target mechanism</dt><dd>{formatMechanismLabel(request.target_mechanism)}</dd></div>}
@@ -264,8 +264,8 @@ export function DataRequestsPage() {
                           {!selected
                             ? "Not selected for Brief; check to include this request when current."
                             : stale
-                              ? "Selected · excluded until refreshed for the current scenario; export state is preserved once refreshed."
-                              : "Auto-selected on creation and included in the Planning Brief; uncheck to exclude before export."}
+                              ? "Selected. This request is excluded from exports until you refresh it for the applied scenario."
+                              : "Included in the Planning Brief."}
                         </small>
                       </span>
                     </label>
@@ -301,7 +301,7 @@ export function DataRequestsPage() {
           <span>
             <strong>{selectedDataRequests.length}</strong> current request{selectedDataRequests.length === 1 ? "" : "s"} eligible for the Planning Brief.
             {staleSelectedCount > 0
-              ? ` ${staleSelectedCount} selected request(s) are stale and excluded until refreshed.`
+              ? ` ${staleSelectedCount} selected ${staleSelectedCount === 1 ? "request needs" : "requests need"} a refresh before export.`
               : ""}
           </span>
           <Link className="button" to="/brief">Open Planning Brief →</Link>

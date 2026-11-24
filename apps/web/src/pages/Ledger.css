@@ -616,3 +616,170 @@
     text-align: left;
   }
 }
+
+.ledger-orientation {
+  margin-top: 6px;
+}
+
+.ledger-mode-row {
+  justify-content: flex-start;
+}
+
+.presentation-mode {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 3px;
+  border: 1px solid var(--do-border);
+  border-radius: 12px;
+}
+
+.presentation-mode button {
+  min-height: 44px;
+  padding: 4px 14px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--do-text-muted);
+  font: inherit;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.presentation-mode button[aria-pressed="true"],
+.presentation-mode button:hover {
+  background: var(--do-selection-bg);
+  color: var(--do-selection-text);
+}
+
+.ledger-group {
+  min-width: 0;
+  border-top: 1px solid var(--do-border);
+}
+
+.ledger-group:last-child {
+  border-bottom: 1px solid var(--do-border);
+}
+
+.ledger-group-title {
+  margin: 0;
+  font-size: 1.04rem;
+}
+
+.ledger-group-title button {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 4px 16px;
+  width: 100%;
+  min-height: 54px;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--do-text);
+  font: inherit;
+  font-weight: 700;
+  text-align: start;
+  cursor: pointer;
+}
+
+.ledger-group-title button:hover,
+.ledger-group-title button:focus-visible,
+.ledger-group-title button[aria-expanded="true"] {
+  background: var(--do-selection-bg);
+}
+
+.ledger-group-count {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--do-text-muted);
+}
+
+.ledger-disclosure-mark {
+  font-size: 1.2rem;
+  color: var(--do-accent);
+}
+
+.ledger-group-content {
+  padding: 14px 12px 18px;
+}
+
+.burden-ledger-page .atlas-bento-card,
+.local-ledger-page .atlas-local-summary-tile {
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 0;
+  border-inline-start: 2px solid var(--do-border);
+  background: transparent;
+  box-shadow: none;
+}
+
+.atlas-metric-row.is-compact,
+.local-ledger-page .atlas-terrain-row {
+  padding: 12px;
+  border-radius: 0;
+}
+
+.local-ledger-page .atlas-constraint-matrix,
+.local-ledger-page .atlas-local-group-list {
+  gap: 0;
+}
+
+.local-ledger-page .atlas-terrain-row {
+  border: 0;
+  border-top: 1px solid var(--do-border);
+  box-shadow: none;
+  background: transparent;
+}
+
+.local-ledger-page .atlas-terrain-row.is-pilot,
+.local-ledger-page .atlas-terrain-row.is-inspected {
+  border-inline-start: 2px solid var(--do-accent);
+  background: var(--do-selection-bg);
+}
+
+.atlas-metric-row.is-compact:hover,
+.atlas-metric-row.is-compact:focus-within,
+.atlas-metric-row.is-compact.is-inspected,
+.local-ledger-page .atlas-terrain-row:hover,
+.local-ledger-page .atlas-terrain-row:focus-within {
+  background: var(--do-surface-elevated);
+}
+
+.burden-measure-detail:not([hidden]) {
+  display: grid;
+  grid-column: 1 / -1;
+  gap: 10px;
+  justify-items: start;
+}
+
+.burden-measure-detail p {
+  margin: 0;
+  max-width: 70ch;
+}
+
+.ledger-group .atlas-detail-trigger {
+  min-height: 44px;
+}
+
+.ledger-mode-row .atlas-tab-bar {
+  flex-wrap: wrap;
+}
+
+@media (max-width: 600px) {
+  .ledger-group-title button {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .ledger-group-count {
+    grid-row: 2;
+  }
+  .ledger-disclosure-mark {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+  .burden-ledger-page .atlas-hero-bento.is-four-col {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+}
