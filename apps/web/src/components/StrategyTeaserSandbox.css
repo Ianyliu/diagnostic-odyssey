@@ -129,7 +129,7 @@
 
 .teaser-slider-row label {
   font-size: .88rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--do-text);
 }
 
@@ -146,6 +146,11 @@
   margin: 0;
   accent-color: var(--do-accent);
   cursor: pointer;
+}
+
+.teaser-range-input:focus-visible {
+  outline: 2px solid var(--do-accent);
+  outline-offset: 4px;
 }
 
 .teaser-slider-meta {
@@ -237,7 +242,9 @@
 }
 
 .teaser-svg-fill-gap {
-  fill: var(--do-error-text);
+  fill: url(#teaser-gap-stripe);
+  stroke: var(--do-error-text);
+  stroke-width: 1;
   transition: x var(--do-motion-medium) ease-out, width var(--do-motion-medium) ease-out;
 }
 
@@ -268,7 +275,10 @@
 }
 
 .teaser-swatch-primary { background: var(--do-chart-1); }
-.teaser-swatch-gap { background: var(--do-error-text); }
+.teaser-swatch-gap {
+  border: 1px solid var(--do-error-text);
+  background: repeating-linear-gradient(45deg, var(--do-error-text) 0 2px, var(--do-error-bg) 2px 5px);
+}
 .teaser-swatch-fixed { background: var(--do-chart-3); }
 
 .teaser-footer {

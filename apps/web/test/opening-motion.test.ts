@@ -125,10 +125,12 @@ test("manual replay is independent of the once-per-session flag", async () => {
 
 test("first-screen hero and reduced-motion choreography stay intact", () => {
   const overview = readFileSync(fileURLToPath(new URL("../src/pages/OverviewPage.tsx", import.meta.url)), "utf8");
+  const appShell = readFileSync(fileURLToPath(new URL("../src/components/AppShell.tsx", import.meta.url)), "utf8");
   const motionCss = readFileSync(fileURLToPath(new URL("../src/motion.css", import.meta.url)), "utf8");
   assert.match(overview, /useOpeningMotion\(\)/);
   assert.match(overview, /<LandingJourney \/>/);
-  assert.match(overview, /<EditionDrawer/);
+  assert.match(overview, /useEditionDrawer\(\)/);
+  assert.match(appShell, /<EditionDrawer/);
   assert.match(overview, /Never blended/);
   assert.match(motionCss, /@keyframes atlas-rise/);
   assert.match(motionCss, /@media \(prefers-reduced-motion: reduce\)/);

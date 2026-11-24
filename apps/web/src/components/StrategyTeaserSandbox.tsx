@@ -15,6 +15,11 @@ const currency = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 0
 });
 
+function gapWidthStart(reachedWidth: number, maxWidth: number): number {
+  if (reachedWidth <= 0) return 0;
+  return Math.min(maxWidth, reachedWidth + 2);
+}
+
 const SVG_WIDTH = 320;
 
 export function StrategyTeaserSandbox() {
@@ -36,7 +41,10 @@ export function StrategyTeaserSandbox() {
 
   const coverageScale = Math.max(result.intended_reach, 1);
   const reachedWidth = Math.round((result.reached_participants / coverageScale) * SVG_WIDTH);
-  const gapWidth = Math.max(0, Math.min(SVG_WIDTH - reachedWidth, Math.round((result.capacity_gap / coverageScale) * SVG_WIDTH)));
+  const gapStart = gapWidthStart(reachedWidth, SVG_WIDTH);
+  const gapWidth = result.capacity_gap > 0
+    ? Math.max(4, Math.min(SVG_WIDTH - gapStart, Math.round((result.capacity_gap / coverageScale) * SVG_WIDTH)))
+    : 0;
   const coveragePct = result.intended_reach > 0
     ? Math.round((result.reached_participants / result.intended_reach) * 100)
     : 0;
@@ -147,10 +155,16 @@ export function StrategyTeaserSandbox() {
                 role="img"
                 aria-label={`Capacity coverage: ${formatPlanningNumber(result.reached_participants, integer)} reached within capacity, ${formatPlanningNumber(result.capacity_gap, integer)} capacity gap.`}
               >
+                <defs>
+                  <pattern id="teaser-gap-stripe" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+                    <rect width="8" height="8" fill="var(--do-error-bg)" />
+                    <path d="M0 0V8" stroke="var(--do-error-text)" strokeWidth="3" />
+                  </pattern>
+                </defs>
                 <rect className="teaser-svg-track" x="0" y="4" width={SVG_WIDTH} height="14" rx="2" />
                 <rect className="teaser-svg-fill-primary" x="0" y="4" width={reachedWidth} height="14" rx="2" />
                 {gapWidth > 0 && (
-                  <rect className="teaser-svg-fill-gap" x={reachedWidth} y="4" width={gapWidth} height="14" rx="2" />
+                  <rect className="teaser-svg-fill-gap" x={gapStart} y="4" width={gapWidth} height="14" rx="2" />
                 )}
               </svg>
               <div className="teaser-svg-legend">
@@ -172,7 +186,16 @@ export function StrategyTeaserSandbox() {
               >
                 <rect className="teaser-svg-track" x="0" y="4" width={SVG_WIDTH} height="14" rx="2" />
                 <rect className="teaser-svg-fill-fixed" x="0" y="4" width={fixedWidth} height="14" rx="2" />
-                <rect className="teaser-svg-fill-variable" x={fixedWidth} y="4" width={variableWidth} height="14" rx="2" />
+                {variableWidth > 0 && (
+                  <rect
+                    className="teaser-svg-fill-variable"
+                    x={gapWidthStart(fixedWidth, SVG_WIDTH)}
+                    y="4"
+                    width={Math.min(SVG_WIDTH - gapWidthStart(fixedWidth, SVG_WIDTH), variableWidth)}
+                    height="14"
+                    rx="2"
+                  />
+                )}
               </svg>
               <div className="teaser-svg-legend">
                 <span><i className="teaser-swatch teaser-swatch-fixed" aria-hidden="true" />Fixed: {formatPlanningCurrency(result.fixed_program_cost, currency)}</span>

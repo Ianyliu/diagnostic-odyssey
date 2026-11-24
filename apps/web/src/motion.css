@@ -29,6 +29,17 @@
   @media (hover: hover) {
     .atlas-lens-card:hover { transform: translateY(-2px); }
   }
+
+  /* Restrained editorial scroll choreography via IntersectionObserver */
+  [data-reveal="pending"] {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  [data-reveal="visible"] {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity var(--do-motion-enter) var(--do-ease-out), transform var(--do-motion-enter) var(--do-ease-out);
+  }
 }
 
 @keyframes atlas-rise {
@@ -42,9 +53,11 @@
   .button,
   .atlas-lens-card,
   .atlas-metric-row,
-  .atlas-terrain-tile {
+  .atlas-terrain-tile,
+  [data-reveal] {
     animation: none !important;
     transition: none !important;
+    opacity: 1 !important;
     transform: none !important;
   }
 }
