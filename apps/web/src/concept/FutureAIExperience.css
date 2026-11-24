@@ -1,7 +1,7 @@
 /* Atelier Atlas Strategy AI Studio */
 .future-concept {
-  --fc-accent: var(--do-accent);
-  --fc-concept: var(--do-assumption-text);
+  --fc-accent: var(--do-ai-text);
+  --fc-concept: var(--do-ai-text);
   display: grid;
   gap: 24px;
   color: var(--do-text);
@@ -35,7 +35,7 @@
   font-size: 0.7rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--do-gold);
+  color: var(--do-ai-text);
   font-weight: 600;
 }
 
@@ -96,8 +96,8 @@
 }
 
 .fc-goal-selector button[aria-selected="true"] {
-  border-color: var(--do-gold);
-  background: var(--do-assumption-bg);
+  border-color: var(--do-ai-text);
+  background: var(--do-ai-bg);
 }
 
 .fc-tab-icon { color: var(--fc-accent); display: flex; flex-shrink: 0; }
@@ -209,9 +209,9 @@
 .fc-demo-notice, .fc-demo-insight {
   padding: 14px 16px;
   border-radius: 10px;
-  border: 1px solid var(--do-assumption-border);
-  background: var(--do-assumption-bg);
-  color: var(--do-assumption-text);
+  border: 1px solid var(--do-ai-border);
+  background: var(--do-ai-bg);
+  color: var(--do-ai-text);
   font-size: 0.84rem;
 }
 
@@ -234,8 +234,8 @@
 }
 .fc-pipeline-steps button[aria-pressed="true"],
 .fc-map-branches button[aria-pressed="true"] {
-  border-color: var(--do-gold);
-  background: var(--do-assumption-bg);
+  border-color: var(--do-ai-text);
+  background: var(--do-ai-bg);
 }
 
 .fc-dependency-workspace { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 16px; }

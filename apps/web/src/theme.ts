@@ -5,7 +5,7 @@ export type ResolvedTheme = "light" | "dark";
 
 /** Browser chrome follows the Atelier Atlas light/dark canvas colors. */
 export function getThemeColor(theme: ResolvedTheme): string {
-  return theme === "dark" ? "#0b1119" : "#f9f7f3";
+  return theme === "dark" ? "#0b1119" : "#f5f7fc";
 }
 
 export function getThemeStorage(): Storage | null {

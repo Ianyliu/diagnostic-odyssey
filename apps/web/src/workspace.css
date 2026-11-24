@@ -358,3 +358,7 @@ html {
     align-items: flex-start;
   }
 }
+
+/* AI is its own semantic color, not evidence or scenario assumptions. */
+.header-ai-pill { color: var(--do-ai-text); border-color: var(--do-ai-border); background: var(--do-ai-bg); }
+.header-ai-pill:hover, .header-ai-pill.active { color: var(--do-ai-text); border-color: var(--do-ai-text); background: var(--do-ai-bg); }
