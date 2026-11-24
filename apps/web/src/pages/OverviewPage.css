@@ -1,6 +1,8 @@
 /* Strategic Atlas Landing Page — Direction A ("Atlas Unfolded") */
 .overview-page {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
   background: var(--do-canvas);
 }
 
@@ -18,6 +20,7 @@
 
 .atlas-band-inner {
   width: min(1200px, calc(100% - 48px));
+  min-width: 0;
   margin-inline: auto;
 }
 
@@ -27,7 +30,7 @@
   overflow: hidden;
   background: var(--do-canvas);
   color: var(--do-text);
-  padding: clamp(32px, 5.5vh, 64px) 0 clamp(24px, 3.8vh, 42px);
+  padding: clamp(38px, 6vh, 72px) 0 clamp(26px, 4vh, 44px);
 }
 
 .atlas-hero-atmosphere {
@@ -68,7 +71,7 @@
   margin: 0;
   font-family: var(--do-font-display);
   font-weight: 400;
-  font-size: clamp(2.4rem, 5.4vw, 4.65rem);
+  font-size: clamp(2.55rem, 5.6vw, 4.95rem);
   line-height: 1.02;
   letter-spacing: -0.032em;
   color: var(--do-text);
@@ -459,7 +462,7 @@
 
 .atlas-closing-meta a,
 .atlas-edition-link {
-  color: #dbe5f5;
+  color: #e6eefc;
   text-decoration: underline;
   text-underline-offset: 4px;
   background: transparent;

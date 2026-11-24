@@ -76,7 +76,7 @@ export function OverviewPage({ advisorAvailable = false }: { advisorAvailable?: 
         <LandingBurdenStrata bundle={bundle} />
 
         {/* Chapter IV — Introduce Diagnostic Odyssey: Inset Rounded Midnight Navy Stage */}
-        <section className="atlas-pathway-section" aria-labelledby="overview-pathway-title" data-reveal="auto">
+        <section className="atlas-pathway-section" aria-labelledby="overview-pathway-title">
           <div className="atlas-band-inner">
             <div className="atlas-inset-stage">
               <div className="atlas-stage-grid" aria-hidden="true" />
@@ -150,7 +150,7 @@ export function OverviewPage({ advisorAvailable = false }: { advisorAvailable?: 
         </section>
 
         {/* Chapter VI — The Result: Inset Rounded Navy Brief Finale */}
-        <section className="atlas-closing-band" aria-labelledby="overview-closing-title" data-reveal="auto">
+        <section className="atlas-closing-band" aria-labelledby="overview-closing-title">
           <div className="atlas-band-inner">
             <div className="atlas-closing-frame">
               <div className="atlas-stage-grid" aria-hidden="true" />

@@ -44,11 +44,15 @@
 
 .atlas-strata-beats {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
   gap: clamp(32px, 6vh, 68px);
 }
 
 .atlas-beat-card {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
   gap: 10px;
   padding: clamp(24px, 3vw, 34px);
   border-radius: 20px;
@@ -366,6 +370,31 @@
 .atlas-burden-bridge strong {
   color: var(--do-text);
   font-weight: 550;
+}
+
+@media (min-width: 961px) {
+  .atlas-beat-card {
+    padding: 34px 4px 18px;
+    border: 0;
+    border-top: 1px solid var(--do-border);
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    min-height: 44vh;
+    align-content: center;
+  }
+
+  .atlas-beat-card.is-active {
+    border-top: 2px solid var(--do-reviewed-text);
+  }
+
+  .atlas-beat-card.is-admin.is-active {
+    border-top-color: var(--do-selection-text);
+  }
+
+  .atlas-beat-card.is-distress.is-active {
+    border-top-color: var(--do-journey-accent);
+  }
 }
 
 @media (max-width: 960px) {

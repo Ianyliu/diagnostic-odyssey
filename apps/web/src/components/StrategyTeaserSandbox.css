@@ -1,10 +1,9 @@
 .teaser-sandbox {
   display: grid;
   gap: 20px;
-  padding: clamp(20px, 2.8vw, 32px);
+  padding: clamp(22px, 3.2vw, 38px);
   border: 1px solid var(--do-border);
-  border-top: 3px solid var(--do-accent);
-  border-radius: var(--do-radius-card);
+  border-radius: 24px;
   background: var(--do-surface);
   box-shadow: var(--do-shadow-soft);
 }

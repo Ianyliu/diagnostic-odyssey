@@ -89,7 +89,7 @@ export function LandingAiDemo({ advisorAvailable = false }: { advisorAvailable?:
         >
           <div className="atlas-ai-packet-head">
             <span className="atlas-ai-schema">{AI_HANDOFF_SCHEMA_VERSION}</span>
-            <span className="status status-ai">Manual prompt handoff · Guardrails attached</span>
+            <span className="status status-ai">Manual prompt · Guardrails attached</span>
           </div>
 
           <div className="atlas-ai-packet-body">
