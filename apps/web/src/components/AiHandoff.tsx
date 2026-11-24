@@ -1,10 +1,10 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import type { PlanningBrief } from "@diagnostic-odyssey/brief-core";
-import { createAiHandoffText, type AiGoal, type AiHandoffTextV1 } from "../data/aiHandoff";
+import { createAiHandoffText, createConciseAiHandoffText, type AiGoal, type AiHandoffTextV1 } from "../data/aiHandoff";
 import { AI_GOALS, AI_GOAL_TEMPLATES } from "../data/aiHandoffTemplates";
 import { aiHandoffQuestionLength, inspectAiHandoffSource, type AiHandoffSourceState } from "../data/aiHandoffSession";
-import { copyAiHandoffText, copyAndOpenAiProvider, downloadAiHandoff } from "../data/aiHandoffTransfer";
+import { copyAiHandoffText, copyAndOpenAiProvider, downloadAiHandoff, downloadAiHandoffJsonCompanion } from "../data/aiHandoffTransfer";
 import { AI_RESEARCH_MODULES, AI_RESEARCH_MODULE_LABELS, enrichAiHandoff, type AiResearchModule } from "../data/aiHandoffResearch";
 import { AI_PUBLIC_RESEARCH_LINKS, availableAiProviders, type AiHandoffProvider } from "../data/aiHandoffProviders";
 import { AiGeminiPanel } from "./AiGeminiPanel";
@@ -73,6 +73,7 @@ function HandoffPanel({
   const [transferStatus, setTransferStatus] = useState("");
   const [copying, setCopying] = useState(false);
   const [goal, setGoal] = useState<AiGoal>(suggestion?.goal ?? "comprehensive");
+  const [promptMode, setPromptMode] = useState<"complete" | "concise">("complete");
   const [researchModules, setResearchModules] = useState<readonly AiResearchModule[]>(() => [...AI_RESEARCH_MODULES]);
   const [openedProvider, setOpenedProvider] = useState<AiHandoffProvider | null>(null);
   const providers = availableAiProviders(import.meta.env.VITE_AI_PROVIDERS);
@@ -134,9 +135,25 @@ function HandoffPanel({
   const snapshot = session.snapshot;
   const payload = snapshot?.envelope.payload;
 
+  const displayedSnapshot = useMemo(() => {
+    if (!snapshot) return null;
+    if (promptMode === "complete") return snapshot;
+    try {
+      const baseConcise = createConciseAiHandoffText(snapshot.envelope.payload as PlanningBrief, {
+        goal: snapshot.envelope.analysis_goal,
+        optionalQuestion: snapshot.envelope.optional_question
+      });
+      return enrichAiHandoff(baseConcise, researchModules);
+    } catch {
+      return null;
+    }
+  }, [snapshot, promptMode, researchModules]);
+
+  const activePreview = promptMode === "complete" ? snapshot : displayedSnapshot;
+
   useLayoutEffect(() => {
     transferEpoch.current++;
-  }, [identity, snapshot]);
+  }, [identity, snapshot, promptMode]);
 
   const backdropPointerDown = useRef(false);
 
@@ -161,12 +178,15 @@ function HandoffPanel({
     };
   }, [inline]);
 
+  const modeText = promptMode === "concise" ? "concise" : "complete";
+  const ModeLabelText = promptMode === "concise" ? "Concise" : "Complete";
+
   const copy = async () => {
-    if (!current || !snapshot || copying) return;
+    if (!current || !activePreview || copying) return;
     const epoch = transferEpoch.current;
     setCopying(true);
-    setTransferStatus("Copying complete prompt…");
-    const outcome = await copyAiHandoffText(snapshot.markdown, navigator.clipboard, window.isSecureContext);
+    setTransferStatus(`Copying ${modeText} prompt…`);
+    const outcome = await copyAiHandoffText(activePreview.markdown, navigator.clipboard, window.isSecureContext);
     if (!mounted.current) return;
     setCopying(false);
     if (epoch !== transferEpoch.current) {
@@ -175,19 +195,19 @@ function HandoffPanel({
     }
     setTransferStatus(
       outcome === "copied"
-        ? "Complete prompt copied to clipboard."
-        : `${outcome === "insecure" ? "Automatic copying requires a secure browser context." : outcome === "unsupported" ? "This browser does not support clipboard copying." : "Clipboard access was denied or failed."} Use Select complete prompt, then your device’s Copy command, or download Markdown.`
+        ? `${ModeLabelText} prompt copied to clipboard.`
+        : `${outcome === "insecure" ? "Automatic copying requires a secure browser context." : outcome === "unsupported" ? "This browser does not support clipboard copying." : "Clipboard access was denied or failed."} Use Select ${modeText} prompt, then your device’s Copy command, or download Markdown.`
     );
   };
 
   const copyAndOpen = async (provider: AiHandoffProvider) => {
-    if (!current || !snapshot || copying) return;
+    if (!current || !activePreview || copying) return;
     const epoch = transferEpoch.current;
     setOpenedProvider(provider);
     setCopying(true);
-    setTransferStatus(`Attempting to open ${provider.label} and copy the complete prompt…`);
+    setTransferStatus(`Attempting to open ${provider.label} and copy the ${modeText} prompt…`);
     const action = copyAndOpenAiProvider(
-      snapshot.markdown,
+      activePreview.markdown,
       provider,
       navigator.clipboard,
       window.isSecureContext,
@@ -205,18 +225,28 @@ function HandoffPanel({
       : "If no provider tab opened, use the fallback link below. ";
     setTransferStatus(
       launchNote + (outcome === "copied"
-        ? `Complete prompt copied. Paste it into ${provider.label} and submit only if you choose.`
-        : "Clipboard copy failed or is unavailable. Use Select complete prompt or Download Markdown, then paste manually.")
+        ? `${ModeLabelText} prompt copied. Paste it into ${provider.label} and submit only if you choose.`
+        : `Clipboard copy failed or is unavailable. Use Select ${modeText} prompt or ${promptMode === "concise" ? "Download concise Markdown" : "Download Markdown"}, then paste manually.`)
     );
   };
 
   const download = () => {
+    if (!current || !activePreview) return;
+    try {
+      downloadAiHandoff(activePreview, promptMode);
+      setTransferStatus(`Markdown download requested with the ${modeText} preview text.`);
+    } catch {
+      setTransferStatus(`The download could not start. Use Select ${modeText} prompt and your device’s Copy command.`);
+    }
+  };
+
+  const downloadCompanion = () => {
     if (!current || !snapshot) return;
     try {
-      downloadAiHandoff(snapshot);
-      setTransferStatus("Markdown download requested with the complete preview text.");
+      downloadAiHandoffJsonCompanion(snapshot);
+      setTransferStatus("Canonical JSON companion download requested.");
     } catch {
-      setTransferStatus("The download could not start. Use Select complete prompt and your device’s Copy command.");
+      setTransferStatus("The JSON companion download could not start. Use Export JSON companion on the Brief.");
     }
   };
 
@@ -321,37 +351,75 @@ function HandoffPanel({
           </dl>
         )}
 
+        <div className="ai-mode-switch-wrap">
+          <span className="ai-mode-switch-label">Prompt format</span>
+          <div className="ai-mode-switch" role="group" aria-label="Prompt format">
+            <button
+              type="button"
+              aria-pressed={promptMode === "complete"}
+              className={`ai-mode-btn${promptMode === "complete" ? " is-active" : ""}`}
+              onClick={() => {
+                transferEpoch.current++;
+                setTransferStatus("");
+                setPromptMode("complete");
+              }}
+            >
+              Complete prompt (default)
+            </button>
+            <button
+              type="button"
+              aria-pressed={promptMode === "concise"}
+              className={`ai-mode-btn${promptMode === "concise" ? " is-active" : ""}`}
+              onClick={() => {
+                transferEpoch.current++;
+                setTransferStatus("");
+                setPromptMode("concise");
+              }}
+            >
+              Concise prompt + JSON
+            </button>
+          </div>
+          {promptMode === "concise" && (
+            <p className="ai-handoff-help">
+              Concise mode sends goal-focused verified excerpts with full scientific rules; attach the downloaded canonical JSON companion for complete 21-measure / 34-indicator provenance.
+            </p>
+          )}
+        </div>
+
         <label htmlFor={inline ? "ai-inline-text" : "ai-handoff-text"}>
-          Complete prompt · {snapshot?.plainTextLength.toLocaleString("en-US") ?? 0} chars
+          {ModeLabelText} prompt · {activePreview?.plainTextLength.toLocaleString("en-US") ?? 0} chars
         </label>
         <textarea
           ref={textRef}
           id={inline ? "ai-inline-text" : "ai-handoff-text"}
           className="ai-handoff-text"
           readOnly
-          value={snapshot?.markdown ?? ""}
+          value={activePreview?.markdown ?? ""}
           spellCheck={false}
         />
 
         <div className="ai-handoff-actions">
-          <button className="button" type="button" disabled={!current || copying} onClick={() => void copy()}>
-            Copy complete prompt
+          <button className="button" type="button" disabled={!current || !activePreview || copying} onClick={() => void copy()}>
+            {promptMode === "concise" ? "Copy concise prompt" : "Copy complete prompt"}
           </button>
-          <button className="button secondary" type="button" disabled={!current} onClick={download}>
-            Download Markdown
+          <button className="button secondary" type="button" disabled={!current || !activePreview} onClick={download}>
+            {promptMode === "concise" ? "Download concise Markdown" : "Download Markdown"}
+          </button>
+          <button className="button secondary" type="button" disabled={!current || !activePreview} onClick={downloadCompanion}>
+            Download JSON companion
           </button>
           <button
             className="button secondary"
             type="button"
-            disabled={!current}
+            disabled={!current || !activePreview}
             onClick={() => {
-              if (!current) return;
+              if (!current || !activePreview) return;
               textRef.current?.focus();
               textRef.current?.select();
-              setTransferStatus("Complete prompt selected. Use your device’s Copy command.");
+              setTransferStatus(`${ModeLabelText} prompt selected. Use your device’s Copy command.`);
             }}
           >
-            Select complete prompt
+            {promptMode === "concise" ? "Select concise prompt" : "Select complete prompt"}
           </button>
         </div>
 

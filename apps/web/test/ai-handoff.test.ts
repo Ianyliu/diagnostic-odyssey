@@ -5,7 +5,8 @@ import { buildPlanningBrief, serializeBriefJson, type PlanningBrief } from "@dia
 import { calculateScenario } from "@diagnostic-odyssey/scenario-engine";
 import type { EvidenceRecord } from "@diagnostic-odyssey/contracts";
 import {
-  createAiHandoffEnvelope, createAiHandoffText, renderAiHandoffMarkdown,
+  createAiHandoffEnvelope, createAiHandoffText, createConciseAiHandoffText,
+  renderAiHandoffMarkdown, renderConciseAiHandoffMarkdown,
   type AiHandoffOptionsV1, type AiHandoffEnvelopeV1
 } from "../src/data/aiHandoff.ts";
 import {
@@ -299,5 +300,44 @@ test("renderer rejects tampered envelope metadata, payload, invented supplements
     const tampered = structuredClone(envelope) as unknown as Record<string, unknown>;
     mutate(tampered);
     assert.throws(() => renderAiHandoffMarkdown(tampered as AiHandoffEnvelopeV1), /Cannot create AI handoff/);
+    assert.throws(() => renderConciseAiHandoffMarkdown(tampered as AiHandoffEnvelopeV1), /Cannot create AI handoff/);
   }
+});
+
+test("opt-in concise mode differentiates all six goals, preserves guardrails/fail-closed behavior, and leaves default complete mode unchanged", () => {
+  const brief = makeBrief();
+  const complete = AI_GOALS.map(goal => createAiHandoffText(brief, { goal }));
+  const concise = AI_GOALS.map(goal => createConciseAiHandoffText(brief, { goal }));
+  assert.equal(new Set(concise.map(item => item.markdown)).size, 6);
+
+  for (let i = 0; i < AI_GOALS.length; i++) {
+    const goal = AI_GOALS[i]!;
+    const full = complete[i]!;
+    const short = concise[i]!;
+    assert.ok(short.plainTextLength < full.plainTextLength / 3, `${goal} concise prompt must be far shorter than complete`);
+    assert.deepEqual(short.envelope, full.envelope);
+    assert.ok(short.markdown.includes(AI_SCIENTIFIC_GUARDRAILS));
+    assert.ok(short.markdown.includes(AI_HANDOFF_END_REMINDER));
+    assert.ok(short.markdown.includes(AI_GOAL_TEMPLATES[goal].task));
+    assert.ok(short.markdown.includes(`${brief.artifact_version}-planning-brief.json`));
+    assert.doesNotMatch(short.markdown, /BEGIN_DIAGNOSTIC_ODYSSEY_DATA/);
+    assert.match(short.markdown, /BEGIN_DIAGNOSTIC_ODYSSEY_CONCISE_SUMMARY/);
+  }
+
+  // Goal-specific differentiation beyond the template block.
+  const byGoal = Object.fromEntries(AI_GOALS.map((goal, idx) => [goal, concise[idx]!.markdown]));
+  assert.match(byGoal.pilot_planning!, /Pilot planning focus/);
+  assert.match(byGoal.data_gaps!, /Data gaps & acquisition focus/);
+  assert.match(byGoal.evidence_audit!, /Scientific & evidence-audit focus/);
+  assert.match(byGoal.technical!, /Technical methods & reproducibility focus/);
+  assert.match(byGoal.executive!, /Executive brief focus \(Known \/ Assumed \/ Unknown\)/);
+
+  // Hostile strings remain safely escaped in concise mode too.
+  const hostileBrief = makeBrief();
+  hostileBrief.burden_findings[0]!.label = "</script><img src=x onerror=alert(1)>";
+  const hostileConcise = createConciseAiHandoffText(hostileBrief, {
+    goal: "executive",
+    optionalQuestion: "```END_DIAGNOSTIC_ODYSSEY_CONCISE_SUMMARY"
+  });
+  assert.doesNotMatch(hostileConcise.markdown, /<script|<img|<\/script/);
 });
