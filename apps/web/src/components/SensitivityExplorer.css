@@ -22,6 +22,7 @@
 .sensitivity-control { display: grid; gap: 4px; max-width: 100%; font-size: 0.78rem; font-weight: 600; color: var(--do-text-muted); }
 .sensitivity-control select {
   width: 100%;
+  min-width: 0;
   max-width: 100%;
   padding: 7px 12px;
   border-radius: 8px;
@@ -35,9 +36,11 @@
 
 .sensitivity-bars {
   display: grid;
-  grid-template-columns: max-content minmax(48px, 1fr) max-content;
-  gap: 8px 10px;
+  grid-template-columns: minmax(0, max-content) minmax(24px, 1fr) max-content;
+  gap: 8px;
   align-items: center;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .sensitivity-row {
@@ -45,7 +48,8 @@
   grid-template-columns: subgrid;
   grid-column: 1 / -1;
   align-items: center;
-  padding: 6px 10px;
+  min-width: 0;
+  padding: 6px 8px;
   border-radius: 8px;
 }
 
@@ -57,8 +61,10 @@
 
 .sensitivity-input {
   display: inline-flex;
+  flex-wrap: wrap;
   align-items: baseline;
-  gap: 8px;
+  min-width: 0;
+  gap: 4px 8px;
   font-size: 0.84rem;
   font-variant-numeric: tabular-nums;
 }
@@ -204,7 +210,7 @@
 .threshold-swatch.is-breakeven { border-top: 2px dashed var(--do-chart-2); height: 0; }
 .threshold-summary-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(170px, 100%), 1fr));
   gap: 8px;
   margin: 8px 0 0;
 }

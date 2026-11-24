@@ -14,18 +14,20 @@
 
 .header-inner {
   width: min(1240px, calc(100% - 48px));
-  height: var(--do-shell-height);
+  min-height: var(--do-shell-height);
+  padding-block: 4px;
   margin-inline: auto;
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
-  gap: 20px;
+  gap: 12px 20px;
 }
 
 .brand {
   display: inline-flex;
   align-items: center;
   gap: 10px;
+  min-width: 0;
   text-decoration: none;
   color: var(--do-text);
   white-space: nowrap;
@@ -57,9 +59,11 @@
 
 .primary-nav {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  min-width: 0;
+  gap: 4px 6px;
 }
 
 .primary-nav a {
@@ -87,7 +91,9 @@
 
 .header-controls {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
+  min-width: 0;
   gap: 8px;
 }
 
@@ -354,8 +360,16 @@
     height: auto;
     min-height: var(--do-shell-height);
     padding-block: 10px;
-    grid-template-columns: 1fr auto;
+    grid-template-columns: minmax(0, 1fr) auto;
     gap: 10px;
+  }
+
+  .brand {
+    white-space: normal;
+  }
+
+  .brand-name {
+    overflow-wrap: anywhere;
   }
 
   .menu-toggle {

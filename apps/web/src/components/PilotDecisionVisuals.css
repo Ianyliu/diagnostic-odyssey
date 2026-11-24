@@ -70,7 +70,7 @@
 .window-bars { display: grid; gap: 8px; }
 .window-row {
   display: grid;
-  grid-template-columns: 64px minmax(60px, 1fr) auto;
+  grid-template-columns: minmax(64px, max-content) minmax(32px, 1fr) auto;
   gap: 10px;
   align-items: center;
   color: var(--do-text-muted);

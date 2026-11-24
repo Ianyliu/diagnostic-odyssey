@@ -25,6 +25,7 @@ function stableWebfontLoading(): Plugin {
       handler(html, ctx) {
         if (!ctx.bundle) return html;
         const links = Object.keys(ctx.bundle)
+          .sort()
           .filter(name => name.endsWith(".woff2") && CRITICAL_PRELOAD_FONTS.some(prefix => name.includes(prefix)))
           .map(name => `    <link rel="preload" as="font" type="font/woff2" crossorigin href="/${name}" />`)
           .join("\n");
