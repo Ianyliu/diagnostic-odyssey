@@ -4,7 +4,7 @@
 .atlas-journey-path { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
 .atlas-journey-reveal { stroke-dasharray: 1; stroke-dashoffset: 0; }
 .atlas-journey-point.is-evidence { fill: #3157d5; stroke: #f5f7fc; }
-.atlas-journey-point.is-context { fill: #101b32; stroke: #8bb8f0; strokeWidth: 4; stroke-width: 4; }
+.atlas-journey-point.is-context { fill: #101b32; stroke: #8bb8f0; stroke-width: 4; }
 .atlas-journey-point.is-assumption { stroke: #b8a5ff; }
 .atlas-journey-point.is-gap { fill: #b42348; stroke: #f5f7fc; }
 .atlas-journey-point.is-brief { fill: #f5f7fc; stroke: #b8a5ff; stroke-width: 4; }
