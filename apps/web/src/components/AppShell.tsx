@@ -89,7 +89,7 @@ export function AppShell({ advisorAvailable = false }: { advisorAvailable?: bool
     };
   }, [location.key]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     setMenuOpen(false);
     const frame = requestAnimationFrame(() => {
       if (navigationType === "POP" && savedScroll.has(location.key)) {
@@ -131,12 +131,24 @@ export function AppShell({ advisorAvailable = false }: { advisorAvailable?: bool
             className={"primary-nav" + (menuOpen ? " open" : "")}
           >
             {workspaceStages.map(({ to, label }, index) => (
-              <NavLink key={to} to={to} className={activeStage === to ? "active" : ""}>
+              <NavLink
+                key={to}
+                to={to}
+                className={activeStage === to ? "active" : ""}
+                onClick={() => setMenuOpen(false)}
+              >
                 <span className="atlas-stage-number" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span> {label}
               </NavLink>
             ))}
             <span className="atlas-nav-divider" aria-hidden="true" />
-            <NavLink to="/data-requests" end className="atlas-requests-link">Data requests</NavLink>
+            <NavLink
+              to="/data-requests"
+              end
+              className="atlas-requests-link"
+              onClick={() => setMenuOpen(false)}
+            >
+              Data requests
+            </NavLink>
           </nav>
 
           <div id="workspace-tools" className={"header-controls" + (menuOpen ? " open" : "")}>
