@@ -82,7 +82,7 @@ await check("AI handoff, optional print, and navigation do not mutate canonical 
   }
   if (conceptEnabled) {
     await page.getByRole("link", {name:/Open Strategy AI Studio/}).first().click();
-    await page.getByRole("tablist", {name:"Interactive lenses"}).waitFor();
+    await page.getByRole("tablist", {name:"Illustrative exploration lenses"}).waitFor();
     assert.match(await page.locator(".fc-hero").innerText(), /authenticated previews|Prompt Studio/i);
     for (const name of ["Explore interventions", "Identify data gaps", "Compare strategies", "Explain my Brief"]) {
       await page.getByRole("tab", {name:new RegExp(name)}).click();
@@ -108,7 +108,7 @@ await check("visitor can turn the illustrative concept off and back on without c
     assert.equal(await page.getByRole("link", {name: /Open Strategy AI Studio/}).count(), 0);
     await toggle.check();
     await page.getByRole("link", {name: /Open Strategy AI Studio/}).first().click();
-    await page.getByRole("tablist", {name: "Interactive lenses"}).waitFor();
+    await page.getByRole("tablist", {name: "Illustrative exploration lenses"}).waitFor();
     await page.getByRole("button", {name: "Hide studio", exact: true}).click();
     await page.waitForURL("**/brief");
     assert.equal(await toggle.isChecked(), false, "hiding from concept returns to the Brief with preference retained");
@@ -205,7 +205,7 @@ await check("stale data request forces a current AI handoff snapshot; exploratio
   await dialog.getByRole("button", {name: "Close Analyze with AI", exact: true}).click();
   if (conceptEnabled) {
     await page.getByRole("link", {name: /Open Strategy AI Studio/}).first().click();
-    await page.getByRole("tablist", {name: "Interactive lenses"}).waitFor();
+    await page.getByRole("tablist", {name: "Illustrative exploration lenses"}).waitFor();
     await page.getByRole("tab", {name: /Compare strategies/}).click();
     await page.getByRole("link", {name: /Back to Brief/}).click();
   }

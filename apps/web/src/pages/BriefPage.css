@@ -323,14 +323,15 @@
   .page.planning-brief-page, .atlas-memo-shell { display: block !important; width: 100%; max-width: none; padding: 0 !important; margin: 0 !important; }
   .brief-dock, .brief-print-controls, .brief-concept-strip, .brief-appendix-control { display: none !important; }
   .atlas-memo-body { display: block !important; border: 0; padding: 0 !important; margin-bottom: 0 !important; box-shadow: none; }
-  .atlas-memo-body > section + section { margin-top: 5pt; padding-top: 5pt; }
+  .atlas-memo-body > section + section { margin-top: 12pt; padding-top: 10pt; }
   .atlas-memo-body section h2 { margin: 0 0 3pt; break-after: avoid-page; }
   .atlas-memo-body .empty-state,
   .atlas-memo-body .callout { padding: 5pt 8pt; margin: 2.5pt 0; font-size: 8.2pt; break-inside: avoid; }
   .atlas-memo-body .empty-state p,
   .atlas-memo-body .callout p { margin: 1.5pt 0 0; }
   .brief-burden-groups, .brief-burden-group { display: block !important; break-inside: auto; }
-  .brief-burden-group + .brief-burden-group { margin-top: 5pt; }
+  .brief-burden-group + .brief-burden-group { margin-top: 12pt; }
+  .brief-burden-group-heading { margin-bottom: 5pt; }
   .brief-applied-assumptions,
   .brief-output-list,
   .brief-scenario-trace { padding: 4.5pt 8pt; margin: 2.5pt 0; gap: 2pt 12pt; break-inside: avoid; }

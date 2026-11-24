@@ -1,8 +1,7 @@
-/* global process, console, document, window, getComputedStyle, innerWidth, innerHeight, PerformanceObserver, localStorage */
+/* global process, console, document, window, getComputedStyle, innerWidth, innerHeight, PerformanceObserver */
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";
 import { mkdir, writeFile } from "node:fs/promises";
-import { readFileSync } from "node:fs";
 
 const require = createRequire(process.env.PLAYWRIGHT_RUNNER ?? import.meta.url);
 const { chromium } = require("playwright");
@@ -327,10 +326,6 @@ try {
   } finally {
     await zoom.close();
   }
-
-  // Silence unused import lint while documenting expected QA script signature.
-  void readFileSync;
-  void localStorage;
 } finally {
   await browser.close();
 }
