@@ -83,7 +83,7 @@ export function PilotDecisionVisuals({
               strokeDasharray={`${gaugeFilled} ${halfCircumference}`}
             />
             <text x="70" y="64" textAnchor="middle" className="gauge-value">
-              {Math.round(coveragePct)}%
+              {capacityCoverage.coveragePercent === null ? "N/A" : `${Math.round(coveragePct)}%`}
             </text>
           </svg>
         </div>
@@ -144,9 +144,23 @@ export function PilotDecisionVisuals({
           role="img"
           aria-label={`Program-resource requirement ${formatPlanningCurrency(resourceTotal, currency)}: fixed ${formatPlanningCurrency(result.fixed_program_cost, currency)}, participant-dependent ${formatPlanningCurrency(result.variable_program_cost, currency)}.`}
         >
+          <defs>
+            <pattern id="pilot-fixed-stripe" width="12" height="14" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+              <rect width="12" height="14" fill="var(--do-surface)" />
+              <path d="M0 0V14" stroke="var(--do-chart-2)" strokeWidth="5" />
+            </pattern>
+          </defs>
           <rect x="0" y="0" width="1000" height="14" rx="7" className="bar-svg-track" />
-          <rect x="0" y="0" width={fixedShare * 10} height="14" className="bar-svg-fixed" />
-          <rect x={fixedShare * 10} y="0" width={variableShare * 10} height="14" className="bar-svg-variable" />
+          <rect x="0" y="0" width={fixedShare * 10} height="14" fill="url(#pilot-fixed-stripe)" className="bar-svg-fixed" />
+          {variableShare > 0 && (
+            <rect
+              x={fixedShare > 0 ? Math.min(1000, fixedShare * 10 + 4) : 0}
+              y="0"
+              width={Math.max(0, variableShare * 10 - (fixedShare > 0 ? 4 : 0))}
+              height="14"
+              className="bar-svg-variable"
+            />
+          )}
         </svg>
         <div className="resource-legend">
           <span><i className="legend-swatch fixed" aria-hidden="true" />Fixed {formatPlanningCurrency(result.fixed_program_cost, currency)}</span>

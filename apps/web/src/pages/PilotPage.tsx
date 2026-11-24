@@ -1,5 +1,5 @@
 import { formatPlanningCurrency, formatPlanningNumber } from "../data/planningNumberFormatting.ts";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { Link, useLocation } from "react-router-dom";
 import type { Scenario, ScenarioResult } from "@diagnostic-odyssey/contracts";
 import { DetailDrawer } from "../components/DetailDrawer";
@@ -39,14 +39,13 @@ interface SliderSpec {
   min: number;
   max: number;
   step: number;
-  formatValue: (v: number) => string;
 }
 
 const SLIDERS: readonly SliderSpec[] = [
-  { key: "reach", shortLabel: "Reach", min: 5, max: 60, step: 1, formatValue: v => `${v}%` },
-  { key: "capacity", shortLabel: "Capacity", min: 200, max: 8000, step: 100, formatValue: v => resultNumber.format(v) },
-  { key: "alternative_window_months", shortLabel: "Speed (window)", min: 1, max: 12, step: 1, formatValue: v => `${v} mo` },
-  { key: "per_participant_cost", shortLabel: "Budget / person", min: 50, max: 1000, step: 25, formatValue: v => `$${resultNumber.format(v)}` }
+  { key: "reach", shortLabel: "Reach", min: 0, max: 100, step: 1 },
+  { key: "capacity", shortLabel: "Capacity", min: 200, max: 8000, step: 100 },
+  { key: "alternative_window_months", shortLabel: "Speed (window)", min: 1, max: 12, step: 1 },
+  { key: "per_participant_cost", shortLabel: "Budget / person", min: 50, max: 1000, step: 25 }
 ];
 
 const EXTRA_FIELDS: readonly PilotNumericField[] = [
@@ -57,6 +56,24 @@ const EXTRA_FIELDS: readonly PilotNumericField[] = [
 ];
 
 type BottomTab = "sensitivity" | "quantities" | "context";
+const BOTTOM_TABS: readonly { id: BottomTab; label: string }[] = [
+  { id: "sensitivity", label: "Sensitivity" },
+  { id: "quantities", label: "All Quantities" },
+  { id: "context", label: "Context & Requests" }
+];
+
+function presetMatchesScenario(preset: PilotStrategyPreset, scenario: Scenario): boolean {
+  return (
+    scenario.eligible_population === preset.values.eligible_population &&
+    scenario.reach === preset.values.reach &&
+    scenario.capacity === preset.values.capacity &&
+    scenario.baseline_window_months === preset.values.baseline_window_months &&
+    scenario.alternative_window_months === preset.values.alternative_window_months &&
+    scenario.horizon_months === preset.values.horizon_months &&
+    scenario.fixed_cost === preset.values.fixed_cost &&
+    scenario.per_participant_cost === preset.values.per_participant_cost
+  );
+}
 
 export function PilotPage({ advisorAvailable = false }: { advisorAvailable?: boolean }) {
   const { scenario, scenarioResult } = useArtifact();
@@ -66,15 +83,17 @@ export function PilotPage({ advisorAvailable = false }: { advisorAvailable?: boo
   useEffect(() => {
     const targetId = getPilotFragmentTargetId(location.hash);
     if (!targetId || !sensitivityReady) return;
-    document.getElementById(targetId)?.scrollIntoView({ block: "start" });
+    requestAnimationFrame(() => {
+      document.getElementById(targetId)?.scrollIntoView({ block: "start" });
+    });
   }, [location.hash, sensitivityReady]);
 
   if (!scenario || !scenarioResult) {
     return (
       <section className="page page-stack">
         <header className="page-heading">
-          <p className="eyebrow">03 · SIMULATE</p>
-          <h1>Pilot simulator</h1>
+          <p className="eyebrow">03 · STRATEGY LAB</p>
+          <h1>Scope a feasible pilot</h1>
           <p>Planning assumptions are unavailable or invalid.</p>
         </header>
         <div className="empty-state">
@@ -85,17 +104,26 @@ export function PilotPage({ advisorAvailable = false }: { advisorAvailable?: boo
     );
   }
 
-  return <PilotPlannerWorkspace scenario={scenario} scenarioResult={scenarioResult} advisorAvailable={advisorAvailable} />;
+  return (
+    <PilotPlannerWorkspace
+      scenario={scenario}
+      scenarioResult={scenarioResult}
+      advisorAvailable={advisorAvailable}
+      hash={location.hash}
+    />
+  );
 }
 
 function PilotPlannerWorkspace({
   scenario,
   scenarioResult,
-  advisorAvailable
+  advisorAvailable,
+  hash
 }: {
   scenario: Scenario;
   scenarioResult: ScenarioResult;
   advisorAvailable: boolean;
+  hash: string;
 }) {
   const {
     bundle,
@@ -109,9 +137,18 @@ function PilotPlannerWorkspace({
     clearPilotLocalContext
   } = useArtifact();
 
-  const [bottomTab, setBottomTab] = useState<BottomTab>("sensitivity");
+  const [bottomTab, setBottomTab] = useState<BottomTab>(() =>
+    hash === "#pilot-context" ? "context" : "sensitivity"
+  );
   const [boundaryOpen, setBoundaryOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
+  const [inspectorOpen, setInspectorOpen] = useState(true);
+  const tabButtonRefs = useRef<Partial<Record<BottomTab, HTMLButtonElement | null>>>({});
+
+  useEffect(() => {
+    if (getPilotFragmentTargetId(hash) === "sensitivity") setBottomTab("sensitivity");
+    if (hash === "#pilot-context") setBottomTab("context");
+  }, [hash]);
 
   const draft: PilotInputDraft = pilotInputDraft ?? createPilotInputDraft(scenario);
   const evaluation = useMemo(
@@ -162,38 +199,78 @@ function PilotPlannerWorkspace({
   const sensitivityDataRequestStatus = (field: SensitivityField) =>
     getSensitivityDataRequestStatus(scenario, field, analystDataRequests);
 
+  const handleTabKeyDown = (event: KeyboardEvent<HTMLButtonElement>, currentId: BottomTab) => {
+    const ids = BOTTOM_TABS.map(t => t.id);
+    const index = ids.indexOf(currentId);
+    let nextIndex = -1;
+    if (event.key === "ArrowRight") nextIndex = (index + 1) % ids.length;
+    else if (event.key === "ArrowLeft") nextIndex = (index - 1 + ids.length) % ids.length;
+    else if (event.key === "Home") nextIndex = 0;
+    else if (event.key === "End") nextIndex = ids.length - 1;
+    if (nextIndex < 0) return;
+    event.preventDefault();
+    const targetId = ids[nextIndex]!;
+    setBottomTab(targetId);
+    tabButtonRefs.current[targetId]?.focus();
+  };
+
+  const showExtraFields =
+    moreOpen ||
+    EXTRA_FIELDS.some(key => Boolean(evaluation.errors[key])) ||
+    Boolean(evaluation.formError);
+
   return (
     <section className="page page-stack pilot-page">
       <div className="atlas-page-top">
         <header className="page-heading">
-          <p className="eyebrow">03 · SIMULATE</p>
-          <h1>Pilot simulator</h1>
-          <p>Planning math · Not savings.</p>
+          <p className="eyebrow">03 · STRATEGY LAB</p>
+          <h1>Scope a feasible pilot</h1>
+          <p>Deterministic scenario arithmetic · Not observed effectiveness or savings.</p>
         </header>
-        <button
-          type="button"
-          className="button secondary"
-          onClick={() => setBoundaryOpen(true)}
-        >
-          Pathway boundary
-        </button>
+        <div className="atlas-page-top-actions">
+          <button
+            type="button"
+            className="button secondary"
+            aria-expanded={inspectorOpen}
+            aria-controls="pilot-decision-inspector"
+            onClick={() => setInspectorOpen(open => !open)}
+          >
+            {inspectorOpen ? "Hide inspector" : "Show inspector"}
+          </button>
+          <button
+            type="button"
+            className="button secondary"
+            onClick={() => setBoundaryOpen(true)}
+          >
+            Pathway boundary
+          </button>
+        </div>
       </div>
 
-      {/* Split Studio */}
-      <div className="atlas-studio-grid">
-        {/* Left: Presets + Sliders */}
+      <nav className="atlas-section-jump" aria-label="Strategy Lab sections">
+        <a className="text-button" href="#pilot-assumptions">Assumptions</a>
+        <a className="text-button" href="#pilot-results">Outputs</a>
+        <a
+          className="text-button"
+          href="#sensitivity"
+          onClick={() => setBottomTab("sensitivity")}
+        >
+          Sensitivity
+        </a>
+      </nav>
+
+      {/* Three-region workspace */}
+      <div className={`atlas-studio-grid${inspectorOpen ? "" : " is-inspector-collapsed"}`}>
+        {/* Region 1: Presets + Sliders */}
         <form id="pilot-assumptions" className="card atlas-studio-controls" onSubmit={event => event.preventDefault()}>
           <div className="atlas-presets" role="group" aria-label="Strategy presets">
             {PILOT_STRATEGY_PRESETS.map(preset => {
-              const active =
-                scenario.eligible_population === preset.values.eligible_population &&
-                scenario.reach === preset.values.reach &&
-                scenario.capacity === preset.values.capacity &&
-                scenario.alternative_window_months === preset.values.alternative_window_months;
+              const active = presetMatchesScenario(preset, scenario);
               return (
                 <button
                   key={preset.id}
                   type="button"
+                  aria-pressed={active}
                   className={`atlas-preset-card${active ? " is-active" : ""}`}
                   onClick={() => applyPreset(preset)}
                 >
@@ -209,11 +286,17 @@ function PilotPlannerWorkspace({
               const field = pilotInputFields.find(item => item.key === spec.key)!;
               const inputId = `pilot-${spec.key}`;
               const rangeId = `${inputId}-range`;
+              const helperId = `${inputId}-helper`;
+              const errorId = `${inputId}-error`;
               const error = evaluation.errors[spec.key];
+              const helper = error ? null : formatPilotInputHelper(spec.key, draft[spec.key]);
               const numericVal = Number(draft[spec.key]);
               const sliderVal = Number.isFinite(numericVal)
                 ? Math.min(spec.max, Math.max(spec.min, numericVal))
                 : spec.min;
+              const describedBy = [helper ? helperId : null, error ? errorId : null]
+                .filter(Boolean)
+                .join(" ") || undefined;
 
               return (
                 <div className="atlas-slider-row" key={spec.key}>
@@ -228,6 +311,7 @@ function PilotPlannerWorkspace({
                         onChange={event => updateDraft(spec.key, event.target.value)}
                         aria-invalid={Boolean(error)}
                         aria-label={field.label}
+                        aria-describedby={describedBy}
                       />
                       {field.suffix && <small aria-hidden="true">{field.suffix}</small>}
                     </div>
@@ -243,7 +327,8 @@ function PilotPlannerWorkspace({
                     aria-label={`${field.label} slider`}
                     onChange={event => updateDraft(spec.key, event.target.value)}
                   />
-                  {error && <span className="field-error" aria-live="polite">{error}</span>}
+                  {helper && <small id={helperId} className="subtle">{helper}</small>}
+                  {error && <span id={errorId} className="field-error" aria-live="polite">{error}</span>}
                 </div>
               );
             })}
@@ -254,18 +339,23 @@ function PilotPlannerWorkspace({
               type="button"
               className="text-button"
               onClick={() => setMoreOpen(open => !open)}
-              aria-expanded={moreOpen}
+              aria-expanded={showExtraFields}
             >
-              {moreOpen ? "Hide base parameters" : "More parameters (Population, Horizon, Fixed cost)"}
+              {showExtraFields ? "Hide base parameters" : "More parameters (Population, Horizon, Fixed cost)"}
             </button>
 
-            {(moreOpen || EXTRA_FIELDS.some(key => Boolean(evaluation.errors[key]))) && (
+            {showExtraFields && (
               <div className="atlas-extra-grid">
                 {EXTRA_FIELDS.map(key => {
                   const field = pilotInputFields.find(item => item.key === key)!;
                   const inputId = `pilot-${key}`;
+                  const helperId = `${inputId}-helper`;
+                  const errorId = `${inputId}-error`;
                   const error = evaluation.errors[key];
                   const helper = error ? null : formatPilotInputHelper(key, draft[key]);
+                  const describedBy = [helper ? helperId : null, error ? errorId : null]
+                    .filter(Boolean)
+                    .join(" ") || undefined;
                   return (
                     <div className="atlas-extra-field" key={key}>
                       <label htmlFor={inputId}>{field.label}</label>
@@ -277,11 +367,12 @@ function PilotPlannerWorkspace({
                           value={draft[key]}
                           onChange={event => updateDraft(key, event.target.value)}
                           aria-invalid={Boolean(error)}
+                          aria-describedby={describedBy}
                         />
                         {field.suffix && <small aria-hidden="true">{field.suffix}</small>}
                       </div>
-                      {helper && !error && <small className="subtle">{helper}</small>}
-                      {error && <span className="field-error" aria-live="polite">{error}</span>}
+                      {helper && !error && <small id={helperId} className="subtle">{helper}</small>}
+                      {error && <span id={errorId} className="field-error" aria-live="polite">{error}</span>}
                     </div>
                   );
                 })}
@@ -294,7 +385,7 @@ function PilotPlannerWorkspace({
           )}
         </form>
 
-        {/* Right: Oversized KPIs + Live Gauge */}
+        {/* Region 2: Applied Calculations & Visuals */}
         <article id="pilot-results" className="card atlas-studio-output">
           {invalidDraft && (
             <div className="caution" role="status">
@@ -330,76 +421,85 @@ function PilotPlannerWorkspace({
               {invalidDraft ? (
                 <button className="button" type="button" disabled>Open Brief</button>
               ) : (
-                <Link className="button" to="/brief">Open Brief →</Link>
+                <Link className="button" to="/brief">Open Planning Brief →</Link>
               )}
             </div>
           </div>
 
           <div className="sr-only" aria-live="polite" aria-atomic="true">{resultAnnouncement}</div>
         </article>
-        <aside className="card atlas-decision-inspector" aria-labelledby="pilot-inspector-title">
-          <header>
-            <p className="eyebrow">DECISION INTELLIGENCE</p>
-            <h2 id="pilot-inspector-title">What needs attention?</h2>
-            <p className="subtle">Rule-based checks on the applied scenario, not AI predictions.</p>
-          </header>
-          <div className="atlas-inspector-item">
-            <h3>Capacity</h3>
-            {invalidDraft ? <p>Resolve invalid inputs to update the assessment. The current results reflect the last valid scenario.</p>
-              : scenarioResult.capacity_gap > 0 ? <p><strong>{formatPlanningNumber(scenarioResult.capacity_gap, resultNumber)}</strong> intended participants exceed the assumed program capacity. Review reach and capacity together.</p>
-              : <p>The assumed capacity covers the intended reach. This is not evidence of real-world program feasibility.</p>}
-          </div>
-          <div className="atlas-inspector-item">
-            <h3>Implementation context</h3>
-            <p>{pilotLocalContext ? pilotLocalContext.label : "No local indicator attached."} Context informs interpretation; it never changes the arithmetic.</p>
-            <Link className="text-button" to="/local-context">Inspect local indicators →</Link>
-          </div>
-          <div className="atlas-inspector-item">
-            <h3>Information needs</h3>
-            <p>{currentOperationalDataRequests.length} current analyst-generated operational data request(s). Requests remain separate from evidence.</p>
-            <Link className="text-button" to="/data-requests">Review requests →</Link>
-          </div>
-          {advisorAvailable && <div className="atlas-inspector-ai">
-            <h3>Strategy AI Studio</h3>
-            <p>Explore the available evidence and implementation questions. AI output does not set scenario parameters or establish effectiveness.</p>
-            <Link className="button secondary" to="/advisor">Open advisor →</Link>
-          </div>}
-        </aside>
+
+        {/* Region 3: Collapsible Contextual Decision Inspector */}
+        {inspectorOpen && (
+          <aside id="pilot-decision-inspector" className="card atlas-decision-inspector" aria-labelledby="pilot-inspector-title">
+            <header>
+              <p className="eyebrow">DECISION INTELLIGENCE</p>
+              <h2 id="pilot-inspector-title">What needs attention?</h2>
+              <p className="subtle">Rule-based checks on the applied scenario, not AI predictions.</p>
+            </header>
+            <div className="atlas-inspector-item">
+              <h3>Capacity</h3>
+              {invalidDraft ? <p>Resolve invalid inputs to update the assessment. The current results reflect the last valid scenario.</p>
+                : scenarioResult.capacity_gap > 0 ? <p><strong>{formatPlanningNumber(scenarioResult.capacity_gap, resultNumber)}</strong> intended participants exceed the assumed program capacity. Review reach and capacity together.</p>
+                : <p>The assumed capacity covers the intended reach. This is not evidence of real-world program feasibility.</p>}
+            </div>
+            <div className="atlas-inspector-item">
+              <h3>Implementation context</h3>
+              {pilotLocalContext ? (
+                <>
+                  <p>
+                    <strong>{pilotLocalContext.label}:</strong>{" "}
+                    <span className="pilot-local-context-value">{formatLocalContextValue(pilotLocalContext)}</span>{" "}
+                    — context informs interpretation; it never changes the arithmetic.
+                  </p>
+                </>
+              ) : (
+                <p>No local indicator attached. Context informs interpretation; it never changes the arithmetic.</p>
+              )}
+              <Link className="text-button" to="/local-context">Inspect local indicators →</Link>
+            </div>
+            <div className="atlas-inspector-item">
+              <h3>Information needs</h3>
+              <p>{currentOperationalDataRequests.length} current analyst-generated operational data request(s). Requests remain separate from evidence.</p>
+              <Link className="text-button" to="/data-requests">Review requests →</Link>
+            </div>
+            {advisorAvailable && <div className="atlas-inspector-ai">
+              <h3>Prompt Studio</h3>
+              <p>Explore the available evidence and implementation questions. AI output does not set scenario parameters or establish effectiveness.</p>
+              <Link className="button secondary" to="/advisor">Open Prompt Studio →</Link>
+            </div>}
+          </aside>
+        )}
       </div>
 
       {/* Bottom Tabs: Sensitivity | All Quantities | Context & Requests */}
       <div className="atlas-studio-tabs">
         <div className="atlas-tab-bar" role="tablist" aria-label="Simulator analysis panels">
-          <button
-            type="button"
-            role="tab"
-            aria-selected={bottomTab === "sensitivity"}
-            className={`atlas-tab${bottomTab === "sensitivity" ? " is-active" : ""}`}
-            onClick={() => setBottomTab("sensitivity")}
-          >
-            Sensitivity
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={bottomTab === "quantities"}
-            className={`atlas-tab${bottomTab === "quantities" ? " is-active" : ""}`}
-            onClick={() => setBottomTab("quantities")}
-          >
-            All Quantities
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={bottomTab === "context"}
-            className={`atlas-tab${bottomTab === "context" ? " is-active" : ""}`}
-            onClick={() => setBottomTab("context")}
-          >
-            Context &amp; Requests
-          </button>
+          {BOTTOM_TABS.map(tab => (
+            <button
+              key={tab.id}
+              ref={el => { tabButtonRefs.current[tab.id] = el; }}
+              id={`pilot-tab-${tab.id}`}
+              type="button"
+              role="tab"
+              tabIndex={bottomTab === tab.id ? 0 : -1}
+              aria-selected={bottomTab === tab.id}
+              aria-controls={`pilot-panel-${tab.id}`}
+              className={`atlas-tab${bottomTab === tab.id ? " is-active" : ""}`}
+              onKeyDown={event => handleTabKeyDown(event, tab.id)}
+              onClick={() => setBottomTab(tab.id)}
+            >
+              {tab.label}
+            </button>
+          ))}
         </div>
 
-        <div className="card atlas-tab-panel" role="tabpanel">
+        <div
+          id={`pilot-panel-${bottomTab}`}
+          className="card atlas-tab-panel"
+          role="tabpanel"
+          aria-labelledby={`pilot-tab-${bottomTab}`}
+        >
           {bottomTab === "sensitivity" && (
             invalidDraft ? (
               <section id="sensitivity" className="empty-state" aria-labelledby="sensitivity-paused-title">
@@ -442,11 +542,11 @@ function PilotPlannerWorkspace({
             <section id="pilot-context" className="atlas-pilot-context">
               <div className="card-title-row">
                 <div>
-                  <p className="eyebrow">ATTACHED TERRAIN</p>
+                  <p className="eyebrow">ATTACHED LOCAL CONTEXT</p>
                   <h3>Local planning context</h3>
                 </div>
                 <Link className="text-button" to="/local-context">
-                  {pilotLocalContext ? "Change in Terrain →" : "Select in Terrain →"}
+                  {pilotLocalContext ? "Change in Local context →" : "Select in Local context →"}
                 </Link>
               </div>
               {pilotLocalContext ? (
@@ -455,7 +555,7 @@ function PilotPlannerWorkspace({
                   <span>{formatLocalContextValue(pilotLocalContext)}</span>
                   <small>{pilotLocalContext.geography_name} · {formatPublishedLocalContextUncertainty(pilotLocalContext)}</small>
                   <button type="button" className="text-button" onClick={clearPilotLocalContext}>
-                    Remove from Simulate
+                    Remove from Strategy Lab
                   </button>
                 </div>
               ) : (

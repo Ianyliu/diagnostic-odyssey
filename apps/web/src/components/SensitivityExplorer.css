@@ -43,6 +43,7 @@
 .sensitivity-row.current {
   margin-inline: 0;
   background: var(--do-assumption-bg);
+  box-shadow: inset 3px 0 0 var(--do-assumption-text);
 }
 
 .sensitivity-input {
