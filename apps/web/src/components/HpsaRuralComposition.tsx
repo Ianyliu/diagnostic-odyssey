@@ -1,3 +1,4 @@
+import { useId } from "react";
 import "./HpsaRuralComposition.css";
 import type { LocalContextRecord } from "@diagnostic-odyssey/contracts";
 
@@ -27,6 +28,9 @@ function segmentFor(record: LocalContextRecord): Segment | null {
   return null;
 }
 
+const VIEW_WIDTH = 1000;
+const SEGMENT_GAP = 4;
+
 export function HpsaRuralComposition({
   records,
   serviceLabel
@@ -34,6 +38,7 @@ export function HpsaRuralComposition({
   records: LocalContextRecord[];
   serviceLabel: string;
 }) {
+  const patternBaseId = useId();
   const segments = records
     .map(segmentFor)
     .filter((segment): segment is Segment => segment !== null);
@@ -42,6 +47,8 @@ export function HpsaRuralComposition({
 
   const nonzero = segments.filter(segment => segment.value > 0);
   const aria = nonzero.map(segment => `${segment.label} ${segment.value}`).join(", ");
+  const totalGap = Math.max(0, (nonzero.length - 1) * SEGMENT_GAP);
+  const usableWidth = VIEW_WIDTH - totalGap;
   let cursor = 0;
 
   return (
@@ -52,16 +59,31 @@ export function HpsaRuralComposition({
       </div>
       <svg
         className="hpsa-composition-svg"
-        viewBox="0 0 1000 16"
+        viewBox={`0 0 ${VIEW_WIDTH} 16`}
         preserveAspectRatio="none"
         role="img"
         aria-label={`${serviceLabel} HPSA designation composition: ${aria}.`}
       >
-        <rect x="0" y="0" width="1000" height="16" rx="8" className="hpsa-svg-track" />
+        <defs>
+          <pattern id={`${patternBaseId}-partial`} width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+            <rect width="8" height="8" fill="var(--do-surface)" />
+            <path d="M0 0V8" stroke="var(--do-chart-3)" strokeWidth="4" />
+          </pattern>
+          <pattern id={`${patternBaseId}-other`} width="6" height="6" patternUnits="userSpaceOnUse">
+            <rect width="6" height="6" fill="var(--do-chart-track)" />
+            <circle cx="3" cy="3" r="1.4" fill="var(--do-chart-4)" />
+          </pattern>
+        </defs>
+        <rect x="0" y="0" width={VIEW_WIDTH} height="16" rx="8" className="hpsa-svg-track" />
         {nonzero.map(segment => {
-          const width = (segment.value / total) * 1000;
+          const width = Math.max(3, (segment.value / total) * usableWidth);
           const x = cursor;
-          cursor += width;
+          cursor += width + SEGMENT_GAP;
+          const fill = segment.className === "partial"
+            ? `url(#${patternBaseId}-partial)`
+            : segment.className === "other"
+              ? `url(#${patternBaseId}-other)`
+              : undefined;
           return (
             <rect
               key={segment.label}
@@ -69,6 +91,8 @@ export function HpsaRuralComposition({
               y="0"
               width={width}
               height="16"
+              rx="2"
+              fill={fill}
               className={`hpsa-segment ${segment.className}`}
             >
               <title>{`${segment.label}: ${segment.value}`}</title>

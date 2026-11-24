@@ -31,9 +31,9 @@
 
 .hpsa-svg-track { fill: var(--do-chart-track); }
 .hpsa-segment.rural { fill: var(--do-chart-1); }
-.hpsa-segment.partial { fill: var(--do-chart-3); }
+.hpsa-segment.partial { stroke: var(--do-chart-3); stroke-width: 1; }
 .hpsa-segment.nonrural { fill: var(--do-chart-2); }
-.hpsa-segment.other { fill: var(--do-chart-4); }
+.hpsa-segment.other { stroke: var(--do-chart-4); stroke-width: 1; }
 
 .hpsa-legend {
   display: flex;
@@ -46,6 +46,12 @@
 .hpsa-legend span { display: inline-flex; align-items: center; gap: 6px; }
 .hpsa-legend .legend-swatch { display: inline-block; width: 10px; height: 10px; border-radius: 3px; }
 .hpsa-legend .legend-swatch.rural { background: var(--do-chart-1); }
-.hpsa-legend .legend-swatch.partial { background: var(--do-chart-3); }
+.hpsa-legend .legend-swatch.partial {
+  border: 1px solid var(--do-chart-3);
+  background: repeating-linear-gradient(45deg, var(--do-chart-3) 0 2px, var(--do-surface) 2px 4px);
+}
 .hpsa-legend .legend-swatch.nonrural { background: var(--do-chart-2); }
-.hpsa-legend .legend-swatch.other { background: var(--do-chart-4); }
+.hpsa-legend .legend-swatch.other {
+  border: 1px solid var(--do-chart-4);
+  background: radial-gradient(var(--do-chart-4) 35%, var(--do-chart-track) 36%);
+}
