@@ -274,15 +274,23 @@
   .page.planning-brief-page, .atlas-memo-shell { display: block !important; width: 100%; max-width: none; padding: 0 !important; margin: 0 !important; }
   .brief-dock, .brief-print-controls, .brief-concept-strip, .brief-appendix-control { display: none !important; }
   .atlas-memo-body { display: block !important; border: 0; padding: 0 !important; margin-bottom: 0 !important; box-shadow: none; }
-  .atlas-memo-body > section + section { margin-top: 8pt; padding-top: 8pt; }
+  .atlas-memo-body > section + section { margin-top: 5pt; padding-top: 5pt; }
+  .atlas-memo-body section h2 { margin: 0 0 3pt; break-after: avoid-page; }
+  .atlas-memo-body .empty-state,
+  .atlas-memo-body .callout { padding: 5pt 8pt; margin: 2.5pt 0; font-size: 8.2pt; break-inside: avoid; }
+  .atlas-memo-body .empty-state p,
+  .atlas-memo-body .callout p { margin: 1.5pt 0 0; }
   .brief-burden-groups, .brief-burden-group { display: block !important; break-inside: auto; }
-  .brief-burden-group + .brief-burden-group { margin-top: 8pt; }
+  .brief-burden-group + .brief-burden-group { margin-top: 5pt; }
   .brief-applied-assumptions,
   .brief-output-list,
-  .brief-scenario-trace { padding: 7pt 10pt; margin: 5pt 0; gap: 4pt 12pt; }
-  .brief-decision-trace { margin-top: 7pt; padding-top: 7pt; }
+  .brief-scenario-trace { padding: 4.5pt 8pt; margin: 2.5pt 0; gap: 2pt 12pt; }
+  .brief-decision-trace { margin-top: 4pt; padding-top: 4pt; }
+  .brief-decision-trace h3 { margin: 0 0 2pt; }
   .planning-brief-page.brief-include-context-appendix .brief-local-context-list { display: block !important; }
-  .planning-brief-page.brief-include-context-appendix .brief-local-context { padding: 7pt 0; font-size: 9pt; }
+  .planning-brief-page.brief-include-context-appendix .brief-local-context { padding: 7pt 0; font-size: 9pt; line-height: 1.5; }
+  .brief-context-appendix-heading { font-size: 9.2pt; margin: 2.5pt 0 1.5pt; break-after: avoid-page; }
+  #brief-local-context .subtle { margin: 1.5pt 0; font-size: 8.2pt; }
   .brief-local-context-opening { break-inside: avoid; }
   .brief-local-context-opening .card-title-row { flex-wrap: nowrap; align-items: baseline; }
   .brief-local-context-opening .card-title-row > div > strong { font-size: 9pt; }
@@ -316,7 +324,10 @@
   .brief-executive-roles p { font-size: 7pt; margin: 2pt 0; }
   .brief-executive-boundary { font-size: 7.2pt; margin: 4pt 0 0; }
   .brief-print-decision-state { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4pt 16pt; margin-bottom: 10pt; font-size: 8pt; }
-  .brief-local-context-executive { display: block; }
+  .brief-local-context-executive { display: block; font-size: 8pt; line-height: 1.26; }
+  .brief-local-context-executive p { margin: 2pt 0; }
+  .brief-local-context-executive ul { margin: 2pt 0 2.5pt 14pt; padding: 0; }
+  .brief-local-context-executive li + li { margin-top: 1pt; }
   .brief-local-context-list { display: none !important; }
   .planning-brief-page.brief-include-context-appendix .brief-local-context-list { display: block !important; }
   .planning-brief-page .brief-burden-table { width: 100%; min-width: 0; table-layout: fixed; }

@@ -94,8 +94,8 @@ export function BriefExecutiveSummary({
         <div>
           <strong>West Virginia implementation context</strong>
           <p>
-            {brief.local_context.length} reviewed records included in JSON ({checkboxIncludedCount} from current checkboxes
-            {pilotOnlyCount ? "; 1 extra via Use in Strategy Lab" : ""}). HRSA/Census access indicators are not West Virginia Long COVID prevalence or costs.
+            {brief.local_context.length} reviewed statewide records included in JSON ({checkboxIncludedCount} from current checkboxes
+            {pilotOnlyCount ? "; 1 extra via Use in Strategy Lab" : ""}). HRSA shortage designations (not people) and ACS access indicators describe statewide conditions—not local Long COVID prevalence or costs.
           </p>
         </div>
         <div>
@@ -103,19 +103,19 @@ export function BriefExecutiveSummary({
           <p>
             {brief.scenario
               ? "Deterministic planning arithmetic from applied inputs; no effect or savings inferred."
-              : "No validated applied scenario."} Defaults are assumptions, not observed evidence.
+              : "No validated applied scenario."} Defaults are planning assumptions, not observed evidence.
           </p>
         </div>
         <div>
           <strong>Operational data requests</strong>
           <p>
-            {brief.data_requests.length} current requests included; {staleRequestCount} stale excluded until refreshed. New requests start included but may be deselected.
+            {brief.data_requests.length} current {brief.data_requests.length === 1 ? "request" : "requests"} included; {staleRequestCount} selected stale {staleRequestCount === 1 ? "request" : "requests"} excluded until refreshed. New requests start included but may be deselected.
           </p>
         </div>
       </div>
 
       <p className="brief-executive-boundary">
-        The national figures are descriptive, not attributable to Long COVID or diagnostic delay; they cannot establish preventable cost, efficacy, or ROI.
+        The national figures are descriptive, not attributable to Long COVID or diagnostic delay. ESAQ and PSAQ have their own outcome-specific respondent universes. Screening is not diagnosis; no causal intervention-effect, savings or ROI claim follows.
       </p>
     </section>
   );

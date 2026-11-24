@@ -242,7 +242,7 @@ main { min-height: calc(100vh - 132px); }
 @page { margin: 0.6in; }
 @media print {
   html, body { background: #ffffff; color: var(--do-text); }
-  .skip-link, .site-header, .site-footer, .prototype-strip, footer, .planning-brief-page > .context-bar, .brief-export-actions, .brief-dock, .brief-content .button { display: none !important; }
+  .skip-link, .site-header, .site-footer, .prototype-strip, footer, .planning-brief-page > .context-bar, .brief-export-actions, .brief-dock, .brief-content .button, .brief-content .text-button { display: none !important; }
   main { min-height: 0; }
   .planning-brief-page { display: block; width: 100%; max-width: none; margin: 0; padding: 0; }
   .print-provenance { display: grid; gap: 3pt; margin: 0 0 12pt; padding: 8pt 10pt; border: 1px solid var(--do-border); font-size: 8.5pt; break-inside: avoid; }

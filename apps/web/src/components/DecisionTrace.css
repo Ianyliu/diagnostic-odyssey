@@ -1,0 +1,116 @@
+.decision-trace {
+  display: grid;
+  gap: 10px;
+}
+
+.decision-trace-boundary {
+  margin: 0;
+  color: var(--do-text-muted);
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.decision-trace ol {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.decision-trace li {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+  padding: 10px 12px;
+  border: 1px solid var(--do-border);
+  border-radius: 10px;
+  background: var(--do-canvas);
+}
+
+.decision-trace-step {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--do-reviewed-bg);
+  color: var(--do-reviewed-text);
+  border: 1px solid var(--do-reviewed-border);
+  font-family: var(--do-font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.decision-trace-body {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.decision-trace-label {
+  display: block;
+  color: var(--do-text);
+  font-size: 0.86rem;
+}
+
+.decision-trace-detail {
+  margin: 0;
+  color: var(--do-text-muted);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+@media print {
+  .decision-trace {
+    gap: 4pt;
+  }
+
+  .decision-trace-boundary {
+    font-size: 7.6pt;
+    line-height: 1.32;
+  }
+
+  .decision-trace ol {
+    display: block !important;
+    list-style: none !important;
+    margin: 2pt 0 0;
+    padding: 0;
+  }
+
+  .decision-trace li {
+    display: grid !important;
+    grid-template-columns: 20pt minmax(0, 1fr);
+    gap: 5pt;
+    padding: 3pt 6pt;
+    border: 0.5pt solid #cbd5e4;
+    border-radius: 4pt;
+    background: #ffffff;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .decision-trace li + li {
+    margin-top: 2.5pt;
+  }
+
+  .decision-trace-step {
+    width: 17pt;
+    height: 17pt;
+    font-size: 7pt;
+  }
+
+  .decision-trace-label {
+    font-size: 8.2pt;
+  }
+
+  .decision-trace-detail {
+    font-size: 7.6pt;
+    line-height: 1.32;
+  }
+
+  .decision-trace a.text-button {
+    display: none !important;
+  }
+}

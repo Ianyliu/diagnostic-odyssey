@@ -379,7 +379,7 @@ export function BriefPage({
 
           <section id="brief-pilot-assumptions">
             <h2>Strategy Lab planning assumptions</h2>
-            <p className="subtle"><strong>{PLANNING_DEFAULTS_LABEL}</strong></p>
+            <p className="subtle"><strong>{PLANNING_DEFAULTS_LABEL}.</strong> These inputs are planning assumptions, not observed evidence.</p>
             {brief.scenario && scenarioBoundary ? (
               <>
                 <dl className="brief-applied-assumptions" aria-label={`${pilotInputFields.length} applied planning assumptions`}>
@@ -408,7 +408,7 @@ export function BriefPage({
           {brief.scenario && (
             <section id="brief-scenario-outputs" className="brief-output-section">
               <h2>Scenario outputs</h2>
-              <p className="micro-caption">Deterministic planning quantities from the applied assumptions above; not a forecast or savings.</p>
+              <p className="micro-caption">Deterministic planning quantities from the applied assumptions above; not a forecast or savings, and not observed evidence.</p>
               <dl className="brief-output-list">
                 {(() => {
                   const reached = formatPlanningNumber(brief.scenario.result.reached_participants, resultNumber);
@@ -443,21 +443,37 @@ export function BriefPage({
             {brief.local_context.length > 0 && (
               <div className="brief-local-context-executive" aria-label="Local context print synopsis">
                 <p>
-                  <strong>{brief.local_context.length} reviewed context {brief.local_context.length === 1 ? "record" : "records"} included.</strong>{" "}
-                  HRSA shortage designations and Census ACS indicators describe local access conditions—not local Long COVID prevalence or attributable costs.
+                  <strong>{brief.local_context.length} reviewed context {brief.local_context.length === 1 ? "record" : "records"} included in this Brief.</strong>{" "}
+                  These statewide West Virginia indicators inform implementation planning; they do not estimate state Long COVID prevalence, modify national burden, or prove savings.
+                </p>
+                <p>
+                  HPSA figures describe shortage-area designations, not people; ACS figures describe statewide Census survey measures. A separately attached Strategy Lab record remains distinct from checkbox choices. An active Pilot-used record may be included separately from checkbox choices.
                 </p>
                 <ul>
                   {localContextPreview.map(record => (
                     <li key={record.indicator_id}>
-                      <strong>{record.label}:</strong> {formatLocalContextValue(record)} <span>({record.indicator_id})</span>
+                      <strong>{record.label}:</strong> {formatLocalContextValue(record)} <span>({record.indicator_id}; {record.source_ref})</span>
                     </li>
                   ))}
                 </ul>
+                {brief.local_context.length > localContextPreview.length && (
+                  <p>
+                    Showing {localContextPreview.length} source-traceable examples from the actual included selection, not a ranking, aggregate, or statewide severity score. The canonical JSON companion contains all {brief.local_context.length} complete records, source locators, released interpretations and limitations. Enable the detailed print option to include their full text in the PDF.
+                  </p>
+                )}
+                {brief.context.local_context_id && (
+                  <p><strong>Reviewed local artifact:</strong> {brief.context.local_context_id}</p>
+                )}
               </div>
             )}
             {brief.local_context.length > 0 ? (
               <div className="brief-local-context-list">
                 <h3 className="brief-context-appendix-heading">Detailed included context records ({brief.local_context.length})</h3>
+                {brief.context.local_context_id && (
+                  <p className="subtle">
+                    <strong>Reviewed local-context artifact:</strong> {brief.context.local_context_id}
+                  </p>
+                )}
                 {brief.local_context.map(record => (
                   <article className="brief-local-context" key={record.indicator_id}>
                     <div className="brief-local-context-opening">
@@ -554,7 +570,7 @@ export function BriefPage({
                     ? "Data requests are available, but none has been selected for this brief."
                     : "No data request has been created or loaded."}
                 </strong>
-                <p>Data requests are planning artifacts, not observed evidence. New requests start selected; review or deselect them before export.</p>
+                <p>Data requests are planning artifacts, not observed evidence. New requests start selected and only requests current for the applied scenario export; review or deselect them before export.</p>
                 <Link className="button secondary" to="/data-requests">Review data requests →</Link>
               </div>
             )}
