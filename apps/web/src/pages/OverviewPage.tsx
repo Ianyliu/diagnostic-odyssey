@@ -6,6 +6,7 @@ import { COVERAGE_CATALOG } from "../data/coverageCatalog";
 import { selectHeadlineFindings } from "../data/headlineFindings";
 import { formatEstimateValue } from "../data/formatEstimateValue";
 import { LandingJourney } from "../components/LandingJourney";
+import { StrategyTeaserSandbox } from "../components/StrategyTeaserSandbox";
 import { EditionDrawer } from "../components/EditionDrawer";
 import { useOpeningMotion } from "./OpeningProvenance";
 import "./OverviewPage.css";
@@ -65,7 +66,11 @@ export function OverviewPage() {
         </div>
       </section>
 
-      {/* Band 2: Warm Gallery Paper — Monumental Two-Lens Showcase */}
+      <div className="atlas-sandbox-band">
+        <div className="atlas-band-inner"><StrategyTeaserSandbox /></div>
+      </div>
+
+      {/* Band 2: Cool Gallery Paper — Monumental Two-Lens Showcase */}
       <section className="atlas-paper-band" aria-labelledby="overview-lenses-title">
         <div className="atlas-band-inner atlas-lenses-section">
           <div className="atlas-section-head">

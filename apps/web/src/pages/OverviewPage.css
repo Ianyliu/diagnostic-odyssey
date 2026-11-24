@@ -405,3 +405,6 @@
   .atlas-hero-ctas { gap: 7px; margin-top: 2px; }
   .atlas-hero-ctas .atlas-ghost-cta { min-height: 44px; padding: 8px 12px; }
 }
+
+.atlas-sandbox-band { background: var(--do-canvas); padding: 36px 0 0; }
+@media (max-width: 760px) { .atlas-sandbox-band { padding-top: 24px; } }
