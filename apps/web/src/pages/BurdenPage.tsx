@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { canExportEstimate, type Estimate } from "@diagnostic-odyssey/contracts";
 import {
+  BurdenInspectContext,
   BurdenMeasureList,
   EstimateProvenanceDetails
 } from "../components/BurdenMeasureList";
@@ -133,6 +134,10 @@ export function BurdenPage() {
         </p>
       )}
 
+      <BurdenInspectContext.Provider value={{
+        selectedEstimateId: inspectedEstimate?.estimate_id ?? null,
+        onInspect: estimate => setInspectedId(estimate.estimate_id)
+      }}>
       <div className="atlas-split-workspace">
         <div className="burden-domain-stack">
           {visibleDomains.map(domain => {
@@ -174,11 +179,7 @@ export function BurdenPage() {
                   />
                 )}
 
-                <BurdenMeasureList
-                  estimates={domain.measures}
-                  selectedEstimateId={inspectedEstimate?.estimate_id ?? null}
-                  onInspect={estimate => setInspectedId(estimate.estimate_id)}
-                />
+                <BurdenMeasureList estimates={domain.measures} />
               </article>
             );
           })}
@@ -194,6 +195,7 @@ export function BurdenPage() {
           </aside>
         )}
       </div>
+      </BurdenInspectContext.Provider>
 
       <div className="atlas-page-footer-bar">
         <div className="atlas-footer-links">

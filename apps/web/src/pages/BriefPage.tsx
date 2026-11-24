@@ -3,14 +3,22 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { buildPlanningBrief, serializeBriefJson, type PlanningBrief } from "@diagnostic-odyssey/brief-core";
 import { AcquisitionGuidanceCard } from "../components/AcquisitionGuidanceCard";
+import { ErrorBoundary } from "../components/ErrorBoundary";
+import { PlanningInsights } from "../components/PlanningInsights";
 import { BriefExecutiveSummary } from "../components/BriefExecutiveSummary";
-import { buildVerifiedNationalBriefSection } from "../data/planningInsights";
+import {
+  buildPlanningInsights,
+  buildVerifiedNationalBriefSection,
+  type PlanningInsightsSources
+} from "../data/planningInsights";
+import { planningInsightsEnabled } from "../data/planningInsightsEnabled";
 import { AiHandoff } from "../components/AiHandoff";
 import {
   canDisplayDistributionSummary,
   type Estimate
 } from "@diagnostic-odyssey/contracts";
 import { getEvidenceParameterReadiness, getNationalBurdenReadiness } from "../data/workspaceReadiness";
+import { DecisionTrace } from "../components/DecisionTrace";
 import { DistributionSummaryText } from "../components/DistributionSummaryText";
 import { useArtifact } from "../data/ArtifactContext";
 import {
@@ -42,6 +50,10 @@ const previewGeminiEnabled = typeof __DO_GEMINI_STAGE2_PREVIEW__ === "boolean" &
 
 const resultNumber = new Intl.NumberFormat("en-US");
 
+function BriefInsights({ brief, sources }: { brief: PlanningBrief; sources: PlanningInsightsSources }) {
+  return <PlanningInsights model={buildPlanningInsights(brief, sources)} />;
+}
+
 function AccessibleEstimateInterval({ estimate }: { estimate: Estimate }) {
   const interval = formatEstimateInterval(estimate);
   const accessibleInterval = interval
@@ -67,9 +79,9 @@ function BriefJsonExport({ brief }: { brief: PlanningBrief }) {
       anchor.download = brief.artifact_version + "-planning-brief.json";
       document.body.append(anchor);
       anchor.click();
-      setExportStatus("JSON downloaded.");
+      setExportStatus("JSON download requested with the current Planning Brief.");
     } catch {
-      setExportStatus("JSON download could not start.");
+      setExportStatus("JSON download could not start. Your Brief is unchanged; try again or use Print / save PDF.");
     } finally {
       anchor.remove();
       if (url) {
@@ -82,7 +94,7 @@ function BriefJsonExport({ brief }: { brief: PlanningBrief }) {
   return (
     <>
       <button type="button" className="button secondary" onClick={exportJson}>
-        JSON
+        Export JSON companion
       </button>
       <span className="brief-export-status subtle" role="status">{exportStatus}</span>
     </>
@@ -114,6 +126,7 @@ export function BriefPage({
     selectedLocalContextIds,
     pilotLocalContext,
     pilotLocalContextId,
+    availableDataRequests,
     briefDataRequestIds,
     selectedDataRequests
   } = useArtifact();
@@ -191,14 +204,14 @@ export function BriefPage({
     >
       <div className="atlas-memo-shell">
         <header className="page-heading atlas-memo-head">
-          <p className="eyebrow">04 · EXECUTIVE BRIEF · {COVERAGE_EDITION_BADGE}</p>
-          <h1>Care-strategy &amp; pilot planning brief</h1>
-          <p>Reviewed evidence, selected terrain, and explicit assumptions.</p>
+          <p className="eyebrow">04 · PLANNING BRIEF · {COVERAGE_EDITION_BADGE}</p>
+          <h1>Long COVID burden and pilot planning brief</h1>
+          <p>Reviewed national evidence, selected local context, and explicit pilot assumptions, with interpretation boundaries and data needs intact.</p>
         </header>
 
-        {/* Minimal Floating / Sticky Command Dock */}
+        {/* Sticky Export & AI Command Dock */}
         <div className="brief-dock brief-export-actions" role="toolbar" aria-label="Brief export and AI actions">
-          <button type="button" className="button" onClick={printBrief}>PDF</button>
+          <button type="button" className="button" onClick={printBrief}>Print / save PDF</button>
           <BriefJsonExport brief={brief} />
           <AiHandoff
             brief={brief}
@@ -215,31 +228,45 @@ export function BriefPage({
           />
           {conceptAvailable && showFutureConcept && (
             <Link className="button secondary" to="/advisor">
-              Ask Strategy AI →
+              Open Strategy AI Studio →
             </Link>
           )}
         </div>
 
-        {conceptAvailable && (
-          <div className="brief-concept-strip" role="group" aria-label="Strategy AI Studio status">
-            <label className="brief-concept-toggle">
-              <input
-                type="checkbox"
-                checked={showFutureConcept}
-                onChange={event => onFutureConceptChange?.(event.target.checked)}
-              />
-              <span>Show Strategy AI Studio</span>
-            </label>
-            {showFutureConcept && (
-              <Link className="text-button" to="/advisor">Open Strategy AI Studio →</Link>
-            )}
-            <small className="subtle">
-              {previewGeminiEnabled
-                ? "Live Gemini Advisor (authenticated Preview) active."
-                : "No on-site Gemini model calls run in public builds."}
-            </small>
-          </div>
-        )}
+        <div className="brief-print-controls">
+          <label className="brief-appendix-control">
+            <input
+              type="checkbox"
+              checked={includeContextAppendixInPrint}
+              onChange={event => setIncludeContextAppendixInPrint(event.target.checked)}
+            />
+            <span>
+              Include detailed local-context records in print{" "}
+              <small>Off by default for a concise Brief. All included records remain in the JSON companion and readable on screen.</small>
+            </span>
+          </label>
+
+          {conceptAvailable && (
+            <div className="brief-concept-strip" role="group" aria-label="Strategy AI Studio status">
+              <label className="brief-concept-toggle">
+                <input
+                  type="checkbox"
+                  checked={showFutureConcept}
+                  onChange={event => onFutureConceptChange?.(event.target.checked)}
+                />
+                <span>Show Strategy AI Studio</span>
+              </label>
+              {showFutureConcept && (
+                <Link className="text-button" to="/advisor">Open Strategy AI Studio →</Link>
+              )}
+              <small className="subtle">
+                {previewGeminiEnabled
+                  ? "Live Gemini Advisor (authenticated Preview) active alongside deterministic Prompt Studio."
+                  : "No on-site Gemini model calls run in public builds; Prompt Studio works locally."}
+              </small>
+            </div>
+          )}
+        </div>
 
         <div className="print-provenance" role="group" aria-label="Planning Brief provenance">
           <strong>Brief provenance</strong>
@@ -252,6 +279,26 @@ export function BriefPage({
 
         <BriefExecutiveSummary brief={brief} national={nationalExecutive} checkboxSelectedIds={selectedLocalContextIds} pilotLocalContextId={pilotLocalContextId} staleRequestCount={staleSelectedDataRequestCount} />
 
+        {planningInsightsEnabled && (
+          <ErrorBoundary
+            fallback={
+              <p className="insight-unavailable">
+                Planning insights are unavailable. The reviewed Brief and exports remain available below.
+              </p>
+            }
+          >
+            <BriefInsights
+              brief={brief}
+              sources={{
+                national: bundle,
+                local: localContext,
+                localStatus: localContextStatus,
+                availableDataRequests
+              }}
+            />
+          </ErrorBoundary>
+        )}
+
         <section className="brief-print-decision-state" aria-label="Decision state summary">
           <h2>Decision state</h2>
           <div><strong>Burden estimates</strong><span>{burdenReadiness.briefStatus}</span></div>
@@ -262,21 +309,10 @@ export function BriefPage({
         </section>
 
         <article className="card brief-content atlas-memo-body" aria-label="Planning Brief document">
-          <details className="technical-disclosure brief-guardrails-sheet">
-            <summary>Sources &amp; Guardrails ({brief.warnings.length} boundaries)</summary>
-            <section id="brief-interpretation-boundaries" className="interpretation-boundaries">
-              <h2>Interpretation boundaries</h2>
-              <ul>{brief.warnings.map(warning => <li key={warning}>{warning}</li>)}</ul>
-            </section>
-            <label className="brief-appendix-control">
-              <input
-                type="checkbox"
-                checked={includeContextAppendixInPrint}
-                onChange={event => setIncludeContextAppendixInPrint(event.target.checked)}
-              />
-              <span>Include full local-context appendix in PDF print</span>
-            </label>
-          </details>
+          <section id="brief-interpretation-boundaries" className="interpretation-boundaries">
+            <h2>Interpretation boundaries</h2>
+            <ul>{brief.warnings.map(warning => <li key={warning}>{warning}</li>)}</ul>
+          </section>
 
           <section id="brief-national-burden">
             <h2>Reviewed national burden findings</h2>
@@ -342,7 +378,7 @@ export function BriefPage({
           </section>
 
           <section id="brief-pilot-assumptions">
-            <h2>Pilot planning assumptions</h2>
+            <h2>Strategy Lab planning assumptions</h2>
             <p className="subtle"><strong>{PLANNING_DEFAULTS_LABEL}</strong></p>
             {brief.scenario && scenarioBoundary ? (
               <>
@@ -357,6 +393,8 @@ export function BriefPage({
                 <dl className="brief-scenario-trace">
                   <div><dt>Target step</dt><dd>{scenarioBoundary.pathwayStepLabel}</dd></div>
                   <div><dt>Mechanism</dt><dd>{scenarioBoundary.mechanismLabel}</dd></div>
+                  <div><dt>Assumption boundary</dt><dd>{scenarioBoundary.assumptionBoundaryStatement}</dd></div>
+                  <div><dt>Outside this model</dt><dd>{scenarioBoundary.outsideModelItems.join("; ")}.</dd></div>
                 </dl>
               </>
             ) : (
@@ -367,12 +405,24 @@ export function BriefPage({
           {brief.scenario && (
             <section id="brief-scenario-outputs" className="brief-output-section">
               <h2>Scenario outputs</h2>
-              <p className="micro-caption">Deterministic planning math · Not a forecast or savings.</p>
+              <p className="micro-caption">Deterministic planning quantities from the applied assumptions above; not a forecast or savings.</p>
               <dl className="brief-output-list">
                 <div><dt>Participants within capacity</dt><dd>{formatPlanningNumber(brief.scenario.result.reached_participants, resultNumber)}</dd></div>
-                <div><dt>Exposure difference</dt><dd>{formatPlanningNumber(brief.scenario.result.difference_person_months, resultNumber)} pm</dd></div>
-                <div><dt>Resource requirement</dt><dd>{formatPlanningCurrency(brief.scenario.result.program_resource_requirement)}</dd></div>
+                <div><dt>Person-month planning exposure difference</dt><dd>{formatPlanningNumber(brief.scenario.result.difference_person_months, resultNumber)} pm</dd></div>
+                <div><dt>Program-resource requirement</dt><dd>{formatPlanningCurrency(brief.scenario.result.program_resource_requirement)}</dd></div>
               </dl>
+              <section className="brief-decision-trace" aria-labelledby="brief-decision-trace-title">
+                <h3 id="brief-decision-trace-title">Decision trace</h3>
+                <DecisionTrace
+                  burdenEstimateCount={brief.burden_findings.length}
+                  pilotLocalContext={pilotLocalContext}
+                  localContextStatus={localContextStatus}
+                  scenario={brief.scenario.input}
+                  currentDataRequestCount={selectedDataRequests.length}
+                  evidence={bundle.evidence}
+                  dataRequestHref="/data-requests"
+                />
+              </section>
             </section>
           )}
 
@@ -380,7 +430,10 @@ export function BriefPage({
             <h2>Local implementation context</h2>
             {brief.local_context.length > 0 && (
               <div className="brief-local-context-executive" aria-label="Local context print synopsis">
-                <p><strong>{brief.local_context.length} reviewed West Virginia indicators included.</strong></p>
+                <p>
+                  <strong>{brief.local_context.length} reviewed West Virginia indicators included.</strong>{" "}
+                  HRSA shortage designations and Census ACS indicators describe local access conditions—not local Long COVID prevalence or attributable costs.
+                </p>
                 <ul>
                   {localContextPreview.map(record => (
                     <li key={record.indicator_id}>
@@ -401,26 +454,49 @@ export function BriefPage({
                           <strong>{record.label}</strong>
                           <span>{record.geography_name} ({record.geography_type})</span>
                           {pilotLocalContext?.indicator_id === record.indicator_id && (
-                            <span className="status status-selection pilot-used-badge">Active in Simulate</span>
+                            <span className="status status-selection pilot-used-badge">Active in Strategy Lab</span>
                           )}
                         </div>
-                        <span className={record.state === "partial" ? "status status-warning" : "status status-reviewed"}>
+                        <span className={record.state === "partial" ? "status status-partial" : "status status-reviewed"}>
                           {formatDataStateLabel(record.state)}
                         </span>
                       </div>
                       <p className="brief-local-context-value">{formatLocalContextValue(record)}</p>
                     </div>
                     <p className="subtle">
-                      <strong>Source:</strong> {record.source_agency} · {record.source_release_vintage} · {formatPublishedLocalContextUncertainty(record)}
+                      <strong>Source:</strong> {record.source_agency} · {record.source_release_vintage}
                     </p>
-                    <p className="limitations">{record.allowed_interpretation}</p>
+                    <p className="subtle">
+                      <strong>Published uncertainty:</strong> {formatPublishedLocalContextUncertainty(record)}
+                    </p>
+                    <p className="subtle">
+                      <strong>Availability:</strong> {formatDataStateLabel(record.state)}
+                    </p>
+                    <p className="limitations"><strong>Allowed interpretation:</strong> {record.allowed_interpretation}</p>
+                    {record.prohibited_interpretation.length > 0 && (
+                      <p className="limitations"><strong>Not supported:</strong> {record.prohibited_interpretation.join("; ")}</p>
+                    )}
+                    {record.limitations.length > 0 && (
+                      <p className="limitations"><strong>Limitations:</strong> {record.limitations.join(" ")}</p>
+                    )}
                   </article>
                 ))}
               </div>
             ) : (
               <div className="empty-state">
-                <strong>No local context selected for this brief.</strong>
-                <Link className="text-button" to="/local-context">Select in Terrain →</Link>
+                <strong>
+                  {localContextAvailable
+                    ? "Reviewed West Virginia state context is available, but no local context has been selected for this brief or used in Strategy Lab."
+                    : "No local context has been selected for this brief."}
+                </strong>
+                <p>
+                  {localContextAvailable
+                    ? "Review the available state evidence on the Local context page. Eligible reviewed records are selected for this Brief by default, and an explicit Use-in-Strategy Lab selection remains separate."
+                    : "National MEPS burden remains unchanged; no local prevalence or state-specific Long COVID burden is inferred."}
+                </p>
+                {localContextAvailable && (
+                  <Link className="text-button" to="/local-context">Select in Local context →</Link>
+                )}
               </div>
             )}
           </section>
@@ -432,7 +508,7 @@ export function BriefPage({
             ) : (
               <div className="empty-state">
                 <strong>No reviewed intervention-effect parameter is loaded.</strong>
-                <p>Causal benefit, savings, and ROI remain unavailable.</p>
+                <p>Causal benefit, savings, ROI, and preventable-cost claims remain unavailable.</p>
               </div>
             )}
           </section>
@@ -440,24 +516,34 @@ export function BriefPage({
           <section id="brief-data-requests">
             <h2>What to collect next</h2>
             {brief.data_requests.length > 0 ? (
-              <ul>
-                {brief.data_requests.map(request => (
-                  <li key={request.request_id}>
-                    <strong>{request.target_question}</strong> — {request.fields_needed.join(", ")}
-                    <small className="brief-request-trace">
-                      {formatPathwayStepLabel(request.pathway_step)}
-                      {request.target_mechanism && <> · {formatMechanismLabel(request.target_mechanism)}</>}
-                    </small>
-                    {brief.acquisition_guidance?.filter(guidance => guidance.request_id === request.request_id).map(guidance => (
-                      <AcquisitionGuidanceCard key={guidance.reference.hint_id} guidance={guidance} />
-                    ))}
-                  </li>
-                ))}
-              </ul>
+              <>
+                <p className="subtle">
+                  New analyst requests start included; only requests current for the applied scenario export. Deselect any request before export.
+                </p>
+                <ul>
+                  {brief.data_requests.map(request => (
+                    <li key={request.request_id}>
+                      <strong>{request.target_question}</strong> — {request.fields_needed.join(", ")}
+                      <small className="brief-request-trace">
+                        Pathway: {formatPathwayStepLabel(request.pathway_step)}
+                        {request.target_mechanism && <> · Mechanism: {formatMechanismLabel(request.target_mechanism)}</>}
+                      </small>
+                      {brief.acquisition_guidance?.filter(guidance => guidance.request_id === request.request_id).map(guidance => (
+                        <AcquisitionGuidanceCard key={guidance.reference.hint_id} guidance={guidance} />
+                      ))}
+                    </li>
+                  ))}
+                </ul>
+              </>
             ) : (
               <div className="empty-state">
-                <strong>No data request selected.</strong>
-                <Link className="text-button" to="/data-requests">Open Data Requests →</Link>
+                <strong>
+                  {availableDataRequests.length > 0
+                    ? "Data requests are available, but none has been selected for this brief."
+                    : "No data request has been created or loaded."}
+                </strong>
+                <p>Data requests are planning artifacts, not observed evidence. New requests start selected; review or deselect them before export.</p>
+                <Link className="button secondary" to="/data-requests">Review data requests →</Link>
               </div>
             )}
           </section>

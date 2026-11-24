@@ -4,10 +4,26 @@ import { formatEstimateInterval, formatEstimateValue } from "../data/formatEstim
 import { BRIEF_HEADLINE_IDS } from "../data/briefExecutiveHeadlines";
 
 const HEADLINES = [
-  { key: "population", title: "U.S. adults represented" },
-  { key: "spending", title: "Total all-cause spending" },
-  { key: "paperwork", title: "Paperwork & bills time" },
-  { key: "distress", title: "Serious distress (K6 ≥ 13)" }
+  {
+    key: "population",
+    title: "U.S. population represented",
+    meaning: "Survey-weighted adults ages 18–64 meeting the operational current Long COVID definition."
+  },
+  {
+    key: "spending",
+    title: "Total national all-cause spending",
+    meaning: "2024 health care spending for the represented population—not spending attributable to Long COVID or potential savings."
+  },
+  {
+    key: "paperwork",
+    title: "Health care paperwork time",
+    meaning: "Mean annualized paperwork/navigation time among eligible later ESAQ respondents; this is a different outcome sample."
+  },
+  {
+    key: "distress",
+    title: "Serious psychological distress",
+    meaning: "Share with K6 score ≥ 13 among eligible later PSAQ respondents. Nonspecific screening, not a psychiatric diagnosis."
+  }
 ] as const;
 
 interface Props {
@@ -18,6 +34,8 @@ interface Props {
   staleRequestCount: number;
 }
 
+/** Always-on human-readable view. Strict verified records come from the reviewed
+ * Brief/source identity gate; canonical JSON and scenario are never changed. */
 export function BriefExecutiveSummary({
   brief,
   national,
@@ -47,42 +65,58 @@ export function BriefExecutiveSummary({
   return (
     <section className="brief-executive-summary" aria-labelledby="brief-executive-title">
       <header className="brief-executive-header">
-        <p className="eyebrow">EXECUTIVE SUMMARY</p>
-        <h2 id="brief-executive-title">Key figures</h2>
-        <p className="micro-caption">National descriptive · Local terrain · Planning math — kept strictly separate.</p>
+        <p className="eyebrow">REVIEWED NATIONAL EVIDENCE · PLANNING CONTEXT</p>
+        <h2 id="brief-executive-title">Executive summary</h2>
+        <p>
+          National burden, West Virginia implementation context, and analyst planning inputs have different meanings. Neither state indicators nor assumptions recalibrate the national estimates.
+        </p>
       </header>
 
       <div className="brief-executive-grid">
-        {highlights.map(({ key, title, finding }) => (
+        {highlights.map(({ key, title, meaning, finding }) => (
           <article className="brief-executive-finding" key={key}>
             <h3>{title}</h3>
             <strong className="brief-executive-value">{formatEstimateValue(finding.estimate)}</strong>
             <span className="brief-executive-interval">{formatEstimateInterval(finding.estimate)}</span>
-            <small>MEPS 2024 · {finding.estimate.estimate_id}</small>
+            <p>{meaning}</p>
+            <small>MEPS 2024 · {finding.estimate.estimate_id} · {finding.source.source_ref}</small>
           </article>
         ))}
       </div>
 
       {highlights.length !== HEADLINES.length && (
         <p role="status" className="subtle">
-          Unverified national headlines are withheld, not imputed.
+          One or more national headlines cannot be verified against this reviewed Brief and have been withheld, not imputed. Consult the original evidence records.
         </p>
       )}
 
       <div className="brief-executive-roles">
         <div>
-          <strong>West Virginia terrain</strong>
-          <p>{brief.local_context.length} indicators ({checkboxIncludedCount} selected{pilotOnlyCount ? "; +1 Simulate" : ""}).</p>
+          <strong>West Virginia implementation context</strong>
+          <p>
+            {brief.local_context.length} reviewed records included in JSON ({checkboxIncludedCount} from current checkboxes
+            {pilotOnlyCount ? "; 1 extra via Use in Strategy Lab" : ""}). HRSA/Census access indicators are not West Virginia Long COVID prevalence or costs.
+          </p>
         </div>
         <div>
-          <strong>Pilot assumptions</strong>
-          <p>{brief.scenario ? "Deterministic planning math; not savings." : "No applied scenario."}</p>
+          <strong>Applied Strategy Lab assumptions</strong>
+          <p>
+            {brief.scenario
+              ? "Deterministic planning arithmetic from applied inputs; no effect or savings inferred."
+              : "No validated applied scenario."} Defaults are assumptions, not observed evidence.
+          </p>
         </div>
         <div>
-          <strong>Data requests</strong>
-          <p>{brief.data_requests.length} current · {staleRequestCount} stale excluded.</p>
+          <strong>Operational data requests</strong>
+          <p>
+            {brief.data_requests.length} current requests included; {staleRequestCount} stale excluded until refreshed. New requests start included but may be deselected.
+          </p>
         </div>
       </div>
+
+      <p className="brief-executive-boundary">
+        The national figures are descriptive, not attributable to Long COVID or diagnostic delay; they cannot establish preventable cost, efficacy, or ROI.
+      </p>
     </section>
   );
 }

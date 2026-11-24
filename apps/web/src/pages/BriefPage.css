@@ -29,13 +29,43 @@
   box-shadow: var(--do-shadow-soft);
 }
 
+.brief-print-controls {
+  display: grid;
+  gap: 8px;
+}
+
 .brief-concept-strip {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 8px 16px;
-  padding: 8px 4px;
+  padding: 6px 2px;
   font-size: 0.82rem;
+}
+
+.brief-decision-trace {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--do-border);
+}
+
+.brief-decision-trace h3 {
+  margin: 0 0 8px;
+  font-size: 0.96rem;
+}
+
+.brief-executive-finding p {
+  margin: 4px 0;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: var(--do-text);
+}
+
+.brief-executive-boundary {
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: var(--do-text-muted);
 }
 
 .brief-concept-toggle {
@@ -221,13 +251,41 @@
 
 @media print {
   @page {
-    @bottom-left { content: "Diagnostic Odyssey"; font: 6.8pt sans-serif; color: #4a5562; }
-    @bottom-center { content: "Reviewed artifact · see Brief provenance"; font: 6.8pt sans-serif; color: #4a5562; }
-    @bottom-right { content: "Page " counter(page) " of " counter(pages); font: 6.8pt sans-serif; color: #4a5562; }
+    @bottom-left { content: "Diagnostic Odyssey"; font: 6.8pt sans-serif; color: #4a5568; }
+    @bottom-center { content: "Reviewed artifact · see Brief provenance"; font: 6.8pt sans-serif; color: #4a5568; }
+    @bottom-right { content: "Page " counter(page) " of " counter(pages); font: 6.8pt sans-serif; color: #4a5568; }
   }
-  .atlas-memo-shell { width: 100%; max-width: none; }
-  .brief-dock, .brief-concept-strip, .brief-appendix-control { display: none !important; }
-  .atlas-memo-body { border: 0; padding: 0; box-shadow: none; }
+  .atlas-memo-shell { width: 100%; max-width: none; gap: 10pt; }
+  .brief-dock, .brief-print-controls, .brief-concept-strip, .brief-appendix-control { display: none !important; }
+  .atlas-memo-body { border: 0; padding: 0; box-shadow: none; gap: 14pt; }
+  .atlas-memo-body, .brief-burden-group { break-inside: auto; }
+  .brief-executive-summary {
+    display: block !important;
+    color: #101b32 !important;
+    background: #ffffff !important;
+    border: 0 !important;
+    border-top: 1pt solid #9aa8be !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    padding: 5pt 0 7pt !important;
+    margin: 0 0 5pt !important;
+    font-size: 8pt;
+    line-height: 1.32;
+  }
+  .brief-executive-header h2 { font-size: 11pt; margin: 0 0 3pt; break-after: avoid-page; }
+  .brief-executive-header .eyebrow { font-size: 7pt !important; margin: 0 0 2pt; }
+  .brief-executive-header p { font-size: 8pt; margin: 0 0 5pt; }
+  .brief-executive-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4pt 16pt; }
+  .brief-executive-finding { padding-top: 3pt; border-color: #cbd5e4; break-inside: avoid; }
+  .brief-executive-finding h3 { font-size: 8pt; margin: 0 0 2pt; break-after: avoid-page; }
+  .brief-executive-value { font-size: 10pt; }
+  .brief-executive-interval { font-size: 7.5pt; color: #36455d; }
+  .brief-executive-finding p { font-size: 7.5pt; margin: 2pt 0; }
+  .brief-executive-finding small { font-size: 6.8pt; color: #36455d; }
+  .brief-executive-roles { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8pt; margin-top: 5pt; padding-top: 4pt; border-color: #cbd5e4; }
+  .brief-executive-roles strong { font-size: 7.4pt; }
+  .brief-executive-roles p { font-size: 7pt; margin: 2pt 0; }
+  .brief-executive-boundary { font-size: 7.2pt; margin: 4pt 0 0; }
   .brief-print-decision-state { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4pt 16pt; margin-bottom: 10pt; font-size: 8pt; }
   .brief-local-context-executive { display: block; }
   .brief-local-context-list { display: none !important; }

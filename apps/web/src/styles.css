@@ -246,10 +246,10 @@ main { min-height: calc(100vh - 132px); }
   main { min-height: 0; }
   .planning-brief-page { display: block; width: 100%; max-width: none; margin: 0; padding: 0; }
   .print-provenance { display: grid; gap: 3pt; margin: 0 0 12pt; padding: 8pt 10pt; border: 1px solid var(--do-border); font-size: 8.5pt; break-inside: avoid; }
-  .brief-burden-table-wrap { overflow: visible; border-color: var(--do-border); }
+  .brief-burden-table-wrap{overflow:visible;border-color:var(--do-border)}
   .brief-burden-table { min-width: 0; }
-  .brief-burden-table tr { break-inside: avoid; }
-  thead { display: table-header-group; }
+  .brief-burden-table tr{break-inside:avoid}
+  thead{display:table-header-group}
   .card { box-shadow: none; }
   a { text-decoration: none; }
 }
