@@ -94,5 +94,5 @@ test("public route retains explicit disable switch; manual workbench does not re
   assert.match(page,/AiHandoffInline brief=\{snapshot\?\.live\.brief/);
   assert.match(page,/<div className="fc-prompt-from-view">/);
   assert.match(page,/Live on-site Gemini: authenticated previews only/);
-  assert.match(vite,/process\.env\.VERCEL_ENV === "preview" && process\.env\.AI_GUIDANCE_ENABLED === "on"/);
+  assert.match(vite,/process\.env\.VERCEL_ENV === "preview" &&[\s\n]*process\.env\.AI_PREVIEW_ENABLED === "on" &&[\s\n]*process\.env\.AI_GUIDANCE_ENABLED === "on"/);
 });

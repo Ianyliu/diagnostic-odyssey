@@ -8,9 +8,10 @@ import {handleReviewedGuidance} from "../api/ai-guidance.ts";
 
 const here=dirname(fileURLToPath(import.meta.url));
 const token="operator-credential-that-is-long-enough-20261021";
+const challengeSecret="dedicated-hmac-challenge-secret-distinct-20261123";
 const key="SENTINEL_GEMINI_API_KEY_NEVER_LEAK";
 const env={VERCEL_ENV:"preview",AI_PREVIEW_ENABLED:"on",AI_GUIDANCE_ENABLED:"on",AI_PREVIEW_TOKEN:token,
- GEMINI_API_KEY:key,GEMINI_MODEL:"gemini-3.5-flash-lite"};
+ AI_CHALLENGE_SECRET:challengeSecret,GEMINI_API_KEY:key,GEMINI_MODEL:"gemini-3.5-flash-lite"};
 const national=JSON.parse(readFileSync(resolve(here,"../../../artifacts/reviewed/meps-2024-long-covid-candidate-20260926T011343Z/bundle.json"),"utf8"));
 const local=JSON.parse(readFileSync(resolve(here,"../../../artifacts/reviewed/local-context-wv-hrsa-acs-candidate-20260924T052332Z/local-context.json"),"utf8"));
 const selected=()=>({schema_version:"do.gemini-reviewed.v1",
@@ -148,4 +149,47 @@ test("source-independent canonical inline code and deployment path",()=>{
  assert.deepEqual(entry.split("\n").filter(line=>line.startsWith("import ")),
   ['import {createHash,createHmac,randomBytes,timingSafeEqual} from "node:crypto";']);
  assert.doesNotMatch(entry,/from ["'](?:\.|@diagnostic-odyssey\/)/);
+});
+test("challenge secret separation, VERCEL distributed store fail-closed, and cross-instance replay/rate limits",async()=>{
+ const s=selected();
+ const rejected=(async()=>{throw Error("should not call Gemini")}) as typeof fetch;
+ // Missing, too-short, or identical challenge secret fails closed with 503
+ for(const badEnv of [
+  {...env,AI_CHALLENGE_SECRET:undefined},
+  {...env,AI_CHALLENGE_SECRET:"too-short"},
+  {...env,AI_CHALLENGE_SECRET:token},
+  {...env,AI_CHALLENGE_SECRET:key}
+ ]){
+  const r=await handleReviewedGuidance(request("prepare",s),badEnv,rejected);
+  assert.equal(r.status,503);
+  assert.deepEqual(await r.json(),{error:"challenge_secret_not_configured"});
+ }
+ // Deployed Vercel without KV/Upstash fails closed with 503
+ const noKv=await handleReviewedGuidance(request("prepare",s),{...env,VERCEL:"1"},rejected);
+ assert.equal(noKv.status,503);
+ assert.deepEqual(await noKv.json(),{error:"distributed_store_not_configured"});
+ // Distributed state store blocks replay across independent serverless instances and throttles prepare+analyze
+ const challenges=new Set<string>();
+ const counts=new Map<string,number>();
+ const distributedStore={
+  async consumeChallenge(k:string){if(challenges.has(k))return "replay" as const;challenges.add(k);return "consumed" as const},
+  async incrementRateLimit(k:string,_w:number,lim:number){const n=(counts.get(k)??0)+1;counts.set(k,n);return n<=lim}
+ };
+ const prep=await handleReviewedGuidance(request("prepare",s),env,mock,distributedStore);
+ assert.equal(prep.status,200);
+ const {challenge}=await prep.json() as {challenge:string};
+ // Challenge signed with AI_CHALLENGE_SECRET cannot verify with a different AI_CHALLENGE_SECRET
+ assert.equal((await handleReviewedGuidance(request("analyze",s,challenge),{...env,AI_CHALLENGE_SECRET:"another-distinct-secret-value-at-least-32-chars"},rejected,distributedStore)).status,409);
+ // Replayed across "second instance" using shared distributedStore
+ const firstAnalyze=await handleReviewedGuidance(request("analyze",s,challenge),env,mock,distributedStore);
+ assert.equal(firstAnalyze.status,200);
+ const replayAnalyze=await handleReviewedGuidance(request("analyze",s,challenge),env,mock,distributedStore);
+ assert.equal(replayAnalyze.status,409);
+ // Shared rate-limit budget (12 total across prepare/analyze; 4 used above -> 8 remaining)
+ for(let i=0;i<8;i++){
+  const p=await handleReviewedGuidance(request("prepare",s),env,mock,distributedStore);
+  assert.equal(p.status,200);
+ }
+ const throttled=await handleReviewedGuidance(request("prepare",s),env,rejected,distributedStore);
+ assert.equal(throttled.status,429);
 });

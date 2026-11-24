@@ -19,10 +19,12 @@ export interface PromptGoalSuggestion {
 }
 
 const STARTER_CHIPS: ReadonlyArray<{ label: string; goal: AiGoal }> = [
-  { label: "Brief leadership on hidden costs", goal: "executive" },
-  { label: "Find the biggest pilot bottleneck", goal: "pilot_planning" },
-  { label: "List what data to verify first", goal: "data_gaps" },
-  { label: "Audit evidence limits", goal: "evidence_audit" }
+  { label: "Comprehensive review", goal: "comprehensive" },
+  { label: "Brief leadership", goal: "executive" },
+  { label: "Pilot bottlenecks", goal: "pilot_planning" },
+  { label: "Data to verify first", goal: "data_gaps" },
+  { label: "Audit evidence limits", goal: "evidence_audit" },
+  { label: "Technical methods", goal: "technical" }
 ];
 
 interface Props {
@@ -34,17 +36,21 @@ interface Props {
 export function AiHandoff(props: Props) {
   const [open, setOpen] = useState(false);
   return (
-    <>
+    <div className="ai-handoff-launch">
       <button
         className="button secondary"
         type="button"
         onClick={() => setOpen(true)}
         aria-haspopup="dialog"
+        aria-describedby="ai-handoff-launch-note"
       >
-        Quick AI Prompt
+        Analyze with AI
       </button>
+      <small id="ai-handoff-launch-note" className="ai-handoff-launch-note">
+        * Manual prompt handoff only · No live AI model or API calls.
+      </small>
       {open && createPortal(<HandoffPanel {...props} inline={false} onClose={() => setOpen(false)} />, document.body)}
-    </>
+    </div>
   );
 }
 
@@ -115,11 +121,15 @@ function HandoffPanel({
   };
 
   const lastSuggestionSerial = useRef(suggestion?.serial);
+  const updatePromptOptionsRef = useRef(updatePromptOptions);
+  updatePromptOptionsRef.current = updatePromptOptions;
+  const researchModulesRef = useRef(researchModules);
+  researchModulesRef.current = researchModules;
   useEffect(() => {
     if (!suggestion || suggestion.serial === lastSuggestionSerial.current) return;
     lastSuggestionSerial.current = suggestion.serial;
-    updatePromptOptions(suggestion.goal, researchModules);
-  });
+    updatePromptOptionsRef.current(suggestion.goal, researchModulesRef.current);
+  }, [suggestion]);
 
   const snapshot = session.snapshot;
   const payload = snapshot?.envelope.payload;
@@ -127,6 +137,8 @@ function HandoffPanel({
   useLayoutEffect(() => {
     transferEpoch.current++;
   }, [identity, snapshot]);
+
+  const backdropPointerDown = useRef(false);
 
   useLayoutEffect(() => {
     if (inline) {
@@ -138,16 +150,13 @@ function HandoffPanel({
     }
     const dialog = dialogRef.current!;
     const previousFocus = document.activeElement;
-    const previousOverflow = document.body.style.overflow;
     mounted.current = true;
     dialog.showModal();
-    document.body.style.overflow = "hidden";
     goalRef.current?.focus();
     return () => {
       mounted.current = false;
       transferEpoch.current++;
-      dialog.close();
-      document.body.style.overflow = previousOverflow;
+      if (dialog.open) dialog.close();
       if (previousFocus instanceof HTMLElement && previousFocus.isConnected) previousFocus.focus();
     };
   }, [inline]);
@@ -216,6 +225,7 @@ function HandoffPanel({
             <button
               key={chip.goal}
               type="button"
+              aria-pressed={goal === chip.goal}
               className={`ai-starter-chip${goal === chip.goal ? " is-active" : ""}`}
               onClick={() => updatePromptOptions(chip.goal, researchModules)}
             >
@@ -344,21 +354,31 @@ function HandoffPanel({
 
         <div className="ai-handoff-provider-area">
           <h3>Copy &amp; open an AI</h3>
-          <div className="ai-handoff-actions">
-            {providers.map(provider => (
-              <button
-                key={provider.id}
-                className="button secondary"
-                type="button"
-                disabled={!current || copying}
-                onClick={() => void copyAndOpen(provider)}
-              >
-                Copy &amp; open {provider.label}
-              </button>
-            ))}
-          </div>
+          <p className="ai-handoff-help">
+            Review the complete preview first; do not share PHI or confidential content. Clicking attempts a local clipboard copy and opens the approved provider homepage, not a chat submission. Paste manually only after reviewing the provider&apos;s data terms. Long pastes may become attachments.
+          </p>
+          {providers.length > 0 ? (
+            <div className="ai-handoff-actions">
+              {providers.map(provider => (
+                <button
+                  key={provider.id}
+                  className="button secondary"
+                  type="button"
+                  disabled={!current || copying}
+                  onClick={() => void copyAndOpen(provider)}
+                >
+                  Copy &amp; open {provider.label}
+                </button>
+              ))}
+            </div>
+          ) : (
+            <p className="ai-handoff-help">
+              Provider launch is not enabled for this deployment. You can still Copy, Download or select the full prompt manually.
+            </p>
+          )}
           {openedProvider && (
             <p className="ai-handoff-help">
+              If the tab did not open:{" "}
               <a href={openedProvider.home} target="_blank" rel="noopener noreferrer">
                 Open {openedProvider.label} manually
               </a>
@@ -389,9 +409,28 @@ function HandoffPanel({
   return (
     <dialog
       ref={dialogRef}
+      {...({ closedby: "any" } as Record<string, string>)}
       open={inline || undefined}
       className="ai-handoff-dialog"
       aria-labelledby="ai-handoff-title"
+      onPointerDown={event => {
+        backdropPointerDown.current = event.target === dialogRef.current;
+      }}
+      onPointerUp={event => {
+        const dialog = dialogRef.current;
+        if (!backdropPointerDown.current || !dialog || event.target !== dialog) {
+          backdropPointerDown.current = false;
+          return;
+        }
+        backdropPointerDown.current = false;
+        const rect = dialog.getBoundingClientRect();
+        const outside =
+          event.clientX < rect.left ||
+          event.clientX > rect.right ||
+          event.clientY < rect.top ||
+          event.clientY > rect.bottom;
+        if (outside) onClose?.();
+      }}
       onKeyDown={event => {
         if (event.key !== "Tab") return;
         const controls = Array.from(

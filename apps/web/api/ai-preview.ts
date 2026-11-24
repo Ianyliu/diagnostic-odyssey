@@ -343,12 +343,85 @@ function assertOutput(out:unknown,input:PlanningGuidanceInputV1,authority:Verifi
 
 // BEGIN_SYNTHETIC_ENDPOINT
 type Environment = Record<string, string | undefined>;
+type PreviewStateStore = {
+ incrementRateLimit(key:string,windowSeconds:number,limit:number):Promise<boolean>;
+};
 const authority: VerifiedAuthority = {narrative:null, hints:null};
 const hex = "a".repeat(64);
 const modelAllowlist = new Set(["gemini-3.5-flash-lite", "gemini-2.5-flash-lite"]);
-const headers = {"Cache-Control":"no-store","X-Content-Type-Options":"nosniff"};
+const headers = {"Cache-Control":"no-store","X-Content-Type-Options":"nosniff","Referrer-Policy":"no-referrer"};
+const syntheticLimits = new Map<string,{count:number,start:number}>();
 
 function json(code:number,data:unknown) {return Response.json(data,{status:code,headers});}
+
+function createMemoryPreviewStore():PreviewStateStore {
+ return {
+  async incrementRateLimit(key:string,windowSeconds:number,limit:number) {
+   const now=Date.now(),item=syntheticLimits.get(key);
+   if(!item||now-item.start>=windowSeconds*1000){syntheticLimits.set(key,{count:1,start:now});return true}
+   if(item.count>=limit)return false;item.count++;return true;
+  }
+ };
+}
+
+function createKvPreviewStore(url:string,token:string):PreviewStateStore {
+ const base=url.replace(/\/+$/,"");
+ return {
+  async incrementRateLimit(key:string,windowSeconds:number,limit:number) {
+   const r=await fetch(base+"/pipeline",{method:"POST",
+    headers:{"Authorization":"Bearer "+token,"Content-Type":"application/json"},
+    signal:AbortSignal.timeout(2500),
+    body:JSON.stringify([["INCR",key],["EXPIRE",key,String(windowSeconds),"NX"]])});
+   if(!r.ok)throw Error("kv_http_error");
+   const out=await r.json() as any;
+   const count=Array.isArray(out)?Number(out[0]?.result):NaN;
+   if(!Number.isFinite(count))throw Error("kv_unexpected_incr");
+   return count<=limit;
+  }
+ };
+}
+
+function resolvePreviewStore(env:Environment,override?:PreviewStateStore):{ok:true;store:PreviewStateStore}|{ok:false} {
+ if(override)return {ok:true,store:override};
+ const rawUrl=env.KV_REST_API_URL||env.UPSTASH_REDIS_REST_URL;
+ const rawToken=env.KV_REST_API_TOKEN||env.UPSTASH_REDIS_REST_TOKEN;
+ if(rawUrl||rawToken){
+  try{
+   const parsed=new URL(rawUrl??"");
+   if(parsed.protocol!=="https:"||!rawToken||rawToken.length<16)return {ok:false};
+   return {ok:true,store:createKvPreviewStore(rawUrl!,rawToken)};
+  }catch{return {ok:false}}
+ }
+ if(env.VERCEL==="1")return {ok:false};
+ return {ok:true,store:createMemoryPreviewStore()};
+}
+
+async function assertEmptyRequestBody(request:Request):Promise<boolean> {
+ const len=Number(request.headers.get("content-length")??0);
+ if(Number.isFinite(len)&&len>0)return false;
+ const reader=request.body?.getReader();
+ if(!reader)return true;
+ try{
+  while(true){
+   const part=await reader.read();
+   if(part.done)return true;
+   if(part.value.byteLength>0){await reader.cancel();return false}
+  }
+ }catch{return false}
+}
+
+async function boundedProviderJson(response:Response):Promise<any> {
+ const reader=response.body?.getReader();if(!reader)throw Error("empty provider response");
+ const chunks:Uint8Array[]=[];let length=0;
+ while(true){
+  const p=await reader.read();if(p.done)break;length+=p.value.byteLength;
+  if(length>32768){await reader.cancel();throw Error("provider response oversized")}
+  chunks.push(p.value);
+ }
+ const all=new Uint8Array(length);let offset=0;
+ for(const part of chunks){all.set(part,offset);offset+=part.length}
+ return JSON.parse(new TextDecoder("utf-8",{fatal:true}).decode(all));
+}
 
 function syntheticInput():PlanningGuidanceInputV1 {
  return {
@@ -386,16 +459,25 @@ function verifyBearer(header:string|null,secret:string):boolean {
 
 /** The provider receives only a fixed server-owned synthetic fixture, no browser data. */
 export async function handleSyntheticPreview(
- request:Request,env:Environment=process.env,providerFetch:typeof fetch=fetch
+ request:Request,env:Environment=process.env,providerFetch:typeof fetch=fetch,stateStore?:PreviewStateStore
 ):Promise<Response> {
  if(env.VERCEL_ENV!=="preview"||env.AI_PREVIEW_ENABLED!=="on")
   return json(404,{error:"not_found"});
  if(request.method!=="POST")return json(405,{error:"method_not_allowed"});
  if(!env.AI_PREVIEW_TOKEN||!verifyBearer(request.headers.get("authorization"),env.AI_PREVIEW_TOKEN))
   return json(401,{error:"unauthorized"});
- if((await request.text()).length!==0)return json(400,{error:"body_not_allowed"});
+ const origin=request.headers.get("origin");
+ if(origin&&origin!==new URL(request.url).origin)return json(403,{error:"origin_denied"});
+ if(!(await assertEmptyRequestBody(request)))return json(400,{error:"body_not_allowed"});
  const model=env.GEMINI_MODEL||"gemini-3.5-flash-lite";
  if(!env.GEMINI_API_KEY||!modelAllowlist.has(model))return json(503,{error:"provider_not_configured"});
+ const resolvedStore=resolvePreviewStore(env,stateStore);
+ if(!resolvedStore.ok)return json(503,{error:"distributed_store_not_configured"});
+ const rateKey="do:rate:preview:"+sha(env.AI_PREVIEW_TOKEN);
+ let allowed:boolean;
+ try{allowed=await resolvedStore.store.incrementRateLimit(rateKey,300,12)}
+ catch{return json(503,{error:"distributed_store_unavailable"})}
+ if(!allowed)return json(429,{error:"preview_rate_limited"});
 
  const input=syntheticInput();
  assertInput(input,authority);
@@ -411,7 +493,7 @@ export async function handleSyntheticPreview(
   response=await providerFetch(
    "https://generativelanguage.googleapis.com/v1beta/models/"+encodeURIComponent(model)+":generateContent",
    {method:"POST",headers:{"Content-Type":"application/json","x-goog-api-key":env.GEMINI_API_KEY},
-    signal:AbortSignal.timeout(8000),
+    signal:AbortSignal.any([AbortSignal.timeout(8000),request.signal]),
     body:JSON.stringify({
      systemInstruction:{parts:[{text:system}]},
      contents:[{role:"user",parts:[{text:JSON.stringify(egress)}]}],
@@ -422,7 +504,7 @@ export async function handleSyntheticPreview(
  } catch {return json(502,{error:"provider_unavailable"});}
  if(!response.ok)return json(502,{error:"provider_rejected_request"});
  try {
-  const wire=await response.json() as {
+  const wire=await boundedProviderJson(response) as {
    candidates?:{content?:{parts?:{text?:string}[]}}[];
    usageMetadata?:{promptTokenCount?:number;candidatesTokenCount?:number}
   };

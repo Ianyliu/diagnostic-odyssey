@@ -20,7 +20,9 @@ export default defineConfig({
     __DO_BUILD_PROVENANCE__: JSON.stringify(provenance),
     // Build-time public boolean only; never expose server secrets or production inference.
     __DO_GEMINI_STAGE2_PREVIEW__: JSON.stringify(
-      process.env.VERCEL_ENV === "preview" && process.env.AI_GUIDANCE_ENABLED === "on"
+      process.env.VERCEL_ENV === "preview" &&
+      process.env.AI_PREVIEW_ENABLED === "on" &&
+      process.env.AI_GUIDANCE_ENABLED === "on"
     )
   },
   server: { port: 5173 }

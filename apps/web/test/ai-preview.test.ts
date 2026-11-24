@@ -73,3 +73,26 @@ test("hallucinated ID and provider failures fail closed without secrets",async()
  const malformed=(async()=>Response.json({candidates:[{content:{parts:[{text:"{bad-json"}]}}]})) as typeof fetch;
  assert.equal((await handleSyntheticPreview(req(),env,malformed)).status,502);
 });
+test("ai-preview enforces origin, distributed rate limit, and fails closed when VERCEL lacks KV",async()=>{
+ const reject=(async()=>{throw Error("must not call Gemini")}) as typeof fetch;
+ const wrongOrigin=new Request(url,{method:"POST",headers:{"Authorization":"Bearer "+token,"Origin":"https://attacker.invalid"}});
+ assert.equal((await handleSyntheticPreview(wrongOrigin,env,reject)).status,403);
+ const noKv=await handleSyntheticPreview(req(),{...env,VERCEL:"1"},reject);
+ assert.equal(noKv.status,503);
+ assert.deepEqual(await noKv.json(),{error:"distributed_store_not_configured"});
+ const counts=new Map<string,number>();
+ const distributedStore={
+  async incrementRateLimit(k:string,_w:number,lim:number){const n=(counts.get(k)??0)+1;counts.set(k,n);return n<=lim}
+ };
+ let okCalls=0;
+ const okNet=(async(_u:RequestInfo|URL,init?:RequestInit)=>{
+  okCalls++;
+  const e=JSON.parse(JSON.parse(String(init?.body)).contents[0].parts[0].text);
+  return Response.json({candidates:[{content:{parts:[{text:JSON.stringify({schema_version:"pg.v1",snapshot_fingerprint:e.snapshot_fingerprint,finding_ids:[],options:[],requests:[]})}]}}]});
+ }) as typeof fetch;
+ for(let i=0;i<12;i++){
+  assert.equal((await handleSyntheticPreview(req(),env,okNet,distributedStore)).status,200);
+ }
+ assert.equal((await handleSyntheticPreview(req(),env,reject,distributedStore)).status,429);
+ assert.equal(okCalls,12);
+});

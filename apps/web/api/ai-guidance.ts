@@ -359,6 +359,10 @@ const requiredNational = "meps-2024-long-covid-candidate-20260926T011343Z";
 const requiredLocal = "local-context-wv-hrsa-acs-candidate-20260924T052332Z";
 const fixedAuthority:VerifiedAuthority={narrative:null,hints:null};
 const allowedModels=new Set(["gemini-3.5-flash-lite","gemini-2.5-flash-lite"]);
+type PreviewStateStore={
+ consumeChallenge(key:string,ttlSeconds:number):Promise<"consumed"|"replay">;
+ incrementRateLimit(key:string,windowSeconds:number,limit:number):Promise<boolean>;
+};
 const safeHeaders={"Cache-Control":"no-store","X-Content-Type-Options":"nosniff","Referrer-Policy":"no-referrer"};
 const limits=new Map<string,{count:number,start:number}>();
 const challengeMaxAgeMs=90000;
@@ -368,6 +372,70 @@ const idCode=(s:string)=>s.replace(/[^A-Za-z0-9_.:-]/g,"_").slice(0,79);
 function verifyOperator(h:string|null,secret:string):boolean {
  if(!h?.startsWith("Bearer ")||h.length>2048||secret.length<32)return false;
  return timingSafeEqual(createHash("sha256").update(h.slice(7)).digest(),createHash("sha256").update(secret).digest());
+}
+function hasDedicatedChallengeSecret(env:Environment):boolean {
+ const secret=env.AI_CHALLENGE_SECRET,token=env.AI_PREVIEW_TOKEN,apiKey=env.GEMINI_API_KEY;
+ if(typeof secret!=="string"||secret.length<32)return false;
+ const secretDigest=createHash("sha256").update(secret).digest();
+ for(const other of [token,apiKey]){
+  if(typeof other==="string"&&other.length>0&&
+   timingSafeEqual(secretDigest,createHash("sha256").update(other).digest()))return false;
+ }
+ return true;
+}
+function createMemoryStateStore():PreviewStateStore {
+ return {
+  async consumeChallenge(key:string,ttlSeconds:number){
+   const now=Date.now();
+   if(consumedChallenges.size>1024)for(const [k,exp] of consumedChallenges){if(exp<now)consumedChallenges.delete(k)}
+   if(consumedChallenges.has(key))return "replay";
+   consumedChallenges.set(key,now+ttlSeconds*1000);
+   return "consumed";
+  },
+  async incrementRateLimit(key:string,windowSeconds:number,limit:number){
+   const now=Date.now(),item=limits.get(key);
+   if(!item||now-item.start>=windowSeconds*1000){limits.set(key,{count:1,start:now});return true}
+   if(item.count>=limit)return false;item.count++;return true;
+  }
+ };
+}
+function createKvStateStore(url:string,token:string):PreviewStateStore {
+ const base=url.replace(/\/+$/,"");
+ const kvPost=async(path:string,body?:unknown)=>{
+  const r=await fetch(base+path,{method:"POST",
+   headers:{"Authorization":"Bearer "+token,...(body!==undefined?{"Content-Type":"application/json"}:{})},
+   signal:AbortSignal.timeout(2500),...(body!==undefined?{body:JSON.stringify(body)}:{})});
+  if(!r.ok)throw Error("kv_http_error");
+  return await r.json() as any;
+ };
+ return {
+  async consumeChallenge(key:string,ttlSeconds:number){
+   const out=await kvPost("",["SET",key,"1","EX",String(ttlSeconds),"NX"]);
+   if(out?.result==="OK")return "consumed";
+   if(out?.result===null)return "replay";
+   throw Error("kv_unexpected_set");
+  },
+  async incrementRateLimit(key:string,windowSeconds:number,limit:number){
+   const out=await kvPost("/pipeline",[["INCR",key],["EXPIRE",key,String(windowSeconds),"NX"]]);
+   const count=Array.isArray(out)?Number(out[0]?.result):NaN;
+   if(!Number.isFinite(count))throw Error("kv_unexpected_incr");
+   return count<=limit;
+  }
+ };
+}
+function resolveStateStore(env:Environment,override?:PreviewStateStore):{ok:true;store:PreviewStateStore}|{ok:false}{
+ if(override)return {ok:true,store:override};
+ const rawUrl=env.KV_REST_API_URL||env.UPSTASH_REDIS_REST_URL;
+ const rawToken=env.KV_REST_API_TOKEN||env.UPSTASH_REDIS_REST_TOKEN;
+ if(rawUrl||rawToken){
+  try{
+   const parsed=new URL(rawUrl??"");
+   if(parsed.protocol!=="https:"||!rawToken||rawToken.length<16)return {ok:false};
+   return {ok:true,store:createKvStateStore(rawUrl!,rawToken)};
+  }catch{return {ok:false}}
+ }
+ if(env.VERCEL==="1")return {ok:false};
+ return {ok:true,store:createMemoryStateStore()};
 }
 function loadTrustedRegistry():Registry {
  if(sha(nationalBytes)!==nationalSha||sha(localBytes)!==localSha)throw Error("reviewed source byte integrity failed");
@@ -487,29 +555,18 @@ async function boundedJson(request:Request):Promise<unknown>{
  for(const chunk of chunks){all.set(chunk,offset);offset+=chunk.length}
  return JSON.parse(new TextDecoder("utf-8",{fatal:true}).decode(all));
 }
-function signedChallenge(s:BriefSelection,token:string) {
+function signedChallenge(s:BriefSelection,secret:string) {
  const now=Date.now(),nonce=randomBytes(16).toString("hex"),message=now+"."+nonce+"."+sha(canonical(s));
- const mac=createHmac("sha256",token).update(message).digest("hex");
+ const mac=createHmac("sha256",secret).update(message).digest("hex");
  return now+"."+nonce+"."+mac;
 }
-function checkChallenge(s:BriefSelection,token:string,value:unknown):boolean{
+function verifyChallengeSignature(s:BriefSelection,secret:string,value:unknown):boolean{
  if(typeof value!=="string"||!/^\d{13}\.[0-9a-f]{32}\.[0-9a-f]{64}$/.test(value))return false;
  const [time,nonce,mac]=value.split(".");
  const t=Number(time);
  if(!Number.isSafeInteger(t)||t>Date.now()+5000||Date.now()-t>challengeMaxAgeMs)return false;
- const expected=createHmac("sha256",token).update(time+"."+nonce+"."+sha(canonical(s))).digest();
- if(!timingSafeEqual(expected,Buffer.from(mac,"hex")))return false;
- // Same-instance single use; distributed replay protection requires an external durable store.
- const now=Date.now();
- if(consumedChallenges.size>1024)for(const [k,expiration] of consumedChallenges){if(expiration<now)consumedChallenges.delete(k)}
- if(consumedChallenges.has(value))return false;
- consumedChallenges.set(value,t+challengeMaxAgeMs);
- return true;
-}
-function acceptRate(token:string){
- const key=sha(token),now=Date.now(),item=limits.get(key);
- if(!item||now-item.start>=300000){limits.set(key,{count:1,start:now});return true}
- if(item.count>=12)return false;item.count++;return true;
+ const expected=createHmac("sha256",secret).update(time+"."+nonce+"."+sha(canonical(s))).digest();
+ return timingSafeEqual(expected,Buffer.from(mac,"hex"));
 }
 async function boundedProviderJson(response:Response):Promise<any>{
  const reader=response.body?.getReader();if(!reader)throw Error("empty provider response");
@@ -521,7 +578,7 @@ async function boundedProviderJson(response:Response):Promise<any>{
 }
 /** Protected Preview-only; no arbitrary Brief JSON, scenario results, or client-owned values. */
 export async function handleReviewedGuidance(request:Request,
- env:Environment=process.env,providerFetch:typeof fetch=fetch):Promise<Response>{
+ env:Environment=process.env,providerFetch:typeof fetch=fetch,stateStore?:PreviewStateStore):Promise<Response>{
  if(env.VERCEL_ENV!=="preview"||env.AI_PREVIEW_ENABLED!=="on"||env.AI_GUIDANCE_ENABLED!=="on")
   return jsonResponse(404,{error:"not_found"});
  if(request.method!=="POST"&&request.method!=="GET")return jsonResponse(405,{error:"method_not_allowed"});
@@ -540,16 +597,30 @@ export async function handleReviewedGuidance(request:Request,
   selection=parseSelection(frame.selection);
   if(frame.action==="prepare"&&frame.challenge!==null)throw Error("challenge not expected");
  }catch{return jsonResponse(422,{error:"invalid_or_stale_selection"})}
+ if(!hasDedicatedChallengeSecret(env))
+  return jsonResponse(503,{error:"challenge_secret_not_configured"});
  if(!env.GEMINI_API_KEY||!allowedModels.has(env.GEMINI_MODEL||"gemini-3.5-flash-lite"))
   return jsonResponse(503,{error:"provider_not_configured"});
+ const resolvedStore=resolveStateStore(env,stateStore);
+ if(!resolvedStore.ok)return jsonResponse(503,{error:"distributed_store_not_configured"});
+ const rateKey="do:rate:guidance:"+sha(env.AI_PREVIEW_TOKEN);
+ let allowed:boolean;
+ try{allowed=await resolvedStore.store.incrementRateLimit(rateKey,300,12)}
+ catch{return jsonResponse(503,{error:"distributed_store_unavailable"})}
+ if(!allowed)return jsonResponse(429,{error:"preview_rate_limited"});
+ const challengeSecret=env.AI_CHALLENGE_SECRET!;
  if(frame.action==="prepare"){
-  return jsonResponse(200,{mode:"reviewed_evidence_preview",challenge:signedChallenge(selection,env.AI_PREVIEW_TOKEN),
+  return jsonResponse(200,{mode:"reviewed_evidence_preview",challenge:signedChallenge(selection,challengeSecret),
    expires_in_seconds:90,selected:{national:selection.finding_ids.length,local:selection.local_ids.length},
    excluded:{scenarios:true,analyst_requests:true,intervention_admission:true}});
  }
- if(!checkChallenge(selection,env.AI_PREVIEW_TOKEN,frame.challenge))
+ if(!verifyChallengeSignature(selection,challengeSecret,frame.challenge))
   return jsonResponse(409,{error:"stale_or_replayed_selection"});
- if(!acceptRate(env.AI_PREVIEW_TOKEN))return jsonResponse(429,{error:"preview_rate_limited"});
+ const replayKey="do:challenge:"+sha(String(frame.challenge));
+ let consumed:"consumed"|"replay";
+ try{consumed=await resolvedStore.store.consumeChallenge(replayKey,95)}
+ catch{return jsonResponse(503,{error:"distributed_store_unavailable"})}
+ if(consumed!=="consumed")return jsonResponse(409,{error:"stale_or_replayed_selection"});
  let input:PlanningGuidanceInputV1,egress:ModelEgressV1;
  try{input=inputFromSelection(selection);egress=projectEgress(input,fixedAuthority)}
  catch{return jsonResponse(503,{error:"reviewed_registry_unavailable"})}

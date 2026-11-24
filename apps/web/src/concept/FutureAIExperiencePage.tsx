@@ -26,11 +26,26 @@ const suggestedPromptGoals: Record<GoalId, AiGoal> = {
 export default function FutureAIExperiencePage({ onHide }: { onHide: () => void }) {
   const snapshot = useConceptBrief(previewGeminiEnabled);
   const [goal, setGoal] = useState<GoalId>("explain_brief");
-  const [workflow, setWorkflow] = useState<"prompt" | "gemini">(previewGeminiEnabled ? "gemini" : "prompt");
+  const [workflow, setWorkflow] = useState<"prompt" | "gemini">("prompt");
   const [suggestion, setSuggestion] = useState<PromptGoalSuggestion | null>(null);
   const [validated, setValidated] = useState<{ identity: string; data: ReviewedGeminiResponse } | null>(null);
+  const workflowRefs = useRef<Partial<Record<"prompt" | "gemini", HTMLButtonElement | null>>>({});
   const controls = useRef<(HTMLButtonElement | null)[]>([]);
   const workbench = useRef<HTMLElement>(null);
+
+  function moveWorkflowTab(event: KeyboardEvent<HTMLButtonElement>, current: "prompt" | "gemini") {
+    const order: readonly ("prompt" | "gemini")[] = ["prompt", "gemini"];
+    const idx = order.indexOf(current);
+    let next: "prompt" | "gemini" | null = null;
+    if (event.key === "ArrowRight" || event.key === "ArrowDown") next = order[(idx + 1) % order.length]!;
+    else if (event.key === "ArrowLeft" || event.key === "ArrowUp") next = order[(idx + order.length - 1) % order.length]!;
+    else if (event.key === "Home") next = order[0]!;
+    else if (event.key === "End") next = order[1]!;
+    if (!next) return;
+    event.preventDefault();
+    setWorkflow(next);
+    workflowRefs.current[next]?.focus();
+  }
 
   function moveTab(event: KeyboardEvent<HTMLButtonElement>, index: number) {
     let next = index;
@@ -72,28 +87,50 @@ export default function FutureAIExperiencePage({ onHide }: { onHide: () => void 
       <section ref={workbench} className="fc-unified-workbench" aria-label="Strategy AI Studio">
         {previewGeminiEnabled && <div className="fc-workflow-switch" role="tablist" aria-label="AI workflow">
             <button
+              ref={el => { workflowRefs.current.prompt = el; }}
+              id="fc-workflow-tab-prompt"
               type="button"
               role="tab"
-              aria-selected={workflow === "gemini"}
-              onClick={() => setWorkflow("gemini")}
-            >
-              Live Gemini Advisor
-            </button>
-            <button
-              type="button"
-              role="tab"
+              tabIndex={workflow === "prompt" ? 0 : -1}
               aria-selected={workflow === "prompt"}
+              aria-controls="fc-workflow-panel-prompt"
+              onKeyDown={event => moveWorkflowTab(event, "prompt")}
               onClick={() => setWorkflow("prompt")}
             >
               Prompt Studio
             </button>
+            <button
+              ref={el => { workflowRefs.current.gemini = el; }}
+              id="fc-workflow-tab-gemini"
+              type="button"
+              role="tab"
+              tabIndex={workflow === "gemini" ? 0 : -1}
+              aria-selected={workflow === "gemini"}
+              aria-controls="fc-workflow-panel-gemini"
+              onKeyDown={event => moveWorkflowTab(event, "gemini")}
+              onClick={() => setWorkflow("gemini")}
+            >
+              Live Gemini Advisor
+            </button>
           </div>}
 
-        <div className="fc-workflow-panel" hidden={previewGeminiEnabled && workflow !== "prompt"}>
+        <div
+          className="fc-workflow-panel" hidden={previewGeminiEnabled && workflow !== "prompt"}
+          id="fc-workflow-panel-prompt"
+          role={previewGeminiEnabled ? "tabpanel" : undefined}
+          aria-labelledby={previewGeminiEnabled ? "fc-workflow-tab-prompt" : undefined}
+        >
           <AiHandoffInline brief={snapshot?.live.brief ?? null} sourceState={snapshot.live.sourceState} suggestion={suggestion} />
         </div>
 
-        {previewGeminiEnabled && <div className="fc-workflow-panel" hidden={workflow !== "gemini"}>
+        {previewGeminiEnabled && <div className="fc-workflow-panel" hidden={workflow !== "gemini"}
+            id="fc-workflow-panel-gemini"
+            role="tabpanel"
+            aria-labelledby="fc-workflow-tab-gemini"
+          >
+            {!snapshot.live.snapshot && snapshot.live.reason && (
+              <p className="caution" role="status">{snapshot.live.reason}</p>
+            )}
             <AiGeminiPanel
               snapshot={snapshot.live.snapshot}
               sourceKey={snapshot.live.sourceKey}
