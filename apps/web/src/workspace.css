@@ -407,7 +407,7 @@
 }
 
 /* Compact accessible navigation with optional Data requests companion. */
-.primary-nav a { display: inline-flex; align-items: center; justify-content: center; gap: 5px; min-height: 38px; white-space: nowrap; padding-inline: 10px; }
+.primary-nav a { display: inline-flex; align-items: center; justify-content: center; gap: 5px; min-height: 44px; white-space: nowrap; padding-inline: 10px; }
 .atlas-stage-number { font-family: var(--do-font-mono); font-size: .66rem; color: var(--do-text-muted); }
 .primary-nav a.active .atlas-stage-number { color: var(--do-accent); }
 .atlas-nav-divider { width: 1px; height: 18px; background: var(--do-border); margin-inline: 4px; flex-shrink: 0; }
