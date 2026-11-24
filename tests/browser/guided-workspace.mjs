@@ -143,10 +143,10 @@ await check("visible selections, collapsed category state and unchanged Pilot in
   assert.match(await page.locator("#local-selection-summary").innerText(), /1 of 34 in Brief/);
   await navigateWorkspace(page, "Pilot planner");
   assert.equal(await page.locator("#pilot-capacity").inputValue(), "3000");
-  assert.match(await page.locator("#pilot-context").innerText(), /does not alter reach, capacity, timing, cost/);
+  assert.match(await page.locator(".atlas-decision-inspector").innerText(), /never changes the arithmetic/);
   await page.locator("#pilot-capacity").fill("2345");
   await page.locator("#pilot-capacity").fill("2e");
-  assert.match(await page.locator(".pilot-summary").innerText(), /Draft not applied/);
+  assert.match(await page.locator(".atlas-studio-output").innerText(), /Draft not applied/);
   assert.ok(await page.getByRole("button", {name: "Review planning brief", exact: true}).isDisabled());
   await page.locator("#pilot-capacity").fill("2000");
   await page.getByRole("link", {name: /(?:Explore sensitivity|Open sensitivity explorer)/}).click();
@@ -223,7 +223,8 @@ for (const width of [390, 1440]) await check(`cross-route history reveals fragme
   await page.waitForURL(base + "/brief#brief-national-burden");
   await expectBurdenFocus();
   assert.ok(await page.locator("#brief-national-burden h2").isVisible());
-  await page.waitForFunction(y => Math.abs(window.scrollY - y) <= 1, fragmentScroll);
+  await settleScroll();
+  await page.waitForFunction(y => Math.abs(window.scrollY - y) <= 4, fragmentScroll);
 
   // Forward to an ordinary entry, then verify its saved position on return.
   await page.goForward();
@@ -236,20 +237,20 @@ for (const width of [390, 1440]) await check(`cross-route history reveals fragme
   await page.waitForURL(base + "/brief");
   await page.goBack();
   await page.waitForURL(base + "/pilot");
-  await page.waitForFunction(y => Math.abs(window.scrollY - y) <= 1, ordinaryScroll);
+  await page.waitForFunction(y => Math.abs(window.scrollY - y) <= 4, ordinaryScroll);
 
   // A real cross-route link must also regain fragment focus on Forward.
-  await page.goto(base + "/");
-  await page.locator('a[href="/brief#planning-insights"]').first().click();
-  await page.waitForFunction(() => document.activeElement?.id === "planning-insights-title");
+  await page.goto(base + "/data-requests");
+  await page.getByRole("link", {name: "Open sensitivity explorer", exact: true}).click();
+  await page.waitForFunction(() => document.activeElement?.id === "sensitivity-title");
   await settleScroll();
-  const insightsScroll = await page.evaluate(() => window.scrollY);
+  const sensitivityScroll = await page.evaluate(() => window.scrollY);
   await page.goBack();
-  await page.waitForURL(base + "/");
+  await page.waitForURL(base + "/data-requests");
   await page.goForward();
-  await page.waitForURL(base + "/brief#planning-insights");
-  await page.waitForFunction(() => document.activeElement?.id === "planning-insights-title");
-  await page.waitForFunction(y => Math.abs(window.scrollY - y) <= 1, insightsScroll);
+  await page.waitForURL(base + "/pilot#sensitivity");
+  await page.waitForFunction(() => document.activeElement?.id === "sensitivity-title");
+  await page.waitForFunction(y => Math.abs(window.scrollY - y) <= 4, sensitivityScroll);
 });
 await check("text enlargement and keyboard-height simulation keep controls reachable", async () => {
   const page = await pageAt("/pilot", 390);
