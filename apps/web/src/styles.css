@@ -46,7 +46,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 
 main { min-height: calc(100vh - 132px); }
 .page { width: min(1240px, calc(100% - 48px)); margin: 0 auto; padding: 32px 0 64px; }
-.page-stack { display: grid; gap: 28px; }
+.page-stack { display: grid; grid-template-columns: minmax(0, 1fr); min-width: 0; gap: 28px; }
 
 .page-heading { display: grid; gap: 8px; }
 .page-heading h1 {
@@ -173,6 +173,9 @@ main { min-height: calc(100vh - 132px); }
 .guardrail p { margin: 0; color: var(--do-text-muted); }
 
 .technical-disclosure {
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
   padding: 12px 16px;
   border: 1px solid var(--do-border);
   border-radius: var(--do-radius-control);
@@ -183,8 +186,25 @@ main { min-height: calc(100vh - 132px); }
 .technical-disclosure summary { cursor: pointer; font-weight: 650; color: var(--do-text); }
 .technical-disclosure p { margin: 8px 0 0; }
 
-.brief-burden-table-wrap{max-width:100%;overflow-x:auto;border:1px solid var(--do-border);border-radius:var(--do-radius-control)}
+.brief-burden-table-wrap{width:100%;min-width:0;max-width:100%;overflow-x:auto;border:1px solid var(--do-border);border-radius:var(--do-radius-control)}
 .brief-burden-table{width:100%;min-width:580px;border-collapse:collapse;background:var(--do-surface)}
+@media (max-width: 680px) {
+  .brief-burden-table {
+    min-width: 0;
+    width: 100%;
+    table-layout: fixed;
+    font-size: 0.76rem;
+  }
+  .brief-burden-table th,
+  .brief-burden-table td {
+    padding: 8px 6px;
+    overflow-wrap: anywhere;
+  }
+  .brief-burden-table th:first-child,
+  .brief-burden-table td:first-child {
+    width: 42%;
+  }
+}
 .brief-burden-table th,.brief-burden-table td{padding:10px 12px;border-bottom:1px solid var(--do-border);text-align:left;vertical-align:top}
 .brief-burden-table thead th{background:var(--do-surface-elevated);color:var(--do-text);font-size:0.75rem;text-transform:uppercase;letter-spacing:0.06em}
 .brief-burden-table tbody th{font-weight:650;color:var(--do-text)}
