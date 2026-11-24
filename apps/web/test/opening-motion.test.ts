@@ -43,23 +43,18 @@ test("reduced motion or storage failure produces the static composition", () => 
 test("sessionStorageOrNull handles missing window, accessible storage, and getter security errors", () => {
   const originalWindow = Object.getOwnPropertyDescriptor(globalThis, "window");
   try {
-    // 1. Accessible window.sessionStorage
     const dummyStorage = { getItem: () => null } as unknown as Storage;
-    Object.defineProperty(globalThis, "window", {value: {sessionStorage: dummyStorage}, configurable: true, writable: true});
+    Object.defineProperty(globalThis, "window", { value: { sessionStorage: dummyStorage }, configurable: true, writable: true });
     assert.equal(sessionStorageOrNull(), dummyStorage);
 
-    // 2. window.sessionStorage getter throws error (e.g. SecurityError / privacy settings)
     const errorWindow = {};
     Object.defineProperty(errorWindow, "sessionStorage", {
-      get() {
-        throw new Error("SecurityError: Access is denied");
-      },
+      get() { throw new Error("SecurityError: Access is denied"); },
       configurable: true
     });
-    Object.defineProperty(globalThis, "window", {value: errorWindow, configurable: true, writable: true});
+    Object.defineProperty(globalThis, "window", { value: errorWindow, configurable: true, writable: true });
     assert.equal(sessionStorageOrNull(), null);
 
-    // 3. window is undefined
     delete (globalThis as Record<string, unknown>).window;
     assert.equal(sessionStorageOrNull(), null);
   } finally {
@@ -73,15 +68,15 @@ test("reducedMotionRequested handles state, unavailable APIs, and missing window
   const originalWindow = Object.getOwnPropertyDescriptor(globalThis, "window");
   try {
     const cases = [
-      [{matchMedia: () => ({matches: true})}, true],
-      [{matchMedia: () => ({matches: false})}, false],
-      [{matchMedia() {throw new Error("blocked");}}, true],
+      [{ matchMedia: () => ({ matches: true }) }, true],
+      [{ matchMedia: () => ({ matches: false }) }, false],
+      [{ matchMedia() { throw new Error("blocked"); } }, true],
       [{}, true],
-      [{matchMedia: () => ({})}, true],
-      [{matchMedia: () => null}, true]
+      [{ matchMedia: () => ({}) }, true],
+      [{ matchMedia: () => null }, true]
     ] as const;
     for (const [value, expected] of cases) {
-      Object.defineProperty(globalThis, "window", {value, configurable: true, writable: true});
+      Object.defineProperty(globalThis, "window", { value, configurable: true, writable: true });
       assert.equal(reducedMotionRequested(), expected);
     }
     Reflect.deleteProperty(globalThis, "window");
@@ -93,49 +88,30 @@ test("reducedMotionRequested handles state, unavailable APIs, and missing window
   assert.deepEqual(Object.getOwnPropertyDescriptor(globalThis, "window"), originalWindow);
 });
 
-test("opening uses session storage and remains decorative", () => {
+test("opening provenance and motion styles respect reduced motion and session boundaries", () => {
   const source = readFileSync(
     fileURLToPath(new URL("../src/pages/OpeningProvenance.tsx", import.meta.url)), "utf8"
   );
-  const motionSource = readFileSync(
-    fileURLToPath(new URL("../src/pages/openingMotion.ts", import.meta.url)), "utf8"
+  const motionCss = readFileSync(
+    fileURLToPath(new URL("../src/motion.css", import.meta.url)), "utf8"
   );
   assert.match(source, /sessionStorageOrNull/);
-  assert.match(motionSource, /window\.sessionStorage/);
   assert.doesNotMatch(source, /localStorage/);
-  assert.match(source, /className="preview-lanes" role="group" aria-label="Evidence roles remain separate"/);
-  assert.match(source, /Reviewed evidence/);
-  assert.match(source, /Local context/);
-  assert.match(source, /Analyst assumptions/);
-  assert.doesNotMatch(source, /diagnostic-odyssey-icon\.png/);
-  assert.match(source, /pointerdown/);
-  assert.match(source, /keydown/);
-  assert.match(source, /prefers-reduced-motion: reduce/);
-  assert.match(source, /<Fragment key=\{runId\}>/);
-  assert.match(source, /className="workspace-preview" data-replay-cycle=\{runId % 2\}/);
-  assert.doesNotMatch(source, /className="workspace-preview" key=\{runId\}/);
+  assert.match(motionCss, /prefers-reduced-motion: reduce/);
 });
 
 test("manual replay is independent of the once-per-session flag", async () => {
-  const {canReplayOpening, OPENING_DURATION_MS} = await import("../src/pages/openingMotion.ts");
+  const { canReplayOpening, OPENING_DURATION_MS } = await import("../src/pages/openingMotion.ts");
   assert.equal(canReplayOpening(false), true);
   assert.equal(canReplayOpening(true), false);
   assert.ok(OPENING_DURATION_MS >= 3500 && OPENING_DURATION_MS < 5000);
 });
 
-test("first-screen panel and all interpretation boundaries survive compact styling", () => {
+test("Overview tactical arc keeps four stage nodes and clean layer boundaries", () => {
   const overview = readFileSync(fileURLToPath(new URL("../src/pages/OverviewPage.tsx", import.meta.url)), "utf8");
-  const panel = readFileSync(fileURLToPath(new URL("../src/pages/OpeningProvenance.tsx", import.meta.url)), "utf8");
-  const css = readFileSync(fileURLToPath(new URL("../src/pages/OverviewPage.css", import.meta.url)), "utf8");
-  assert.match(overview,/className="overview-hero-motion"/);
-  assert.equal((overview.match(/<OpeningProvenance /g)??[]).length,1);
-  assert.match(overview,/<HeadlineFindings \/>/);
-  for(const label of ["Reviewed evidence","Local context","Analyst assumptions","Planning Brief"])
-    assert.ok(panel.includes(label),label);
-  for(const label of ["Replay animation","visibilitychange","pagehide","not a combined scientific score"])
-    assert.ok(panel.includes(label),label);
-  assert.match(css,/@keyframes circuit-route/);
-  assert.match(css,/@keyframes workspace-unfold-replay/);
-  assert.match(css,/@media \(prefers-reduced-motion: reduce\)/);
-  assert.match(css,/\.preview-output \{ display: grid;/);
+  assert.match(overview, /tactical-arc-shell/);
+  assert.match(overview, /monolith-strip/);
+  for (const label of ["National Burden", "Local Terrain", "Pilot Simulation", "Action Brief"]) {
+    assert.ok(overview.includes(label), label);
+  }
 });

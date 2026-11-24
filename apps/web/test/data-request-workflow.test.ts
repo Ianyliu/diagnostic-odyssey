@@ -74,7 +74,7 @@ test("analyst-created requests start selected with reversible Brief inclusion", 
   assert.match(context, /clearDataRequestsForBrief/);
   assert.match(brief, /dataRequests:\s*selectedDataRequests/);
   assert.doesNotMatch(brief, /dataRequests:\s*bundle\.data_requests/);
-  assert.match(sensitivity, /New requests start selected in the Brief/);
+  assert.match(sensitivity, /New requests start selected in Brief/);
 });
 
 

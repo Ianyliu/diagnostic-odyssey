@@ -1,21 +1,38 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Link, NavLink, Outlet, useLocation, useNavigationType } from "react-router-dom";
-import { workspaceStages, workspaceStageForPath } from "../data/workspaceNavigation";
+import { workspaceStageForPath } from "../data/workspaceNavigation";
 import { DisclosureProvider } from "./WorkspaceDisclosure";
 import "./WorkspaceNavigation.css";
 import { focusTarget, scrollToFragment } from "../data/fragmentNavigation";
 import { ThemeControl } from "./ThemeControl";
+import { EditionModal } from "./EditionModal";
 import { displayBuildProvenance, type BuildProvenance } from "../data/buildProvenance";
 
 /** Replaced with a validated Git checkout identity by Vite at build time. */
 declare const __DO_BUILD_PROVENANCE__: BuildProvenance;
 
 const savedScroll = new Map<string, number>();
+const aiStudioAvailable = import.meta.env.VITE_FUTURE_AI_EXPERIENCE_DEMO !== "off";
+
+const railItems: ReadonlyArray<{
+  to: string;
+  code: string;
+  label: string;
+  matchStage?: string;
+}> = [
+  { to: "/", code: "00", label: "Overview" },
+  { to: "/burden", code: "01", label: "Costs", matchStage: "/burden" },
+  { to: "/local-context", code: "02", label: "Terrain", matchStage: "/local-context" },
+  { to: "/pilot", code: "03", label: "Simulate", matchStage: "/pilot" },
+  { to: "/brief", code: "04", label: "Brief", matchStage: "/brief" }
+];
 
 export function AppShell() {
   const location = useLocation();
   const navigationType = useNavigationType();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [editionOpen, setEditionOpen] = useState(false);
   const initialRoute = useRef(true);
   const menuToggle = useRef<HTMLButtonElement>(null);
   const preFragmentScroll = useRef<number | null>(null);
@@ -68,7 +85,7 @@ export function AppShell() {
   useLayoutEffect(() => {
     const recordScroll = () => { lastScrollY.current = window.scrollY; };
     recordScroll();
-    window.addEventListener("scroll", recordScroll, {passive: true});
+    window.addEventListener("scroll", recordScroll, { passive: true });
     return () => {
       window.removeEventListener("scroll", recordScroll);
       savedScroll.set(location.key, lastScrollY.current);
@@ -79,8 +96,6 @@ export function AppShell() {
     setMenuOpen(false);
     const frame = requestAnimationFrame(() => {
       if (navigationType === "POP" && savedScroll.has(location.key)) {
-        // A different history entry may have closed the destination's disclosure.
-        // Reveal and focus it before restoring this entry's saved position.
         scrollToFragment(location.hash);
         window.scrollTo(0, savedScroll.get(location.key) ?? 0);
       } else if (scrollToFragment(location.hash)) {
@@ -92,26 +107,36 @@ export function AppShell() {
       }
       initialRoute.current = false;
     });
-    return () => {
-      cancelAnimationFrame(frame);
-    };
+    return () => cancelAnimationFrame(frame);
   }, [location.key, location.hash, navigationType]);
 
   const activeStage = workspaceStageForPath(location.pathname);
+  const advisorActive = location.pathname === "/advisor" || location.pathname === "/concept/future-ai";
   const buildIdentity = displayBuildProvenance(__DO_BUILD_PROVENANCE__);
 
+  const isRouteActive = (item: (typeof railItems)[number]) => {
+    if (advisorActive) return false;
+    if (item.to === "/") return location.pathname === "/";
+    return activeStage === item.matchStage;
+  };
+
   return (
-    <div className="app-shell">
+    <div className="app-shell command-shell">
       <a className="skip-link" href="#main-content">Skip to main content</a>
-      <header className="site-header">
-        <div className="header-inner">
+
+      <aside className="command-rail" aria-label="Command navigation">
+        <div className="rail-top-bar">
           <Link className="brand" to="/" aria-label="Diagnostic Odyssey, Overview">
-            <span className="brand-mark" aria-hidden="true">
-              <img src="/diagnostic-odyssey-icon.png" width="192" height="192" alt="" />
-            </span>
+            <img
+              className="brand-crest"
+              src="/diagnostic-odyssey-mark.svg"
+              width="32"
+              height="32"
+              alt=""
+            />
             <span className="brand-copy">
               <strong>Diagnostic Odyssey</strong>
-              <span>Evidence workspace</span>
+              <span>COMMAND WORKSPACE</span>
             </span>
           </Link>
           <button
@@ -121,37 +146,92 @@ export function AppShell() {
             aria-expanded={menuOpen}
             aria-controls="workspace-tools"
             onClick={() => setMenuOpen(open => !open)}
-          >{menuOpen ? "Close menu" : "Menu"}</button>
-          <nav
-            id="primary-navigation"
-            aria-label="Primary navigation"
-            className={"primary-nav" + (menuOpen ? " open" : "")}
           >
-            {workspaceStages.map(({to, label, shortLabel}, index) => (
-              <NavLink key={to} to={to} className={activeStage === to ? "active" : ""}>
-                <span className="stage-number" aria-hidden="true">{index + 1}</span>
-                <span className="stage-label">{label}</span><span className="stage-short" aria-hidden="true">{shortLabel}</span>
+            {menuOpen ? "Close" : "Menu"}
+          </button>
+        </div>
+
+        <div id="workspace-tools" className={`rail-drawer${menuOpen ? " open" : ""}`}>
+          <nav id="primary-navigation" className="rail-nav" aria-label="Primary navigation">
+            {railItems.map(item => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                end={item.to === "/"}
+                className={() => `rail-link${isRouteActive(item) ? " active" : ""}`}
+              >
+                {item.to !== "/" && <span className="rail-code" aria-hidden="true">{item.code}</span>}
+                <span className="rail-label">{item.label}</span>
               </NavLink>
             ))}
+            {aiStudioAvailable && (
+              <NavLink
+                to="/advisor"
+                className={() => `rail-link rail-link-advisor${advisorActive ? " active" : ""}`}
+              >
+                <span className="rail-dot" aria-hidden="true" />
+                <span className="rail-label">AI Strategist</span>
+              </NavLink>
+            )}
           </nav>
-          <div id="workspace-tools" className={"header-controls" + (menuOpen ? " open" : "")} hidden={!menuOpen}>
-            <nav aria-label="Supporting navigation">
-              <Link to="/">Overview</Link>
-              <Link to="/evidence">Intervention evidence &amp; limits</Link>
-              <Link to="/data-requests">Data requests</Link>
-            </nav>
+
+          <div className="rail-secondary" aria-label="Supporting routes">
+            <Link
+              to="/evidence"
+              className={`rail-sub-link${location.pathname === "/evidence" ? " active" : ""}`}
+            >
+              Evidence limits
+            </Link>
+            <Link
+              to="/data-requests"
+              className={`rail-sub-link${location.pathname === "/data-requests" ? " active" : ""}`}
+            >
+              Data requests
+            </Link>
+          </div>
+
+          <div className="rail-footer">
+            <button
+              type="button"
+              className="edition-trigger"
+              onClick={() => setEditionOpen(true)}
+              aria-haspopup="dialog"
+            >
+              <span className="edition-trigger-label">Edition 01 ▾</span>
+              <small>Long COVID · WV</small>
+            </button>
+
             <ThemeControl />
+
+            <small className="source-revision" aria-label="Application source revision">
+              {buildIdentity.url ? (
+                <a href={buildIdentity.url} target="_blank" rel="noopener noreferrer">
+                  {buildIdentity.label}
+                </a>
+              ) : (
+                buildIdentity.label
+              )}
+            </small>
           </div>
         </div>
-      </header>
-      <DisclosureProvider><main id="main-content" tabIndex={-1} data-navigation={navigationType}>
-        <Outlet />
-      </main></DisclosureProvider>
-      <footer>
-        <span>Diagnostic Odyssey</span>
-        <span>Built on public federal data: AHRQ MEPS, HRSA and Census ACS · aggregate estimates only; no patient-level records</span>
-        <small className="source-revision" aria-label="Application source revision">{buildIdentity.url ? <a href={buildIdentity.url} target="_blank" rel="noopener noreferrer">{buildIdentity.label}</a> : buildIdentity.label}</small>
-      </footer>
+      </aside>
+
+      <div className="command-main-column">
+        <DisclosureProvider>
+          <main id="main-content" tabIndex={-1} data-navigation={navigationType}>
+            <Outlet />
+          </main>
+        </DisclosureProvider>
+        <footer className="command-footer">
+          <span>Diagnostic Odyssey · Edition 01: Long COVID · West Virginia</span>
+          <span>AHRQ MEPS · HRSA · Census ACS · Aggregate estimates only</span>
+        </footer>
+      </div>
+
+      {editionOpen && createPortal(
+        <EditionModal open={editionOpen} onClose={() => setEditionOpen(false)} />,
+        document.body
+      )}
     </div>
   );
 }

@@ -3,9 +3,9 @@ export const THEME_STORAGE_KEY = "diagnostic-odyssey.theme";
 export type ThemePreference = "light" | "dark" | "system";
 export type ResolvedTheme = "light" | "dark";
 
-/** Browser chrome follows the existing light/dark canvas colors. */
+/** Browser chrome follows the Obsidian Command dark/light canvas colors. */
 export function getThemeColor(theme: ResolvedTheme): string {
-  return theme === "dark" ? "#09131b" : "#f5f2eb";
+  return theme === "dark" ? "#0a0b0e" : "#f4f3ee";
 }
 
 export function getThemeStorage(): Storage | null {
@@ -19,7 +19,7 @@ export function getThemeStorage(): Storage | null {
 export function parseThemePreference(value: string | null): ThemePreference {
   return value === "light" || value === "dark" || value === "system"
     ? value
-    : "system";
+    : "dark";
 }
 
 export function resolveTheme(
@@ -35,7 +35,7 @@ export function readThemePreference(
   try {
     return parseThemePreference(storage?.getItem(THEME_STORAGE_KEY) ?? null);
   } catch {
-    return "system";
+    return "dark";
   }
 }
 

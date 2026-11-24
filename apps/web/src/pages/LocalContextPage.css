@@ -1,0 +1,188 @@
+.terrain-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.terrain-selection-controls {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 0.8rem;
+  color: var(--do-text-muted);
+}
+
+.terrain-matrix-column {
+  display: grid;
+  gap: 16px;
+}
+
+.constraint-matrix {
+  display: grid;
+  gap: 6px;
+}
+
+.constraint-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 14px;
+  border-radius: 9px;
+  border: 1px solid var(--do-border);
+  background: var(--do-surface);
+}
+
+.constraint-row:hover {
+  border-color: var(--do-control-border);
+}
+
+.constraint-row.is-inspected {
+  border-color: var(--do-reviewed-text);
+  background: var(--do-surface-elevated);
+}
+
+.constraint-row.is-pinned {
+  box-shadow: inset 2px 0 0 var(--do-accent);
+}
+
+.constraint-row-main {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 240px;
+  gap: 16px;
+  align-items: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--do-text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.constraint-row-title {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.constraint-row-title strong {
+  font-size: 0.88rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--do-text);
+}
+
+.constraint-row-title span {
+  font-size: 0.74rem;
+  color: var(--do-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.constraint-row-meter {
+  display: grid;
+  gap: 4px;
+  justify-items: end;
+}
+
+.constraint-row-meter strong {
+  font-size: 0.84rem;
+  color: var(--do-text);
+}
+
+.constraint-bar-svg {
+  width: 180px;
+  height: 12px;
+  display: block;
+}
+
+.cb-track {
+  stroke: var(--do-chart-track);
+}
+
+.cb-fill {
+  fill: var(--do-chart-1);
+}
+
+.cb-moe {
+  stroke: var(--do-accent);
+}
+
+.constraint-row-pills {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pill-toggle,
+.pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--do-border);
+  background: var(--do-canvas);
+  color: var(--do-text-muted);
+  font-family: var(--do-font-mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.pill-toggle input {
+  width: 13px;
+  height: 13px;
+  margin: 0;
+  accent-color: var(--do-reviewed-text);
+}
+
+.pill-toggle.is-active {
+  border-color: var(--do-reviewed-border);
+  background: var(--do-reviewed-bg);
+  color: var(--do-reviewed-text);
+}
+
+.pill-btn.is-pinned {
+  border-color: var(--do-assumption-border);
+  background: var(--do-assumption-bg);
+  color: var(--do-accent);
+}
+
+.coming-soon-terrain {
+  display: grid;
+  gap: 6px;
+  padding: 16px 18px;
+  border-radius: 10px;
+  border: 1px dashed var(--do-border);
+  background: var(--do-surface);
+  opacity: 0.72;
+}
+
+.coming-soon-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.coming-soon-terrain p {
+  margin: 0;
+}
+
+@media (max-width: 780px) {
+  .constraint-row {
+    grid-template-columns: 1fr;
+  }
+
+  .constraint-row-main {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .constraint-row-meter {
+    justify-items: start;
+  }
+}

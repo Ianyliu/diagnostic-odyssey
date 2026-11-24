@@ -25,9 +25,7 @@ const reviewedArtifactPath = fileURLToPath(
 const rawReviewed: unknown = JSON.parse(readFileSync(reviewedArtifactPath, "utf8"));
 assertValidArtifactBundle(rawReviewed);
 const reviewedBundle: ArtifactBundle = rawReviewed;
-const reviewedEstimates = reviewedBundle.burden_domains.flatMap(
-  domain => domain.measures
-);
+const reviewedEstimates = reviewedBundle.burden_domains.flatMap(domain => domain.measures);
 const reviewedBrief = buildPlanningBrief({
   context: reviewedBundle.context,
   estimates: reviewedEstimates,
@@ -41,10 +39,7 @@ const reviewedBrief = buildPlanningBrief({
 test("reviewed Burden runtime remains 21 estimates in 13 / 4 / 4 full domain groups", () => {
   assert.equal(reviewedEstimates.length, 21);
   assert.deepEqual(
-    reviewedBundle.burden_domains.map(domain => [
-      domain.domain_id,
-      domain.measures.length
-    ]),
+    reviewedBundle.burden_domains.map(domain => [domain.domain_id, domain.measures.length]),
     [
       ["economic-healthcare", 13],
       ["healthcare-work-admin", 4],
@@ -65,9 +60,7 @@ test("reviewed Burden runtime remains 21 estimates in 13 / 4 / 4 full domain gro
     ]
   );
 
-  const groupedIds = groups.flatMap(group =>
-    group.findings.map(finding => finding.estimate_id)
-  );
+  const groupedIds = groups.flatMap(group => group.findings.map(finding => finding.estimate_id));
   assert.equal(groupedIds.length, 21);
   assert.equal(new Set(groupedIds).size, 21);
   assert.deepEqual(
@@ -90,9 +83,7 @@ test("brief grouping preserves unmatched gated findings in an explicit fallback"
     reviewedBundle.burden_domains,
     [...reviewedBrief.burden_findings, unmatched]
   );
-  const fallback = groups.find(
-    group => group.group_id === OTHER_REVIEWED_FINDINGS_GROUP_ID
-  );
+  const fallback = groups.find(group => group.group_id === OTHER_REVIEWED_FINDINGS_GROUP_ID);
 
   assert.ok(fallback);
   assert.equal(fallback.label, "Other reviewed findings");
@@ -101,41 +92,25 @@ test("brief grouping preserves unmatched gated findings in an explicit fallback"
     [unmatched.estimate_id]
   );
 
-  const groupedIds = groups.flatMap(group =>
-    group.findings.map(finding => finding.estimate_id)
-  );
+  const groupedIds = groups.flatMap(group => group.findings.map(finding => finding.estimate_id));
   assert.equal(groupedIds.length, 22);
   assert.equal(new Set(groupedIds).size, 22);
 });
 
-test("Burden and Domain pages share plain-language measure presentation", () => {
+test("Burden and Domain pages share telemetry grid and inspector provenance presentation", () => {
   const burden = readSource("../src/pages/BurdenPage.tsx");
   const domain = readSource("../src/pages/DomainPage.tsx");
-  const measures = readSource("../src/components/BurdenMeasureList.tsx");
 
-  assert.match(burden, /className="burden-domain-stack"/);
-  assert.match(burden, /formatDataStateLabel\(domain\.availability_state\)/);
-  assert.match(burden, /<BurdenMeasureList estimates=\{domain\.measures\} \/>/);
-  assert.doesNotMatch(burden, /Reviewed analytical estimate/);
-  assert.doesNotMatch(burden, />\{domain\.availability_state\}</);
+  assert.match(burden, /className="telemetry-grid"/);
+  assert.match(burden, /className="inspector-panel"/);
+  assert.match(burden, /formatDataStateLabel\(selectedDomain\.availability_state\)/);
+  assert.match(burden, /formatEstimateValue/);
+  assert.match(burden, /formatEstimateInterval/);
+  assert.match(burden, /do not add to parent total/);
 
   assert.match(domain, /formatDataStateLabel\(domain\.availability_state\)/);
-  assert.match(domain, /<BurdenMeasureList estimates=\{domain\.measures\} \/>/);
-  assert.doesNotMatch(domain, /State: \{domain\.availability_state\}/);
+  assert.match(domain, /className="telemetry-grid"/);
   assert.match(domain, /Not yet represented by a standalone reviewed domain/);
-
-  assert.match(measures, /formatEstimateValue\(estimate\)/);
-  assert.match(measures, /formatEstimateInterval\(estimate\)/);
-  assert.match(measures, /<details className="burden-measure-details technical-disclosure">/);
-  assert.match(measures, /Interpretation and technical details/);
-  assert.match(measures, /estimate\.allowed_interpretation/);
-  assert.match(measures, /estimate\.universe/);
-  assert.match(measures, /estimate\.denominator/);
-  assert.match(measures, /estimate\.system_boundary/);
-  assert.match(measures, /estimate\.source_ref/);
-  assert.match(measures, /formatReleaseStatusLabel\(estimate\.release_status\)/);
-  assert.match(measures, /estimate\.component_of_measure_id/);
-  assert.match(measures, /do not add this value to the parent total/);
 });
 
 test("Planning Brief uses semantic grouped tables and promotes every warning", () => {
@@ -167,14 +142,13 @@ test("Planning Brief uses semantic grouped tables and promotes every warning", (
 test("new grouped Brief presentation remains print-safe without hiding critical boundaries", () => {
   const styles = readSource("../src/styles.css");
 
-  assert.match(styles, /\.brief-burden-table-wrap\{[^}]*overflow-x:auto/);
-  assert.match(styles, /\.brief-burden-table\{[^}]*border-collapse:collapse/);
+  assert.match(styles, /\.brief-burden-table-wrap\s*\{[\s\S]*?overflow-x:\s*auto/);
+  assert.match(styles, /\.brief-burden-table\s*\{[\s\S]*?border-collapse:\s*collapse/);
   assert.match(styles, /@media print/);
-  assert.match(styles, /\.brief-burden-table-wrap\{overflow:visible/);
-  assert.match(styles, /thead\{display:table-header-group\}/);
-  assert.match(styles, /\.brief-burden-table tr\{break-inside:avoid/);
-  assert.doesNotMatch(styles, /\.interpretation-boundaries\s*\{[^}]*display:none/i);
-  assert.doesNotMatch(styles, /\.brief-burden-table\s*\{[^}]*display:none/i);
-  assert.match(styles, /\.brief-export-actions/);
+  assert.match(styles, /\.brief-burden-table-wrap\s*\{[\s\S]*?overflow:\s*visible/);
+  assert.match(styles, /\.brief-burden-table thead\s*\{[\s\S]*?display:\s*table-header-group/);
+  assert.match(styles, /\.brief-burden-table tr\s*\{[\s\S]*?break-inside:\s*avoid/);
+  assert.doesNotMatch(styles, /\.interpretation-boundaries\s*\{[^}]*display:\s*none/i);
+  assert.doesNotMatch(styles, /\.brief-burden-table\s*\{[^}]*display:\s*none/i);
   assert.match(styles, /\.print-provenance/);
 });

@@ -1,182 +1,256 @@
+import { useState, type KeyboardEvent } from "react";
 import { Link } from "react-router-dom";
 import { canExportEstimate } from "@diagnostic-odyssey/contracts";
 import { useArtifact } from "../data/ArtifactContext";
-import { OpeningProvenance, useOpeningMotion } from "./OpeningProvenance";
-import { HeadlineFindings } from "../components/HeadlineFindings";
-import { LandingJourney } from "../components/LandingJourney";
-import { planningInsightsEnabled } from "../data/planningInsightsEnabled";
+import { formatEstimateValue } from "../data/formatEstimateValue";
+import { formatPlanningNumber } from "../data/planningNumberFormatting";
 import "./OverviewPage.css";
 
-const journey: ReadonlyArray<readonly [
-  step: string,
-  title: string,
-  outcome: string,
-  to: string
-]> = [
-  ["1", "Describe burden", "Review national burden estimates with survey uncertainty and explicit interpretation boundaries.", "/burden"],
-  ["2", "Review local constraints", "Inspect implementation and access context without turning national burden into a local disease estimate.", "/local-context"],
-  ["3", "Scope a feasible pilot", "Set explicit planning assumptions and stress-test reach, capacity, timing, and resources.", "/pilot"],
-  ["4", "Create a planning brief", "Export reviewed evidence, selected context, assumptions, boundaries, and remaining gaps.", "/brief"]
-];
+interface TacticalNode {
+  readonly id: string;
+  readonly code: string;
+  readonly title: string;
+  readonly metric: string;
+  readonly detail: string;
+  readonly caption: string;
+  readonly to: string;
+  readonly cta: string;
+  readonly tone: "evidence" | "terrain" | "simulation" | "brief";
+  readonly x: number;
+  readonly y: number;
+}
+
+const integer = new Intl.NumberFormat("en-US");
 
 export function OverviewPage() {
-  const opening = useOpeningMotion();
-  const {bundle, localContext, localContextStatus} = useArtifact();
-  const reviewedCount = bundle?.burden_domains
-    .flatMap(domain => domain.measures)
-    .filter(canExportEstimate).length ?? 0;
-  const localIndicatorCount = localContextStatus === "loaded"
-    ? localContext?.indicators.length ?? 0
-    : null;
+  const {
+    bundle,
+    localContext,
+    localContextStatus,
+    scenarioResult,
+    selectedLocalContextIds,
+    selectedDataRequests
+  } = useArtifact();
+  const [activeNodeIndex, setActiveNodeIndex] = useState(0);
+
+  const allMeasures = bundle?.burden_domains.flatMap(domain => domain.measures) ?? [];
+  const reviewedCount = allMeasures.filter(canExportEstimate).length;
+  const meanSpendingEstimate = allMeasures.find(
+    estimate =>
+      estimate.estimate_id === "meps24-gross-all-cause-spending-mean" &&
+      canExportEstimate(estimate)
+  );
+  const meanSpendingDisplay = meanSpendingEstimate
+    ? formatEstimateValue(meanSpendingEstimate)
+    : "—";
+
+  const localIndicatorCount =
+    localContextStatus === "loaded" ? localContext?.indicators.length ?? 0 : null;
+  const reachCount = scenarioResult
+    ? formatPlanningNumber(scenarioResult.reached_participants, integer)
+    : "—";
+
+  const nodes: readonly TacticalNode[] = [
+    {
+      id: "burden",
+      code: "01",
+      title: "National Burden",
+      metric: meanSpendingDisplay,
+      detail: `${reviewedCount || "—"} reviewed MEPS measures`,
+      caption: "National descriptive · Not causal",
+      to: "/burden",
+      cta: "Inspect national costs",
+      tone: "evidence",
+      x: 68,
+      y: 132
+    },
+    {
+      id: "terrain",
+      code: "02",
+      title: "Local Terrain",
+      metric: localIndicatorCount !== null ? `${localIndicatorCount} signals` : "Unavailable",
+      detail: "West Virginia HRSA & ACS constraints",
+      caption: "State context · Not prevalence",
+      to: "/local-context",
+      cta: "Explore local terrain",
+      tone: "terrain",
+      x: 288,
+      y: 74
+    },
+    {
+      id: "simulate",
+      code: "03",
+      title: "Pilot Simulation",
+      metric: `${reachCount} reach`,
+      detail: "Deterministic capacity & resource math",
+      caption: "Planning math · Not savings",
+      to: "/pilot",
+      cta: "Open simulator",
+      tone: "simulation",
+      x: 512,
+      y: 74
+    },
+    {
+      id: "brief",
+      code: "04",
+      title: "Action Brief",
+      metric: `${selectedLocalContextIds.length} terrain · ${selectedDataRequests.length} gaps`,
+      detail: "Decision dossier with boundaries intact",
+      caption: "Boundaries intact · Export ready",
+      to: "/brief",
+      cta: "Review action brief",
+      tone: "brief",
+      x: 732,
+      y: 132
+    }
+  ];
+
+  const activeNode = nodes[activeNodeIndex] ?? nodes[0]!;
+
+  const onNodeKeyDown = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
+    let next = index;
+    if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+      next = (index + 1) % nodes.length;
+    } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+      next = (index - 1 + nodes.length) % nodes.length;
+    } else if (event.key === "Home") {
+      next = 0;
+    } else if (event.key === "End") {
+      next = nodes.length - 1;
+    } else {
+      return;
+    }
+    event.preventDefault();
+    setActiveNodeIndex(next);
+  };
 
   return (
-    <section className={"page page-stack overview-page" + (opening.playing ? " is-opening" : "")}>
-      <section className="overview-hero" aria-labelledby="overview-title">
-        <div className="overview-hero-grid" aria-hidden="true" />
-        <div className="overview-hero-intro">
-          <p className="overview-kicker">Evidence into planning, with boundaries intact.</p>
+    <div className="overview-command-page">
+      <section className="obsidian-hero" aria-labelledby="overview-title">
+        <div className="obsidian-grid-backdrop" aria-hidden="true" />
+        <div className="obsidian-hero-inner">
+          <p className="eyebrow">EDITION 01 · LONG COVID · WEST VIRGINIA</p>
           <h1 id="overview-title">
-            Chart the road from <em>data</em> to <em>action.</em>
+            See where health costs break. Move the right lever first.
           </h1>
-        </div>
-        <div className="overview-hero-details">
-          <p className="overview-lede">
-            <strong className="overview-audience">For state health departments and Medicaid programs scoping Long COVID care-navigation pilots.</strong> Understand what the evidence shows, see the conditions on the ground, test a response—and carry a brief you can defend into the room.
+          <p className="obsidian-subtitle">
+            Separate national evidence, state constraints, and transparent pilot math.
           </p>
-          <div className="overview-hero-actions" role="group" aria-label="Start exploring Diagnostic Odyssey">
-            <Link className="button overview-primary-cta" to="/burden">Explore reviewed burden <span aria-hidden="true">↗</span></Link>
-            <Link className="overview-secondary-cta" to="/pilot">Open the planner <span aria-hidden="true">→</span></Link>
-            {planningInsightsEnabled && <Link className="overview-tertiary-cta" to="/brief#planning-insights">See planning insights <span aria-hidden="true">→</span></Link>}
-          </div>
-        </div>
-        <div className="overview-hero-journey">
-          <LandingJourney />
-        </div>
-        <div className="overview-hero-state">
-          <span>Now charting</span>
-          <span>Long COVID</span>
-          <span>West Virginia</span>
-          <span>Reviewed national evidence + local implementation context</span>
-        </div>
-      </section>
 
-      <section className="overview-story" aria-label="How Diagnostic Odyssey moves from data to planning">
-        <div className="overview-story-copy">
-          <p className="overview-kicker">Try the pathway, not just the dashboard</p>
-          <h2>Dashboards stop at the statistic. <em>Planning starts after it.</em></h2>
-          <p>Long COVID&rsquo;s burden goes beyond the bill. Review national evidence and its uncertainty, understand local constraints, then test explicit pilot assumptions without confusing them with observed effects.</p>
-          <dl className="overview-proof" aria-label="Current workspace evidence">
-            <div>
-              <dt>{reviewedCount || "—"}</dt>
-              <dd>reviewed national estimates</dd>
+          <div className="tactical-arc-shell" aria-label="Four-stage strategy architecture">
+            <svg
+              className="tactical-arc-svg"
+              viewBox="0 0 800 170"
+              aria-hidden="true"
+            >
+              <line className="arc-axis" x1="40" y1="132" x2="760" y2="132" strokeWidth="1" />
+              <path
+                className="arc-track"
+                d="M 68 132 Q 400 12 732 132"
+                fill="none"
+                strokeWidth="2"
+              />
+              <path
+                className="arc-highlight"
+                d="M 68 132 Q 400 12 732 132"
+                fill="none"
+                strokeWidth="2.5"
+              />
+              {nodes.map((node, index) => {
+                const isActive = index === activeNodeIndex;
+                return (
+                  <g key={node.id} className={`arc-svg-node tone-${node.tone}${isActive ? " is-active" : ""}`}>
+                    <line
+                      className="arc-drop"
+                      x1={node.x}
+                      y1={node.y}
+                      x2={node.x}
+                      y2="132"
+                      strokeWidth="1"
+                    />
+                    <circle className="arc-halo" cx={node.x} cy={node.y} r={isActive ? 18 : 11} />
+                    <circle className="arc-core" cx={node.x} cy={node.y} r={isActive ? 7 : 5} />
+                    <text className="arc-svg-code" x={node.x} y={node.y - 22} textAnchor="middle">
+                      {node.code}
+                    </text>
+                  </g>
+                );
+              })}
+            </svg>
+
+            <div className="arc-node-buttons" role="tablist" aria-label="Select strategy stage">
+              {nodes.map((node, index) => {
+                const isActive = index === activeNodeIndex;
+                return (
+                  <button
+                    key={node.id}
+                    type="button"
+                    role="tab"
+                    id={`arc-tab-${node.id}`}
+                    aria-selected={isActive}
+                    aria-controls="arc-telemetry-card"
+                    className={`arc-node-btn tone-${node.tone}${isActive ? " is-active" : ""}`}
+                    onClick={() => setActiveNodeIndex(index)}
+                    onKeyDown={event => onNodeKeyDown(event, index)}
+                  >
+                    <span className="arc-btn-code">{node.code}</span>
+                    <span className="arc-btn-title">{node.title}</span>
+                  </button>
+                );
+              })}
             </div>
-            <div>
-              <dt>{localIndicatorCount ?? "—"}</dt>
-              <dd>reviewed local-context indicators</dd>
+
+            <div
+              id="arc-telemetry-card"
+              role="tabpanel"
+              aria-labelledby={`arc-tab-${activeNode.id}`}
+              className={`telemetry-readout tone-${activeNode.tone}`}
+            >
+              <div className="telemetry-readout-left">
+                <span className="eyebrow">
+                  {activeNode.code} · {activeNode.title}
+                </span>
+                <strong className="telemetry-readout-value">{activeNode.metric}</strong>
+                <span className="telemetry-readout-detail">{activeNode.detail}</span>
+                <span className="micro-caption">{activeNode.caption}</span>
+              </div>
+              <Link className="button" to={activeNode.to}>
+                {activeNode.cta} <span aria-hidden="true">→</span>
+              </Link>
+            </div>
+          </div>
+
+          <dl className="monolith-strip" aria-label="Platform key metrics">
+            <div className="monolith-cell tone-evidence">
+              <dt>Mean annual all-cause spending</dt>
+              <dd>{meanSpendingDisplay}</dd>
+              <span className="micro-caption">National descriptive · Not causal</span>
+            </div>
+            <div className="monolith-cell tone-terrain">
+              <dt>West Virginia access indicators</dt>
+              <dd>{localIndicatorCount !== null ? `${localIndicatorCount} signals` : "—"}</dd>
+              <span className="micro-caption">State context · Not prevalence</span>
+            </div>
+            <div className="monolith-cell tone-simulation">
+              <dt>Pilot capacity reach baseline</dt>
+              <dd>{reachCount} reach</dd>
+              <span className="micro-caption">Planning math · Not savings</span>
             </div>
           </dl>
-          <p className="overview-source-note">Grounded in <strong>MEPS</strong>, <strong>HRSA</strong> and <strong>ACS</strong> · source boundaries stay visible.</p>
-          <Link className="overview-story-link" to="/pilot">Explore the pilot planning workspace <span aria-hidden="true">↗</span></Link>
-        </div>
-        <div className="overview-hero-motion">
-          <OpeningProvenance playing={opening.playing} runId={opening.runId} onReplay={opening.replay} reducedMotion={opening.reducedMotion} announcement={opening.announcement} />
-        </div>
-      </section>
 
-      <HeadlineFindings />
-
-      <section className="overview-value-prop" aria-labelledby="overview-value-title">
-        <div className="overview-section-heading">
-          <p className="visual-kicker">HOW EVIDENCE TRAVELS</p>
-          <h2 id="overview-value-title">Different evidence, distinct purposes.</h2>
-          <p>MEPS describes national burden; HRSA and ACS describe local implementation context, not local Long COVID prevalence; analyst inputs are planning assumptions, not observed effects. The three are never blended into one estimate.</p>
-        </div>
-        <div className="overview-role-grid" role="list" aria-label="How to read evidence and planning information">
-          <div className="overview-role-card reviewed" role="listitem">
-            <p>01 / REVIEWED · NATIONAL</p>
-            <h3>Observed burden</h3>
-            <span>Reviewed survey estimates retain their population, units, uncertainty and release conditions.</span>
-          </div>
-          <div className="overview-role-card context" role="listitem">
-            <p>02 / REVIEWED · LOCAL</p>
-            <h3>Delivery context</h3>
-            <span>HRSA and ACS describe implementation conditions. They do not create local illness-burden estimates.</span>
-          </div>
-          <div className="overview-role-card assumption" role="listitem">
-            <p>03 / EDITABLE · HYPOTHETICAL</p>
-            <h3>Planning assumptions</h3>
-            <span>Reach, capacity and resources are inputs to a scenario, not observations or measured intervention effects.</span>
-          </div>
-          <div className="overview-role-card gap" role="listitem">
-            <p>04 / UNRESOLVED · NEXT STEP</p>
-            <h3>Evidence and data gaps</h3>
-            <span>Outstanding questions can become explicit data requests when the analyst chooses to include them.</span>
-          </div>
-        </div>
-        <p className="overview-value-echo">The opening provenance circuit connects each evidence role to a documented planning artifact—not to a pooled estimate or invented effect.</p>
-      </section>
-
-      <section className="overview-two-lenses" aria-labelledby="overview-lenses-title">
-        <div className="overview-section-heading">
-          <p className="visual-kicker">TWO LENSES, KEPT APART</p>
-          <h2 id="overview-lenses-title">National evidence describes the burden. <em>Local data describes the ground.</em></h2>
-          <p>These sources answer different questions. Neither a national contrast nor a local workforce indicator automatically establishes a state-level disease burden.</p>
-        </div>
-        <div className="overview-lenses-grid">
-          <Link to="/burden" className="overview-lens is-national">
-            <span className="overview-lens-label">Reviewed evidence · national</span>
-            <strong className="overview-lens-count">{reviewedCount || "—"}</strong>
-            <h3>National burden estimates</h3>
-            <p>MEPS measures retain source, population, native units, survey uncertainty and release conditions.</p>
-            <span className="overview-lens-action">Explore reviewed burden <span aria-hidden="true">↗</span></span>
-          </Link>
-          <span className="overview-lens-separator" aria-hidden="true">Never blended</span>
-          <Link to="/local-context" className="overview-lens is-local">
-            <span className="overview-lens-label">Reviewed implementation context · state</span>
-            <strong className="overview-lens-count">{localIndicatorCount ?? "—"}</strong>
-            <h3>Local delivery indicators</h3>
-            <p>HRSA and ACS describe access, service supply and community conditions without inventing local prevalence.</p>
-            <span className="overview-lens-action">Read local context <span aria-hidden="true">↗</span></span>
-          </Link>
-        </div>
-      </section>
-
-      <nav className="overview-destinations" aria-label="Workspace navigation">
-        <div className="overview-section-heading overview-destinations-heading">
-          <p className="visual-kicker">HOW IT WORKS</p>
-          <h2>A clear path from evidence to a plan.</h2>
-          <p>Start where you need. Review the evidence, test assumptions, and capture what you still need to know.</p>
-        </div>
-        <div className="journey-grid">
-          {journey.map(([step, title, outcome, to]) => (
-            <Link key={step} className="journey-card" to={to}>
-              <span className="journey-index" aria-hidden="true">{step.padStart(2, "0")}</span>
-              <strong>{title}</strong>
-              <small>{outcome}</small>
-              <span className="journey-arrow" aria-hidden="true">→</span>
+          <div className="obsidian-finale">
+            <Link className="button obsidian-enter-btn" to="/burden">
+              Enter Command Workspace <span aria-hidden="true">→</span>
             </Link>
-          ))}
-        </div>
-        <p className="overview-workflow-note">Within your pilot: <Link to="/pilot#sensitivity">test sensitivity</Link> → <Link to="/data-requests">capture data needs</Link> → review your brief. <Link to="/evidence">Intervention evidence &amp; limits</Link> stays separate from descriptive burden.</p>
-      </nav>
-
-      <section className="overview-closing" aria-labelledby="overview-closing-title">
-        <div>
-          <p className="overview-kicker">THE ACTION-READY PLAN</p>
-          <h2 id="overview-closing-title">Leave with a brief, <em>not just a chart.</em></h2>
-          <p>Reviewed evidence, implementation context, explicit scenario assumptions, data needs and next steps—assembled with their boundaries intact.</p>
-          <Link className="button overview-closing-cta" to="/brief">Open the Planning Brief <span aria-hidden="true">↗</span></Link>
-        </div>
-        <div className="overview-paper-illustration" aria-hidden="true">
-          <span className="overview-paper-sheet back" />
-          <span className="overview-paper-sheet middle" />
-          <span className="overview-paper-sheet front">
-            <i className="paper-mark" /><i className="paper-line title" /><i className="paper-line" />
-            <i className="paper-line short" /><i className="paper-bar" />
-            <i className="paper-line" /><i className="paper-line" /><i className="paper-line short" />
-          </span>
+            <Link className="button secondary" to="/pilot">
+              Simulate Pilot
+            </Link>
+            <Link className="text-button" to="/advisor">
+              Open AI Strategist →
+            </Link>
+          </div>
         </div>
       </section>
-    </section>
+    </div>
   );
 }

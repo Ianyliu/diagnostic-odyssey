@@ -1,282 +1,150 @@
 .sensitivity-visual {
   display: grid;
   gap: 14px;
-  min-width: 0;
-  margin: 0;
-  padding: 20px 0 0;
-  border: 0;
-  border-top: 1px solid var(--do-border);
-  border-radius: 0;
-  background: transparent;
+  padding: 18px;
+  border-radius: 10px;
+  border: 1px solid var(--do-border);
+  background: var(--do-surface);
 }
 
 .sensitivity-heading {
   display: flex;
   justify-content: space-between;
-  gap: 14px;
-  align-items: end;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .sensitivity-heading h3 {
-  margin: 3px 0 0;
-  color: var(--do-text);
-  font-size: 18px;
-}
-
-.sensitivity-visual .visual-kicker {
-  margin: 0;
-  color: var(--do-text-muted);
-  font-size: 11px;
-  font-weight: 750;
-  letter-spacing: .08em;
-}
-
-.sensitivity-visual .visual-note {
-  margin: 0;
-  color: var(--do-text-muted);
-  font-size: 12px;
-  line-height: 1.5;
-}
-
-.sensitivity-control {
-  display: grid;
-  gap: 5px;
-  min-width: min(220px, 100%);
-  color: var(--do-text);
-  font-size: 12px;
-  font-weight: 700;
+  margin: 2px 0 0;
+  font-size: 0.96rem;
 }
 
 .sensitivity-control select {
-  width: 100%;
-  min-height: 42px;
-  padding: 8px 10px;
-  border: 1px solid var(--do-control-border);
-  border-radius: var(--do-radius-control);
-  background: var(--do-surface-elevated);
+  padding: 7px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--do-border);
+  background: var(--do-canvas);
   color: var(--do-text);
-}
-
-.sensitivity-metric {
-  color: var(--do-text-muted);
-  font-size: 13px;
-}
-
-.sensitivity-metric strong {
-  color: var(--do-text);
+  font-family: var(--do-font-mono);
+  font-size: 0.78rem;
 }
 
 .sensitivity-bars {
   display: grid;
-  grid-template-columns: minmax(170px, 0.72fr) minmax(120px, 1fr) minmax(58px, auto);
-  gap: 0 12px;
-  border-top: 1px solid var(--do-border);
+  grid-template-columns: max-content minmax(0, 1fr) max-content;
+  gap: 8px 12px;
+  align-items: center;
 }
 
 .sensitivity-row {
   display: grid;
   grid-template-columns: subgrid;
   grid-column: 1 / -1;
-  gap: 12px;
   align-items: center;
-  min-width: 0;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--do-border);
+  padding: 5px 8px;
+  border-radius: 6px;
 }
 
 .sensitivity-row.current {
   margin-inline: 0;
-  background: var(--do-selection-surface);
-  box-shadow: inset 3px 0 var(--do-selection-border);
+  background: var(--do-surface-elevated);
+  box-shadow: inset 0 0 0 1px var(--do-assumption-border);
 }
 
 .sensitivity-input {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2px 6px;
-  align-items: baseline;
-  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--do-font-mono);
+  font-size: 0.78rem;
   color: var(--do-text);
-  font-size: 12px;
-  overflow-wrap: anywhere;
 }
 
 .sensitivity-input small {
-  color: var(--do-selection-text);
-  font-size: 11px;
-  font-weight: 750;
+  color: var(--do-accent);
+  font-size: 0.66rem;
 }
 
-.sensitivity-track {
-  height: 12px;
-  overflow: hidden;
-  border-radius: 2px;
-  background: var(--do-chart-track);
-}
-
-.sensitivity-fill {
+.sensitivity-svg {
+  width: 100%;
+  height: 10px;
   display: block;
-  height: 100%;
-  background: var(--do-chart-1);
-  transition: width var(--do-motion-medium) ease-out;
 }
 
-.sensitivity-row.current .sensitivity-fill {
-  background: var(--do-chart-2);
+.sens-track {
+  fill: var(--do-chart-track);
 }
 
-.sensitivity-row > strong {
-  color: var(--do-text);
-  font-size: 13px;
-  font-variant-numeric: tabular-nums;
+.sens-fill {
+  fill: var(--do-chart-1);
+}
+
+.sens-fill.is-current {
+  fill: var(--do-accent);
+}
+
+.sensitivity-row strong {
   text-align: right;
+  font-size: 0.8rem;
+  color: var(--do-text);
 }
 
 .visual-table-disclosure {
-  min-width: 0;
+  font-size: 0.8rem;
   color: var(--do-text-muted);
-  font-size: 13px;
 }
 
 .visual-table-disclosure summary {
-  display: list-item;
-  width: fit-content;
-  min-height: 40px;
-  padding: 9px 2px;
   cursor: pointer;
-  color: var(--do-accent);
-  font-weight: 700;
+  color: var(--do-text);
+  font-weight: 600;
 }
 
 .sensitivity-table-scroll {
-  max-width: 100%;
   overflow-x: auto;
   margin-top: 8px;
+  border: 1px solid var(--do-border);
+  border-radius: 8px;
 }
 
 .visual-data-table {
   width: 100%;
-  min-width: 520px;
-  margin: 0;
   border-collapse: collapse;
-  color: var(--do-text);
-  font-variant-numeric: tabular-nums;
+  font-size: 0.8rem;
 }
 
 .visual-data-table caption {
-  padding-bottom: 8px;
-  color: var(--do-text-muted);
-  font-size: 12px;
+  padding: 8px 10px;
   text-align: left;
+  color: var(--do-text-muted);
+  font-size: 0.74rem;
 }
 
 .visual-data-table th,
 .visual-data-table td {
-  padding: 9px 10px;
+  padding: 8px 10px;
   border-top: 1px solid var(--do-border);
   text-align: left;
-  vertical-align: top;
-}
-
-.visual-data-table th {
-  color: var(--do-text);
-  font-weight: 700;
-}
-
-.visual-data-table td {
-  text-align: right;
 }
 
 .sensitivity-action {
   display: flex;
   justify-content: space-between;
-  gap: 16px;
   align-items: center;
-  padding-top: 14px;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-top: 12px;
   border-top: 1px solid var(--do-border);
-}
-
-.sensitivity-action.request-acknowledged {
-  animation: request-acknowledged var(--do-motion-medium) ease-out both;
-}
-
-@keyframes request-acknowledged {
-  from { background: var(--do-selection-bg); box-shadow: inset 3px 0 var(--do-selection-text); }
-  to { background: transparent; box-shadow: inset 0 0 var(--do-selection-text); }
 }
 
 .sensitivity-action > div:first-child {
   display: grid;
-  gap: 4px;
-}
-
-.sensitivity-action strong {
-  color: var(--do-text);
-  font-size: 13px;
-}
-
-.sensitivity-action span {
-  color: var(--do-text-muted);
-  font-size: 12px;
-  line-height: 1.45;
+  gap: 2px;
 }
 
 .sensitivity-action-controls {
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
   align-items: center;
-  flex-shrink: 0;
-}
-
-.sensitivity-action-controls .button {
-  min-height: 42px;
-}
-
-.sensitivity-action-controls .button[aria-disabled="true"] {
-  cursor: default;
-  border-color: var(--do-border);
-  color: var(--do-text-muted);
-  background: var(--do-surface);
-}
-
-@container pilot-result (max-width: 520px) {
-  .sensitivity-heading,
-  .sensitivity-action {
-    display: grid;
-    justify-content: stretch;
-  }
-
-  .sensitivity-bars {
-    display: block;
-  }
-
-  .sensitivity-row {
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 6px 12px;
-  }
-
-  .sensitivity-track {
-    grid-column: 1 / -1;
-    grid-row: 2;
-  }
-
-  .sensitivity-control {
-    min-width: 0;
-  }
-}
-
-@media (forced-colors: active) {
-  .sensitivity-track {
-    border: 1px solid CanvasText;
-    background: Canvas;
-  }
-
-  .sensitivity-fill {
-    background: Highlight;
-  }
-
-  .sensitivity-row.current {
-    outline: 1px solid Highlight;
-  }
+  gap: 12px;
 }

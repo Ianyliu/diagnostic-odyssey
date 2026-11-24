@@ -74,7 +74,7 @@ test("medical route composes Candidate A only as separate secondary evidence", (
   assert.match(medical, /secondaryContent=\{secondaryContent\}/);
   assert.match(domain, /secondaryContent\?: ReactNode/);
   assert.match(domain, /\{secondaryContent\}/);
-  assert.match(domain, /<BurdenMeasureList estimates=\{domain\.measures\} \/>/);
+  assert.match(domain, /telemetry-grid/);
 
   assert.match(component, /Secondary \/ documentation-linked evidence/);
   assert.match(component, /Reviewed descriptive evidence/);

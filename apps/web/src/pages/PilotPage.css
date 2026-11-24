@@ -1,376 +1,202 @@
-.pilot-page { overflow-wrap: anywhere; }
-.pilot-page > * { min-width: 0; }
-
-.pilot-page .heading-row {
-  grid-template-columns: minmax(0, 1fr) minmax(220px, 300px);
-  align-items: start;
-}
-
-.pilot-page .heading-row .caution {
-  padding: 12px 16px;
-  font-size: 13px;
-}
-
-.pilot-section-nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px 18px;
-  align-items: center;
-  padding: 9px 0;
-  border-block: 1px solid var(--do-border);
-  background: var(--do-canvas);
-  color: var(--do-text-muted);
-  font-size: 13px;
-  font-weight: 650;
-}
-
-.pilot-section-nav a {
-  min-height: 44px;
-  display: inline-flex;
-  align-items: center;
-  text-decoration: none;
-  border-bottom: 2px solid transparent;
-}
-
-.pilot-section-nav a:hover,
-.pilot-section-nav a:focus-visible {
-  color: var(--do-accent);
-  border-bottom-color: var(--do-accent);
-}
-
-.pilot-page .pilot-grid {
-  grid-template-columns: minmax(340px, 0.82fr) minmax(0, 1.65fr);
-  gap: 20px;
-  align-items: start;
-}
-
-.pilot-input-column {
+.pilot-warroom-grid {
   display: grid;
-  gap: 16px;
-  min-width: 0;
-  align-self: start;
+  grid-template-columns: minmax(340px, 420px) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
 }
 
-.pilot-page .assumption-card {
+.pilot-controls-col,
+.pilot-telemetry-col {
+  display: grid;
   gap: 14px;
-  align-self: start;
-  border-color: var(--do-border);
+}
+
+.preset-bar {
+  display: grid;
+  gap: 8px;
+}
+
+.preset-pill {
+  display: grid;
+  gap: 2px;
+  text-align: left;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--do-border);
+  background: var(--do-surface);
+  color: var(--do-text);
+  cursor: pointer;
+}
+
+.preset-pill strong {
+  font-family: var(--do-font-display);
+  font-size: 0.86rem;
+}
+
+.preset-pill span {
+  font-family: var(--do-font-mono);
+  font-size: 0.7rem;
+  color: var(--do-text-muted);
+}
+
+.preset-pill:hover {
+  border-color: var(--do-control-border);
+}
+
+.preset-pill.is-active {
+  border-color: var(--do-accent);
+  background: var(--do-surface-elevated);
+  box-shadow: inset 2px 0 0 var(--do-accent);
+}
+
+.pilot-sliders-card {
+  display: grid;
+  gap: 14px;
+}
+
+.pilot-card-head {
+  display: grid;
+  gap: 3px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--do-border);
+}
+
+.pilot-card-head h2 {
+  margin: 0;
+  font-size: 0.96rem;
+}
+
+.lever-row {
+  display: grid;
+  gap: 6px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--do-border);
+}
+
+.lever-row:last-of-type {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.lever-label-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 144px;
+  gap: 10px;
+  align-items: center;
+}
+
+.lever-label-row label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--do-text);
+}
+
+.lever-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 16px;
+}
+
+.pinned-terrain-chip {
+  padding: 12px 14px;
+  border-radius: 9px;
+  border: 1px solid var(--do-border);
   background: var(--do-surface);
 }
 
-.pilot-page .assumption-card > .subtle {
-  margin: 0;
-  line-height: 1.5;
+.pinned-terrain-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 0.82rem;
 }
 
-.pilot-assumption-group {
-  min-width: 0;
-  margin: 0;
-  padding: 14px 0 0;
-  border: 0;
-  border-top: 1px solid var(--do-border);
+.pinned-terrain-row > div:first-child {
   display: grid;
+  gap: 2px;
+}
+
+.pinned-terrain-actions {
+  display: flex;
   gap: 12px;
 }
 
-.pilot-assumption-group legend {
-  padding: 0;
-  color: var(--do-text);
-  font-size: 15px;
-  font-weight: 720;
+.draft-not-applied {
+  display: grid;
+  gap: 4px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--do-error-border);
+  background: var(--do-error-bg);
+  color: var(--do-error-text);
+  font-size: 0.84rem;
 }
 
-.pilot-assumption-group > p {
+.pilot-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
   margin: 0;
+}
+
+.pilot-kpi-card {
+  display: grid;
+  gap: 4px;
+  padding: 16px 18px;
+  border-radius: 10px;
+  border: 1px solid var(--do-border);
+  background: var(--do-surface);
+}
+
+.pilot-kpi-card dt {
+  font-size: 0.78rem;
   color: var(--do-text-muted);
-  font-size: 12px;
-  line-height: 1.5;
 }
 
-.pilot-page .pilot-field {
-  grid-template-columns: minmax(0, 1fr) minmax(112px, 148px);
-  gap: 10px;
-}
-
-.pilot-page .assumption-card .pilot-field-label {
-  color: var(--do-text);
-  line-height: 1.35;
-}
-
-.pilot-page .input-wrap {
-  overflow: visible;
-  border-color: var(--do-control-border);
-  background: var(--do-surface-elevated);
-}
-
-.pilot-page .input-wrap input {
-  background: transparent;
+.pilot-kpi-card dd {
+  margin: 0;
+  font-family: var(--do-font-display);
+  font-size: clamp(1.45rem, 2.5vw, 1.95rem);
+  font-weight: 600;
+  letter-spacing: -0.025em;
   color: var(--do-text);
   font-variant-numeric: tabular-nums;
 }
 
-.pilot-page .input-wrap.invalid {
-  border-color: var(--do-error-text);
+.pilot-kpi-card.is-bottleneck {
+  border-color: var(--do-error-border);
 }
 
-.pilot-page .field-error {
+.pilot-kpi-card.is-bottleneck dd {
   color: var(--do-error-text);
 }
 
-.pilot-page .input-helper {
-  overflow-wrap: anywhere;
+.pilot-kpi-card.is-gold dd {
+  color: var(--do-accent);
 }
 
-.pilot-page .form-error,
-.pilot-page .draft-not-applied {
-  background: var(--do-warning-surface);
-  color: var(--do-warning-text);
-  border-color: var(--do-warning-border);
-}
-
-.pilot-page .pathway-boundary {
-  margin: 0;
-  background: var(--do-assumption-surface);
-  border-color: var(--do-assumption-border);
-}
-
-.pilot-page .pathway-boundary h2,
-.pilot-page .pathway-boundary strong,
-.pilot-page .pathway-boundary-facts dd {
-  color: var(--do-assumption-text);
-}
-
-.pilot-page .pathway-boundary h2 { margin: 0; }
-
-.pilot-page .pathway-boundary-facts div {
-  background: var(--do-surface);
-  border-color: var(--do-assumption-border);
-}
-
-.pilot-page .result-card {
-  min-width: 0;
-  align-self: start;
-  container: pilot-result / inline-size;
-  /* Explicit single column: the implicit `auto` column stretched toward the
-     h2's max-content width and blew the 246px content box at 320px viewports,
-     producing page-level horizontal overflow. minmax(0, 1fr) caps the track
-     at the available width (same pattern as .pilot-visual-stack). */
-  grid-template-columns: minmax(0, 1fr);
-  background: var(--do-surface);
-  border-color: var(--do-border);
-}
-
-/* Grid blowout guard: grid items with wrappable content may shrink below
-   their automatic minimum so long words cannot force page-level horizontal
-   overflow at 320px viewports. (The result-card's own track is capped above;
-   .pilot-visual-stack is intentionally exempt so extreme single-line tokens
-   can still size their heading, per the acceptance suite.) */
-.pilot-page .page-stack > *,
-.pilot-page .pilot-grid > *,
-.pilot-page .sensitivity-visual > * {
-  min-width: 0;
-}
-
-.pilot-page .result-card > .subtle {
-  margin: 0;
-}
-
-.pilot-page .pilot-result-kicker {
-  margin: 0;
-  color: var(--do-assumption-text);
-}
-
-.pilot-page .pilot-result-ledger {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0 20px;
-}
-
-.pilot-page .pilot-result-ledger div {
-  min-width: 0;
-  padding: 12px 0;
-  background: transparent;
-  border-top: 1px solid var(--do-border);
-  border-radius: 0;
-}
-
-.pilot-page .pilot-result-ledger dt {
-  color: var(--do-text-muted);
-  font-size: 12px;
-  line-height: 1.35;
-}
-
-.pilot-page .pilot-result-ledger dd {
-  margin-top: 4px;
-  color: var(--do-text);
-  font-size: clamp(18px, 2vw, 23px);
-  font-variant-numeric: tabular-nums;
-  overflow-wrap: anywhere;
-}
-
-.pilot-page .pilot-result-ledger .pilot-result-scientific {
-  grid-column: 1 / -1;
-}
-
-.pilot-page .pilot-result-scientific dd {
-  white-space: nowrap;
-  /* Preserve every digit while fitting the full finite-number token at 320px. */
-  font-size: clamp(.875rem, 5cqi, 1.125rem);
-}
-
-.pilot-page .sensitivity-paused-state {
-  background: var(--do-assumption-surface);
-  border-color: var(--do-assumption-border);
-}
-
-.pilot-page .pilot-local-context,
-.pilot-page .pilot-decision-trace {
-  margin: 0;
-  padding: 18px 20px;
-  background: var(--do-surface);
-  border-color: var(--do-border);
-}
-
-.pilot-page .pilot-local-context h2,
-.pilot-page .pilot-decision-trace h2 {
-  margin: 0;
-  color: var(--do-text);
-  font-size: 20px;
-}
-
-.pilot-page .pilot-local-context-record {
-  background: var(--do-selection-surface);
-  color: var(--do-text-muted);
-}
-
-.pilot-page .pilot-local-context-record strong,
-.pilot-page .pilot-local-context-value {
-  color: var(--do-selection-text);
-}
-
-.pilot-page .decision-trace ol {
-  gap: 0;
+.drawer-section {
+  display: grid;
+  gap: 8px;
+  padding-top: 12px;
   border-top: 1px solid var(--do-border);
 }
 
-.pilot-page .decision-trace li {
-  padding: 13px 4px;
-  border: 0;
-  border-bottom: 1px solid var(--do-border);
-  border-radius: 0;
-  background: transparent;
-}
-
-.pilot-page .decision-trace-step {
-  width: 28px;
-  height: 28px;
-  background: var(--do-assumption-surface);
-  color: var(--do-assumption-text);
-  border-radius: 3px;
-  font-size: 12px;
-  font-variant-numeric: tabular-nums;
-}
-
-.pilot-page .decision-trace li strong {
-  color: var(--do-text);
-}
-
-.pilot-page .decision-trace li span:not(.decision-trace-step),
-.pilot-page .decision-trace-boundary {
-  color: var(--do-text-muted);
-}
-
-@container pilot-result (min-width: 690px) {
-  .pilot-page .pilot-result-ledger {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+@media (max-width: 1020px) {
+  .pilot-warroom-grid {
+    grid-template-columns: 1fr;
   }
 }
 
-@media (max-width: 1100px) {
-  .pilot-page .pilot-grid,
-  .pilot-page .heading-row {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
-@media (max-width: 640px) {
-  .pilot-page .pilot-field,
-  .pilot-page .pilot-result-ledger {
-    grid-template-columns: minmax(0, 1fr);
+@media (max-width: 560px) {
+  .pilot-kpi-grid {
+    grid-template-columns: 1fr;
   }
 
-  .pilot-page .assumption-card .pilot-field-label {
-    padding-top: 0;
-  }
-
-  .pilot-page .pilot-local-context,
-  .pilot-page .pilot-decision-trace {
-    padding: 16px;
+  .lever-label-row {
+    grid-template-columns: 1fr;
   }
 }
-
-@media (min-width: 1200px) and (min-height: 800px) {
-  .pilot-section-nav {
-    position: sticky;
-    top: var(--do-sticky-offset, 76px);
-    z-index: var(--do-z-sticky, 5);
-  }
-
-  .pilot-page :is(#pilot-assumptions, #pilot-results, #sensitivity, #pilot-context, #pilot-trace) {
-    scroll-margin-top: calc(var(--do-sticky-offset, 76px) + 64px);
-  }
-}
-
-@media print {
-  .pilot-section-nav {
-    display: none;
-  }
-}
-
-.pilot-page .pilot-field-control small,
-.pilot-page .input-wrap small {
-  white-space: nowrap;
-}
-
-/* Inputs retain their live draft contract; only presentation is disclosed. */
-.pilot-page .assumption-card { gap: 8px; }
-.pilot-page .pilot-assumption-group { border: 0; padding-top: 0; }
-.pilot-assumption-group legend { position: absolute; width: 1px; height: 1px; clip-path: inset(50%); overflow: hidden; }
-.pilot-group-values { display: grid; gap: 3px; }
-.pilot-group-values strong { display: inline-block; font-weight: 550; white-space: nowrap; }
-.pilot-page .workspace-disclosure[open] > summary .pilot-group-values { display: none; }
-.pilot-page .pilot-input-column { container: pilot-input / inline-size; }
-.pilot-headlines { margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 20px; }
-.pilot-headlines > div { min-width: 0; border-top: 1px solid var(--do-border); padding-top: 12px; }
-.pilot-headlines dt { font-size: .82rem; color: var(--do-text-muted); }
-.pilot-headlines dd { margin: 4px 0 0; color: var(--do-text); font-size: clamp(1.25rem, 4cqi, 1.8rem); font-weight: 750; }
-.pilot-headlines .pilot-headline-scientific { grid-column: 1 / -1; }
-.pilot-next-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 20px; }
-.sensitivity-preview { padding: 16px 0; border-block: 1px solid var(--do-border); }
-.sensitivity-preview h3 { margin: 0 0 8px; font-size: 1rem; }
-.sensitivity-preview ul { padding: 0; margin: 14px 0 6px; list-style: none; display: grid; gap: 8px; }
-.sensitivity-preview li { display: grid; grid-template-columns: minmax(0, 1fr) minmax(24px, 1fr) auto; align-items: center; gap: 8px; font-size: .78rem; }
-.sensitivity-preview li > * { min-width: 0; overflow-wrap: anywhere; }
-.preview-gap-track { height: 6px; background: var(--do-surface-elevated); }
-.preview-gap-track > span { display: block; height: 100%; background: var(--do-assumption-text); }
-.pilot-request-loop { font-size: .88rem; line-height: 1.7; }
-.pilot-page .result-card > h2 { font-size: 1.35rem; }
-@media (max-width: 640px) {
- .pilot-headlines { grid-template-columns: minmax(0, 1fr); gap: 10px; }
- .pilot-headlines dd { font-size: clamp(1rem, 8cqi, 1.5rem); }
- .pilot-group-values strong { font-size: clamp(.75rem, 4.8cqi, .82rem); }
- .sensitivity-preview li { grid-template-columns: minmax(0, 1fr) auto; }
- .preview-gap-track { grid-column: 1 / -1; grid-row: auto; }
- .sensitivity-preview li strong { grid-column: 2; grid-row: 1; }
- .pilot-page .heading-row .caution { display: none; }
-}
-
-/* Summary first in DOM order, alongside the form on wide screens. */
-.pilot-headlines dd.scientific-value { white-space: nowrap; font-size: clamp(.875rem, 5cqi, 1.125rem); }
-@media (min-width: 1101px) {
- .pilot-page .pilot-summary { grid-column: 2; grid-row: 1; }
- .pilot-page .pilot-input-column { grid-column: 1; grid-row: 1 / span 2; }
- .pilot-page .pilot-detail-results { grid-column: 2; grid-row: 2; }
-}
-.pilot-page .pilot-summary { gap: 12px; }
-.pilot-page .pilot-summary .sensitivity-preview { padding-block: 12px; }
-.pilot-page .pilot-summary .pilot-next-actions { order: 1; }

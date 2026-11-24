@@ -6,54 +6,36 @@ import test from "node:test";
 const readSource = (path: string) =>
   readFileSync(fileURLToPath(new URL(path, import.meta.url)), "utf8");
 
-test("brand palette is navy and teal rather than a red primary theme", () => {
+test("brand palette is Obsidian Command dark-first with zero AI-teal", () => {
   const tokens = readSource("../../../packages/ui/src/styles.css");
-  assert.match(tokens, /--do-brand-navy:\s*#153552/);
-  assert.match(tokens, /--do-brand-teal:\s*#0f7476/);
-  assert.match(tokens, /--do-accent:\s*#0f7476/);
-  assert.match(tokens, /--do-canvas:\s*#f5f2eb/);
-  assert.doesNotMatch(tokens, /--do-accent:\s*#762f3c/);
-  assert.match(tokens, /:root\[data-theme="dark"\][\s\S]*--do-canvas:\s*#09131b/);
-  assert.match(tokens, /:root\[data-theme="dark"\][\s\S]*--do-surface:\s*#111d26/);
-  assert.match(tokens, /:root\[data-theme="dark"\][\s\S]*--do-chart-4:\s*#d2ad68/);
+  assert.match(tokens, /--do-canvas:\s*#0a0b0e/);
+  assert.match(tokens, /--do-surface:\s*#12141a/);
+  assert.match(tokens, /--do-text:\s*#f4f2ec/);
+  assert.match(tokens, /--do-accent:\s*#d9a441/);
+  assert.match(tokens, /:root\[data-theme="light"\][\s\S]*--do-canvas:\s*#f4f3ee/);
+  assert.match(tokens, /:root\[data-theme="light"\][\s\S]*--do-text:\s*#111318/);
+  assert.match(tokens, /:root\[data-theme="light"\][\s\S]*--do-accent:\s*#9a6a16/);
+  assert.doesNotMatch(tokens, /#0f7476|#2a9d9f|#58c3bd|#276b54|#3f765f|#2c6b58/i);
 });
 
-test("overview keeps the workflow visible without promotional filler", () => {
+test("overview uses tactical arc and quantitative monolith strip without filler", () => {
   const overview = readSource("../src/pages/OverviewPage.tsx");
   const css = readSource("../src/pages/OverviewPage.css");
-  assert.match(overview, /Evidence into planning/);
-  assert.match(overview, /boundaries intact/);
-  assert.match(overview, /overview-proof/);
-  assert.match(overview, /<OpeningProvenance playing=\{opening\.playing\}/);
-  assert.match(overview, /className="overview-hero-motion"/);
-  assert.match(overview, /journey-grid/);
+  assert.match(overview, /See where health costs break\. Move the right lever first\./);
+  assert.match(overview, /tactical-arc-shell/);
+  assert.match(overview, /monolith-strip/);
+  assert.match(overview, /Enter Command Workspace/);
   assert.doesNotMatch(overview, /<DecisionStateRail/);
-  assert.doesNotMatch(overview, /overview-launch-pill/);
-  assert.doesNotMatch(overview, /overview-final-cta/);
+  assert.doesNotMatch(overview, /style=\{\{/);
+  assert.match(css, /obsidian-grid-backdrop/);
   assert.match(css, /radial-gradient/);
-  assert.match(css, /workspace-preview/);
-  assert.match(css, /\.overview-destinations\s*\{[^}]*background:\s*color-mix\(in srgb, var\(--do-assumption-bg\) 35%, var\(--do-canvas\)\)/);
-  assert.doesNotMatch(css, /linear-gradient\(135deg, #153552, #102a3d 72%\)/);
-  assert.match(css, /@media \(prefers-reduced-motion: reduce\)/);
 });
 
-test("narrow Overview uses valid single-column evidence and workflow grids", () => {
+test("narrow Overview uses single-column monolith strip", () => {
   const css = readSource("../src/pages/OverviewPage.css");
-  const narrow = css.match(/@media \(max-width: 720px\) \{([\s\S]*?)\n\}\n\n@media \(max-width: 440px\)/)?.[1];
-  assert.ok(narrow, "720px mobile styles must exist");
-  assert.match(narrow, /\.overview-role-grid,\s*\.overview-page \.journey-grid\s*\{\s*grid-template-columns:\s*minmax\(0, 1fr\)/);
-  assert.doesNotMatch(narrow, /\.overview-page \.journey-grid,\s*\.overview-role-card/);
-});
-
-test("overview visualization preserves separate evidence lanes through the planning output", () => {
-  const source = readSource("../src/pages/OpeningProvenance.tsx");
-  assert.match(source, /opening-lane lane-evidence/);
-  assert.match(source, /opening-lane lane-context/);
-  assert.match(source, /opening-lane lane-assumption/);
-  assert.match(source, /National estimates, local context, and analyst assumptions stay separate in the Planning Brief/);
-  assert.match(source, /not a combined scientific score/);
-  assert.match(source, /Replay animation/);
-  assert.doesNotMatch(source, /opening-junction/);
+  const narrow = css.match(/@media \(max-width: 820px\) \{([\s\S]*?)\n\}/)?.[1];
+  assert.ok(narrow, "820px mobile styles must exist");
+  assert.match(narrow, /\.monolith-strip\s*\{\s*grid-template-columns:\s*1fr/);
 });
 
 test("sensitivity rows share one grid and the current row does not escape the card", () => {
@@ -65,29 +47,20 @@ test("sensitivity rows share one grid and the current row does not escape the ca
   assert.doesNotMatch(css, /\.sensitivity-row\.current\s*\{[^}]*padding-inline:/s);
 });
 
-test("all quantitative burden and local-context rows expose native-unit mini visuals", () => {
-  const burden = readSource("../src/components/BurdenMeasureList.tsx");
+test("all quantitative burden and local-context views use pure-SVG native-unit visuals", () => {
+  const burden = readSource("../src/pages/BurdenPage.tsx");
+  const domain = readSource("../src/pages/DomainPage.tsx");
   const local = readSource("../src/pages/LocalContextPage.tsx");
   const visual = readSource("../src/components/MetricVisual.tsx");
-  assert.match(burden, /<MetricVisual/);
-  assert.match(local, /<MetricVisual/);
+  assert.match(burden, /TelemetryWhiskerTrack/);
+  assert.match(domain, /<MetricVisual/);
+  assert.match(local, /ConstraintBar/);
   assert.match(visual, /role="img"/);
+  assert.doesNotMatch(visual, /style=\{\{/);
   const geometry = readSource("../src/data/metricGeometry.ts");
   assert.match(geometry, /No uncertainty interval is displayed/);
   assert.match(visual, /intervalLabel/);
-  assert.match(burden, /value=\{estimate\.value\}/);
   assert.match(visual, /metricAriaDescription/);
-  assert.match(geometry, /formatMetricValue/);
-  assert.match(burden, /pointLabel=\{estimate\.distribution_summary/);
-});
-
-test("overview preview does not encode illustrative values as a chart", () => {
-  const source = readSource("../src/pages/OpeningProvenance.tsx");
-  assert.doesNotMatch(source, /preview-mini-chart/);
-  const css = readSource("../src/pages/OverviewPage.css");
-  assert.match(css, /\.preview-boundary-line\s*\{/);
-  assert.doesNotMatch(css, /\.preview-mini-chart\s*\{/);
-  assert.doesNotMatch(source, /height: "(?:42|74|58|88)%"/);
 });
 
 test("Planning Brief print repeats product provenance and moves decision state out of the trailing sidebar", () => {
@@ -99,30 +72,9 @@ test("Planning Brief print repeats product provenance and moves decision state o
   assert.match(brief, /brief\.generated_at/);
   assert.match(brief, /brief-print-decision-state/);
   assert.match(brief, /<h2>Decision state<\/h2>/);
-  assert.match(css, /\.planning-brief-page \.brief-aside\s*\{\s*display:\s*none !important/s);
-  // Real @page margin boxes reserve document space instead of overlaying
-  // paragraph text; dynamic artifact version and timestamp remain in provenance.
+  assert.match(css, /\.planning-brief-page \.brief-aside,[\s\S]*?display:\s*none !important/s);
   assert.match(css, /@bottom-left\s*\{\s*content:\s*"Diagnostic Odyssey"/s);
   assert.match(css, /@bottom-right\s*\{\s*content:\s*"Page "\s*counter\(page\)/s);
-  assert.match(css, /\.planning-brief-page \.brief-print-footer\s*\{\s*display:\s*none !important/s);
+  assert.match(css, /\.planning-brief-page \.brief-print-footer\s*\{[\s\S]*?display:\s*none !important/s);
   assert.match(css, /\.brief-burden-table-wrap\s*\{[^}]*position:\s*relative/s);
-});
-
-
-test("workflow cards use restrained semantic variety instead of one teal treatment", () => {
-  const css = readSource("../src/pages/OverviewPage.css");
-  for (const accent of ["#3f765f", "#3e6f91", "#806326", "#327472", "#606c7e", "#153552"]) {
-    assert.ok(css.includes(accent), accent);
-  }
-  assert.match(css, /journey-card:nth-child\(1\)/);
-  assert.match(css, /journey-card:nth-child\(6\)/);
-  assert.match(css, /--journey-accent/);
-});
-
-test("dark overview keeps teal as emphasis instead of the dominant field color", () => {
-  const css = readSource("../src/pages/OverviewPage.css");
-  assert.match(css, /:root\[data-theme="dark"\] \.overview-hero\s*\{[\s\S]*linear-gradient\(145deg, #101d27 0%, #09131b 66%, #0d1821 100%\)/);
-  assert.match(css, /rgba\(88, 195, 189, \.055\)/);
-  assert.match(css, /\.overview-hero h1 em\s*\{[^}]*color:\s*var\(--do-accent\)/s);
-  assert.match(css, /:root\[data-theme="dark"\] \.overview-lede\s*\{[^}]*color:\s*#c1c9cd/s);
 });

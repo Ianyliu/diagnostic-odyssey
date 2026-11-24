@@ -1,27 +1,17 @@
+import { formatPlanningCurrency, formatPlanningNumber } from "../data/planningNumberFormatting";
 import type { PlanningBrief } from "@diagnostic-odyssey/brief-core";
 import type { PlanningInsightsModelV1 } from "../data/planningInsights";
 import { formatEstimateInterval, formatEstimateValue } from "../data/formatEstimateValue";
 import { BRIEF_HEADLINE_IDS } from "../data/briefExecutiveHeadlines";
 
-
 const HEADLINES = [
-  {
-    key: "population", title: "U.S. population represented",
-    meaning: "Survey-weighted adults ages 18–64 meeting the operational current Long COVID definition."
-  },
-  {
-    key: "spending", title: "Total national all-cause spending",
-    meaning: "2024 health care spending for the represented population—not spending attributable to Long COVID or potential savings."
-  },
-  {
-    key: "paperwork", title: "Health care paperwork time",
-    meaning: "Mean annualized paperwork/navigation time among eligible later ESAQ respondents; this is a different outcome sample."
-  },
-  {
-    key: "distress", title: "Serious psychological distress",
-    meaning: "Share with K6 score ≥13 among eligible later PSAQ respondents. Nonspecific screening, not a psychiatric diagnosis."
-  }
+  { key: "population", title: "Represented adults (18–64)" },
+  { key: "spending", title: "Total national all-cause spending" },
+  { key: "paperwork", title: "Health care paperwork time" },
+  { key: "distress", title: "K6 serious distress screen" }
 ] as const;
+
+const integer = new Intl.NumberFormat("en-US");
 
 interface Props {
   brief: PlanningBrief;
@@ -31,47 +21,128 @@ interface Props {
   staleRequestCount: number;
 }
 
-/** Always-on human-readable view. Strict verified records come from the reviewed
- * Brief/source identity gate; canonical JSON and scenario are never changed. */
 export function BriefExecutiveSummary({
-  brief, national, checkboxSelectedIds, pilotLocalContextId, staleRequestCount
+  brief,
+  national,
+  checkboxSelectedIds,
+  pilotLocalContextId,
+  staleRequestCount
 }: Props) {
   const selectedIds = new Set(checkboxSelectedIds);
   const includedIds = new Set(brief.local_context.map(record => record.indicator_id));
-  const checkboxIncludedCount = brief.local_context.filter(record => selectedIds.has(record.indicator_id)).length;
-  const pilotOnlyCount = pilotLocalContextId && includedIds.has(pilotLocalContextId) && !selectedIds.has(pilotLocalContextId) ? 1 : 0;
+  const checkboxIncludedCount = brief.local_context.filter(record =>
+    selectedIds.has(record.indicator_id)
+  ).length;
+  const pilotOnlyCount =
+    pilotLocalContextId &&
+    includedIds.has(pilotLocalContextId) &&
+    !selectedIds.has(pilotLocalContextId)
+      ? 1
+      : 0;
+
   const byKey = {
     population: national.context.population,
     spending: national.context.allCauseSpending,
     paperwork: national.context.paperwork,
     distress: national.context.seriousDistress
   };
+
   const highlights = HEADLINES.flatMap(item => {
     const finding = byKey[item.key];
     return finding && finding.estimate.estimate_id === BRIEF_HEADLINE_IDS[item.key]
-      ? [{...item, finding}] : [];
+      ? [{ ...item, finding }]
+      : [];
   });
-  return <section className="brief-executive-summary" aria-labelledby="brief-executive-title">
-    <header className="brief-executive-header">
-      <p className="eyebrow">REVIEWED NATIONAL EVIDENCE · PLANNING CONTEXT</p>
-      <h2 id="brief-executive-title">Executive summary</h2>
-      <p>National burden, West Virginia implementation context and analyst planning inputs have different meanings. Neither state indicators nor assumptions recalibrate the national estimates.</p>
-    </header>
-    <div className="brief-executive-grid">
-      {highlights.map(({key, title, meaning, finding}) => <article className="brief-executive-finding" key={key}>
-        <h3>{title}</h3>
-        <strong className="brief-executive-value">{formatEstimateValue(finding.estimate)}</strong>
-        <span className="brief-executive-interval">{formatEstimateInterval(finding.estimate)}</span>
-        <p>{meaning}</p>
-        <small>MEPS 2024 · {finding.estimate.estimate_id} · {finding.source.source_ref}</small>
-      </article>)}
-    </div>
-    {highlights.length !== HEADLINES.length && <p role="status" className="subtle">One or more national headlines cannot be verified against this reviewed Brief and have been withheld, not imputed. Consult the original evidence records.</p>}
-    <div className="brief-executive-roles">
-      <div><strong>West Virginia implementation context</strong><p>{brief.local_context.length} reviewed records included in JSON ({checkboxIncludedCount} from current checkboxes{pilotOnlyCount ? "; 1 extra via Use in Pilot" : ""}). HRSA/Census access indicators are not West Virginia Long COVID prevalence or costs.</p></div>
-      <div><strong>Applied Pilot assumptions</strong><p>{brief.scenario ? "Deterministic planning arithmetic from applied inputs; no effect or savings inferred." : "No validated applied scenario."} Defaults are assumptions, not observed evidence.</p></div>
-      <div><strong>Operational data requests</strong><p>{brief.data_requests.length} current requests included; {staleRequestCount} selected stale requests excluded until refreshed. New requests start included but may be deselected.</p></div>
-    </div>
-    <p className="brief-executive-boundary">The national figures are descriptive, not attributable to Long COVID or diagnostic delay. ESAQ and PSAQ have their own outcome-specific respondent universes. Screening is not diagnosis; no causal intervention-effect, savings or ROI claim follows.</p>
-  </section>;
+
+  return (
+    <section className="brief-executive-summary" aria-labelledby="brief-executive-title">
+      <header className="brief-executive-header">
+        <p className="eyebrow">FOUR-QUADRANT EXECUTIVE MATRIX</p>
+        <h2 id="brief-executive-title">Executive summary</h2>
+      </header>
+
+      <div className="dossier-quadrants">
+        <article className="dossier-quadrant q-national">
+          <div className="quadrant-head">
+            <span className="eyebrow">01 · NATIONAL BURDEN</span>
+            <span className="status status-reviewed">MEPS 2024</span>
+          </div>
+          <div className="brief-executive-grid">
+            {highlights.map(({ key, title, finding }) => (
+              <div className="brief-executive-finding" key={key}>
+                <h3>{title}</h3>
+                <strong className="brief-executive-value">
+                  {formatEstimateValue(finding.estimate)}
+                </strong>
+                <span className="brief-executive-interval">
+                  {formatEstimateInterval(finding.estimate)}
+                </span>
+                <small>
+                  MEPS 2024 · {finding.estimate.estimate_id}
+                </small>
+              </div>
+            ))}
+          </div>
+          {highlights.length !== HEADLINES.length && (
+            <p role="status" className="subtle">
+              Unverified national headlines are withheld, not imputed.
+            </p>
+          )}
+          <p className="micro-caption">National descriptive · Not causal</p>
+        </article>
+
+        <article className="dossier-quadrant q-terrain">
+          <div className="quadrant-head">
+            <span className="eyebrow">02 · STATE TERRAIN</span>
+            <span className="status status-selection">HRSA · ACS</span>
+          </div>
+          <strong className="quadrant-hero-stat">
+            {brief.local_context.length} indicators
+          </strong>
+          <p className="subtle">
+            {checkboxIncludedCount} from selection
+            {pilotOnlyCount ? " + 1 pinned to Pilot" : ""}.
+          </p>
+          <p className="micro-caption">State context · Not prevalence</p>
+        </article>
+
+        <article className="dossier-quadrant q-pilot">
+          <div className="quadrant-head">
+            <span className="eyebrow">03 · PILOT ASSUMPTIONS</span>
+            <span className="status status-assumption">Planning math</span>
+          </div>
+          {brief.scenario ? (
+            <>
+              <strong className="quadrant-hero-stat">
+                {formatPlanningNumber(brief.scenario.result.reached_participants, integer)} reach
+              </strong>
+              <p className="subtle">
+                {formatPlanningCurrency(brief.scenario.result.program_resource_requirement)} program
+                budget · {formatPlanningNumber(brief.scenario.result.capacity_gap, integer)} gap
+              </p>
+            </>
+          ) : (
+            <strong className="quadrant-hero-stat">No applied scenario</strong>
+          )}
+          <p className="micro-caption">Planning math · Not savings</p>
+        </article>
+
+        <article className="dossier-quadrant q-gaps">
+          <div className="quadrant-head">
+            <span className="eyebrow">04 · EVIDENCE &amp; GAPS</span>
+            <span className="status status-unavailable">Admissibility</span>
+          </div>
+          <strong className="quadrant-hero-stat">
+            {brief.evidence.length} effect params · {brief.data_requests.length} requests
+          </strong>
+          <p className="subtle">
+            {staleRequestCount > 0
+              ? `${staleRequestCount} stale request(s) excluded until refreshed.`
+              : "No admitted causal effect parameter loaded."}
+          </p>
+          <p className="micro-caption">Pending verification · Not ROI</p>
+        </article>
+      </div>
+    </section>
+  );
 }

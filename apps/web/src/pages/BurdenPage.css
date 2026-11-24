@@ -1,0 +1,142 @@
+.burden-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.burden-subroutes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.burden-main-column {
+  display: grid;
+  gap: 20px;
+}
+
+.telemetry-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.telemetry-tile {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+  text-align: left;
+  min-width: 0;
+  padding: 16px;
+  border-radius: 10px;
+  border: 1px solid var(--do-border);
+  background: var(--do-surface);
+  color: var(--do-text);
+  cursor: pointer;
+}
+
+.telemetry-tile:hover {
+  border-color: var(--do-control-border);
+  background: var(--do-surface-elevated);
+}
+
+.telemetry-tile.is-selected {
+  border-color: var(--do-reviewed-text);
+  background: var(--do-surface-elevated);
+  box-shadow: inset 0 2px 0 var(--do-reviewed-text);
+}
+
+.tile-top-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: center;
+  min-width: 0;
+}
+
+.tile-domain-tag {
+  font-family: var(--do-font-mono);
+  font-size: 0.64rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--do-reviewed-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tile-unit-tag {
+  font-family: var(--do-font-mono);
+  font-size: 0.62rem;
+  color: var(--do-text-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.tile-figure {
+  font-family: var(--do-font-display);
+  font-size: clamp(1.22rem, 1.7vw, 1.52rem);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.12;
+  color: var(--do-text);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.tile-figure .distribution-summary {
+  text-align: left;
+  gap: 2px;
+}
+
+.tile-figure .distribution-mean {
+  font-size: 1.32rem;
+  font-weight: 600;
+  color: var(--do-text);
+}
+
+.tile-figure .distribution-range,
+.tile-figure .distribution-median {
+  font-size: 0.66rem;
+}
+
+@media (max-width: 560px) {
+  .telemetry-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.tile-label {
+  font-size: 0.82rem;
+  line-height: 1.35;
+  color: var(--do-text-muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.tile-whisker-svg {
+  width: 100%;
+  height: 14px;
+  display: block;
+  margin-top: auto;
+}
+
+.tile-whisker-rail {
+  stroke: var(--do-chart-track);
+}
+
+.tile-whisker-band {
+  fill: color-mix(in srgb, var(--do-chart-1) 36%, transparent);
+  stroke: var(--do-chart-1);
+  stroke-width: 1;
+}
+
+.tile-whisker-dot {
+  fill: var(--do-text);
+  stroke: var(--do-chart-1);
+  stroke-width: 1.5;
+}

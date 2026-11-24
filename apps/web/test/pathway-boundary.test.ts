@@ -51,25 +51,17 @@ test("pathway boundary helper has deterministic readable fallback for unknown id
   assert.equal(humanizeBoundaryId(""), "Not specified");
 });
 
-test("Pilot renders the committed Scenario boundary beside assumptions with descriptive follow-up links", () => {
+test("Pilot renders the committed Scenario boundary in Boundary & Trace drawer without pathway select", () => {
   const pilot = readSource("../src/pages/PilotPage.tsx");
-  const assumptionsIndex = pilot.indexOf("<h2>Planning assumptions</h2>");
-  const boundaryIndex = pilot.indexOf("Modeled pathway boundary");
-  const resultsIndex = pilot.indexOf("Baseline vs recognition/");
-
-  assert.ok(assumptionsIndex >= 0);
-  assert.ok(boundaryIndex > assumptionsIndex);
-  assert.ok(resultsIndex >= 0 && resultsIndex < assumptionsIndex, "mobile summary precedes editable assumptions");
-  assert.match(pilot, /Target step/);
+  assert.match(pilot, /Modeled pathway boundary/);
+  assert.match(pilot, /Target pathway step/);
   assert.match(pilot, /Assumed mechanism/);
-  assert.match(pilot, /Outside this model:/);
-  assert.match(pilot, /Stress-test these assumptions/);
-  assert.match(pilot, /to="\/pilot#sensitivity"/);
-  assert.match(pilot, /Review evidence limits/);
-  assert.match(pilot, /to="\/evidence"/);
+  assert.match(pilot, /Outside this model/);
+  assert.match(pilot, /dataRequestHref="\/pilot#sensitivity"/);
+  assert.match(pilot, /to="\/data-requests"/);
   assert.doesNotMatch(pilot, /select[^>]*(pathway|mechanism)/i);
   assert.doesNotMatch(pilot, /target-box/);
-  assert.match(pilot, /not a prediction or causal ROI estimate/i);
+  assert.match(pilot, /Planning math · Not savings/);
 });
 
 test("Data Requests renders mechanism only when the request carries it", () => {

@@ -53,26 +53,22 @@ test("presentation labels cover every current DataState and ReleaseStatus withou
   }
 });
 
-test("Overview explains the evidence-to-planning workflow across four stages and supporting tools", () => {
+test("Overview presents the 4-stage tactical arc and routes concisely", () => {
   const source = readSource("../src/pages/OverviewPage.tsx");
 
   for (const phrase of [
-    "Evidence into planning,",
-    "boundaries intact.",
-    "reviewed national burden",
-    "local implementation context",
-    "analyst assumptions",
-    "Review national burden estimates with survey uncertainty and explicit interpretation boundaries.",
-    "Inspect implementation and access context without turning national burden into a local disease estimate.",
-    "Set explicit planning assumptions and stress-test reach, capacity, timing, and resources.",
-    "Export reviewed evidence, selected context, assumptions, boundaries, and remaining gaps."
+    "See where health costs break. Move the right lever first.",
+    "National descriptive · Not causal",
+    "State context · Not prevalence",
+    "Planning math · Not savings",
+    "Boundaries intact · Export ready",
+    "Enter Command Workspace"
   ]) {
     assert.ok(source.includes(phrase), phrase);
   }
-  assert.match(source, /Intervention evidence &amp; limits/);
-  assert.match(source, /capture data needs/);
-  assert.match(source, /journey\.map\(\(\[step, title, outcome, to\]\)/);
-  assert.match(source, /<small>{outcome}<\/small>/);
+  for (const route of ["/burden", "/local-context", "/pilot", "/brief"]) {
+    assert.ok(source.includes(route), route);
+  }
 });
 
 test("DecisionStateRail reuses the readable pathway formatter", () => {
@@ -81,33 +77,26 @@ test("DecisionStateRail reuses the readable pathway formatter", () => {
   assert.ok(!source.includes("Target: ${scenario.target_pathway_step}"));
 });
 
-test("Local Context humanizes statuses and preserves interpretation boundaries", () => {
+test("Local Context humanizes statuses and preserves interpretation boundaries in inspector", () => {
   const source = readSource("../src/pages/LocalContextPage.tsx");
 
-  assert.match(source, /formatReleaseStatusLabel\(record\.release_status\)/);
-  assert.match(source, /formatDataStateLabel\(record\.state\)/);
-  assert.doesNotMatch(source, /<small>{record\.release_status} · {record\.state}<\/small>/);
-  assert.match(source, /Missing designation\/data does not mean no shortage or zero implementation constraint/);
-  assert.match(source, /West Virginia Long COVID prevalence, burden, cost, causal effect, savings, ROI, or a composite access-severity score/);
-  assert.match(source, /Source timing and technical details/);
-  assert.match(source, /Health Resources and Services Administration \(HRSA\)/);
-  assert.match(source, /Health Professional Shortage Area \(HPSA\)/);
-  assert.match(source, /American Community Survey \(ACS\)/);
-  assert.match(source, /not a statewide shortage severity score/);
+  assert.match(source, /formatReleaseStatusLabel\(inspected\.release_status\)/);
+  assert.match(source, /formatDataStateLabel\(inspected\.state\)/);
+  assert.match(source, /Missing designation or survey data never implies zero constraint/);
   assert.match(source, /Include in Planning Brief/);
+  assert.match(source, /inspected\.allowed_interpretation/);
+  assert.match(source, /inspected\.prohibited_interpretation/);
 });
 
-test("Pilot interpretation describes planning arithmetic without duplicating the pathway boundary", () => {
+test("Pilot interpretation keeps boundary details in drawer without duplicating form inputs", () => {
   const source = readSource("../src/pages/PilotPage.tsx");
 
   assert.equal(source.split("Modeled pathway boundary").length - 1, 1);
-  assert.match(source, /mechanical planning consequences of the currently applied assumptions/i);
-  assert.match(source, /A forecast, observed improvement, treatment effectiveness, causal effect, savings, or ROI/);
-  assert.match(source, /Stress-test an assumption and create a structured data request/);
+  assert.match(source, /Planning math · Not savings/);
   assert.match(source, /Draft not applied/);
   assert.match(source, /last valid planning assumptions/);
   assert.match(source, /Sensitivity analysis paused/);
-  assert.match(source, /disabled>Review planning brief<\/button>/);
+  assert.match(source, /disabled>[\s\S]*?Review planning brief[\s\S]*?<\/button>/);
 });
 
 test("Evidence uses existing admissibility and current-scenario eligibility semantics", () => {
@@ -148,7 +137,7 @@ test("Evidence uses existing admissibility and current-scenario eligibility sema
   ] as const);
 
   for (const [status, label] of expected) {
-    assert.equal(evidenceClaimLabel({...base, admissibility_status: status}), label);
+    assert.equal(evidenceClaimLabel({ ...base, admissibility_status: status }), label);
   }
 
   const scenario = {
@@ -169,7 +158,7 @@ test("Evidence uses existing admissibility and current-scenario eligibility sema
 
   assert.equal(canDriveScenarioParameter(base, scenario).allowed, true);
   assert.equal(
-    canDriveScenarioParameter({...base, admissibility_status: "limited_use"}, scenario).allowed,
+    canDriveScenarioParameter({ ...base, admissibility_status: "limited_use" }, scenario).allowed,
     false
   );
 });
