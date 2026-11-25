@@ -83,6 +83,26 @@ test("legacy leads import as internal research with caller-provided run identity
   assert.equal(result.ok && result.value.status, "no_change");
 });
 
+test("long legacy proposals keep original uncertainty and leads within the current wire limits", () => {
+  const summary = "Unverified account of a possible change. ".repeat(16).trimEnd();
+  const relevance = "Applicability could not be established.";
+  const question = "Has the originating institution published an effective date?";
+  const limitation = "The original notice and the secondary report appear to conflict.";
+  const preservedLead = { url: "https://www.example.org/notice", publisher: "Example Authority", locator: "Page 2" };
+  const result = convertLegacyResearchProposals({
+    schema_version: "0.2.0", kind: "research_proposals", status: "ok", reason_codes: [],
+    proposals: [{ proposal_type: "possible_change", title: "Possible change", summary, wv_relevance: relevance,
+      verification_question: question, limitations: [limitation], leads: [preservedLead] }]
+  }, { run_id: "legacy-long-1", report_type: "on_demand", title: "Legacy conversion" });
+  assert.ok(result.ok);
+  assert.equal(result.value.items.length, 2);
+  assert.deepEqual(result.value.items[0]?.sources, [preservedLead]);
+  assert.ok(result.value.items.every(item => item.kind === "verification_needed" && item.text.length <= 700));
+  const text = result.value.items.map(item => item.text).join(" ");
+  for (const original of [summary, relevance, question, limitation]) assert.ok(text.includes(original));
+  assert.equal(validateResearchReport(result.value).ok, true);
+});
+
 const anchor = { segment_id: "s1", quote: "The clinic proposes a revised schedule." };
 const extraction: ExtractionResult = {
   schema_version: "0.2.1", kind: "extraction_result", status: "ok", reason_codes: [], security_flags: [],

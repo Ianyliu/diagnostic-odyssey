@@ -36,8 +36,9 @@ export interface ResearchReport {
   reason_codes: string[];
 }
 
+const itemTextLimit = 700;
 const source = object({ url, publisher: line(120), locator: line(200) }, ["locator"]);
-const item = object({ kind: choice(researchItemKinds), title: line(120), text: line(700), sources: list(source, 5) });
+const item = object({ kind: choice(researchItemKinds), title: line(120), text: line(itemTextLimit), sources: list(source, 5) });
 
 export const researchReportSchema = {
   $schema: "https://json-schema.org/draft/2020-12/schema",
@@ -108,7 +109,7 @@ interface LegacyResearch {
 const legacySchema = object({
   schema_version: choice(["0.2.0"]), kind: choice(["research_proposals"]), status: choice(legacyStatuses),
   proposals: list(object({
-    proposal_type: choice(legacyProposalTypes), title: line(120), summary: line(700), wv_relevance: nullable(line(400)),
+    proposal_type: choice(legacyProposalTypes), title: line(120), summary: line(itemTextLimit), wv_relevance: nullable(line(400)),
     verification_question: line(400), limitations: list(line(240), 4),
     leads: list(object({ url, publisher: nullable(line(120)), locator: nullable(line(200)) }), 5)
   }), 8),
@@ -130,15 +131,36 @@ export function convertLegacyResearchProposals(value: unknown, run: {
   if (!legacy.ok) return legacy;
   return validateResearchReport({
     ...run, schema_version: wireVersion, kind: "research_report", status: legacyStatus[legacy.value.status],
-    items: legacy.value.proposals.map(proposal => ({
-      kind: legacyItemKind[proposal.proposal_type], title: proposal.title,
-      text: [proposal.summary, proposal.wv_relevance, proposal.verification_question, ...proposal.limitations.filter(Boolean)]
-        .filter(part => part !== null).join(" "),
-      sources: proposal.leads.map(lead => ({
-        url: lead.url, publisher: lead.publisher ?? "Publisher unverified",
-        ...(lead.locator === null ? {} : { locator: lead.locator })
-      }))
-    })),
+    items: legacy.value.proposals.flatMap(convertLegacyProposal),
     reason_codes: legacy.value.reason_codes
   });
+}
+
+function convertLegacyProposal(proposal: LegacyResearch, index: number): ResearchItem[] {
+  const first: ResearchItem = {
+    kind: legacyItemKind[proposal.proposal_type], title: proposal.title, text: proposal.summary,
+    sources: proposal.leads.map(lead => ({
+      url: lead.url, publisher: lead.publisher ?? "Publisher unverified",
+      ...(lead.locator === null ? {} : { locator: lead.locator })
+    }))
+  };
+  const items = [first];
+  let current = first;
+  const sections = [
+    ...(proposal.wv_relevance === null ? [] : ["WV: " + proposal.wv_relevance]),
+    "Check: " + proposal.verification_question,
+    ...proposal.limitations.map(limit => "Limit: " + limit)
+  ];
+  for (const section of sections) {
+    if (current.text.length + section.length + 1 <= itemTextLimit) {
+      current.text += " " + section;
+    } else {
+      current = {
+        kind: "verification_needed", title: "Verification notes for legacy proposal " + (index + 1),
+        text: section, sources: []
+      };
+      items.push(current);
+    }
+  }
+  return items;
 }
