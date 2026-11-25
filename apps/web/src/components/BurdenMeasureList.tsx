@@ -120,6 +120,11 @@ export function BurdenMeasureList({
   const [activeEstimate, setActiveEstimate] = useState<Estimate | null>(null);
   const parentLabels = new Map(estimates.map(estimate => [estimate.measure_id, estimate.label]));
 
+  const openProvenance = (estimate: Estimate, trigger: HTMLButtonElement) => {
+    trigger.focus({ preventScroll: true });
+    setActiveEstimate(estimate);
+  };
+
   return (
     <>
       <div className="measure-list burden-measure-list">
@@ -158,7 +163,7 @@ export function BurdenMeasureList({
                     {focused ? "Hide details −" : "Details +"}
                   </button>
                 ) : (
-                  <button type="button" className="atlas-detail-trigger" onClick={() => setActiveEstimate(estimate)}>
+                  <button type="button" className="atlas-detail-trigger" onClick={event => openProvenance(estimate, event.currentTarget)}>
                     Provenance &amp; 95% CI ↗
                   </button>
                 )}
@@ -209,7 +214,7 @@ export function BurdenMeasureList({
                       </small>
                     )}
                     {onFocus && (
-                      <button type="button" className="atlas-detail-trigger" onClick={() => setActiveEstimate(estimate)}>
+                      <button type="button" className="atlas-detail-trigger" onClick={event => openProvenance(estimate, event.currentTarget)}>
                         Provenance &amp; 95% CI ↗
                       </button>
                     )}

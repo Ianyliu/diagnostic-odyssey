@@ -229,7 +229,10 @@ export function LocalContextPage() {
             className="atlas-detail-trigger"
             aria-label={`Provenance for ${record.label}`}
             aria-haspopup="dialog"
-            onClick={() => handleInspect(record)}
+            onClick={event => {
+              event.currentTarget.focus({ preventScroll: true });
+              handleInspect(record);
+            }}
           >
             Provenance ↗
           </button>

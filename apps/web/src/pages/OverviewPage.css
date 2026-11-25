@@ -151,6 +151,7 @@
 .atlas-inset-stage {
   position: relative;
   overflow: hidden;
+  overflow: clip;
   border-radius: 28px;
   padding: clamp(32px, 4.8vw, 64px) clamp(22px, 4vw, 56px);
   background:

@@ -83,7 +83,10 @@ export function BurdenPage() {
         <button
           type="button"
           className="button secondary"
-          onClick={() => setMethodOpen(true)}
+          onClick={event => {
+            event.currentTarget.focus({ preventScroll: true });
+            setMethodOpen(true);
+          }}
         >
           Methods &amp; Limits
         </button>
