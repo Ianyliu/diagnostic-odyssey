@@ -9,6 +9,7 @@ import {
   getPathwayBoundaryPresentation,
   humanizeBoundaryId
 } from "../src/data/pathwayBoundary.ts";
+import { readPilotSource } from "./helpers/pilotSource.ts";
 
 const scenario: Scenario = {
   scenario_id: "test",
@@ -52,7 +53,7 @@ test("pathway boundary helper has deterministic readable fallback for unknown id
 });
 
 test("Pilot keeps pathway boundary in a drawer and avoids dropdown overrides", () => {
-  const pilot = readSource("../src/pages/PilotPage.tsx");
+  const pilot = readPilotSource();
   assert.match(pilot, /Modeled pathway boundary/);
   assert.match(pilot, /<DetailDrawer/);
   assert.match(pilot, /Target pathway step/);

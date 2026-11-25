@@ -1,6 +1,4 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
 import test from "node:test";
 import type { Scenario, ScenarioResult } from "@diagnostic-odyssey/contracts";
 import { buildSensitivityValues } from "../src/data/decisionVisuals.ts";
@@ -10,6 +8,7 @@ import {
   formatPilotInputHelper,
   formatPilotResultAnnouncement
 } from "../src/data/pilotInputDraft.ts";
+import { readPilotSource } from "./helpers/pilotSource.ts";
 
 const scenario: Scenario = {
   scenario_id: "test",
@@ -27,10 +26,7 @@ const scenario: Scenario = {
   artifact_version: "test"
 };
 
-const pilotSource = readFileSync(
-  fileURLToPath(new URL("../src/pages/PilotPage.tsx", import.meta.url)),
-  "utf8"
-);
+const pilotSource = readPilotSource();
 
 test("blank draft is invalid and never becomes explicit zero", () => {
   const draft = createPilotInputDraft(scenario);

@@ -17,6 +17,7 @@ import {
 import {
   formatLinkedConditionSecondaryEvidence
 } from "../src/data/linkedConditionPresentation.ts";
+import { pilotSourcePathsFromTests } from "./helpers/pilotSource.ts";
 
 const readSource = (path: string): string =>
   readFileSync(fileURLToPath(new URL(path, import.meta.url)), "utf8");
@@ -169,7 +170,7 @@ test("Overview, DecisionStateRail, Pilot, Evidence, and ArtifactProvider remain 
   const paths = [
     "../src/pages/OverviewPage.tsx",
     "../src/components/DecisionStateRail.tsx",
-    "../src/pages/PilotPage.tsx",
+    ...pilotSourcePathsFromTests(),
     "../src/pages/EvidencePage.tsx",
     "../src/data/ArtifactContext.tsx"
   ];

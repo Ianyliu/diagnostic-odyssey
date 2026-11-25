@@ -15,6 +15,7 @@ import {
   formatDataStateLabel,
   formatReleaseStatusLabel
 } from "../src/data/presentationLabels.ts";
+import { readPilotSource } from "./helpers/pilotSource.ts";
 
 const readSource = (path: string) =>
   readFileSync(fileURLToPath(new URL(path, import.meta.url)), "utf8");
@@ -90,7 +91,7 @@ test("Local Context humanizes statuses and preserves interpretation boundaries i
 });
 
 test("Pilot simulator keeps draft boundaries and opens pathway boundary in a drawer", () => {
-  const source = readSource("../src/pages/PilotPage.tsx");
+  const source = readPilotSource();
 
   assert.match(source, /Modeled pathway boundary/);
   assert.match(source, /<DetailDrawer/);

@@ -6,11 +6,9 @@ import {
   getPilotFragmentTargetId,
   SENSITIVITY_FRAGMENT
 } from "../src/data/pilotFragmentScroll.ts";
+import { readPilotSource } from "./helpers/pilotSource.ts";
 
-const pilotSource = readFileSync(
-  fileURLToPath(new URL("../src/pages/PilotPage.tsx", import.meta.url)),
-  "utf8"
-);
+const pilotSource = readPilotSource();
 const sensitivitySource = readFileSync(
   fileURLToPath(new URL("../src/components/SensitivityExplorer.tsx", import.meta.url)),
   "utf8"

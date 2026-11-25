@@ -37,6 +37,7 @@ import {
   PLANNING_DEFAULTS_DESCRIPTION,
   PLANNING_DEFAULTS_LABEL
 } from "../src/data/planningScenarioDefaults.ts";
+import { readPilotSource } from "./helpers/pilotSource.ts";
 
 const reviewedArtifactPath = fileURLToPath(
   new URL(
@@ -642,7 +643,7 @@ test("planning brief includes only explicitly supplied release-eligible local co
 test("local-context selection UI supports reviewed records without changing Pilot assumptions", () => {
   const localSource = readSource("../src/pages/LocalContextPage.tsx");
   const contextSource = readSource("../src/data/ArtifactContext.tsx");
-  const pilotSource = readSource("../src/pages/PilotPage.tsx");
+  const pilotSource = readPilotSource();
 
   assert.match(localSource, /Include in Brief/);
   assert.match(localSource, /Select all/);
@@ -672,7 +673,7 @@ test("local-context failure state leaves national routes conceptually available"
 
 test("primary routes retain explanatory rendered states rather than null-only secondary paths", () => {
   const app = readSource("../src/App.tsx");
-  const pilot = readSource("../src/pages/PilotPage.tsx");
+  const pilot = readPilotSource();
   const local = readSource("../src/pages/LocalContextPage.tsx");
   const evidence = readSource("../src/pages/EvidencePage.tsx");
   const brief = readSource("../src/pages/BriefPage.tsx");
