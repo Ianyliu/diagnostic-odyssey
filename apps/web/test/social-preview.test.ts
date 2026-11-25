@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {readFileSync} from "node:fs";
+import {defined} from "./helpers/typed.ts";
 const html=readFileSync(new URL("../index.html",import.meta.url),"utf8");
 test("absolute social URL and image metadata target the approved Vercel domain",()=>{
  for(const name of ["og:url","og:image","twitter:image"]) assert.match(html,new RegExp(name));
@@ -26,7 +27,7 @@ test("social artwork alt is literal, matching across OpenGraph and Twitter",()=>
  const get=(attribute:string,name:string)=>{
    const tag=html.match(new RegExp(`<meta ${attribute}="${name}" content="([^"]+)"\\s*\\/>`));
    assert.ok(tag,`Missing metadata ${name}`);
-   return tag[1];
+   return defined(tag[1], `metadata ${name} content`);
  };
  const og=get("property","og:image:alt"),twitter=get("name","twitter:image:alt");
  assert.equal(og,twitter);

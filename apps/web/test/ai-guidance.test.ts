@@ -46,7 +46,7 @@ async function prepare(selection=selected(),provider=mock){
  return (JSON.parse(body) as {challenge:string}).challenge;
 }
 test("reviewed source hashes and exact reviewed promotions are pinned",()=>{
- const map=[
+ const map:ReadonlyArray<readonly [string,string]>=[
   ["meps-2024-long-covid-candidate-20260926T011343Z/bundle.json","5b32bfb3288a28ce0a57de4d0c3ec75fe1d83c0f19ad481e687b70af4a91eca0"],
   ["local-context-wv-hrsa-acs-candidate-20260924T052332Z/local-context.json","82e3cc5d5c6bd1d084fddb47b36ca08df76be19ab2a641dbba50b8c59c467bc4"]
  ];

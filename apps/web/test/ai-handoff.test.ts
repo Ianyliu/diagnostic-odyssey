@@ -3,7 +3,9 @@ import { readFileSync } from "node:fs";
 import test from "node:test";
 import { buildPlanningBrief, serializeBriefJson, type PlanningBrief } from "@diagnostic-odyssey/brief-core";
 import { calculateScenario } from "@diagnostic-odyssey/scenario-engine";
-import type { EvidenceRecord } from "@diagnostic-odyssey/contracts";
+import type { EvidenceRecord, LocalContextRecord } from "@diagnostic-odyssey/contracts";
+import type { AcquisitionGuidance } from "@diagnostic-odyssey/acquisition-hints";
+import { invalidInput } from "./helpers/typed.ts";
 import {
   createAiHandoffEnvelope, createAiHandoffText, createConciseAiHandoffText,
   renderAiHandoffMarkdown, renderConciseAiHandoffMarkdown,
@@ -195,7 +197,7 @@ test("malicious constructed Brief records fail closed without leaking their forb
   illustrative.burden_findings[0]!.display_status = "illustrative";
   assert.throws(() => createAiHandoffEnvelope(illustrative), /not export-eligible/);
   for (const state of ["suppressed", "unavailable", "stale_fallback", "error"] as const) {
-    const brief = makeBrief(); brief.local_context[0]!.state = state;
+    const brief = makeBrief(); brief.local_context[0]!.state = invalidInput<LocalContextRecord["state"]>(state);
     assert.throws(() => createAiHandoffEnvelope(brief), /not export-eligible/);
   }
   const preliminaryLocal = makeBrief(); preliminaryLocal.local_context[0]!.release_status = "preliminary";
@@ -259,7 +261,7 @@ test("stale request bodies and untrusted acquisition companions are removed by t
   assert.ok(text.envelope.payload.warnings.some(warning => /stale/.test(warning)));
   assert.doesNotMatch(text.markdown, /FORBIDDEN_STALE_QUESTION/);
   const forged = makeBrief();
-  forged.acquisition_guidance = [{request_id:"FORGED_SECRET"}] as PlanningBrief["acquisition_guidance"];
+  forged.acquisition_guidance = invalidInput<AcquisitionGuidance[]>([{request_id:"FORGED_SECRET"}]);
   const safe = createAiHandoffText(forged);
   assert.equal(safe.envelope.payload.acquisition_guidance, undefined);
   assert.doesNotMatch(safe.markdown, /FORGED_SECRET/);

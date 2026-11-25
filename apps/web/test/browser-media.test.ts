@@ -7,12 +7,13 @@ import {
   type MediaQuerySource
 } from "../src/browserMedia.ts";
 import { resolveTheme } from "../src/theme.ts";
+import { invalidInput } from "./helpers/typed.ts";
 
 const windowDescriptor = Object.getOwnPropertyDescriptor(globalThis, "window");
 after(() => assert.deepEqual(Object.getOwnPropertyDescriptor(globalThis, "window"), windowDescriptor));
 
-function sourceFor(media: Partial<MediaQueryList>): MediaQuerySource {
-  return {matchMedia: () => media as MediaQueryList};
+function sourceFor(media: unknown): MediaQuerySource {
+  return {matchMedia: () => invalidInput<MediaQueryList>(media)};
 }
 
 test("missing, throwing, and malformed media-query APIs use explicit fallback values", () => {
