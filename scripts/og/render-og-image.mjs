@@ -15,7 +15,7 @@ const root = fileURLToPath(new URL("../../", import.meta.url));
    break a website build or leave stale numerical social metadata behind. */
 const items = [
  {title:"REVIEWED NATIONAL BURDEN",detail:"MEPS - SPENDING / TIME / DISTRESS",foot:"DESCRIPTIVE SURVEY EVIDENCE"},
- {title:"LOCAL IMPLEMENTATION",detail:"HRSA + CENSUS ACS CONTEXT",foot:"NOT LOCAL DISEASE PREVALENCE"},
+ {title:"LOCAL IMPLEMENTATION",detail:"WV HRSA + CENSUS ACS (STATEWIDE)",foot:"NOT LOCAL DISEASE PREVALENCE"},
  {title:"TRANSPARENT PILOT PLANS",detail:"ANALYST ASSUMPTIONS STAY SEPARATE",foot:"NO CAUSAL SAVINGS OR ROI"}
 ];
 const W=1200,H=630,pixels=new Uint8Array(W*H*4);
@@ -90,23 +90,23 @@ function constrainedText(x,y,v,scale,max,hex){
  if(s.length*6*scale>max)throw Error("Preview text overflow: "+v);
  text(x,y,s,scale,hex);
 }
-rect(0,0,W,H,"#f5f2eb");rect(0,0,16,H,"#2c6b58");
-rect(565,48,590,520,"#ffffff");rect(565,48,590,8,"#2c6b58");
-text(54,66,"DIAGNOSTIC ODYSSEY",4,"#153552");
-rect(54,135,442,3,"#91afa9");
-text(54,190,"LONG COVID",6,"#153552");
-text(54,260,"GOES BEYOND",6,"#153552");
-text(54,330,"THE BILL.",6,"#2c6b58");
-text(54,452,"EVIDENCE INTO PLANNING",3,"#153552");
-text(54,500,"WITH BOUNDARIES INTACT",2,"#285e52");
+rect(0,0,W,H,"#101b32");rect(0,0,16,H,"#3157d5");
+rect(565,48,590,520,"#f5f7fc");rect(565,48,590,8,"#7154d8");
+text(54,66,"DIAGNOSTIC ODYSSEY",4,"#f5f7ff");
+rect(54,135,442,3,"#7154d8");
+text(54,190,"LONG COVID",6,"#f5f7ff");
+text(54,260,"GOES BEYOND",6,"#f5f7ff");
+text(54,330,"THE BILL.",6,"#b8c9ff");
+text(54,440,"STRATEGIC ATLAS EDITION 01",3,"#c1b5ff");
+text(54,492,"SEE THE BURDEN. FIND THE LEVERAGE.",2,"#9eb0c3");
 items.forEach((item,i)=>{
  const y=101+i*145;
- if(i>0)rect(595,y-21,526,2,"#e4e9e7");
- constrainedText(596,y,item.title,3,525,"#153552");
- constrainedText(596,y+40,item.detail,2,525,"#285e52");
- constrainedText(596,y+73,item.foot,2,525,"#5e6a72");
+ if(i>0)rect(595,y-21,526,2,"#d8e0ee");
+ constrainedText(596,y,item.title,3,525,"#101b32");
+ constrainedText(596,y+40,item.detail,2,525,"#2457a6");
+ constrainedText(596,y+73,item.foot,2,525,"#4b596d");
 });
-text(55,592,"ALL-CAUSE BURDEN IS NOT ATTRIBUTABLE COST",2,"#5e6a72");
+text(55,592,"ALL-CAUSE BURDEN IS NOT ATTRIBUTABLE COST",2,"#9eb0c3");
 // Pure Node PNG writer: RGBA scanlines + zlib + correctly checksummed PNG chunks.
 const crcTable=Array.from({length:256},(_,n)=>{let c=n;for(let j=0;j<8;j++)c=(c&1)?0xedb88320^(c>>>1):c>>>1;return c>>>0;});
 function crc(buffer){let c=0xffffffff;for(const b of buffer)c=crcTable[(c^b)&255]^(c>>>8);return(c^0xffffffff)>>>0;}

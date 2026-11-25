@@ -1,3 +1,4 @@
+import { serializeBriefJson, type PlanningBrief } from "@diagnostic-odyssey/brief-core";
 import type { AiHandoffTextV1 } from "./aiHandoff.ts";
 import type { AiHandoffProvider } from "./aiHandoffProviders.ts";
 
@@ -34,23 +35,45 @@ export function copyAndOpenAiProvider(
   return {copy, launch};
 }
 
-export function aiHandoffFilename(snapshot: AiHandoffTextV1): string {
+export function aiHandoffFilename(snapshot: AiHandoffTextV1, mode: "complete" | "concise" = "complete"): string {
   const safePart = (value: string) => value.replace(/[^a-zA-Z0-9_-]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 80) || "brief";
-  return `diagnostic-odyssey-${safePart(snapshot.envelope.provenance.national_artifact_version)}-${safePart(snapshot.envelope.analysis_goal)}-${safePart(snapshot.envelope.generated_at.slice(0, 10))}-ai-handoff.md`;
+  const suffix = mode === "concise" ? "-concise-ai-handoff.md" : "-ai-handoff.md";
+  return `diagnostic-odyssey-${safePart(snapshot.envelope.provenance.national_artifact_version)}-${safePart(snapshot.envelope.analysis_goal)}-${safePart(snapshot.envelope.generated_at.slice(0, 10))}${suffix}`;
+}
+
+export function aiHandoffJsonFilename(snapshot: AiHandoffTextV1): string {
+  const safePart = (value: string) => value.replace(/[^a-zA-Z0-9_-]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 80) || "brief";
+  return `${safePart(snapshot.envelope.provenance.national_artifact_version)}-planning-brief.json`;
 }
 
 /** Blob bytes are the frozen preview, with no BOM, newline conversion or truncation. */
-export function downloadAiHandoff(snapshot: AiHandoffTextV1): void {
+export function downloadAiHandoff(snapshot: AiHandoffTextV1, mode: "complete" | "concise" = "complete"): void {
   const url = URL.createObjectURL(new Blob([snapshot.markdown], {type: "text/markdown;charset=utf-8"}));
   const anchor = document.createElement("a");
   try {
     anchor.href = url;
-    anchor.download = aiHandoffFilename(snapshot);
+    anchor.download = aiHandoffFilename(snapshot, mode);
     document.body.append(anchor);
     anchor.click();
   } finally {
     anchor.remove();
     // Allow the browser to consume the object URL before releasing it.
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+}
+
+/** Downloads the exact canonical Brief JSON companion corresponding to the frozen handoff snapshot. */
+export function downloadAiHandoffJsonCompanion(snapshot: AiHandoffTextV1): void {
+  const json = serializeBriefJson(snapshot.envelope.payload as PlanningBrief);
+  const url = URL.createObjectURL(new Blob([json], {type: "application/json;charset=utf-8"}));
+  const anchor = document.createElement("a");
+  try {
+    anchor.href = url;
+    anchor.download = aiHandoffJsonFilename(snapshot);
+    document.body.append(anchor);
+    anchor.click();
+  } finally {
+    anchor.remove();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 }

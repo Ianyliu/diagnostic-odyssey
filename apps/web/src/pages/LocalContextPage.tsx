@@ -1,148 +1,82 @@
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import type { LocalContextRecord } from "@diagnostic-odyssey/contracts";
+import { DetailDrawer } from "../components/DetailDrawer";
+import { LedgerGroup } from "../components/LedgerGroup";
+import { PresentationMode, type Presentation } from "../components/PresentationMode";
 import { WorkspaceDisclosure } from "../components/WorkspaceDisclosure";
-import { ContextBar } from "../components/ContextBar";
+import { useEditionDrawer } from "../components/EditionDrawerContext";
 import { HpsaRuralComposition } from "../components/HpsaRuralComposition";
-import { InterpretationGuide } from "../components/InterpretationGuide";
 import { MetricVisual } from "../components/MetricVisual";
 import { useArtifact } from "../data/ArtifactContext";
+import { COVERAGE_CATALOG } from "../data/coverageCatalog";
 import { formatLocalContextValue } from "../data/formatLocalContextValue";
 import { isSelectableLocalContextRecord } from "../data/localContextSelection";
-import { formatLocalContextUncertaintyType, formatPublishedLocalContextUncertainty, getLocalContextSelectionAccessibility } from "../data/localContextPresentation";
+import {
+  formatLocalContextUncertaintyType,
+  formatPublishedLocalContextUncertainty,
+  getLocalContextSelectionAccessibility
+} from "../data/localContextPresentation";
 import { formatDataStateLabel, formatReleaseStatusLabel } from "../data/presentationLabels";
+import { getLocalContextScaleDomain } from "../data/metricGeometry";
 import "./Ledger.css";
 
-function IndicatorDisclosure({record}: {record: LocalContextRecord}) {
-  return <details className="technical-disclosure ledger-record-details">
-    <summary>Source timing and technical details</summary>
-    <p><strong>Source:</strong> {record.source_agency} · {record.source_ref}</p>
-    <p><strong>Source locator:</strong> {record.source_locator}</p>
-    <p><strong>Vintage:</strong> {record.source_release_vintage}</p>
-    <p><strong>Observation as of:</strong> {record.observation_as_of_date ?? "Missing / not available"}</p>
-    <p><strong>Geography:</strong> {record.geography_name} ({record.geography_type})</p>
-    <p><strong>Universe:</strong> {record.universe}</p>
-    <p><strong>Unit:</strong> {record.unit}</p>
-    <p><strong>Uncertainty type:</strong> {formatLocalContextUncertaintyType(record.uncertainty_type)}</p>
-    <p><strong>Published margin of error:</strong> {record.margin_of_error === null ? "Not applicable / not published" : formatPublishedLocalContextUncertainty(record)}</p>
-    <p><strong>Allowed use:</strong> {record.allowed_interpretation}</p>
-    <p><strong>Not supported:</strong> {record.prohibited_interpretation.join("; ")}</p>
-    <p><strong>Limitations:</strong> {record.limitations.join(" ")}</p>
-    <p><strong>Release/data state:</strong> {formatReleaseStatusLabel(record.release_status)} / {formatDataStateLabel(record.state)}</p>
-  </details>;
+type TerrainCategory = "all" | "primary-care" | "mental-health" | "acs";
+
+function categoryForRecord(record: LocalContextRecord): Exclude<TerrainCategory, "all"> {
+  if (record.source_ref === "hrsa-hpsa-primary-care-current") return "primary-care";
+  if (record.source_ref === "hrsa-hpsa-mental-health-current") return "mental-health";
+  return "acs";
 }
 
-function SelectableIndicatorRow({
-  record,
-  selected,
-  onSelectedChange,
-  pilotSelected,
-  onPilotSelect,
-  onPilotClear,
-  displayLabel
-}: {
-  record: LocalContextRecord;
-  selected: boolean;
-  onSelectedChange: (indicatorId: string, selected: boolean) => void;
-  pilotSelected: boolean;
-  onPilotSelect: (indicatorId: string) => void;
-  onPilotClear: () => void;
-  displayLabel?: string;
-}) {
-  const selectable = isSelectableLocalContextRecord(record);
-  const accessibility = getLocalContextSelectionAccessibility(record, displayLabel);
-
-  return <div className={`measure ledger-indicator-row${selected ? " ledger-row-selected" : ""}${pilotSelected ? " ledger-row-pilot" : ""}`}>
-    <div>
-      <strong id={accessibility.titleId}>{accessibility.displayTitle}</strong>
-      {accessibility.disambiguatorId && <span id={accessibility.disambiguatorId} className="sr-only">{record.label}</span>}
-      <span className="ledger-record-universe">{record.universe}</span>
-      <label className="selection-control" htmlFor={accessibility.controlId}>
-        <input
-          id={accessibility.controlId}
-          type="checkbox"
-          aria-labelledby={accessibility.labelledBy}
-          checked={selected}
-          disabled={!selectable}
-          onChange={event => onSelectedChange(record.indicator_id, event.target.checked)}
-        />
-        <span id={accessibility.actionLabelId}>Include in Planning Brief</span>
-      </label>
-      <div className="pilot-context-action">
-        {pilotSelected ? <>
-          <span className="ledger-pilot-selection">Active Pilot planning context</span>
-          <button className="text-button" type="button" aria-label={`Remove ${record.label} from Pilot planning`} onClick={onPilotClear}>Remove from Pilot</button>
-        </> : <button
-          className="text-button"
-          type="button"
-          disabled={!selectable}
-          aria-label={`Use ${record.label} in Pilot planning`}
-          onClick={() => onPilotSelect(record.indicator_id)}
-        >
-          Use in Pilot planning
-        </button>}
+function LocalContextProvenanceDetails({ record: inspectRecord }: { record: LocalContextRecord }) {
+  return (
+    <>
+      <div className="atlas-drawer-stat">
+        <strong>{formatLocalContextValue(inspectRecord)}</strong>
+        <span>{inspectRecord.source_agency} · {inspectRecord.source_release_vintage}</span>
       </div>
-    </div>
-    <div className="measure-value ledger-record-value">
-      {formatLocalContextValue(record)}
-      {selectable && typeof record.value === "number" && <MetricVisual
-        label={accessibility.displayTitle}
-        value={record.value}
-        unit={record.unit}
-        low={record.margin_of_error === null ? null : record.value - record.margin_of_error}
-        high={record.margin_of_error === null ? null : record.value + record.margin_of_error}
-        intervalLabel={record.margin_of_error === null ? null : `${record.confidence_level === null ? "" : `${(record.confidence_level * 100).toFixed(0)}% `}published margin`}
-        source={record.source_agency}
-        universe={record.universe}
-      />}
-      <small>{formatReleaseStatusLabel(record.release_status)} · {formatDataStateLabel(record.state)}</small>
-    </div>
-  </div>;
-}
-
-function CategorySelectionActions({records, selectedIds, onGroupChange, label}: {
-  records: LocalContextRecord[];
-  selectedIds: string[];
-  onGroupChange: (indicatorIds: string[], selected: boolean) => void;
-  label: string;
-}) {
-  const eligible = records.filter(isSelectableLocalContextRecord);
-  if (eligible.length < 2) return null;
-  const ids = eligible.map(record => record.indicator_id);
-  const count = ids.filter(id => selectedIds.includes(id)).length;
-  return <div className="selection-actions" role="group" aria-label={`${label} selection controls`}>
-    <button className="text-button" type="button" disabled={count === ids.length} onClick={() => onGroupChange(ids, true)}>Select all</button>
-    <button className="text-button" type="button" disabled={count === 0} onClick={() => onGroupChange(ids, false)}>Select none</button>
-  </div>;
-}
-
-function BreakdownList({
-  records,
-  selectedIds,
-  onSelectedChange,
-  pilotContextId,
-  onPilotSelect,
-  onPilotClear
-}: {
-  records: LocalContextRecord[];
-  selectedIds: string[];
-  onSelectedChange: (indicatorId: string, selected: boolean) => void;
-  pilotContextId: string | null;
-  onPilotSelect: (indicatorId: string) => void;
-  onPilotClear: () => void;
-}) {
-  return <div>
-    {records.map(record => <div className="ledger-record-group" key={record.indicator_id}>
-      <SelectableIndicatorRow
-        record={record}
-        selected={selectedIds.includes(record.indicator_id)}
-        onSelectedChange={onSelectedChange}
-        pilotSelected={pilotContextId === record.indicator_id}
-        onPilotSelect={onPilotSelect}
-        onPilotClear={onPilotClear}
-      />
-      <IndicatorDisclosure record={record} />
-    </div>)}
-  </div>;
+      <dl className="atlas-drawer-list">
+        <div>
+          <dt>Observation date</dt>
+          <dd>{inspectRecord.observation_as_of_date ?? "Not specified"}</dd>
+        </div>
+        <div>
+          <dt>Geography &amp; universe</dt>
+          <dd>{inspectRecord.geography_name} ({inspectRecord.geography_type}) · {inspectRecord.universe}</dd>
+        </div>
+        <div>
+          <dt>Source &amp; locator</dt>
+          <dd>{inspectRecord.source_ref} · {inspectRecord.source_locator}</dd>
+        </div>
+        <div>
+          <dt>Published uncertainty</dt>
+          <dd>
+            {formatLocalContextUncertaintyType(inspectRecord.uncertainty_type)} ·{" "}
+            {inspectRecord.margin_of_error === null
+              ? "Not published"
+              : formatPublishedLocalContextUncertainty(inspectRecord)}
+          </dd>
+        </div>
+        <div>
+          <dt>Allowed use</dt>
+          <dd>{inspectRecord.allowed_interpretation}</dd>
+        </div>
+        <div>
+          <dt>Not supported</dt>
+          <dd>{inspectRecord.prohibited_interpretation.join("; ")}</dd>
+        </div>
+        <div>
+          <dt>Limitations</dt>
+          <dd>{inspectRecord.limitations.join(" ")}</dd>
+        </div>
+        <div>
+          <dt>Release / state</dt>
+          <dd>{formatReleaseStatusLabel(inspectRecord.release_status)} · {formatDataStateLabel(inspectRecord.state)}</dd>
+        </div>
+      </dl>
+    </>
+  );
 }
 
 export function LocalContextPage() {
@@ -160,249 +94,409 @@ export function LocalContextPage() {
     setPilotLocalContext,
     clearPilotLocalContext
   } = useArtifact();
+  const { openEdition } = useEditionDrawer();
+
+  const [category, setCategory] = useState<TerrainCategory>("all");
+  const [presentation, setPresentation] = useState<Presentation>("focus");
+  const [groups, setGroups] = useState<Partial<Record<TerrainCategory, boolean>>>({});
+  const [inspectedId, setInspectedId] = useState<string | null>(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  const selectCategory = (next: TerrainCategory) => {
+    setCategory(next);
+    if (next !== "all") setGroups(current => ({ ...current, [next]: true }));
+  };
+
+  const changePresentation = (mode: Presentation) => {
+    if (mode === presentation) return;
+    setPresentation(mode);
+    setCategory("all");
+    setGroups({});
+  };
+
+  const indicators = localContext?.indicators ?? [];
+
+  const counts = useMemo(() => {
+    let primary = 0;
+    let mental = 0;
+    let acs = 0;
+    for (const record of indicators) {
+      const cat = categoryForRecord(record);
+      if (cat === "primary-care") primary += 1;
+      else if (cat === "mental-health") mental += 1;
+      else acs += 1;
+    }
+    return { all: indicators.length, primary, mental, acs };
+  }, [indicators]);
+
+  const filtered = useMemo(() => {
+    if (category === "all") return indicators;
+    return indicators.filter(record => categoryForRecord(record) === category);
+  }, [indicators, category]);
+
   if (!bundle) return null;
 
   if (localContextStatus === "loading") {
-    return <section className="page page-stack">
-      <ContextBar />
-      <header className="page-heading">
-        <h1>Local implementation context</h1>
-        <p>Reviewed state context is loading independently from national burden.</p>
-      </header>
-      <div className="state-card" role="status">
-        <strong>Loading reviewed local context…</strong>
-        <span>National MEPS burden remains available and unchanged.</span>
-      </div>
-    </section>;
+    return (
+      <section className="page page-stack">
+        <header className="page-heading">
+          <p className="eyebrow">02 · LOCAL CONTEXT</p>
+          <h1>West Virginia access conditions</h1>
+          <p>Loading reviewed state indicators…</p>
+        </header>
+      </section>
+    );
   }
 
   if (localContextStatus === "error" || !localContext) {
-    return <section className="page page-stack">
-      <ContextBar />
-      <header className="page-heading">
-        <h1>Local implementation context</h1>
-        <p>Local implementation evidence is a separate runtime layer from national burden.</p>
-      </header>
-      <div className="empty-state" role="alert">
-        <strong>Reviewed local implementation context is unavailable.</strong>
-        <p>{localContextError ?? "The reviewed local-context artifact could not be loaded."}</p>
-        <p>National MEPS burden, Pilot planner, and Planning Brief remain usable. No fixture or illustrative local data are substituted.</p>
-      </div>
-      <div className="guardrail">
-        <strong>Missing local data is not zero constraint.</strong>
-        <p>Missing designation/data does not mean no shortage or no implementation constraint.</p>
-      </div>
-    </section>;
+    return (
+      <section className="page page-stack">
+        <header className="page-heading">
+          <p className="eyebrow">02 · LOCAL CONTEXT</p>
+          <h1>West Virginia access conditions</h1>
+          <p>Local context unavailable; missing does not mean zero constraint.</p>
+        </header>
+        <div className="empty-state" role="alert">
+          <strong>Reviewed local implementation context is unavailable.</strong>
+          <p>{localContextError ?? "Reviewed local context could not be loaded."}</p>
+        </div>
+      </section>
+    );
   }
 
-  const indicators = localContext.indicators;
-  const primaryCount = indicators.find(record =>
-    record.indicator_id === "wv.hrsa.primary-care.designated-distinct-count"
-  )!;
-  const primaryScore = indicators.find(record =>
-    record.indicator_id === "wv.hrsa.primary-care.max-score"
-  )!;
-  const mentalCount = indicators.find(record =>
-    record.indicator_id === "wv.hrsa.mental-health.designated-distinct-count"
-  )!;
-  const mentalScore = indicators.find(record =>
-    record.indicator_id === "wv.hrsa.mental-health.max-score"
-  )!;
-
-  const primaryBreakdowns = indicators.filter(record =>
-    record.source_ref === "hrsa-hpsa-primary-care-current" &&
-    record.indicator_id !== primaryCount.indicator_id &&
-    record.indicator_id !== primaryScore.indicator_id
+  const primaryTotal = indicators.find(
+    record => record.indicator_id === "wv.hrsa.primary-care.designated-distinct-count"
   );
-  const mentalBreakdowns = indicators.filter(record =>
-    record.source_ref === "hrsa-hpsa-mental-health-current" &&
-    record.indicator_id !== mentalCount.indicator_id &&
-    record.indicator_id !== mentalScore.indicator_id
+  const mentalTotal = indicators.find(
+    record => record.indicator_id === "wv.hrsa.mental-health.designated-distinct-count"
   );
-  const acsRecords = [
-    "wv.acs.uninsured_pct",
-    "wv.acs.no_vehicle_pct",
-    "wv.acs.broadband_pct",
-    "wv.acs.poverty_pct"
-  ].map(indicatorId => indicators.find(record => record.indicator_id === indicatorId)!);
-
-  const primarySource = localContext.sources.find(source =>
-    source.source_ref === "hrsa-hpsa-primary-care-current"
+  const primaryBreakdowns = indicators.filter(
+    record =>
+      record.source_ref === "hrsa-hpsa-primary-care-current" &&
+      record.indicator_id !== "wv.hrsa.primary-care.designated-distinct-count"
   );
-  const acsSource = localContext.sources.find(source =>
-    source.source_ref === "acs-2024-5year-profile"
+  const mentalBreakdowns = indicators.filter(
+    record =>
+      record.source_ref === "hrsa-hpsa-mental-health-current" &&
+      record.indicator_id !== "wv.hrsa.mental-health.designated-distinct-count"
   );
 
-  const categorySummary = (records: LocalContextRecord[]) => {
-    const count = records.filter(record => selectedLocalContextIds.includes(record.indicator_id)).length;
-    const pilot = records.find(record => record.indicator_id === pilotLocalContextId);
-    return `${records.length} reviewed indicators · ${count} selected for Brief${pilot ? ` · Pilot: ${pilot.label}` : ""}`;
-  };
+  const eligibleCount = indicators.filter(isSelectableLocalContextRecord).length;
   const selectedCount = selectedLocalContextIds.length;
-  const activePilotRecord = indicators.find(record => record.indicator_id === pilotLocalContextId);
+  const selectableInView = filtered.filter(isSelectableLocalContextRecord).map(record => record.indicator_id);
+  const allFilteredSelected =
+    selectableInView.length > 0 &&
+    selectableInView.every(id => selectedLocalContextIds.includes(id));
 
-  return <section className="page page-stack local-ledger-page">
-    <ContextBar />
-    <header className="page-heading">
-      <p className="eyebrow">REVIEWED IMPLEMENTATION CONTEXT</p>
-      <h1>West Virginia statewide implementation context</h1>
-      <p>What do reviewed statewide health care access and shortage-area records tell us about planning a local program?</p>
-    </header>
+  const inspectRecord = indicators.find(record => record.indicator_id === inspectedId) ?? null;
+  const upcomingGeographies = COVERAGE_CATALOG.filter(entry => entry.status !== "live");
 
-    <div className="ledger-layout">
-      <nav className="ledger-section-nav" aria-label="Local context sections">
-        <p className="ledger-index-heading">On this page</p>
-        <ol>
-          <li><a href="#local-selection-summary">Selections</a></li>
-          <li><a href="#local-primary-care">Primary care HPSA</a></li>
-          <li><a href="#local-mental-health">Mental health HPSA</a></li>
-          <li><a href="#local-acs">ACS access context</a></li>
-        </ol>
-      </nav>
-      <div className="ledger-main">
-    <details className="technical-disclosure"><summary>How to use local context</summary><InterpretationGuide
-      id="local-context-interpretation"
-      headingLevel={2}
-      whatThisShows="Statewide implementation and access context from reviewed Health Resources and Services Administration (HRSA) and U.S. Census Bureau sources."
-      whyItMatters="These indicators can identify operational constraints that may matter when planning implementation."
-      whatItDoesNotShow="West Virginia Long COVID prevalence, burden, cost, causal effect, savings, ROI, or a composite access-severity score."
-      whatToDoNext="Eligible reviewed indicators start included in the Planning Brief for convenience. Use Select all, Select none, or individual checkboxes to customize. The separate Use in Pilot choice remains individual."
-    />
-    </details>
-    <div className="guardrail compact">
-      <strong>Statewide implementation context, separate from national burden.</strong>
-      <p><strong>HPSA</strong> is a federally designated Health Professional Shortage Area; counts describe designations, not patients or clinicians. <strong>ACS</strong> is the Census American Community Survey; its statewide access measures describe residents, not Long COVID cases. Category details retain exact source definitions and limitations.</p>
-      <p>These indicators describe access and implementation conditions, not West Virginia Long COVID prevalence, disease costs, or intervention effects.</p>
-      <strong>Missing does not mean zero.</strong>
-      <p>Missing designation/data does not mean no shortage or zero implementation constraint. "Include in Planning Brief" and "Use in Pilot planning" are separate analyst choices. Neither changes national burden or Pilot planner numeric assumptions.</p>
-    </div>
+  const handleInspect = (record: LocalContextRecord) => {
+    setInspectedId(record.indicator_id);
+    setDrawerOpen(true);
+  };
 
-    <div className="card selection-summary ledger-selection-summary" id="local-selection-summary">
-      <div>
-        <strong>{selectedCount} {selectedCount === 1 ? "indicator" : "indicators"} selected for Planning Brief</strong>
-        <p className="subtle">
-          {pilotLocalContextId
-            ? "The active Pilot-used context will also appear in the Planning Brief, deduplicated if it is checkbox-selected too."
-            : "Eligible reviewed indicators start selected by default. You can change the selection before exporting."}
+  const renderIndicatorCard = (record: LocalContextRecord) => {
+    const selectable = isSelectableLocalContextRecord(record);
+    const selected = selectedLocalContextIds.includes(record.indicator_id);
+    const pilotSelected = pilotLocalContextId === record.indicator_id;
+    const isInspected = inspectRecord?.indicator_id === record.indicator_id;
+    const displayLabel = record.indicator_id.endsWith(".max-score")
+      ? "Maximum source-published HPSA score"
+      : undefined;
+    const accessibility = getLocalContextSelectionAccessibility(record, displayLabel);
+    const isGoverningTotal =
+      record.indicator_id === "wv.hrsa.primary-care.designated-distinct-count" ||
+      record.indicator_id === "wv.hrsa.mental-health.designated-distinct-count";
+
+    return (
+      <article
+        key={record.indicator_id}
+        className={`ledger-indicator-row atlas-terrain-row${isGoverningTotal ? " is-governing-total" : ""}${selected ? " is-selected" : ""}${pilotSelected ? " is-pilot" : ""}${isInspected ? " is-inspected" : ""}`}
+      >
+        <div className="atlas-terrain-row-main">
+          <h3 id={accessibility.titleId}>{accessibility.displayTitle}</h3>
+          {accessibility.disambiguatorId && (
+            <span id={accessibility.disambiguatorId} className="sr-only">{record.label}</span>
+          )}
+
+          <p className="micro-caption">
+            {record.source_agency} · {record.observation_as_of_date ?? record.source_release_vintage}
+            {record.margin_of_error !== null && ` · ${formatLocalContextUncertaintyType(record.uncertainty_type)}`}
+          </p>
+          <button
+            type="button"
+            className="atlas-detail-trigger"
+            aria-label={`Provenance for ${record.label}`}
+            aria-haspopup="dialog"
+            onClick={event => {
+              event.currentTarget.focus({ preventScroll: true });
+              handleInspect(record);
+            }}
+          >
+            Provenance ↗
+          </button>
+        </div>
+
+        <div className="atlas-terrain-row-metrics">
+          <div className="atlas-terrain-figure">
+            <strong className="ledger-record-value">{formatLocalContextValue(record)}</strong>
+            {record.margin_of_error !== null && (
+              <small className="micro-caption">{formatPublishedLocalContextUncertainty(record)}</small>
+            )}
+          </div>
+
+          {presentation === "overview" && selectable && typeof record.value === "number" && (
+            <MetricVisual
+              label={accessibility.displayTitle}
+              value={record.value}
+              unit={record.unit}
+              low={record.margin_of_error === null ? null : record.value - record.margin_of_error}
+              high={record.margin_of_error === null ? null : record.value + record.margin_of_error}
+              intervalLabel={
+                record.margin_of_error === null
+                  ? null
+                  : `${record.confidence_level === null ? "" : `${(record.confidence_level * 100).toFixed(0)}% `}margin`
+              }
+              scaleDomain={getLocalContextScaleDomain(record, indicators)}
+              standaloneNote="Standalone HRSA priority score · no cross-metric bar scale"
+              compact
+            />
+          )}
+
+          <div className="atlas-terrain-controls">
+            <label className="atlas-toggle-pill" htmlFor={accessibility.controlId}>
+              <input
+                id={accessibility.controlId}
+                type="checkbox"
+                aria-labelledby={accessibility.labelledBy}
+                checked={selected}
+                disabled={!selectable}
+                onChange={event => setLocalContextSelected(record.indicator_id, event.target.checked)}
+              />
+              <span id={accessibility.actionLabelId}>Include in Brief</span>
+            </label>
+
+            {pilotSelected ? (
+              <button
+                type="button"
+                className="atlas-pilot-pill is-active"
+                aria-label={`Remove ${record.label} from Strategy Lab`}
+                onClick={clearPilotLocalContext}
+              >
+                Active in Strategy Lab ×
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="atlas-pilot-pill"
+                disabled={!selectable}
+                aria-label={`Use ${record.label} in Strategy Lab`}
+                onClick={() => setPilotLocalContext(record.indicator_id)}
+              >
+                Use in Strategy Lab
+              </button>
+            )}
+          </div>
+        </div>
+      </article>
+    );
+  };
+
+  const groupedSections: ReadonlyArray<{
+    id: Exclude<TerrainCategory, "all">;
+    title: string;
+    subtitle: string;
+    records: LocalContextRecord[];
+  }> = [
+    {
+      id: "primary-care",
+      title: "Primary care shortage designations",
+      subtitle: primaryTotal
+        ? `Governing total: ${formatLocalContextValue(primaryTotal)}. Designation type, rural-status, and score breakdowns sit underneath—never add designations to people.`
+        : "HRSA Primary Care HPSA statewide designations.",
+      records: filtered.filter(record => categoryForRecord(record) === "primary-care")
+    },
+    {
+      id: "mental-health",
+      title: "Mental health shortage designations",
+      subtitle: mentalTotal
+        ? `Governing total: ${formatLocalContextValue(mentalTotal)}. Shortage-area designations reflect facility/population-group boundaries, not patient headcounts.`
+        : "HRSA Mental Health HPSA statewide designations.",
+      records: filtered.filter(record => categoryForRecord(record) === "mental-health")
+    },
+    {
+      id: "acs",
+      title: "Census access indicators",
+      subtitle: "5-year statewide survey percentages with published 90% margins of error; no county-level data is available.",
+      records: filtered.filter(record => categoryForRecord(record) === "acs")
+    }
+  ];
+
+  return (
+    <section className="page page-stack local-ledger-page">
+      <div className="atlas-page-top">
+        <header className="page-heading">
+          <p className="eyebrow">02 · LOCAL CONTEXT · EDITION 01</p>
+          <h1>West Virginia access conditions</h1>
+          <p>Reviewed indicators from HRSA and the 2024 Census ACS describe statewide access conditions in West Virginia. They cannot estimate local Long COVID prevalence.</p>
+          <p className="ledger-orientation">Open an indicator group to review Brief selections, or attach one indicator as context for your Strategy Lab scenario.</p>
+        </header>
+
+        <div className="atlas-selection-bar" id="local-selection-summary">
+          <span className="status status-selection">{selectedCount} of {eligibleCount} in Brief</span>
+          <button
+            type="button"
+            className="button secondary"
+            onClick={selectAllLocalContext}
+            disabled={selectedCount === eligibleCount}
+          >
+            Select all
+          </button>
+          <button
+            type="button"
+            className="button secondary"
+            onClick={clearSelectedLocalContext}
+            disabled={selectedCount === 0}
+          >
+            Select none
+          </button>
+          {category !== "all" && selectableInView.length > 0 && (
+            <button
+              type="button"
+              className="button secondary"
+              onClick={() => setLocalContextGroupSelected(selectableInView, !allFilteredSelected)}
+            >
+              {allFilteredSelected ? "Clear filtered group" : "Include filtered group"}
+            </button>
+          )}
+        </div>
+      </div>
+
+      <p className="sr-only" role="status" aria-live="polite">
+        {selectedCount} {selectedCount === 1 ? "record" : "records"} selected for Planning Brief.
+      </p>
+
+      <div className="atlas-local-summary-strip" aria-label="Reviewed West Virginia statewide summary">
+        <article className="atlas-local-summary-tile">
+          <span className="visual-kicker">Primary Care HPSA · HRSA</span>
+          <strong>{primaryTotal ? formatLocalContextValue(primaryTotal) : "—"}</strong>
+          <small>HRSA shortage-area designations (not people)</small>
+        </article>
+        <article className="atlas-local-summary-tile">
+          <span className="visual-kicker">Mental Health HPSA · HRSA</span>
+          <strong>{mentalTotal ? formatLocalContextValue(mentalTotal) : "—"}</strong>
+          <small>Statewide West Virginia only · no county-level data</small>
+        </article>
+        <article className="atlas-local-summary-tile">
+          <span className="visual-kicker">Census ACS Access · 2024 5-yr</span>
+          <strong>{counts.acs} reviewed indicators</strong>
+          <small>Published statewide % shares with 90% margins of error</small>
+        </article>
+      </div>
+
+      <p className="atlas-guardrail-line is-local-context">
+        <strong>No-rescaling guarantee:</strong> Attaching an indicator via <em>Use in Strategy Lab</em> adds implementation context only; it never rescales national MEPS burden estimates or enters scenario arithmetic. Checkbox selections include up to {eligibleCount} reviewed records in Brief exports.
+      </p>
+
+      <div className="atlas-toolbar-row ledger-mode-row">
+        <PresentationMode value={presentation} onChange={changePresentation} />
+        <div className="atlas-tab-bar" role="group" aria-label="Filter local context indicators">
+          <button
+            type="button"
+            aria-pressed={category === "all"}
+            className={`atlas-tab${category === "all" ? " is-active" : ""}`}
+            onClick={() => selectCategory("all")}
+          >
+            All ({counts.all})
+          </button>
+          <button
+            type="button"
+            aria-pressed={category === "primary-care"}
+            className={`atlas-tab${category === "primary-care" ? " is-active" : ""}`}
+            onClick={() => selectCategory("primary-care")}
+          >
+            Primary Care HPSA ({counts.primary})
+          </button>
+          <button
+            type="button"
+            aria-pressed={category === "mental-health"}
+            className={`atlas-tab${category === "mental-health" ? " is-active" : ""}`}
+            onClick={() => selectCategory("mental-health")}
+          >
+            Mental Health HPSA ({counts.mental})
+          </button>
+          <button
+            type="button"
+            aria-pressed={category === "acs"}
+            className={`atlas-tab${category === "acs" ? " is-active" : ""}`}
+            onClick={() => selectCategory("acs")}
+          >
+            ACS Access ({counts.acs})
+          </button>
+        </div>
+
+        <p className="micro-caption">
+          Designations count shortage areas, populations or facilities. They cannot quantify severity or unmet care volume. This release covers statewide access conditions only. Missing information does not mean zero.
         </p>
       </div>
-      <div className="selection-actions">
-        {(selectedCount > 0 || pilotLocalContextId) && <Link className="button" to="/brief">Review context in Planning Brief</Link>}
-        {indicators.filter(isSelectableLocalContextRecord).length >= 2 && <>
-          <button className="button secondary" type="button" onClick={selectAllLocalContext} disabled={selectedCount === indicators.filter(isSelectableLocalContextRecord).length}>Select all</button>
-          <button className="button secondary" type="button" onClick={clearSelectedLocalContext} disabled={selectedCount === 0}>Select none</button>
-        </>}
+
+      <div className="atlas-constraint-matrix" aria-label={`All ${filtered.length} filtered state indicators`}>
+        {groupedSections.filter(group => group.records.length > 0).map(group => {
+          const open = groups[group.id] ?? presentation === "overview";
+          const breakdowns = group.id === "primary-care" ? primaryBreakdowns
+            : group.id === "mental-health" ? mentalBreakdowns : [];
+          return (
+            <LedgerGroup
+              key={group.id}
+              title={group.title}
+              summary={`${group.records.length} indicators`}
+              open={open}
+              onToggle={() => setGroups(current => ({ ...current, [group.id]: !open }))}
+            >
+              <p className="subtle">{group.subtitle}</p>
+              {breakdowns.length > 0 && (
+                <WorkspaceDisclosure id={`local-composition-${group.id}`} title="Rural-status composition">
+                  <HpsaRuralComposition records={breakdowns} serviceLabel={group.id === "primary-care" ? "Primary Care" : "Mental Health"} />
+                </WorkspaceDisclosure>
+              )}
+              <div className="atlas-local-group-list">{group.records.map(renderIndicatorCard)}</div>
+            </LedgerGroup>
+          );
+        })}
       </div>
-    </div>
-    <p className="sr-only" role="status" aria-live="polite">
-      {selectedCount} {selectedCount === 1 ? "record" : "records"} selected for Planning Brief. {activePilotRecord ? `Pilot context: ${activePilotRecord.label}.` : "No Pilot context selected."}
-    </p>
 
-    <details className="technical-disclosure">
-      <summary>Source timing and technical details</summary>
-      <p><strong>Health Resources and Services Administration (HRSA):</strong> {primarySource?.source_release_vintage ?? "Current HPSA snapshot retrieved 2026-09-24"}.</p>
-      <p><strong>American Community Survey (ACS):</strong> {acsSource?.source_release_vintage ?? "2020–2024 ACS 5-year estimates / 2024 release"}.</p>
-      <p>These sources have different time bases and should not be interpreted as one common observation year. Record disclosures below retain observation dates, universe, uncertainty, allowed and prohibited interpretation, and limitations.</p>
-    </details>
+      {upcomingGeographies.length > 0 && (
+        <div className="atlas-soon-strip" aria-label="Upcoming geographic editions">
+          <span className="edition-pill is-soon">More States · Soon</span>
+          <strong>West Virginia figures are never borrowed or rescaled across states.</strong>
+          <button
+            type="button"
+            className="text-button"
+            onClick={() => openEdition(upcomingGeographies[0]?.id)}
+          >
+            Preview planned editions ({upcomingGeographies.length}) ↗
+          </button>
+        </div>
+      )}
 
-    <WorkspaceDisclosure id="local-primary-care-category" title="Primary care shortages" summary={categorySummary([primaryCount, primaryScore, ...primaryBreakdowns])} defaultOpen className="evidence-category">
-    <article className="card ledger-panel ledger-source-group" id="local-primary-care">
-      <h2>A. Primary Care Health Professional Shortage Area (HPSA) context</h2>
-      <p className="subtle">{primaryCount.source_agency} · {primaryCount.source_release_vintage}</p>
-      <CategorySelectionActions records={[primaryCount, primaryScore, ...primaryBreakdowns]} selectedIds={selectedLocalContextIds} onGroupChange={setLocalContextGroupSelected} label="Primary care" />
-      <SelectableIndicatorRow
-        record={primaryCount}
-        selected={selectedLocalContextIds.includes(primaryCount.indicator_id)}
-        onSelectedChange={setLocalContextSelected}
-        pilotSelected={pilotLocalContextId === primaryCount.indicator_id}
-        onPilotSelect={setPilotLocalContext}
-        onPilotClear={clearPilotLocalContext}
-      />
-      <IndicatorDisclosure record={primaryCount} />
-      <SelectableIndicatorRow
-        record={primaryScore}
-        selected={selectedLocalContextIds.includes(primaryScore.indicator_id)}
-        onSelectedChange={setLocalContextSelected}
-        pilotSelected={pilotLocalContextId === primaryScore.indicator_id}
-        onPilotSelect={setPilotLocalContext}
-        onPilotClear={clearPilotLocalContext}
-        displayLabel="Maximum source-published HPSA score among included designations"
-      />
-      <p className="limitations">The maximum score is a maximum across included individual designations; it is not a statewide shortage severity score.</p>
-      <IndicatorDisclosure record={primaryScore} />
-      <details>
-        <summary>Designation-type and rural-status breakdowns</summary>
-        <HpsaRuralComposition records={primaryBreakdowns} serviceLabel="Primary Care" />
-        <BreakdownList
-          records={primaryBreakdowns}
-          selectedIds={selectedLocalContextIds}
-          onSelectedChange={setLocalContextSelected}
-          pilotContextId={pilotLocalContextId}
-          onPilotSelect={setPilotLocalContext}
-          onPilotClear={clearPilotLocalContext}
-        />
-      </details>
-    </article></WorkspaceDisclosure>
-
-    <WorkspaceDisclosure id="local-mental-health-category" title="Mental health shortages" summary={categorySummary([mentalCount, mentalScore, ...mentalBreakdowns])} className="evidence-category">
-    <article className="card ledger-panel ledger-source-group" id="local-mental-health">
-      <h2>B. Mental Health HPSA context</h2>
-      <p className="subtle">{mentalCount.source_agency} · {mentalCount.source_release_vintage}</p>
-      <CategorySelectionActions records={[mentalCount, mentalScore, ...mentalBreakdowns]} selectedIds={selectedLocalContextIds} onGroupChange={setLocalContextGroupSelected} label="Mental health" />
-      <SelectableIndicatorRow
-        record={mentalCount}
-        selected={selectedLocalContextIds.includes(mentalCount.indicator_id)}
-        onSelectedChange={setLocalContextSelected}
-        pilotSelected={pilotLocalContextId === mentalCount.indicator_id}
-        onPilotSelect={setPilotLocalContext}
-        onPilotClear={clearPilotLocalContext}
-      />
-      <IndicatorDisclosure record={mentalCount} />
-      <SelectableIndicatorRow
-        record={mentalScore}
-        selected={selectedLocalContextIds.includes(mentalScore.indicator_id)}
-        onSelectedChange={setLocalContextSelected}
-        pilotSelected={pilotLocalContextId === mentalScore.indicator_id}
-        onPilotSelect={setPilotLocalContext}
-        onPilotClear={clearPilotLocalContext}
-        displayLabel="Maximum source-published HPSA score among included designations"
-      />
-      <p className="limitations">The maximum score is a maximum across included individual designations; it is not a statewide shortage severity score.</p>
-      <IndicatorDisclosure record={mentalScore} />
-      <details>
-        <summary>Designation-type and rural-status breakdowns</summary>
-        <HpsaRuralComposition records={mentalBreakdowns} serviceLabel="Mental Health" />
-        <BreakdownList
-          records={mentalBreakdowns}
-          selectedIds={selectedLocalContextIds}
-          onSelectedChange={setLocalContextSelected}
-          pilotContextId={pilotLocalContextId}
-          onPilotSelect={setPilotLocalContext}
-          onPilotClear={clearPilotLocalContext}
-        />
-      </details>
-    </article></WorkspaceDisclosure>
-
-    <WorkspaceDisclosure id="local-acs-category" title="Transportation, coverage & access" summary={categorySummary(acsRecords)} className="evidence-category">
-    <article className="card ledger-panel ledger-source-group" id="local-acs">
-      <h2>C. American Community Survey (ACS) implementation/access context</h2>
-      <p className="subtle">U.S. Census Bureau · 2020–2024 ACS 5-year estimates / 2024 release. Native 90% margins of error are preserved.</p>
-      <CategorySelectionActions records={acsRecords} selectedIds={selectedLocalContextIds} onGroupChange={setLocalContextGroupSelected} label="ACS" />
-      {acsRecords.map(record => <div className="ledger-record-group" key={record.indicator_id}>
-        <SelectableIndicatorRow
-          record={record}
-          selected={selectedLocalContextIds.includes(record.indicator_id)}
-          onSelectedChange={setLocalContextSelected}
-          pilotSelected={pilotLocalContextId === record.indicator_id}
-          onPilotSelect={setPilotLocalContext}
-          onPilotClear={clearPilotLocalContext}
-        />
-        <p className="subtle">{record.source_agency} · {record.source_release_vintage} · {record.confidence_level === null ? "Confidence level not published" : `${(record.confidence_level * 100).toFixed(0)}% confidence level`}</p>
-        <IndicatorDisclosure record={record} />
-      </div>)}
-    </article></WorkspaceDisclosure>
+      <div className="atlas-page-footer-bar">
+        <Link className="text-button" to="/brief">
+          View selected terrain in Brief →
+        </Link>
+        <Link className="button" to="/pilot">
+          Continue to 03 Strategy Lab →
+        </Link>
       </div>
-    </div>
-    <div className="workflow-next"><Link className="button" to="/pilot">Continue to Pilot planner</Link><Link to="/brief">Review selected context in Brief</Link></div>
-  </section>;
+
+      <DetailDrawer
+        open={drawerOpen && inspectRecord !== null}
+        eyebrow="LOCAL CONTEXT · PROVENANCE"
+        title={inspectRecord?.label ?? ""}
+        onClose={() => setDrawerOpen(false)}
+      >
+        {inspectRecord && <LocalContextProvenanceDetails record={inspectRecord} />}
+      </DetailDrawer>
+    </section>
+  );
 }

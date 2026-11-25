@@ -1,65 +1,92 @@
-/* Motion explains entry, hierarchy and feedback. It never gates an action. */
+/* Strategic Atlas deliberate landing choreography + analytical hover transitions; zero motion under reduced-motion or print. */
 :root {
-  --do-motion-fast: 140ms;
-  --do-motion-standard: 220ms;
-  --do-motion-enter: 560ms;
-  --do-ease-out: cubic-bezier(.16, 1, .3, 1);
+  --do-motion-fast: 150ms;
+  --do-motion-standard: 240ms;
+  --do-motion-enter: 680ms;
+  --do-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @media screen and (prefers-reduced-motion: no-preference) {
-  .overview-page.is-opening :is(.overview-kicker, .overview-hero h1, .overview-lede, .overview-hero-actions, .overview-proof, .overview-source-note) {
-    animation: workspace-reveal var(--do-motion-enter) var(--do-ease-out) both;
+  /* Chapter I deliberate 2.6s opening stagger (never a 0.5s flash) */
+  .overview-page.is-opening .atlas-hero-eyebrow {
+    animation: atlas-rise 600ms var(--do-ease-out) 0ms both;
   }
-  .overview-page.is-opening .overview-hero h1 { animation-delay: 70ms; }
-  .overview-page.is-opening .overview-lede { animation-delay: 150ms; }
-  .overview-page.is-opening .overview-hero-actions { animation-delay: 220ms; }
-  .overview-page.is-opening .overview-proof { animation-delay: 300ms; }
-  .overview-page.is-opening .overview-source-note { animation-delay: 360ms; }
-  .overview-page.is-opening .workspace-preview {
-    animation: workspace-unfold 850ms var(--do-ease-out) 100ms both;
+  .overview-page.is-opening .atlas-hero-title {
+    animation: atlas-rise 760ms var(--do-ease-out) 160ms both;
   }
-  .overview-page.is-opening .lane-evidence { animation-delay: 200ms; }
-  .overview-page.is-opening .lane-context { animation-delay: 300ms; }
-  .overview-page.is-opening .lane-assumption { animation-delay: 400ms; }
-  .overview-page.is-opening .preview-output { animation-delay: 600ms; }
+  .overview-page.is-opening .atlas-hero-sub {
+    animation: atlas-rise 700ms var(--do-ease-out) 380ms both;
+  }
+  .overview-page.is-opening .atlas-hero-ctas {
+    animation: atlas-rise 620ms var(--do-ease-out) 580ms both;
+  }
+  .overview-page.is-opening .atlas-hero-provenance {
+    animation: atlas-rise 620ms var(--do-ease-out) 1950ms both;
+  }
 
-  main[data-navigation="PUSH"] .page-heading,
-  .ai-handoff-dialog[open], .brief-export-status:not(:empty) {
-    animation: feedback-enter var(--do-motion-standard) var(--do-ease-out) both;
+  /* Decorative hairline scroll progress indicator via native CSS scroll-timeline */
+  @supports (animation-timeline: scroll()) {
+    .atlas-scroll-progress {
+      transform-origin: 0 50%;
+      animation: atlas-scroll-progress auto linear both;
+      animation-timeline: scroll(root);
+    }
   }
-  .ai-handoff-dialog[open]::backdrop { animation: backdrop-enter var(--do-motion-standard) ease-out; }
-  .button, .journey-card, .overview-role-card, .primary-nav a, .overview-tertiary-cta span {
-    transition: transform var(--do-motion-fast) var(--do-ease-out),
-      background-color var(--do-motion-fast) ease, border-color var(--do-motion-fast) ease,
-      box-shadow var(--do-motion-standard) ease;
+
+  .button,
+  .atlas-lens-card,
+  .atlas-metric-row,
+  .atlas-terrain-tile,
+  .atlas-preset-card {
+    transition:
+      border-color var(--do-motion-fast) ease,
+      box-shadow var(--do-motion-standard) ease,
+      background-color var(--do-motion-fast) ease,
+      color var(--do-motion-fast) ease;
   }
-  .button:not(:disabled):active { transform: translateY(1px) scale(.99); }
+
   @media (hover: hover) {
-    .button:not(:disabled):hover { transform: translateY(-1px); }
-    .journey-card:hover, .overview-role-card:hover { transform: translateY(-3px); }
-    .overview-tertiary-cta:hover span { transform: translateX(4px); }
+    .atlas-lens-card:hover { transform: translateY(-2px); }
+  }
+
+  /* Restrained editorial scroll choreography via IntersectionObserver fallback */
+  [data-reveal="pending"] {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  [data-reveal="visible"] {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity var(--do-motion-enter) var(--do-ease-out), transform var(--do-motion-enter) var(--do-ease-out);
   }
 }
 
-@keyframes workspace-reveal {
-  from { opacity: 0; transform: translateY(18px); }
+@keyframes atlas-rise {
+  from { opacity: 0; transform: translateY(16px); }
   to { opacity: 1; transform: translateY(0); }
 }
-@keyframes workspace-unfold {
-  from { opacity: .25; transform: perspective(1200px) rotateY(-7deg) rotateX(3deg) translateY(18px); }
-  to { opacity: 1; transform: perspective(1200px) rotateY(-2deg) rotateX(1deg) translateY(0); }
+
+@keyframes atlas-scroll-progress {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
 }
-@keyframes feedback-enter {
-  from { opacity: .7; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-@keyframes backdrop-enter { from { opacity: 0; } to { opacity: 1; } }
 
 @media (prefers-reduced-motion: reduce), print {
-  .overview-page *, .ai-handoff-dialog, .ai-handoff-dialog::backdrop,
-  .page-heading, .button, .journey-card, .overview-role-card, .primary-nav a, .brief-export-status {
+  .overview-page *,
+  .atlas-drawer,
+  .button,
+  .atlas-lens-card,
+  .atlas-metric-row,
+  .atlas-terrain-tile,
+  [data-reveal] {
     animation: none !important;
     transition: none !important;
   }
-  .button, .journey-card, .overview-role-card { transform: none !important; }
+
+  .overview-page :is(.atlas-hero-eyebrow, .atlas-hero-title, .atlas-hero-sub, .atlas-hero-ctas, .atlas-hero-provenance),
+  .atlas-lens-card:hover,
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
 }

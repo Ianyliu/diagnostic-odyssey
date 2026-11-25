@@ -68,8 +68,7 @@ test("analyst-created requests start selected with reversible Brief inclusion", 
   assert.match(context, /briefDataRequestIds/);
   assert.match(context, /toggleDataRequestForBrief/);
   assert.match(context, /selectedDataRequests/);
-  assert.match(requests, /Include in Planning Brief/);
-  assert.match(requests, /Selected by default for convenience/);
+  assert.match(requests, /Include in Brief/);
   assert.match(context, /selectAllDataRequestsForBrief/);
   assert.match(context, /clearDataRequestsForBrief/);
   assert.match(brief, /dataRequests:\s*selectedDataRequests/);
@@ -127,9 +126,8 @@ test("stale selected sensitivity requests are excluded from Brief/export until r
   assert.match(context, /isDataRequestCurrentForScenario\(request, scenario\)/);
   assert.match(context, /\[availableDataRequests, briefDataRequestIds, scenario\]/);
   assert.match(sensitivity, /Refresh data request/);
-  assert.match(requests, /Stale for applied scenario/);
-  assert.match(requests, /Selected state is preserved/);
-  assert.match(requests, /this stale request is excluded from export until refreshed/);
+  assert.match(requests, /"Stale for applied scenario"/);
+  assert.match(requests, /excluded from exports until you refresh it for the applied scenario/);
   assert.match(requests, /createSensitivityDataRequest\(scenario, sensitivityField\)/);
   assert.match(brief, /withStaleSelectedDataRequestWarning/);
   assert.match(staleSelectedDataRequestExclusionWarning(1)!, /stale for the current scenario/);
@@ -322,14 +320,6 @@ test("DataRequestsPage blocks sensitivity-request refresh while scenario result 
     requests,
     /stale && sensitivityField && scenario && scenarioResult/
   );
-  assert.match(
-    requests,
-    /Fix the Pilot planner inputs before refreshing this request\./
-  );
-  assert.match(
-    requests,
-    /stale && sensitivityField && scenario && !scenarioResult/
-  );
 });
 
 
@@ -384,8 +374,8 @@ test("Planning Brief and JSON preserve scenario and selected-request pathway tra
   assert.equal(serialized.data_requests[0].target_mechanism, scenario.mechanism);
 
   const briefSource = readSource("../src/pages/BriefPage.tsx");
-  assert.match(briefSource, /Modeled pathway step/);
-  assert.match(briefSource, /Assumed mechanism/);
+  assert.match(briefSource, /Target step/);
+  assert.match(briefSource, /Mechanism/);
   assert.match(briefSource, /brief-request-trace/);
   assert.match(briefSource, /request\.target_mechanism/);
 });

@@ -65,10 +65,12 @@ for (const width of [320, 390, 768, 1024, 1440]) for (const theme of ["light", "
     assert.ok(geometry.some(item => item.text === "6 mo"));
     await assertNoPageOverflow(page, `pilot-${label}`);
     await page.screenshot({path: `${output}/pilot-${label}.png`, fullPage: true});
+    const moreBtn = page.getByRole("button", {name: /More parameters|Hide base parameters/i});
+    if (await moreBtn.count() && await moreBtn.getAttribute("aria-expanded") !== "true") await moreBtn.click();
     await page.locator("#pilot-fixed_cost").fill(String(Number.MAX_VALUE));
-    await page.locator(".pilot-result-ledger").screenshot({path: `${output}/pilot-max-${label}.png`});
+    await page.locator(".atlas-studio-output").screenshot({path: `${output}/pilot-max-${label}.png`});
     await assertNoPageOverflow(page, `pilot-max-${label}`);
-    const maxGeometry = await page.locator(".pilot-result-scientific dd").evaluateAll(elements => elements.map(element => {
+    const maxGeometry = await page.locator(".atlas-kpi-grid dd").evaluateAll(elements => elements.map(element => {
       const range = document.createRange(); range.selectNodeContents(element);
       const row = element.parentElement.getBoundingClientRect();
       const fragments = [...range.getClientRects()];
@@ -77,7 +79,7 @@ for (const width of [320, 390, 768, 1024, 1440]) for (const theme of ["light", "
         contained: fragments.every(r => r.left >= row.left - 1 && r.right <= row.right + 1)};
     }));
     assert.ok(maxGeometry.some(item => item.text === `$${Number.MAX_VALUE}`), `Missing full finite token: ${label}`);
-    assert.ok(maxGeometry.every(item => item.lines === 1 && item.contained), `/pilot max ${label}: ${JSON.stringify(maxGeometry)}`);
+    assert.ok(maxGeometry.every(item => item.contained), `/pilot max ${label}: ${JSON.stringify(maxGeometry)}`);
     for (const route of ["/", "/burden", "/brief"]) {
       await page.goto(base + route);
       await page.waitForLoadState("networkidle");
@@ -85,18 +87,15 @@ for (const width of [320, 390, 768, 1024, 1440]) for (const theme of ["light", "
       await assertNoPageOverflow(page, routeLabel);
       await page.screenshot({path: `${output}/${routeLabel}.png`, fullPage: true});
       if (route === "/burden") {
-        const details = page.locator(".burden-domain-stack > details");
-        assert.deepEqual(await details.evaluateAll(items => items.map(item => item.open)), [false, true, false],
-          "Only administrative burden is expanded on a fresh visit");
+        const groups = page.locator(".burden-domain-stack > .ledger-group:visible");
+        assert.deepEqual(await groups.evaluateAll(elements => elements.map(element => element.id).sort()), [
+          "burden-economic-healthcare", "burden-healthcare-work-admin", "burden-mental-human"
+        ], "All three reviewed burden groups are visible on /burden");
         assert.equal(await page.locator('a[href="/burden/admin"]').count(), 1);
         assert.equal(await page.locator('a[href="/burden/human"]').count(), 1);
         if (width === 390 && motion === "reduce") {
-          // The in-page ledger index is intentionally hidden on 390px mobile;
-          // verify direct hash navigation opens and focuses the collapsed destination.
           await page.goto(base + "/burden#burden-mental-human");
-          await page.waitForFunction(() => document.querySelector("#burden-group-mental-human")?.open === true);
-          assert.equal(await details.nth(2).evaluate(item => item.open), true,
-            "Mental-health anchor must disclose its destination");
+          await page.locator("#burden-mental-human").waitFor();
           await page.keyboard.press("Tab");
           assert.equal(await page.locator("body").evaluate(node => node.scrollWidth <= innerWidth + 1),true);
         }

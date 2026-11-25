@@ -8,7 +8,7 @@
 .acquisition-privacy { border-left: 3px solid currentColor; padding-left: .75rem; }
 .acquisition-state { margin-block: 1rem; }
 @media print {
-  .acquisition-guidance { color: #172c3b; border-color: #6b7780; }
+  .acquisition-guidance { color: var(--do-text); border-color: var(--do-border); }
   .acquisition-guidance h3, .acquisition-guidance h4, .acquisition-guidance dt { break-after: avoid; }
   .acquisition-guidance li, .acquisition-guidance dl > div, .acquisition-privacy { break-inside: avoid; }
 }

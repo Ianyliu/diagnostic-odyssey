@@ -123,6 +123,8 @@ await run("current state, local selection, requests and canonical JSON isolation
 for (const width of [1440, 820, 390, 360]) await run(`huge finite scenario presentation stays readable at ${width}px`, async () => {
   const {page} = await session(width, "dark");
   await navigate(page, "Pilot planner");
+  const moreBtn = page.getByRole("button", {name: /More parameters|Hide base parameters/i});
+  if (await moreBtn.count() && await moreBtn.getAttribute("aria-expanded") !== "true") await moreBtn.click();
   await page.locator("#pilot-fixed_cost").fill(String(Number.MAX_VALUE));
   await navigate(page, "Planning brief");
   await page.screenshot({path: `${output}/insights-extreme-${width}-dark.png`, fullPage: true});
@@ -246,16 +248,16 @@ await run("Pilot-used context is included once even after Select none and print 
   const {page} = await session(390, "light");
   await navigate(page, "Local context");
   await page.getByRole("button", {name: "Select none", exact: true}).first().click();
-  const pilotButton = page.getByRole("button", {name: /Use .* in Pilot planning/}).first();
+  const pilotButton = page.getByRole("button", {name: /Use .* in Strategy Lab/}).first();
   const pilotLabel = await pilotButton.getAttribute("aria-label");
-  assert.ok(pilotLabel?.startsWith("Use ") && pilotLabel.endsWith(" in Pilot planning"));
+  assert.ok(pilotLabel?.startsWith("Use ") && pilotLabel.endsWith(" in Strategy Lab"));
   await pilotButton.click();
   await navigate(page, "Planning brief");
   const before = await exportJson(page, "brief-pilot-only-context");
   assert.equal(before.local_context.length, 1, "Active Pilot-used record enters Brief despite no checkbox selection");
   assert.ok(pilotLabel.includes(before.local_context[0].label), "Pilot-used record matches the selected indicator label");
   assert.equal(await page.locator("#brief-local-context .brief-local-context").count(), 1);
-  assert.match(await page.locator(".brief-executive-summary").innerText(), /1 extra via Use in Pilot/);
+  assert.match(await page.locator(".brief-executive-summary").innerText(), /1 extra via Use in Strategy Lab/);
   const appendix = page.getByRole("checkbox", {name: /Include detailed local-context records in print/});
   await appendix.check();
   await page.emulateMedia({media: "print"});

@@ -145,7 +145,7 @@ test("print and selection copy distinguish default inclusion, optional detail an
   assert.doesNotMatch(preview, /insight-national-print-headline|insight-national-context/);
   assert.match(css, /\.brief-local-context-list \{ display: none !important; \}/);
   assert.match(css, /\.brief-include-context-appendix \.brief-local-context-list \{ display: block !important; \}/);
-  assert.match(localPage, /Eligible reviewed indicators start selected by default/);
+  assert.match(localPage, /Include in Brief/);
   assert.match(provider, /createLocalContextSelectionForArtifact\(candidate\)/);
   assert.match(provider, /setBriefDataRequestIds\(current => current.includes\(request.request_id\)/);
   assert.match(provider, /isDataRequestCurrentForScenario\(request, scenario\)/);

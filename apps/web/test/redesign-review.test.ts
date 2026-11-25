@@ -6,91 +6,63 @@ import test from "node:test";
 const readSource = (path: string) =>
   readFileSync(fileURLToPath(new URL(path, import.meta.url)), "utf8");
 
-test("brand palette is navy and teal rather than a red primary theme", () => {
+test("Strategic Atlas palette uses cool ink, cobalt and violet with zero earth-tone or AI-teal accents", () => {
   const tokens = readSource("../../../packages/ui/src/styles.css");
-  assert.match(tokens, /--do-brand-navy:\s*#153552/);
-  assert.match(tokens, /--do-brand-teal:\s*#0f7476/);
-  assert.match(tokens, /--do-accent:\s*#0f7476/);
-  assert.match(tokens, /--do-canvas:\s*#f5f2eb/);
-  assert.doesNotMatch(tokens, /--do-accent:\s*#762f3c/);
-  assert.match(tokens, /:root\[data-theme="dark"\][\s\S]*--do-canvas:\s*#09131b/);
-  assert.match(tokens, /:root\[data-theme="dark"\][\s\S]*--do-surface:\s*#111d26/);
-  assert.match(tokens, /:root\[data-theme="dark"\][\s\S]*--do-chart-4:\s*#d2ad68/);
+  assert.match(tokens, /--do-brand-navy:\s*#101b32/);
+  assert.match(tokens, /--do-canvas:\s*#f5f7fc/);
+  assert.match(tokens, /--do-journey-accent:\s*#7154d8/);
+  assert.match(tokens, /--do-accent:\s*#3157d5/);
+  assert.match(tokens, /--do-reviewed-text:\s*#2457a6/);
+  assert.match(tokens, /:root\[data-theme="dark"\][\s\S]*--do-canvas:\s*#0b1119/);
+  assert.match(tokens, /:root\[data-theme="dark"\][\s\S]*--do-surface:\s*#131c27/);
+  assert.match(tokens, /:root\[data-theme="dark"\][\s\S]*--do-accent:\s*#91aaff/);
+  assert.doesNotMatch(tokens, /#0f7476|#2a9d9f|#58c3bd|#276b54|#3f765f|#2c6b58|#c25a3c|#c8923b|#dfab53|#e47b5c/i);
 });
 
-test("overview keeps the workflow visible without promotional filler", () => {
+test("overview follows light-first six-chapter scroll story with inset midnight stages, Two-Lens showcase, and zero inline styles", () => {
   const overview = readSource("../src/pages/OverviewPage.tsx");
   const css = readSource("../src/pages/OverviewPage.css");
-  assert.match(overview, /Evidence into planning/);
-  assert.match(overview, /boundaries intact/);
-  assert.match(overview, /overview-proof/);
-  assert.match(overview, /<OpeningProvenance playing=\{opening\.playing\}/);
-  assert.match(overview, /className="overview-hero-motion"/);
-  assert.match(overview, /journey-grid/);
-  assert.doesNotMatch(overview, /<DecisionStateRail/);
-  assert.doesNotMatch(overview, /overview-launch-pill/);
-  assert.doesNotMatch(overview, /overview-final-cta/);
+  assert.match(overview, /What does chronic illness <em>really cost us\?<\/em>/);
+  assert.match(overview, /<LandingCareHorizon \/>/);
+  assert.match(overview, /<LandingBurdenStrata /);
+  assert.match(overview, /atlas-hero-band/);
+  assert.match(overview, /atlas-inset-stage/);
+  assert.match(overview, /atlas-paper-band/);
+  assert.match(overview, /atlas-closing-band/);
+  assert.match(overview, /atlas-lenses-grid/);
+  assert.match(overview, /atlas-paper-fan/);
+  assert.match(overview, /<LandingAiDemo /);
+  assert.doesNotMatch(overview, /style=\{\{/);
   assert.match(css, /radial-gradient/);
-  assert.match(css, /workspace-preview/);
-  assert.match(css, /\.overview-destinations\s*\{[^}]*background:\s*color-mix\(in srgb, var\(--do-assumption-bg\) 35%, var\(--do-canvas\)\)/);
-  assert.doesNotMatch(css, /linear-gradient\(135deg, #153552, #102a3d 72%\)/);
-  assert.match(css, /@media \(prefers-reduced-motion: reduce\)/);
+  assert.doesNotMatch(css, /#0f7476|#2a9d9f|#58c3bd|#276b54|#3f765f|#2c6b58|#c25a3c|#c8923b|#dfab53|#e47b5c/i);
 });
 
-test("narrow Overview uses valid single-column evidence and workflow grids", () => {
-  const css = readSource("../src/pages/OverviewPage.css");
-  const narrow = css.match(/@media \(max-width: 720px\) \{([\s\S]*?)\n\}\n\n@media \(max-width: 440px\)/)?.[1];
-  assert.ok(narrow, "720px mobile styles must exist");
-  assert.match(narrow, /\.overview-role-grid,\s*\.overview-page \.journey-grid\s*\{\s*grid-template-columns:\s*minmax\(0, 1fr\)/);
-  assert.doesNotMatch(narrow, /\.overview-page \.journey-grid,\s*\.overview-role-card/);
-});
-
-test("overview visualization preserves separate evidence lanes through the planning output", () => {
-  const source = readSource("../src/pages/OpeningProvenance.tsx");
-  assert.match(source, /opening-lane lane-evidence/);
-  assert.match(source, /opening-lane lane-context/);
-  assert.match(source, /opening-lane lane-assumption/);
-  assert.match(source, /National estimates, local context, and analyst assumptions stay separate in the Planning Brief/);
-  assert.match(source, /not a combined scientific score/);
-  assert.match(source, /Replay animation/);
-  assert.doesNotMatch(source, /opening-junction/);
-});
-
-test("sensitivity rows share one grid and the current row does not escape the card", () => {
-  const css = readSource("../src/components/SensitivityExplorer.css");
-  assert.match(css, /\.sensitivity-bars\s*\{[^}]*grid-template-columns:/s);
-  assert.match(css, /\.sensitivity-row\s*\{[^}]*grid-template-columns:\s*subgrid/s);
-  assert.match(css, /\.sensitivity-row\s*\{[^}]*grid-column:\s*1 \/ -1/s);
-  assert.match(css, /\.sensitivity-row\.current\s*\{[^}]*margin-inline:\s*0/s);
-  assert.doesNotMatch(css, /\.sensitivity-row\.current\s*\{[^}]*padding-inline:/s);
-});
-
-test("all quantitative burden and local-context rows expose native-unit mini visuals", () => {
+test("all quantitative burden and local-context rows expose SVG native-unit mini visuals without inline styles", () => {
   const burden = readSource("../src/components/BurdenMeasureList.tsx");
   const local = readSource("../src/pages/LocalContextPage.tsx");
   const visual = readSource("../src/components/MetricVisual.tsx");
+  const geometry = readSource("../src/data/metricGeometry.ts");
   assert.match(burden, /<MetricVisual/);
   assert.match(local, /<MetricVisual/);
   assert.match(visual, /role="img"/);
-  const geometry = readSource("../src/data/metricGeometry.ts");
+  assert.match(visual, /<svg/);
+  assert.doesNotMatch(visual, /style=\{\{/);
   assert.match(geometry, /No uncertainty interval is displayed/);
   assert.match(visual, /intervalLabel/);
   assert.match(burden, /value=\{estimate\.value\}/);
-  assert.match(visual, /metricAriaDescription/);
-  assert.match(geometry, /formatMetricValue/);
-  assert.match(burden, /pointLabel=\{estimate\.distribution_summary/);
 });
 
-test("overview preview does not encode illustrative values as a chart", () => {
-  const source = readSource("../src/pages/OpeningProvenance.tsx");
-  assert.doesNotMatch(source, /preview-mini-chart/);
-  const css = readSource("../src/pages/OverviewPage.css");
-  assert.match(css, /\.preview-boundary-line\s*\{/);
-  assert.doesNotMatch(css, /\.preview-mini-chart\s*\{/);
-  assert.doesNotMatch(source, /height: "(?:42|74|58|88)%"/);
+test("sensitivity rows share one grid and use SVG bars without inline styles", () => {
+  const sensitivity = readSource("../src/components/SensitivityExplorer.tsx");
+  const css = readSource("../src/components/SensitivityExplorer.css");
+  assert.match(css, /\.sensitivity-bars\s*\{[^}]*grid-template-columns:/s);
+  assert.match(css, /\.sensitivity-row\s*\{[^}]*grid-template-columns:\s*subgrid/s);
+  assert.match(css, /\.sensitivity-row\.current\s*\{[^}]*margin-inline:\s*0/s);
+  assert.match(sensitivity, /<svg className="sensitivity-svg"/);
+  assert.doesNotMatch(sensitivity, /style=\{\{/);
 });
 
-test("Planning Brief print repeats product provenance and moves decision state out of the trailing sidebar", () => {
+test("Planning Brief print retains provenance and decision state outside trailing sidebar", () => {
   const brief = readSource("../src/pages/BriefPage.tsx");
   const css = readSource("../src/pages/BriefPage.css");
   assert.match(brief, /brief-print-footer/);
@@ -99,30 +71,6 @@ test("Planning Brief print repeats product provenance and moves decision state o
   assert.match(brief, /brief\.generated_at/);
   assert.match(brief, /brief-print-decision-state/);
   assert.match(brief, /<h2>Decision state<\/h2>/);
-  assert.match(css, /\.planning-brief-page \.brief-aside\s*\{\s*display:\s*none !important/s);
-  // Real @page margin boxes reserve document space instead of overlaying
-  // paragraph text; dynamic artifact version and timestamp remain in provenance.
   assert.match(css, /@bottom-left\s*\{\s*content:\s*"Diagnostic Odyssey"/s);
   assert.match(css, /@bottom-right\s*\{\s*content:\s*"Page "\s*counter\(page\)/s);
-  assert.match(css, /\.planning-brief-page \.brief-print-footer\s*\{\s*display:\s*none !important/s);
-  assert.match(css, /\.brief-burden-table-wrap\s*\{[^}]*position:\s*relative/s);
-});
-
-
-test("workflow cards use restrained semantic variety instead of one teal treatment", () => {
-  const css = readSource("../src/pages/OverviewPage.css");
-  for (const accent of ["#3f765f", "#3e6f91", "#806326", "#327472", "#606c7e", "#153552"]) {
-    assert.ok(css.includes(accent), accent);
-  }
-  assert.match(css, /journey-card:nth-child\(1\)/);
-  assert.match(css, /journey-card:nth-child\(6\)/);
-  assert.match(css, /--journey-accent/);
-});
-
-test("dark overview keeps teal as emphasis instead of the dominant field color", () => {
-  const css = readSource("../src/pages/OverviewPage.css");
-  assert.match(css, /:root\[data-theme="dark"\] \.overview-hero\s*\{[\s\S]*linear-gradient\(145deg, #101d27 0%, #09131b 66%, #0d1821 100%\)/);
-  assert.match(css, /rgba\(88, 195, 189, \.055\)/);
-  assert.match(css, /\.overview-hero h1 em\s*\{[^}]*color:\s*var\(--do-accent\)/s);
-  assert.match(css, /:root\[data-theme="dark"\] \.overview-lede\s*\{[^}]*color:\s*#c1c9cd/s);
 });

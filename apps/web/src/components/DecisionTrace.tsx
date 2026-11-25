@@ -5,6 +5,7 @@ import type {
   Scenario
 } from "@diagnostic-odyssey/contracts";
 import { buildDecisionTrace } from "../data/decisionTrace";
+import "./DecisionTrace.css";
 
 export function DecisionTrace({
   burdenEstimateCount,
@@ -40,9 +41,9 @@ export function DecisionTrace({
     <ol>
       {items.map((item, index) => <li key={item.key}>
         <span className="decision-trace-step" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
-        <div>
-          <strong>{item.label}</strong>
-          <span>{item.detail}</span>
+        <div className="decision-trace-body">
+          <strong className="decision-trace-label">{item.label}</strong>
+          <p className="decision-trace-detail">{item.detail}</p>
           {item.key === "local-context" && !pilotLocalContext &&
             <Link className="text-button" to="/local-context">
               {localContextStatus === "loaded" ? "Review Local Context" : "Open Local Context status"}

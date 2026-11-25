@@ -167,6 +167,28 @@ for (const [device, viewport] of Object.entries({
       return details;
     });
 await check(
+  "overview and burden inventory claims match 21 national and 34 statewide WV measures (SA-02)",
+  async () => {
+    const context = await browser.newContext({ reducedMotion: "reduce" });
+    const page = await context.newPage();
+    page.setDefaultTimeout(5000);
+    await ready(page, "/");
+    const homeText = await page.locator("main").innerText();
+    assert.ok(homeText.includes("21"), "Overview must display 21 reviewed burden measures");
+    assert.ok(homeText.includes("34"), "Overview must display 34 local terrain indicators");
+    assert.match(homeText, /work-loss measures remain unavailable/i);
+    assert.match(homeText, /statewide West Virginia/i);
+    assert.doesNotMatch(homeText, /across county geography|and work loss/i);
+    await ready(page, "/burden");
+    const burdenText = await page.locator("main").innerText();
+    assert.ok(burdenText.includes("Admin & Care Time"), "Burden tabs must label Admin & Care Time");
+    assert.ok(!burdenText.includes("Work & Time"), "Burden tabs must not imply work-loss availability");
+    assert.ok(burdenText.includes("Work & function (unavailable)"), "Burden links must clarify Work & function gap");
+    await context.close();
+    return { homeChecked: true, burdenChecked: true };
+  },
+);
+await check(
   "history, keyboard skip link, mobile menu and anchor focus",
   async () => {
     const context = await browser.newContext({ reducedMotion: "reduce" });
@@ -192,7 +214,7 @@ await check(
     await page.goBack();
     assert.ok(page.url().endsWith("/burden"));
     await page
-      .getByRole("heading", { name: "Burden overview", exact: true })
+      .getByRole("heading", { name: "National burden overview", exact: true })
       .waitFor();
     await page.goForward();
     assert.ok(page.url().endsWith("/pilot"));
@@ -201,7 +223,7 @@ await check(
       .waitFor();
     assert.equal(await page.locator("#pilot-capacity").inputValue(), "2345");
     await page
-      .getByRole("navigation", { name: "Pilot planner sections" })
+      .getByRole("navigation", { name: "Strategy Lab sections" })
       .getByRole("link", { name: "Sensitivity", exact: true })
       .click();
     await page.waitForFunction(
@@ -263,7 +285,7 @@ await check(
     await navigate(page, "Local context");
     await page.getByRole("checkbox").filter({ visible: true }).first().check();
     await page
-      .getByRole("button", { name: /^Use .* in Pilot planning$/ })
+      .getByRole("button", { name: /^Use .* in Strategy Lab$/ })
       .first()
       .click();
     await navigate(page, "Pilot planner");
@@ -424,7 +446,7 @@ await check("appearance persistence and reduced motion opening", async () => {
   page.setDefaultTimeout(5000);
   await ready(page);
   assert.equal(
-    await page.locator(".overview-provenance.is-playing").count(),
+    await page.locator(".overview-page.is-opening").count(),
     0,
   );
   await setAppearance(page, "dark");
@@ -458,12 +480,13 @@ await check("local context labels preserve native scores and exported uncertaint
         assert.ok((await row.locator(".ledger-record-value").innerText()).startsWith(`${record.value} points`));
       }
       await checkbox.check();
-      if (id === ids[0]) await row.getByRole("button", {name: /^Use .* in Pilot planning$/}).click();
+      if (id === ids[0]) await row.getByRole("button", {name: /^Use .* in Strategy Lab$/}).click();
     }
     const localText = await page.locator("main").textContent();
     assert.ok(localText.includes("Published 90% margin of error"));
     assert.ok(!localText.includes("published_90_percent_margin_of_error"));
     await navigate(page, "Pilot planner");
+    await page.getByRole("button", {name: "Show inspector", exact: true}).click();
     assert.equal(await page.locator(".pilot-local-context-value").innerText(), "23 points");
     await navigate(page, "Planning brief");
     const values = await page.locator(".brief-local-context-value").allTextContents();
@@ -530,6 +553,11 @@ await check("browser theme color follows bootstrap, explicit preferences, system
   await context.close();
 });
 
+async function ensureExtraParamsOpen(page) {
+  const btn = page.getByRole("button", { name: /More parameters|Hide base parameters/i });
+  if (await btn.count() && await btn.getAttribute("aria-expanded") !== "true") await btn.click();
+}
+
 await check(
   "invalid numeric drafts preserve last applied scenario and JSON",
   async () => {
@@ -546,6 +574,7 @@ await check(
     const tiny = await exportBrief(page, "invalid-tiny-draft");
     assert.equal(tiny.scenario.input.reach, 0.25);
     await navigate(page, "Pilot planner");
+    await ensureExtraParamsOpen(page);
     await page.locator("#pilot-fixed_cost").fill("1e308");
     await page.locator("#pilot-per_participant_cost").fill("1e308");
     await page.getByText("Draft not applied", { exact: true }).waitFor();
@@ -605,6 +634,7 @@ await check("extreme finite scenario layout and invalid sensitivity remain usabl
         }
         return tokens;
       };
+      await ensureExtraParamsOpen(page);
       await page.locator("#pilot-fixed_cost").fill("1e308");
       assert.equal(await page.locator("#pilot-fixed_cost").getAttribute("aria-invalid"), "false");
       const assertResourceToken = async (fixedCost) => {
@@ -637,6 +667,7 @@ await check("extreme finite scenario layout and invalid sensitivity remain usabl
       assert.equal(brief.scenario.input.fixed_cost, 1e308);
       assert.equal(brief.scenario.result.fixed_program_cost, 1e308);
       await navigate(page, "Pilot planner");
+      await ensureExtraParamsOpen(page);
       await page.locator("#pilot-fixed_cost").fill(String(Number.MAX_VALUE));
       assert.equal(await page.locator("#pilot-fixed_cost").getAttribute("aria-invalid"), "false");
       const maxScientificToken = await assertResourceToken("Number.MAX_VALUE");
@@ -653,6 +684,7 @@ await check("extreme finite scenario layout and invalid sensitivity remain usabl
       assert.equal(maxBrief.scenario.result.fixed_program_cost, Number.MAX_VALUE);
       layouts.push({ width, theme, scientificToken, scientificLedgerTokens, scientificBriefTokens, maxScientificToken, maxLedgerTokens, maxBriefTokens, maxLayout, maxBriefLayout });
       await navigate(page, "Pilot planner");
+      await ensureExtraParamsOpen(page);
       await page.locator("#pilot-fixed_cost").fill("1e308");
       await page.locator("#pilot-capacity").fill(String(Number.MAX_VALUE));
       assert.equal(await page.locator("#pilot-capacity").getAttribute("aria-invalid"), "false");
@@ -666,6 +698,7 @@ await check("extreme finite scenario layout and invalid sensitivity remain usabl
       assert.equal(capacityBrief.scenario.input.capacity, Number.MAX_VALUE);
       assert.equal(capacityBrief.scenario.result.reached_participants, 3000);
       await navigate(page, "Pilot planner");
+      await ensureExtraParamsOpen(page);
       for (const [key, value] of Object.entries({ fixed_cost: "0", per_participant_cost: "0", baseline_window_months: "0", alternative_window_months: "0", horizon_months: "0", reach: "100", eligible_population: String(Number.MAX_VALUE) })) {
         await page.locator(`#pilot-${key}`).fill(value);
       }
@@ -838,17 +871,17 @@ await check(
     page.setDefaultTimeout(5000);
     await ready(page);
     assert.equal(
-      await page.locator(".overview-provenance.is-playing").count(),
+      await page.locator(".overview-page.is-opening").count(),
       1,
     );
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.waitForFunction(
-      () => !document.querySelector(".overview-provenance.is-playing"),
+      () => !document.querySelector(".overview-page.is-opening"),
     );
     await page.reload();
     await page.locator("main h1").waitFor(); await prepareWorkspace(page);
     assert.equal(
-      await page.locator(".overview-provenance.is-playing").count(),
+      await page.locator(".overview-page.is-opening").count(),
       0,
     );
     await context.close();
@@ -926,10 +959,13 @@ await check(
     });
     const page = await context.newPage();
     page.setDefaultTimeout(5000);
-    await ready(page, "/local-context");
+    await page.goto(baseURL + "/local-context");
+    await page.locator(".local-ledger-page").waitFor();
     // Keep this journey keyboard-only while clearing the new all-selected default.
     const clearLocal = page.getByRole("button", {name: "Select none", exact: true}).first();
     await tabTo(page, clearLocal);
+    await page.keyboard.press("Enter");
+    await tabTo(page, page.getByRole("button", {name: /Primary care shortage designations/}));
     await page.keyboard.press("Enter");
     const selection = page
       .getByRole("checkbox")
@@ -939,14 +975,14 @@ await check(
     await page.keyboard.press("Space");
     assert.equal(await selection.isChecked(), true);
     const pilotContext = page
-      .getByRole("button", { name: /^Use .* in Pilot planning$/ })
+      .getByRole("button", { name: /^Use .* in Strategy Lab$/ })
       .first();
     await tabTo(page, pilotContext);
     await page.keyboard.press("Enter");
     const nav = page.getByRole("navigation", { name: "Primary navigation" });
     await tabTo(
       page,
-      nav.getByRole("link", { name: "Pilot planner", exact: true }),
+      nav.getByRole("link", { name: /^(?:03\s+)?Strategy Lab$/, exact: true }),
       true,
     );
     await page.keyboard.press("Enter");
@@ -971,9 +1007,7 @@ await check(
     });
     await tabTo(page, create);
     await page.keyboard.press("Enter");
-    await tabTo(page, page.getByRole("button", {name: "Menu", exact: true}), true);
-    await page.keyboard.press("Enter");
-    await tabTo(page, page.getByRole("navigation", {name: "Supporting navigation"}).getByRole("link", {name: "Data requests", exact: true}));
+    await tabTo(page, nav.getByRole("link", {name: "Data requests", exact: true}), true);
     await page.keyboard.press("Enter");
     await page
       .getByRole("heading", {
@@ -993,7 +1027,7 @@ await check(
     assert.equal(await request.isChecked(), true);
     await tabTo(
       page,
-      nav.getByRole("link", { name: "Planning brief", exact: true }),
+      nav.getByRole("link", { name: /^(?:04\s+)?Planning Brief$/, exact: true }),
       true,
     );
     await page.keyboard.press("Enter");

@@ -12,6 +12,10 @@ function needsScientificNotation(value: number): boolean {
   return Math.abs(value) >= 1e12;
 }
 
+export function isScientificNotationText(text: string): boolean {
+  return /e[+-]\d+/i.test(text);
+}
+
 /** toExponential() without a precision argument preserves the number's round trip. */
 export function formatPlanningNumber(value: number, formatter = integer): string {
   return needsScientificNotation(value) ? value.toExponential() : formatter.format(value);
@@ -20,4 +24,15 @@ export function formatPlanningNumber(value: number, formatter = integer): string
 export function formatPlanningCurrency(value: number, formatter = currency): string {
   if (!needsScientificNotation(value)) return formatter.format(value);
   return `${value < 0 ? "-" : ""}$${Math.abs(value).toExponential()}`;
+}
+
+export function formatPlanningPercent(proportion: number): string {
+  if (!Number.isFinite(proportion)) {
+    throw new Error("Cannot display a non-finite percentage. Correct the planning inputs first.");
+  }
+  const pct = proportion * 100;
+  if (Math.abs(pct) > 0 && Math.abs(pct) < 0.01) {
+    return `${pct.toLocaleString("en-US", { maximumSignificantDigits: 4 })}%`;
+  }
+  return `${pct.toLocaleString("en-US", { maximumFractionDigits: 2 })}%`;
 }

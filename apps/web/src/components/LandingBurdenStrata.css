@@ -1,0 +1,434 @@
+/* Chapters II & III: Luminous Mist transition + signature sticky Evidence Strata transformation */
+.atlas-burden-chapter {
+  position: relative;
+  background: linear-gradient(180deg, var(--do-canvas) 0%, var(--do-surface-elevated) 16%, var(--do-canvas) 100%);
+  padding: clamp(64px, 9vw, 128px) 0;
+  border-top: 1px solid var(--do-border);
+}
+
+.atlas-burden-intro {
+  display: grid;
+  gap: 10px;
+  max-width: 68ch;
+  margin-bottom: clamp(40px, 6vw, 72px);
+}
+
+.atlas-burden-intro h2 {
+  margin: 0;
+  font-family: var(--do-font-display);
+  font-weight: 500;
+  font-size: clamp(2rem, 3.8vw, 3.1rem);
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+  color: var(--do-text);
+  text-wrap: balance;
+}
+
+.atlas-burden-intro h2 em {
+  font-style: italic;
+  color: var(--do-accent);
+}
+
+.atlas-burden-intro .subtle {
+  margin: 0;
+  font-size: 1.02rem;
+  line-height: 1.6;
+}
+
+.atlas-strata-split {
+  display: grid;
+  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+  gap: clamp(28px, 4.5vw, 64px);
+  align-items: stretch;
+}
+
+.atlas-strata-beats {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+  gap: clamp(32px, 6vh, 68px);
+}
+
+.atlas-beat-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+  gap: 10px;
+  padding: clamp(24px, 3vw, 34px);
+  border-radius: 20px;
+  border: 1px solid var(--do-border);
+  background: var(--do-surface);
+  box-shadow: var(--do-shadow-soft);
+  transition: border-color var(--do-motion-standard) ease, box-shadow var(--do-motion-standard) ease;
+}
+
+.atlas-beat-card.is-active {
+  border-color: var(--do-reviewed-border);
+}
+
+.atlas-beat-card.is-admin.is-active {
+  border-color: var(--do-selection-border);
+}
+
+.atlas-beat-card.is-distress.is-active {
+  border-color: var(--do-assumption-border);
+}
+
+.atlas-beat-eyebrow {
+  margin: 0;
+  font-family: var(--do-font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--do-reviewed-text);
+}
+
+.atlas-beat-card.is-admin .atlas-beat-eyebrow {
+  color: var(--do-selection-text);
+}
+
+.atlas-beat-card.is-distress .atlas-beat-eyebrow {
+  color: var(--do-assumption-text);
+}
+
+.atlas-beat-figure {
+  font-family: var(--do-font-display);
+  font-weight: 500;
+  font-size: clamp(2.8rem, 5vw, 4.4rem);
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+  color: var(--do-text);
+}
+
+.atlas-beat-ci {
+  margin: 0;
+  font-family: var(--do-font-mono);
+  font-size: 0.76rem;
+  font-weight: 500;
+  color: var(--do-reviewed-text);
+}
+
+.atlas-beat-card h3 {
+  margin: 4px 0 0;
+  font-family: var(--do-font-display);
+  font-weight: 500;
+  font-size: clamp(1.22rem, 1.9vw, 1.5rem);
+  line-height: 1.24;
+  color: var(--do-text);
+}
+
+.atlas-beat-summary {
+  margin: 0;
+  font-size: 0.93rem;
+  line-height: 1.6;
+  color: var(--do-text-muted);
+}
+
+.atlas-beat-inline-whisker {
+  display: none;
+  gap: 6px;
+  margin-top: 6px;
+  padding-top: 12px;
+  border-top: 1px solid var(--do-border);
+}
+
+.atlas-beat-scale {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-family: var(--do-font-mono);
+  font-size: 0.68rem;
+  color: var(--do-text-muted);
+}
+
+.strata-disclosure {
+  margin-top: 8px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--do-border);
+  background: var(--do-surface-elevated);
+  font-size: 0.84rem;
+  color: var(--do-text-muted);
+}
+
+.strata-disclosure summary {
+  cursor: pointer;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  color: var(--do-text);
+}
+
+.strata-disclosure ul {
+  margin: 8px 0 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 6px;
+  line-height: 1.5;
+}
+
+.strata-disclosure strong {
+  color: var(--do-text);
+}
+
+.strata-disclosure-note {
+  margin: 8px 0 0;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: var(--do-text-muted);
+}
+
+/* Right Sticky Evidence Architecture Panel */
+.atlas-strata-stage-col {
+  position: relative;
+}
+
+.atlas-strata-sticky {
+  position: sticky;
+  top: 88px;
+  display: grid;
+  gap: 18px;
+  padding: clamp(22px, 2.8vw, 32px);
+  border-radius: 24px;
+  border: 1px solid var(--do-border);
+  background: var(--do-surface);
+  box-shadow: 0 22px 54px color-mix(in srgb, var(--do-text) 7%, transparent);
+}
+
+.strata-stage-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--do-border);
+}
+
+.strata-stage-kicker {
+  font-family: var(--do-font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--do-text-muted);
+}
+
+.strata-stage-badge {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--do-reviewed-bg);
+  border: 1px solid var(--do-reviewed-border);
+  color: var(--do-reviewed-text);
+  font-family: var(--do-font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.strata-layers-stack {
+  display: grid;
+  gap: 14px;
+}
+
+.strata-layer {
+  display: grid;
+  gap: 8px;
+  padding: 16px 18px;
+  border-radius: 14px;
+  border: 1px solid var(--do-border);
+  background: var(--do-surface-elevated);
+  opacity: 0.72;
+  transition: transform 360ms var(--do-ease-out), opacity 300ms ease, border-color 240ms ease, background-color 240ms ease, box-shadow 300ms ease;
+}
+
+.strata-layer.is-focused {
+  opacity: 1;
+  background: var(--do-surface);
+  box-shadow: 0 10px 26px color-mix(in srgb, var(--do-text) 8%, transparent);
+}
+
+.strata-layer.is-spending.is-focused {
+  border-color: var(--do-reviewed-text);
+}
+
+.strata-layer.is-admin.is-focused {
+  border-color: var(--do-selection-text);
+}
+
+.strata-layer.is-distress.is-focused {
+  border-color: var(--do-journey-accent);
+}
+
+/* Physical strata separation transformation as visitor progresses through Beats 1 -> 2 -> 3 */
+@media screen and (prefers-reduced-motion: no-preference) {
+  .atlas-strata-sticky[data-active-beat="1"] .strata-layer.is-spending { transform: translateY(0) scale(1.015); }
+  .atlas-strata-sticky[data-active-beat="1"] .strata-layer.is-admin { transform: translateY(2px); }
+  .atlas-strata-sticky[data-active-beat="1"] .strata-layer.is-distress { transform: translateY(4px); }
+
+  .atlas-strata-sticky[data-active-beat="2"] .strata-layer.is-spending { transform: translateY(-4px); }
+  .atlas-strata-sticky[data-active-beat="2"] .strata-layer.is-admin { transform: translateY(0) scale(1.015); }
+  .atlas-strata-sticky[data-active-beat="2"] .strata-layer.is-distress { transform: translateY(6px); }
+
+  .atlas-strata-sticky[data-active-beat="3"] .strata-layer.is-spending { transform: translateY(-6px); }
+  .atlas-strata-sticky[data-active-beat="3"] .strata-layer.is-admin { transform: translateY(-2px); }
+  .atlas-strata-sticky[data-active-beat="3"] .strata-layer.is-distress { transform: translateY(4px) scale(1.015); }
+}
+
+.strata-layer-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.strata-layer-cohort {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 650;
+  color: var(--do-text);
+}
+
+.strata-layer-unit {
+  display: block;
+  font-family: var(--do-font-mono);
+  font-size: 0.7rem;
+  color: var(--do-text-muted);
+}
+
+.strata-layer-val {
+  font-family: var(--do-font-display);
+  font-size: 1.65rem;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--do-text);
+  white-space: nowrap;
+}
+
+.strata-whisker-svg {
+  display: block;
+  width: 100%;
+  height: 24px;
+}
+
+.strata-whisker-track {
+  fill: var(--do-chart-track);
+}
+
+.strata-whisker-tick {
+  stroke: var(--do-chart-grid);
+  stroke-width: 1;
+}
+
+.strata-whisker-range {
+  fill: var(--do-chart-1);
+  opacity: 0.34;
+}
+
+.strata-whisker-point {
+  fill: var(--do-chart-1);
+}
+
+.is-admin .strata-whisker-range,
+.is-admin .strata-whisker-point {
+  fill: var(--do-selection-text);
+}
+
+.is-distress .strata-whisker-range,
+.is-distress .strata-whisker-point {
+  fill: var(--do-journey-accent);
+}
+
+.strata-layer-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-family: var(--do-font-mono);
+  font-size: 0.68rem;
+  color: var(--do-text-muted);
+}
+
+.strata-stage-boundary {
+  margin: 2px 0 0;
+  padding-top: 12px;
+  border-top: 1px dashed var(--do-border);
+  font-family: var(--do-font-mono);
+  font-size: 0.72rem;
+  color: var(--do-text-muted);
+  text-align: center;
+}
+
+.atlas-burden-bridge {
+  margin: clamp(44px, 6vw, 72px) auto 0;
+  max-width: 58ch;
+  text-align: center;
+  font-family: var(--do-font-display);
+  font-size: clamp(1.25rem, 2vw, 1.6rem);
+  line-height: 1.4;
+  color: var(--do-text-muted);
+}
+
+.atlas-burden-bridge strong {
+  color: var(--do-text);
+  font-weight: 550;
+}
+
+@media (min-width: 961px) {
+  .atlas-beat-card {
+    padding: 34px 4px 18px;
+    border: 0;
+    border-top: 1px solid var(--do-border);
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    min-height: 44vh;
+    align-content: center;
+  }
+
+  .atlas-beat-card.is-active {
+    border-top: 2px solid var(--do-reviewed-text);
+  }
+
+  .atlas-beat-card.is-admin.is-active {
+    border-top-color: var(--do-selection-text);
+  }
+
+  .atlas-beat-card.is-distress.is-active {
+    border-top-color: var(--do-journey-accent);
+  }
+}
+
+@media (max-width: 960px) {
+  .atlas-strata-split {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .atlas-strata-stage-col {
+    display: none;
+  }
+  .atlas-beat-inline-whisker {
+    display: grid;
+  }
+  .atlas-strata-beats {
+    gap: 24px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce), print {
+  .atlas-strata-stage-col {
+    position: static;
+  }
+  .strata-layer,
+  .atlas-beat-card {
+    transition: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}
+
+.atlas-beat-figure.is-unavailable,
+.strata-layer-val.is-unavailable {
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 650;
+  line-height: 1.5;
+  white-space: normal;
+}

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   canDisplayDistributionSummary,
   canExportEstimate,
@@ -9,10 +10,12 @@ import {
   formatIntervalLabel
 } from "../data/formatEstimateValue";
 import { formatReleaseStatusLabel } from "../data/presentationLabels";
+import { getBurdenScaleDomain } from "../data/metricGeometry";
+import { DetailDrawer } from "./DetailDrawer";
 import { DistributionSummaryText } from "./DistributionSummaryText";
 import { MetricVisual } from "./MetricVisual";
 
-function EstimateIntervalText({estimate}: {estimate: Estimate}) {
+function EstimateIntervalText({ estimate }: { estimate: Estimate }) {
   if (!canExportEstimate(estimate)) return null;
 
   const interval = formatEstimateInterval(estimate);
@@ -20,94 +23,217 @@ function EstimateIntervalText({estimate}: {estimate: Estimate}) {
     .replace(/^(\d+(?:\.\d+)?)% CI\s*/, "$1% confidence interval: ")
     .replace(/^CI\s*/, "Confidence interval: ");
 
-  return <small className="measure-interval">
-    <span aria-hidden="true">{interval}</span>
-    <span className="sr-only">{accessibleInterval}</span>
-  </small>;
+  return (
+    <small className="measure-interval">
+      <span aria-hidden="true">{interval}</span>
+      <span className="sr-only">{accessibleInterval}</span>
+    </small>
+  );
 }
 
-export function BurdenMeasureList({estimates}: {estimates: Estimate[]}) {
-  const parentLabels = new Map(
-    estimates.map(estimate => [estimate.measure_id, estimate.label])
+export function EstimateProvenanceDetails({ estimate: activeEstimate }: { estimate: Estimate }) {
+  const released = canExportEstimate(activeEstimate);
+  return (
+    <>
+      <div className="atlas-drawer-stat">
+        <strong>
+          {canDisplayDistributionSummary(activeEstimate)
+            ? <DistributionSummaryText estimate={activeEstimate} />
+            : released || activeEstimate.value === null ? formatEstimateValue(activeEstimate) : "Not released"}
+        </strong>
+        {released && <span>{formatEstimateInterval(activeEstimate)}</span>}
+      </div>
+
+      <dl className="atlas-drawer-list">
+        <div>
+          <dt>Allowed interpretation</dt>
+          <dd>{activeEstimate.allowed_interpretation}</dd>
+        </div>
+        {activeEstimate.prohibited_interpretation.length > 0 && (
+          <div>
+            <dt>Not supported</dt>
+            <dd>
+              <ul className="atlas-compact-list">
+                {activeEstimate.prohibited_interpretation.map(item => <li key={item}>{item}</li>)}
+              </ul>
+            </dd>
+          </div>
+        )}
+        <div>
+          <dt>Population / universe</dt>
+          <dd>{activeEstimate.universe}</dd>
+        </div>
+        <div>
+          <dt>Denominator</dt>
+          <dd>{activeEstimate.denominator}</dd>
+        </div>
+        <div>
+          <dt>System boundary</dt>
+          <dd>{activeEstimate.system_boundary}</dd>
+        </div>
+        <div>
+          <dt>Source</dt>
+          <dd>{activeEstimate.source_ref}</dd>
+        </div>
+        {activeEstimate.source_locator && (
+          <div>
+            <dt>Source locator</dt>
+            <dd>{activeEstimate.source_locator}</dd>
+          </div>
+        )}
+        <div>
+          <dt>Release status</dt>
+          <dd>{formatReleaseStatusLabel(activeEstimate.release_status)}</dd>
+        </div>
+        {activeEstimate.statistics_method && (
+          <div>
+            <dt>Statistical method</dt>
+            <dd>{activeEstimate.statistics_method}</dd>
+          </div>
+        )}
+        {activeEstimate.weight_variable && (
+          <div>
+            <dt>Weight variable</dt>
+            <dd>{activeEstimate.weight_variable}</dd>
+          </div>
+        )}
+        {activeEstimate.limitations.length > 0 && (
+          <div>
+            <dt>Limitations</dt>
+            <dd>{activeEstimate.limitations.join(" ")}</dd>
+          </div>
+        )}
+      </dl>
+    </>
   );
+}
 
-  return <div className="measure-list burden-measure-list">
-    {estimates.map(estimate => {
-      const reviewed = canExportEstimate(estimate);
-      const parentLabel = estimate.component_of_measure_id
-        ? parentLabels.get(estimate.component_of_measure_id)
-        : null;
+export function BurdenMeasureList({
+  estimates,
+  focusedId,
+  onFocus
+}: {
+  estimates: Estimate[];
+  focusedId?: string | null;
+  onFocus?: (estimateId: string) => void;
+}) {
+  const [activeEstimate, setActiveEstimate] = useState<Estimate | null>(null);
+  const parentLabels = new Map(estimates.map(estimate => [estimate.measure_id, estimate.label]));
 
-      return <article className="measure burden-measure-row" aria-labelledby={`burden-measure-${estimate.estimate_id}`} key={estimate.estimate_id}>
-        <div className="burden-measure-summary">
-          <h3 id={`burden-measure-${estimate.estimate_id}`}>{estimate.label}</h3>
-          {estimate.component_of_measure_id && <span className="component-note">
-            Component of {parentLabel ?? "a parent measure"} — do not add this value to the parent total.
-          </span>}
-        </div>
+  const openProvenance = (estimate: Estimate, trigger: HTMLButtonElement) => {
+    trigger.focus({ preventScroll: true });
+    setActiveEstimate(estimate);
+  };
 
-        <div className="measure-value">
-          {canDisplayDistributionSummary(estimate)
-            ? <DistributionSummaryText estimate={estimate} />
-            : formatEstimateValue(estimate)}
-          <EstimateIntervalText estimate={estimate} />
-          {reviewed && typeof estimate.value === "number" && <MetricVisual
-            label={estimate.label}
-            value={estimate.value}
-            unit={estimate.unit}
-            low={estimate.distribution_summary?.p25 ?? estimate.interval_low}
-            high={estimate.distribution_summary?.p75 ?? estimate.interval_high}
-            intervalLabel={estimate.distribution_summary ? "Interquartile range (25th–75th percentile; not a confidence interval)" : formatIntervalLabel(estimate.interval_type)}
-            intervalStyle={estimate.distribution_summary ? "range" : "confidence"}
-            pointLabel={estimate.distribution_summary ? "Survey-weighted mean" : "Point estimate"}
-          />}
-          {!reviewed && <small className="measure-release-status">
-            {formatReleaseStatusLabel(estimate.release_status)}
-          </small>}
-        </div>
+  return (
+    <>
+      <div className="measure-list burden-measure-list">
+        {estimates.map(estimate => {
+          const reviewed = canExportEstimate(estimate);
+          const parentLabel = estimate.component_of_measure_id
+            ? parentLabels.get(estimate.component_of_measure_id)
+            : null;
+          const focused = focusedId === estimate.estimate_id;
+          const showDetail = !onFocus || focused;
+          const titleId = `burden-measure-${estimate.estimate_id}`;
+          const detailId = `${titleId}-details`;
 
-        <details className="burden-measure-details technical-disclosure">
-          <summary>Interpretation and technical details</summary>
-          <dl className="technical-detail-list">
-            <div>
-              <dt>What this estimate describes</dt>
-              <dd>{estimate.allowed_interpretation}</dd>
-            </div>
-            <div>
-              <dt>Population / universe</dt>
-              <dd>{estimate.universe}</dd>
-            </div>
-            <div>
-              <dt>Denominator</dt>
-              <dd>{estimate.denominator}</dd>
-            </div>
-            <div>
-              <dt>System boundary</dt>
-              <dd>{estimate.system_boundary}</dd>
-            </div>
-            <div>
-              <dt>Source</dt>
-              <dd>{estimate.source_ref}</dd>
-            </div>
-            <div>
-              <dt>Release status</dt>
-              <dd>{formatReleaseStatusLabel(estimate.release_status)}</dd>
-            </div>
-            {estimate.source_locator && <div>
-              <dt>Source locator</dt>
-              <dd>{estimate.source_locator}</dd>
-            </div>}
-            {estimate.statistics_method && <div>
-              <dt>Statistical method</dt>
-              <dd>{estimate.statistics_method}</dd>
-            </div>}
-            {estimate.weight_variable && <div>
-              <dt>Weight variable</dt>
-              <dd>{estimate.weight_variable}</dd>
-            </div>}
-          </dl>
-        </details>
-      </article>;
-    })}
-  </div>;
+          return (
+            <article
+              className={`measure burden-measure-row atlas-metric-row${onFocus ? " is-compact" : ""}${focused ? " is-inspected" : ""}`}
+              aria-labelledby={titleId}
+              key={estimate.estimate_id}
+            >
+              <div className="burden-measure-summary">
+                <h3 id={titleId}>{estimate.label}</h3>
+                {estimate.component_of_measure_id && (
+                  <span className="component-note">
+                    Nested inside {parentLabel ?? "parent total"} · do not add.
+                  </span>
+                )}
+                {onFocus ? (
+                  <button
+                    type="button"
+                    className="atlas-detail-trigger"
+                    aria-expanded={focused}
+                    aria-controls={detailId}
+                    aria-label={`${focused ? "Hide" : "Show"} details for ${estimate.label}`}
+                    onClick={() => onFocus(estimate.estimate_id)}
+                  >
+                    {focused ? "Hide details −" : "Details +"}
+                  </button>
+                ) : (
+                  <button type="button" className="atlas-detail-trigger" onClick={event => openProvenance(estimate, event.currentTarget)}>
+                    Provenance &amp; 95% CI ↗
+                  </button>
+                )}
+              </div>
+
+              <div className="measure-value">
+                <div className="atlas-measure-figure">
+                  {canDisplayDistributionSummary(estimate)
+                    ? <DistributionSummaryText estimate={estimate} />
+                    : reviewed || estimate.value === null ? formatEstimateValue(estimate) : "Not released"}
+                </div>
+                <EstimateIntervalText estimate={estimate} />
+                {!reviewed && (
+                  <small className="measure-release-status">
+                    {formatReleaseStatusLabel(estimate.release_status)}
+                  </small>
+                )}
+              </div>
+              <div className="burden-measure-detail" id={detailId} hidden={!showDetail}>
+                {showDetail && (
+                  <>
+                    {onFocus && <p>{estimate.allowed_interpretation}</p>}
+                    {reviewed && typeof estimate.value === "number" && (
+                      <MetricVisual
+                        label={estimate.label}
+                        value={estimate.value}
+                        unit={estimate.unit}
+                        low={estimate.distribution_summary?.p25 ?? estimate.interval_low}
+                        high={estimate.distribution_summary?.p75 ?? estimate.interval_high}
+                        intervalLabel={
+                          estimate.distribution_summary
+                            ? "IQR (25th–75th percentile)"
+                            : formatIntervalLabel(estimate.interval_type)
+                        }
+                        intervalStyle={estimate.distribution_summary ? "range" : "confidence"}
+                        pointLabel={estimate.distribution_summary ? "Survey mean" : "Point estimate"}
+                        scaleDomain={getBurdenScaleDomain(estimate, estimates)}
+                        standaloneNote={`Standalone ${estimate.unit} measure · no cross-row comparison bar`}
+                        compact
+                      />
+                    )}
+                    {reviewed && estimate.distribution_summary && (
+                      <small className="metric-skew-note">
+                        {estimate.value !== null && estimate.value >= estimate.distribution_summary.p25 && estimate.value <= estimate.distribution_summary.p75
+                          ? "The survey mean falls within the interquartile range."
+                          : "The survey mean falls outside the interquartile range."}{" "}
+                        The 25th–75th percentile range describes the middle half of responses. The confidence interval describes sampling uncertainty in the mean.
+                      </small>
+                    )}
+                    {onFocus && (
+                      <button type="button" className="atlas-detail-trigger" onClick={event => openProvenance(estimate, event.currentTarget)}>
+                        Provenance &amp; 95% CI ↗
+                      </button>
+                    )}
+                  </>
+                )}
+              </div>
+            </article>
+          );
+        })}
+      </div>
+
+      <DetailDrawer
+        open={activeEstimate !== null}
+        eyebrow="MEPS 2024 · MEASURE PROVENANCE"
+        title={activeEstimate?.label ?? ""}
+        onClose={() => setActiveEstimate(null)}
+      >
+        {activeEstimate && <EstimateProvenanceDetails estimate={activeEstimate} />}
+      </DetailDrawer>
+    </>
+  );
 }

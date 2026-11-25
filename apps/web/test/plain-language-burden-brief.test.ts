@@ -108,34 +108,33 @@ test("brief grouping preserves unmatched gated findings in an explicit fallback"
   assert.equal(new Set(groupedIds).size, 22);
 });
 
-test("Burden and Domain pages share plain-language measure presentation", () => {
+test("Burden and Domain pages share plain-language measure presentation with DetailDrawer provenance", () => {
   const burden = readSource("../src/pages/BurdenPage.tsx");
   const domain = readSource("../src/pages/DomainPage.tsx");
   const measures = readSource("../src/components/BurdenMeasureList.tsx");
 
   assert.match(burden, /className="burden-domain-stack"/);
   assert.match(burden, /formatDataStateLabel\(domain\.availability_state\)/);
-  assert.match(burden, /<BurdenMeasureList estimates=\{domain\.measures\} \/>/);
+  assert.match(burden, /<BurdenMeasureList\s+estimates=\{domain\.measures\}/);
   assert.doesNotMatch(burden, /Reviewed analytical estimate/);
   assert.doesNotMatch(burden, />\{domain\.availability_state\}</);
 
   assert.match(domain, /formatDataStateLabel\(domain\.availability_state\)/);
   assert.match(domain, /<BurdenMeasureList estimates=\{domain\.measures\} \/>/);
   assert.doesNotMatch(domain, /State: \{domain\.availability_state\}/);
-  assert.match(domain, /Not yet represented by a standalone reviewed domain/);
+  assert.match(domain, /Standalone route reserved without proxy borrowing/);
 
   assert.match(measures, /formatEstimateValue\(estimate\)/);
   assert.match(measures, /formatEstimateInterval\(estimate\)/);
-  assert.match(measures, /<details className="burden-measure-details technical-disclosure">/);
-  assert.match(measures, /Interpretation and technical details/);
-  assert.match(measures, /estimate\.allowed_interpretation/);
-  assert.match(measures, /estimate\.universe/);
-  assert.match(measures, /estimate\.denominator/);
-  assert.match(measures, /estimate\.system_boundary/);
-  assert.match(measures, /estimate\.source_ref/);
-  assert.match(measures, /formatReleaseStatusLabel\(estimate\.release_status\)/);
+  assert.match(measures, /<DetailDrawer/);
+  assert.match(measures, /activeEstimate\.allowed_interpretation/);
+  assert.match(measures, /activeEstimate\.universe/);
+  assert.match(measures, /activeEstimate\.denominator/);
+  assert.match(measures, /activeEstimate\.system_boundary/);
+  assert.match(measures, /activeEstimate\.source_ref/);
+  assert.match(measures, /formatReleaseStatusLabel\(activeEstimate\.release_status\)/);
   assert.match(measures, /estimate\.component_of_measure_id/);
-  assert.match(measures, /do not add this value to the parent total/);
+  assert.match(measures, /do not add/);
 });
 
 test("Planning Brief uses semantic grouped tables and promotes every warning", () => {

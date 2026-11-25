@@ -28,7 +28,7 @@
 <br>
 
 > [!IMPORTANT]
-> **Current evidence:** **21** reviewed national 2024 MEPS Long COVID estimates · **34** reviewed West Virginia state-level HRSA + ACS indicators · **2** descriptive Typical Ranges. These are separate evidence layers: local context never rescales national burden, and Typical Ranges are not intervention-effect estimates.
+> **Current evidence:** **21** reviewed national 2024 MEPS Long COVID estimates across 3 populated domains (13 economic/healthcare, 4 administrative, 4 mental-health; Work & Function stays explicitly missing) · **34** reviewed West Virginia state-level HRSA + ACS indicators (no county-level data) · **2** descriptive Typical Ranges. These are separate evidence layers: local context never rescales national burden, and Typical Ranges are not intervention-effect estimates.
 
 ![Diagnostic Odyssey: evidence roles remain distinct in a traceable planning workspace](docs/audit-2026-10-16/screenshots/after-overview-light.png)
 
@@ -100,14 +100,15 @@ The product is designed to help a team move from **“how large is the problem?�
 
 ### Working vertical slice
 
-**Burden → Pilot Planner → Data Requests → Planning Brief**
+**01 Burden → 02 Local context → 03 Strategy Lab → 04 Planning Brief** (with optional **Data requests**)
 
-1. **Burden** — inspect domains, native units, release state, and reviewed intervals.
-2. **Pilot Planner** — set assumptions, inspect decision visuals, and run one-way sensitivity.
-3. **Data Requests** — optionally turn uncertainty into a structured operational request.
-4. **Planning Brief** — review the assembled artifact and export its JSON companion or a PDF.
+1. **01 Burden** — inspect domains (economic/healthcare, administrative time, mental/human; Work & Function stays explicitly missing), native units, release state, and reviewed intervals.
+2. **02 Local context** — review the 34 statewide West Virginia HRSA and ACS indicators (no county-level data).
+3. **03 Strategy Lab** — set assumptions, inspect decision visuals, and run one-way sensitivity.
+4. **Data requests (optional companion)** — turn sensitivity or capacity gaps into a structured request; new requests start included for the Brief (deselectable before export) and export only when current for the applied scenario.
+5. **04 Planning Brief** — review the assembled artifact and export its canonical JSON companion or a PDF.
 
-The analyst must explicitly opt in before a current data request enters the Planning Brief. Sensitivity testing is assumption testing, not evidence-derived effect estimation.
+Sensitivity testing is assumption testing, not evidence-derived effect estimation.
 
 ## Planning intelligence: three distinct tools
 
@@ -206,7 +207,7 @@ The workflow generates a **preliminary** candidate and uploads aggregate review 
 
 ## What is working
 
-- Reviewed national 2024 MEPS HC-256 Long COVID artifact with **21 `reviewed_released` estimates**.
+- Reviewed national 2024 MEPS HC-256 Long COVID artifact with **21 \`reviewed_released\` estimates** across 3 populated domains (13 economic/healthcare, 4 administrative, 4 mental-health; Work & Function stays explicitly missing).
 - Survey-aware MEPS analysis with reviewed variable maps, cohort construction, weight-specific survey designs, candidate generation, methods review, and promotion gates.
 - Reviewed West Virginia **state-level** HRSA + 2024 ACS implementation context with fail-closed runtime validation.
 - React + TypeScript + Vite application shell and major product routes.

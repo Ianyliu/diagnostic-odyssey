@@ -32,7 +32,7 @@ def verify_spatial_opening(pages, record, filename, appendix_pages):
     title_pattern = r"\s+".join(re.escape(word) for word in label.split())
     geography_pattern = r"\s+".join(re.escape(word) for word in geography.split())
     full_opening = re.compile(title_pattern + r"\s+" + geography_pattern +
-                              r"\s+(?:Active Pilot planning context\s+)?" + opening_value + r"(?=\s|%|±)")
+                              r"\s+(?:(?:Active Pilot planning context|Active in Strategy Lab)\s+)?" + opening_value + r"(?=\s|%|±)")
     status = {"loaded": "Available", "partial": "Partial", "unavailable": "Unavailable",
               "loading": "Loading", "error": "Error"}.get(record["state"], record["state"])
     matches = []
@@ -95,7 +95,7 @@ def verify_detailed_openings(pages, records, filename, pdf_pages):
         else:
             opening_value = re.escape(f"{value:,.0f}" if value == int(value) else f"{value:,.1f}")
         geography = re.escape(record["geography_name"] + " (" + record["geography_type"] + ")")
-        opening = re.compile(r"^\s+" + geography + r"\s+(?:Active Pilot planning context\s+)?" +
+        opening = re.compile(r"^\s+" + geography + r"\s+(?:(?:Active Pilot planning context|Active in Strategy Lab)\s+)?" +
                              opening_value + r"(?=\s|%|±)")
         tail = words[match.end():match.end() + 230]
         assert opening.search(tail), (filename, number, record["indicator_id"],

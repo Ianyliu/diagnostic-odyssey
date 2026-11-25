@@ -1,5 +1,6 @@
 // Isolated test entry point. Never imported by the production application.
 import React, { useEffect, useState } from "react";
+import { flushSync } from "react-dom";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { buildPlanningBrief } from "@diagnostic-odyssey/brief-core";
@@ -20,14 +21,16 @@ function SourceControls() {
   useEffect(() => {
     const change = (event: Event) => {
       const kind = (event as CustomEvent<string>).detail;
-      if (kind === "scenario") state.setScenario({...state.scenario!, capacity: state.scenario!.capacity + 1});
-      if (kind === "timestamp") state.setScenario({...state.scenario!});
-      if (kind === "invalid-scenario") state.setScenario({...state.scenario!, capacity: -1});
-      if (kind === "local-clear") state.clearSelectedLocalContext();
-      if (kind === "local") state.setLocalContextSelected(state.localContext!.indicators[0]!.indicator_id, true);
-      if (kind === "pilot-local") state.setPilotLocalContext(state.localContext!.indicators[1]!.indicator_id);
-      if (kind === "request-create") state.upsertAnalystDataRequest(createSensitivityDataRequest(state.scenario!, "capacity"));
-      if (kind === "request-select") state.toggleDataRequestForBrief(state.availableDataRequests[0]!.request_id);
+      flushSync(() => {
+        if (kind === "scenario") state.setScenario({...state.scenario!, capacity: state.scenario!.capacity + 1});
+        if (kind === "timestamp") state.setScenario({...state.scenario!});
+        if (kind === "invalid-scenario") state.setScenario({...state.scenario!, capacity: -1});
+        if (kind === "local-clear") state.clearSelectedLocalContext();
+        if (kind === "local") state.setLocalContextSelected(state.localContext!.indicators[0]!.indicator_id, true);
+        if (kind === "pilot-local") state.setPilotLocalContext(state.localContext!.indicators[1]!.indicator_id);
+        if (kind === "request-create") state.upsertAnalystDataRequest(createSensitivityDataRequest(state.scenario!, "capacity"));
+        if (kind === "request-select") state.toggleDataRequestForBrief(state.availableDataRequests[0]!.request_id);
+      });
     };
     window.addEventListener("fixture-change", change);
     return () => window.removeEventListener("fixture-change", change);
@@ -38,7 +41,7 @@ function SourceControls() {
 function FaultHarness() {
   const [fault, setFault] = useState("");
   useEffect(() => {
-    const change = (event: Event) => setFault((event as CustomEvent<string>).detail);
+    const change = (event: Event) => flushSync(() => setFault((event as CustomEvent<string>).detail));
     window.addEventListener("fixture-change", change);
     return () => window.removeEventListener("fixture-change", change);
   }, []);

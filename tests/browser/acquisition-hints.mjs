@@ -39,7 +39,7 @@ for(const width of [1440,820,360]) for(const theme of ["light","dark"]) {
     assert.equal(await request.getByRole("button",{name:/Attach reviewed acquisition/}).count(),0);
     assert.equal(await page.locator(".acquisition-guidance").count(),0);
     assert.ok(await overflow(page));await page.screenshot({path:`${output}/requests-pending-${width}-${theme}.png`,fullPage:true});
-    const question=await request.locator("h2").innerText();const checkbox=request.getByRole("checkbox",{name:`${question} Include in Planning Brief`,exact:true});assert.equal(await checkbox.count(),1);
+    const question=await request.locator("h2").innerText();const checkbox=request.getByRole("checkbox",{name:new RegExp(`^${question.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")} Include in (?:Planning )?Brief$`)});assert.equal(await checkbox.count(),1);
     await checkbox.uncheck();assert.equal(await checkbox.isChecked(),false);
     await checkbox.focus();await page.keyboard.press("Space");assert.equal(await checkbox.isChecked(),true);
     await navigate(page,"Planning brief");let brief=await download(page,`selected-${width}-${theme}`);
@@ -57,7 +57,7 @@ for(const width of [1440,820,360]) for(const theme of ["light","dark"]) {
   });
   await check(`synthetic admitted guidance ${width} ${theme}: exact card, disclosures, canonical JSON and print`,async()=>{
     const page=await newPage(width,theme);await page.goto(synthetic);await page.locator("h1").waitFor();await page.evaluate(t=>{document.documentElement.dataset.theme=t;},theme);
-    await page.waitForFunction(t=>getComputedStyle(document.querySelector(".acquisition-guidance")).color === (t === "dark" ? "rgb(242, 244, 241)" : "rgb(24, 53, 75)"),theme);
+    await page.waitForFunction(t=>getComputedStyle(document.querySelector(".acquisition-guidance")).color === (t === "dark" ? "rgb(242, 245, 255)" : "rgb(16, 27, 50)"),theme);
     assert.equal(await page.getByRole("region",{name:"Reviewed acquisition guidance",exact:true}).count(),2);
     for (const name of ["Invalid optional guidance fixture","Stale optional guidance fixture"]) {
       const region=page.getByRole("region",{name,exact:true});

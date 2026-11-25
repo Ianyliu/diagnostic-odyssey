@@ -87,14 +87,9 @@ test("medical route composes Candidate A only as separate secondary evidence", (
   assert.match(component, /aria-labelledby="linked-condition-secondary-heading"/);
   assert.match(component, /<details className="technical-disclosure/);
   assert.match(component, /<summary>/);
-  assert.match(
-    component,
-    /Reviewed documentation-linked service-use evidence is unavailable\./
-  );
+  assert.match(component, /Reviewed documentation-linked service-use evidence is unavailable\./);
   assert.doesNotMatch(component, /tooltip|onMouseEnter|onMouseOver/i);
-
-  assert.match(styles, /\.linked-condition-secondary-evidence\{/);
-  assert.match(styles, /@media\(max-width:640px\).*linked-condition-secondary-measure/s);
+  assert.match(styles, /@media \(max-width: 720px\)/);
 });
 
 test("active runtime view model contains no non-A candidate or generic Estimate semantics", () => {

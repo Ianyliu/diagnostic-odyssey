@@ -16,7 +16,7 @@ test("AppShell exposes a working skip link and focusable main target", () => {
 test("unexpected render failures use an accessible evidence-honest fallback", () => {
   const boundary = readSource("../src/components/ErrorBoundary.tsx");
   const app = readSource("../src/App.tsx");
-  assert.match(app, /<ErrorBoundary><ArtifactProvider>/);
+  assert.match(app, /<ErrorBoundary>\s*<ArtifactProvider>/);
   assert.match(boundary, /className="skip-link" href="#main-content"/);
   assert.match(boundary, /<main id="main-content"[^>]*tabIndex=\{-1\}/);
   assert.match(boundary, /role="alert"/);
@@ -34,9 +34,7 @@ test("Planning Brief print contract hides chrome but retains substantive content
   assert.match(styles, /@media print/);
   for (const selector of [
     "\\.site-header",
-    "\\.prototype-strip",
-    "footer",
-    "\\.planning-brief-page>\\.context-bar",
+    "\\.site-footer",
     "\\.brief-export-actions"
   ]) {
     assert.match(styles, new RegExp(selector));
@@ -45,9 +43,7 @@ test("Planning Brief print contract hides chrome but retains substantive content
   assert.match(tokens, /@media print\s*\{\s*:root,\s*:root\[data-theme="dark"\]\s*\{/);
   assert.match(tokens, /--do-canvas:\s*#ffffff/);
   assert.match(briefStyles, /@media print\s*\{/);
-  assert.match(briefStyles, /\.planning-brief-page \.brief-burden-table-wrap\s*\{\s*overflow:\s*visible/);
   assert.match(briefStyles, /\.planning-brief-page \.brief-burden-table\s*\{[^}]*table-layout:\s*fixed/);
-  assert.match(briefStyles, /\.planning-brief-page \.brief-burden-group,[\s\S]*?break-inside:\s*auto/);
   assert.match(briefStyles, /\.planning-brief-page \.brief-burden-details::details-content\s*\{\s*content-visibility:\s*visible\s*!important/);
   assert.match(brief, /className="print-provenance"/);
   assert.match(brief, /National reviewed artifact:<\/b> \{brief\.artifact_version\}/);
@@ -65,23 +61,22 @@ test("JSON companion remains derived from the same gated brief object and artifa
   assert.match(brief, /withStaleSelectedDataRequestWarning/);
 });
 
-test("shell keeps navigation and context available at narrow widths without sticky overlap", () => {
+test("shell keeps navigation and editions available at narrow widths without sticky overlap", () => {
   const shell = readSource("../src/components/AppShell.tsx");
   const workspace = readSource("../src/workspace.css");
   const styles = readSource("../src/styles.css");
   const main = readSource("../src/main.tsx");
 
   assert.match(shell, /aria-expanded=\{menuOpen\}/);
-  assert.match(shell, /aria-controls="workspace-tools"/);
+  assert.match(shell, /aria-controls="primary-navigation workspace-tools"/);
   assert.match(shell, /event\.key !== "Escape"/);
   assert.match(shell, /menuToggle\.current\?\.focus\(\)/);
-  assert.match(workspace, /@media \(max-width: 767px\)\s*\{/);
-  assert.match(workspace, /\.primary-nav\.open\s*\{[^}]*display:\s*grid/);
-  assert.match(workspace, /\.context-bar\s*\{[^}]*grid-template-columns:\s*1fr;[^}]*overflow:\s*visible;[^}]*white-space:\s*normal/);
-  assert.match(workspace, /@media \(min-width: 1200px\) and \(min-height: 800px\)\s*\{/);
+  assert.match(shell, /<EditionDrawer/);
+  assert.match(workspace, /@media \(max-width: 820px\)\s*\{/);
+  assert.match(workspace, /\.primary-nav\.open\s*\{[\s\S]*?display:\s*grid/);
   assert.ok(main.indexOf('import "./styles.css"') < main.indexOf('import "./workspace.css"'));
-  assert.match(styles, /@media\(prefers-reduced-motion:reduce\)/);
-  assert.match(styles, /scroll-behavior:auto!important/);
+  assert.match(styles, /@media \(prefers-reduced-motion: reduce\)/);
+  assert.match(styles, /scroll-behavior:\s*auto\s*!important/);
 });
 
 test("focusable Brief burden tables expose a named scroll region and table caption", () => {

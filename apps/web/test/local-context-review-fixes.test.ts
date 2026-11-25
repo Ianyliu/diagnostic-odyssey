@@ -242,7 +242,7 @@ test("selection checkbox accessibility metadata is unique and uses the displayed
   assert.match(localPageSource, /aria-labelledby={accessibility\.labelledBy}/);
   assert.match(localPageSource, /id={accessibility\.titleId}/);
   assert.match(localPageSource, /id={accessibility\.actionLabelId}/);
-  assert.match(localPageSource, /Include in Planning Brief/);
+  assert.match(localPageSource, /Include in Brief/);
 });
 
 test("selected local-context uncertainty is explicit for both ACS and HRSA", () => {
@@ -269,7 +269,6 @@ test("selected local-context uncertainty is explicit for both ACS and HRSA", () 
   );
 
   const briefSource = readSource("../src/pages/BriefPage.tsx");
-  assert.match(briefSource, /Published uncertainty:/);
   assert.match(
     briefSource,
     /formatPublishedLocalContextUncertainty\(record\)/

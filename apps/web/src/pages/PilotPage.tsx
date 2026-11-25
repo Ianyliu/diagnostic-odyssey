@@ -1,13 +1,9 @@
-import { formatPlanningCurrency, formatPlanningNumber } from "../data/planningNumberFormatting.ts";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { formatPlanningCurrency, formatPlanningNumber, formatPlanningPercent, isScientificNotationText } from "../data/planningNumberFormatting.ts";
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { Link, useLocation } from "react-router-dom";
 import type { Scenario, ScenarioResult } from "@diagnostic-odyssey/contracts";
-import { WorkspaceDisclosure } from "../components/WorkspaceDisclosure";
-import { SensitivityPreview } from "../components/SensitivityPreview";
-import { formatAppliedAssumption } from "./briefAssumptions";
-import { ContextBar } from "../components/ContextBar";
+import { DetailDrawer } from "../components/DetailDrawer";
 import { DecisionTrace } from "../components/DecisionTrace";
-import { InterpretationGuide } from "../components/InterpretationGuide";
 import { PilotDecisionVisuals } from "../components/PilotDecisionVisuals";
 import { SensitivityExplorer } from "../components/SensitivityExplorer";
 import { useArtifact } from "../data/ArtifactContext";
@@ -30,72 +26,106 @@ import {
 import { getPilotFragmentTargetId } from "../data/pilotFragmentScroll";
 import { formatLocalContextValue } from "../data/formatLocalContextValue";
 import { formatPublishedLocalContextUncertainty } from "../data/localContextPresentation";
-import {
-  PLANNING_DEFAULTS_DESCRIPTION,
-  PLANNING_DEFAULTS_LABEL
-} from "../data/planningScenarioDefaults";
+import { PILOT_STRATEGY_PRESETS, type PilotStrategyPreset } from "../data/planningScenarioDefaults";
+import { buildScenarioComparisonRows, presetMatchesScenario } from "../data/scenarioComparison";
 import { getPathwayBoundaryPresentation } from "../data/pathwayBoundary";
+import { formatAppliedAssumption } from "./briefAssumptions";
 import "./PilotPage.css";
 
 const resultNumber = new Intl.NumberFormat("en-US");
 
-const assumptionGroups: ReadonlyArray<{
-  title: string;
-  description: string;
-  fields: readonly PilotNumericField[];
-}> = [
-  {
-    title: "Population and reach",
-    description: "Who the pilot could serve, and the share it intends to reach.",
-    fields: ["eligible_population", "reach"]
-  },
-  {
-    title: "Delivery and timing",
-    description: "Operational capacity and the recognition windows used in the scenario.",
-    fields: ["capacity", "baseline_window_months", "alternative_window_months", "horizon_months"]
-  },
-  {
-    title: "Program resources",
-    description: "Budget inputs for this planning scenario; these are not savings or ROI.",
-    fields: ["fixed_cost", "per_participant_cost"]
-  }
+interface SliderSpec {
+  key: PilotNumericField;
+  shortLabel: string;
+  min: number;
+  max: number;
+  step: number;
+}
+
+const SLIDERS: readonly SliderSpec[] = [
+  { key: "reach", shortLabel: "Intended reach", min: 0, max: 100, step: 1 },
+  { key: "capacity", shortLabel: "Program capacity", min: 200, max: 8000, step: 100 },
+  { key: "alternative_window_months", shortLabel: "Planning recognition window", min: 1, max: 12, step: 1 },
+  { key: "per_participant_cost", shortLabel: "Cost per participant", min: 50, max: 1000, step: 25 }
 ];
 
-export function PilotPage() {
-  const {scenario, scenarioResult} = useArtifact();
+const EXTRA_FIELDS: readonly PilotNumericField[] = [
+  "eligible_population",
+  "baseline_window_months",
+  "horizon_months",
+  "fixed_cost"
+];
+
+function renderPlanningText(text: string) {
+  return isScientificNotationText(text) ? <span className="scientific-value">{text}</span> : text;
+}
+
+type BottomTab = "sensitivity" | "compare" | "quantities" | "context";
+const BOTTOM_TABS: readonly { id: BottomTab; label: string }[] = [
+  { id: "sensitivity", label: "Sensitivity" },
+  { id: "compare", label: "Compare Strategies" },
+  { id: "quantities", label: "All Quantities" },
+  { id: "context", label: "Context & Requests" }
+];
+
+function formatSignedDelta(value: number | null, isCurrency = false): string | null {
+  if (value === null || value === 0 || !Number.isFinite(value)) return null;
+  const sign = value > 0 ? "+" : "−";
+  const absText = isCurrency
+    ? formatPlanningCurrency(Math.abs(value))
+    : formatPlanningNumber(Math.abs(value), resultNumber);
+  return `${sign}${absText}`;
+}
+
+export function PilotPage({ advisorAvailable = false }: { advisorAvailable?: boolean }) {
+  const { scenario, scenarioResult } = useArtifact();
   const location = useLocation();
   const sensitivityReady = scenario !== null && scenarioResult !== null;
 
   useEffect(() => {
     const targetId = getPilotFragmentTargetId(location.hash);
     if (!targetId || !sensitivityReady) return;
-    document.getElementById(targetId)?.scrollIntoView({block: "start"});
+    requestAnimationFrame(() => {
+      document.getElementById(targetId)?.scrollIntoView({ block: "start" });
+    });
   }, [location.hash, sensitivityReady]);
 
   if (!scenario || !scenarioResult) {
-    return <section className="page page-stack">
-      <ContextBar />
-      <header className="page-heading">
-        <p className="eyebrow">PILOT PLANNER</p>
-        <h1>Scope a feasible pilot</h1>
-        <p>Planning assumptions are currently unavailable or invalid. Reviewed national burden remains available; no causal effect or savings estimate is inferred.</p>
-      </header>
-      <div className="empty-state">
-        <strong>No valid planning scenario result is available.</strong>
-        <p>Planning inputs are separate from reviewed analytical evidence and can be restored without changing the MEPS burden artifact.</p>
-      </div>
-    </section>;
+    return (
+      <section className="page page-stack">
+        <header className="page-heading">
+          <p className="eyebrow">03 · STRATEGY LAB</p>
+          <h1>Scope a feasible pilot</h1>
+          <p>Planning assumptions are unavailable or invalid.</p>
+        </header>
+        <div className="empty-state">
+          <strong>No valid scenario result is available.</strong>
+          <p>National burden evidence remains unaffected.</p>
+        </div>
+      </section>
+    );
   }
 
-  return <PilotPlannerWorkspace scenario={scenario} scenarioResult={scenarioResult} />;
+  return (
+    <PilotPlannerWorkspace
+      scenario={scenario}
+      scenarioResult={scenarioResult}
+      advisorAvailable={advisorAvailable}
+      hash={location.hash}
+    />
+  );
 }
 
 function PilotPlannerWorkspace({
   scenario,
-  scenarioResult
+  scenarioResult,
+  advisorAvailable,
+  hash
 }: {
   scenario: Scenario;
   scenarioResult: ScenarioResult;
+  advisorAvailable: boolean;
+  hash: string;
 }) {
   const {
     bundle,
@@ -108,8 +138,20 @@ function PilotPlannerWorkspace({
     localContextStatus,
     clearPilotLocalContext
   } = useArtifact();
-  // Keep unfinished edits in the workspace across route changes. Only a valid
-  // candidate updates the applied scenario used by the Brief and its exports.
+
+  const [bottomTab, setBottomTab] = useState<BottomTab>(() =>
+    hash === "#pilot-context" ? "context" : "sensitivity"
+  );
+  const [boundaryOpen, setBoundaryOpen] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
+  const [inspectorOpen, setInspectorOpen] = useState(false);
+  const tabButtonRefs = useRef<Partial<Record<BottomTab, HTMLButtonElement | null>>>({});
+
+  useEffect(() => {
+    if (getPilotFragmentTargetId(hash) === "sensitivity") setBottomTab("sensitivity");
+    if (hash === "#pilot-context") setBottomTab("context");
+  }, [hash]);
+
   const draft: PilotInputDraft = pilotInputDraft ?? createPilotInputDraft(scenario);
   const evaluation = useMemo(
     () => evaluatePilotInputDraft(draft, scenario),
@@ -134,12 +176,22 @@ function PilotPlannerWorkspace({
   }, [scenarioResult]);
 
   const updateDraft = (key: PilotNumericField, raw: string) => {
-    const nextDraft = {...draft, [key]: raw};
+    const nextDraft = { ...draft, [key]: raw };
     setPilotInputDraft(nextDraft);
     const nextEvaluation = evaluatePilotInputDraft(nextDraft, scenario);
     if (nextEvaluation.candidate) {
       setScenario(nextEvaluation.candidate);
     }
+  };
+
+  const applyPreset = (preset: PilotStrategyPreset) => {
+    const nextScenario: Scenario = {
+      ...scenario,
+      ...preset.values,
+      scenario_id: preset.id
+    };
+    setPilotInputDraft(createPilotInputDraft(nextScenario));
+    setScenario(nextScenario);
   };
 
   const addSensitivityDataRequest = (field: SensitivityField) => {
@@ -149,185 +201,554 @@ function PilotPlannerWorkspace({
   const sensitivityDataRequestStatus = (field: SensitivityField) =>
     getSensitivityDataRequestStatus(scenario, field, analystDataRequests);
 
-  return <section className="page page-stack pilot-page">
-    <ContextBar />
-    <div className="heading-row">
-      <header className="page-heading"><p className="eyebrow">PILOT PLANNER</p><h1>Scope a feasible pilot</h1><p>Transparent recognition/navigation arithmetic from analyst-supplied assumptions. This is not a prediction or causal ROI estimate.</p></header>
-      <div className="caution cool"><strong>Plan · Test · Learn</strong><span>Every scenario names the pathway step and mechanism it is allowed to change.</span></div>
-    </div>
-    <nav className="pilot-section-nav" aria-label="Pilot planner sections">
-      <a href="#pilot-assumptions">Assumptions</a>
-      <a href="#pilot-results">Results</a>
-      <a href="#sensitivity">Sensitivity</a>
-    </nav>
-    <div className="pilot-grid">
-      <article id="pilot-results" className="card result-card pilot-summary">
-        <p className="visual-kicker pilot-result-kicker">APPLIED PLANNING SCENARIO</p>
-        <h2>Baseline vs recognition/<wbr />navigation scenario</h2>
-        <p className="subtle">Deterministic planning arithmetic · not observed evidence or an evidence-derived effect</p>
-        {invalidDraft && <div className="draft-not-applied" role="status">
-          <strong>Draft not applied</strong>
-          <span>These results still reflect the last valid planning assumptions. Fix the highlighted inputs to apply this draft.</span>
-        </div>}
-        <WorkspaceDisclosure id="pilot-reading-guide" title="How to read these results"><InterpretationGuide
-          id="pilot-result-interpretation"
-          title="How to read these results"
-          whatThisShows="The mechanical planning consequences of the currently applied assumptions."
-          whyItMatters="Whether intended reach, capacity, recognition-window assumptions, and program resources appear operationally feasible together."
-          whatItDoesNotShow="A forecast, observed improvement, treatment effectiveness, causal effect, savings, or ROI."
-          whatToDoNext={invalidDraft
-            ? "Fix the draft inputs, then stress-test an assumption and create a structured data request where uncertainty matters."
-            : "Stress-test an assumption and create a structured data request where uncertainty matters."}
-        />
-        </WorkspaceDisclosure>
-        <dl className="pilot-headlines" aria-label="Four applied planning quantities">
-          {[
-            ["Participants served within capacity", scenarioResult.reached_participants, false],
-            ["Capacity gap", scenarioResult.capacity_gap, false],
-            ["Person-month exposure difference", scenarioResult.difference_person_months, false],
-            ["Program-resource requirement", scenarioResult.program_resource_requirement, true]
-          ].map(([label, value, isCurrency]) => <div key={String(label)} className={Math.abs(Number(value)) >= 1e12 ? "pilot-headline-scientific" : ""}>
-            <dt>{label}</dt><dd className={Math.abs(Number(value)) >= 1e12 ? "scientific-value" : ""}>{isCurrency ? formatPlanningCurrency(Number(value)) : formatPlanningNumber(Number(value), resultNumber)}</dd>
-          </div>)}
-        </dl>
-        <p className="visual-note">Participants and person-months are modeled planning quantities, not observed improvements or forecasts. Program resources are requirements, not savings or ROI.</p>
-        <div className="pilot-next-actions">
-          {invalidDraft && <p className="field-error">Apply valid planning inputs before continuing from this draft.</p>}
-          {invalidDraft ? <button className="button" type="button" disabled>Review planning brief</button> : <Link className="button" to="/brief">Review planning brief</Link>}
-          <Link className="text-button" to="/data-requests">Review unresolved data needs</Link>
+  const handleTabKeyDown = (event: KeyboardEvent<HTMLButtonElement>, currentId: BottomTab) => {
+    const ids = BOTTOM_TABS.map(t => t.id);
+    const index = ids.indexOf(currentId);
+    let nextIndex = -1;
+    if (event.key === "ArrowRight") nextIndex = (index + 1) % ids.length;
+    else if (event.key === "ArrowLeft") nextIndex = (index - 1 + ids.length) % ids.length;
+    else if (event.key === "Home") nextIndex = 0;
+    else if (event.key === "End") nextIndex = ids.length - 1;
+    if (nextIndex < 0) return;
+    event.preventDefault();
+    const targetId = ids[nextIndex]!;
+    setBottomTab(targetId);
+    tabButtonRefs.current[targetId]?.focus();
+  };
+
+  const showExtraFields =
+    moreOpen ||
+    EXTRA_FIELDS.some(key => Boolean(evaluation.errors[key])) ||
+    Boolean(evaluation.formError);
+
+  return (
+    <section className="page page-stack pilot-page">
+      <div className="atlas-page-top">
+        <header className="page-heading">
+          <p className="eyebrow">03 · STRATEGY LAB</p>
+          <h1>Scope a feasible pilot</h1>
+          <p>Adjust reach, capacity, and costs to see what the pilot would require under your assumptions. These calculations cannot predict effectiveness or savings.</p>
+        </header>
+        <div className="atlas-page-top-actions">
+          <button
+            type="button"
+            className="button secondary"
+            aria-expanded={inspectorOpen}
+            aria-controls={inspectorOpen ? "pilot-decision-inspector" : undefined}
+            onClick={() => setInspectorOpen(open => !open)}
+          >
+            {inspectorOpen ? "Hide inspector" : "Show inspector"}
+          </button>
+          <button
+            type="button"
+            className="button secondary"
+            onClick={() => setBoundaryOpen(true)}
+          >
+            Pathway boundary
+          </button>
         </div>
-        <SensitivityPreview scenario={scenario} paused={invalidDraft} />
-      </article>
-      <div className="pilot-input-column">
-      <form id="pilot-assumptions" className="card assumption-card" onSubmit={event => event.preventDefault()}>
-        <h2>Planning assumptions</h2>
-        <p className="subtle"><strong>{PLANNING_DEFAULTS_LABEL}</strong><br />{PLANNING_DEFAULTS_DESCRIPTION}</p>
-        {assumptionGroups.map((group, index) => <WorkspaceDisclosure id={`pilot-input-group-${index}`} key={group.title}
-          title={group.title} defaultOpen={index === 0}
-          forceOpen={group.fields.some(key => Boolean(evaluation.errors[key])) || Boolean(evaluation.formError)}
-          summary={<span className="pilot-group-values"><span>Applied values</span>{pilotInputFields.filter(field => group.fields.includes(field.key)).map(field =>
-            <span key={field.key}>{field.label}: <strong>{formatAppliedAssumption(scenario, field)}</strong></span>)}</span>}>
-          <fieldset className="pilot-assumption-group">
-          <legend>{group.title}</legend>
-          <p>{group.description}</p>
-          {pilotInputFields.filter(field => group.fields.includes(field.key)).map(field => {
-          const inputId = "pilot-" + field.key;
-          const helperId = inputId + "-helper";
-          const errorId = inputId + "-error";
-          const error = evaluation.errors[field.key];
-          const helper = error ? null : formatPilotInputHelper(field.key, draft[field.key]);
-
-          return <div className="pilot-field" key={field.key}>
-            <label className="pilot-field-label" htmlFor={inputId}>{field.label}</label>
-            <div className="pilot-field-control">
-              <span className={"input-wrap" + (error ? " invalid" : "")}>
-                <input
-                  id={inputId}
-                  type="text"
-                  inputMode="decimal"
-                  value={draft[field.key]}
-                  onChange={event => updateDraft(field.key, event.target.value)}
-                  aria-invalid={Boolean(error)}
-                  aria-describedby={helperId + " " + errorId}
-                />
-                {field.suffix && <small aria-hidden="true">{field.suffix}</small>}
-              </span>
-              <span id={helperId} className="input-helper">{helper}</span>
-              <span id={errorId} className="field-error" aria-live="polite">{error ?? ""}</span>
-            </div>
-          </div>;
-        })}
-        </fieldset></WorkspaceDisclosure>)}
-        {evaluation.formError && <p className="field-error form-error" aria-live="polite">{evaluation.formError}</p>}
-      </form>
-        <section className="pathway-boundary" aria-labelledby="pilot-pathway-boundary-title">
-          <div>
-            <p className="visual-kicker">SCIENTIFIC BOUNDARY</p>
-            <h2 id="pilot-pathway-boundary-title">Modeled pathway boundary</h2>
-          </div>
-          <dl className="pathway-boundary-facts">
-            <div><dt>Target step</dt><dd>{pathwayBoundary.pathwayStepLabel}</dd></div>
-            <div><dt>Assumed mechanism</dt><dd>{pathwayBoundary.mechanismLabel}</dd></div>
-          </dl>
-          <p>{pathwayBoundary.modeledBoundaryStatement}</p>
-          <p>{pathwayBoundary.assumptionBoundaryStatement}</p>
-          <p><strong>Outside this model:</strong> {pathwayBoundary.outsideModelItems.join("; ")}.</p>
-          <div className="pathway-boundary-actions" role="group" aria-label="Pathway boundary follow-up">
-            <Link className="text-button" to="/pilot#sensitivity">Stress-test these assumptions</Link>
-            <Link className="text-button" to="/evidence">Review evidence limits</Link>
-          </div>
-        </section>
       </div>
-      <article className="card result-card pilot-detail-results">
-        <h2>Decision visuals &amp; sensitivity</h2>
-        <PilotDecisionVisuals scenario={scenario} result={scenarioResult} />
-        <WorkspaceDisclosure id="pilot-all-results" title="All modeled quantities">
-        <dl className="result-list pilot-result-ledger">
-          <div className={Math.abs(scenarioResult.intended_reach) >= 1e12 ? "pilot-result-scientific" : undefined}><dt>Intended reach</dt><dd>{formatPlanningNumber(scenarioResult.intended_reach, resultNumber)}</dd></div>
-          <div className={Math.abs(scenarioResult.reached_participants) >= 1e12 ? "pilot-result-scientific" : undefined}><dt>Reached participants</dt><dd>{formatPlanningNumber(scenarioResult.reached_participants, resultNumber)}</dd></div>
-          <div className={Math.abs(scenarioResult.capacity_gap) >= 1e12 ? "pilot-result-scientific" : undefined}><dt>Capacity gap</dt><dd>{formatPlanningNumber(scenarioResult.capacity_gap, resultNumber)}</dd></div>
-          <div className={Math.abs(scenarioResult.baseline_person_months) >= 1e12 ? "pilot-result-scientific" : undefined}><dt>Baseline person-month exposure</dt><dd>{formatPlanningNumber(scenarioResult.baseline_person_months, resultNumber)}</dd></div>
-          <div className={Math.abs(scenarioResult.alternative_person_months) >= 1e12 ? "pilot-result-scientific" : undefined}><dt>Planning person-month exposure</dt><dd>{formatPlanningNumber(scenarioResult.alternative_person_months, resultNumber)}</dd></div>
-          <div className={Math.abs(scenarioResult.difference_person_months) >= 1e12 ? "pilot-result-scientific" : undefined}><dt>Difference in person-month exposure</dt><dd>{formatPlanningNumber(scenarioResult.difference_person_months, resultNumber)}</dd></div>
-          <div className={Math.abs(scenarioResult.program_resource_requirement) >= 1e12 ? "pilot-result-scientific" : undefined}><dt>Program-resource requirement</dt><dd>{formatPlanningCurrency(scenarioResult.program_resource_requirement)}</dd></div>
-        </dl>
-        </WorkspaceDisclosure>
-        <div className="sr-only" aria-live="polite" aria-atomic="true">{resultAnnouncement}</div>
-        {invalidDraft ? <section id="sensitivity" className="sensitivity-paused-state" aria-labelledby="sensitivity-paused-title">
-          <h3 id="sensitivity-paused-title">Sensitivity analysis paused</h3>
-          <p>Fix the Pilot planner inputs before running sensitivity analysis or creating data requests.</p>
-        </section> : <SensitivityExplorer
-          scenario={scenario}
-          onUpsertDataRequest={addSensitivityDataRequest}
-          dataRequestStatus={sensitivityDataRequestStatus}
-        />}
-        <div className="guardrail compact"><strong>Not savings or ROI.</strong><p>The resource requirement is a program input. The person-month difference is a planning exposure quantity, not observed improvement.</p></div>
-        <p className="pilot-request-loop">An assumption still needs checking? <Link to="/data-requests">Review data requests</Link> before finalizing your brief. <Link to="/evidence">Intervention evidence &amp; limits</Link>.</p>
-      </article>
-    </div>
 
-        <section id="pilot-context" className="pilot-local-context" aria-labelledby="pilot-local-context-title">
-          <div className="pilot-local-context-heading">
-            <div>
-              <p className="visual-kicker">ANALYST-SELECTED CONTEXT</p>
-              <h2 id="pilot-local-context-title">Local planning context</h2>
-            </div>
-            <Link className="text-button" to="/local-context">
-              {pilotLocalContext ? "Replace in Local Context" : "Review Local Context"}
-            </Link>
+      <nav className="atlas-section-jump" aria-label="Strategy Lab sections">
+        <a className="text-button" href="#pilot-assumptions">Assumptions</a>
+        <a className="text-button" href="#pilot-results">Outputs</a>
+        <a
+          className="text-button"
+          href="#sensitivity"
+          onClick={() => setBottomTab("sensitivity")}
+        >
+          Sensitivity
+        </a>
+      </nav>
+
+      {/* Three-region workspace */}
+      <div className={`atlas-studio-grid${inspectorOpen ? "" : " is-inspector-collapsed"}`}>
+        {/* Region 1: Presets + Sliders */}
+        <form id="pilot-assumptions" className="card atlas-studio-controls" onSubmit={event => event.preventDefault()}>
+          <div className="atlas-presets" role="group" aria-label="Strategy presets">
+            {PILOT_STRATEGY_PRESETS.map(preset => {
+              const active = presetMatchesScenario(preset, scenario);
+              return (
+                <button
+                  key={preset.id}
+                  type="button"
+                  aria-pressed={active}
+                  className={`atlas-preset-card${active ? " is-active" : ""}`}
+                  onClick={() => applyPreset(preset)}
+                >
+                  <strong>{preset.label}</strong>
+                  <span>{preset.summary}</span>
+                </button>
+              );
+            })}
           </div>
-          {pilotLocalContext ? <>
-            <div className="pilot-local-context-record">
-              <strong>{pilotLocalContext.label}</strong>
-              <span className="pilot-local-context-value">{formatLocalContextValue(pilotLocalContext)}</span>
-              <span>{pilotLocalContext.geography_name} ({pilotLocalContext.geography_type})</span>
-              <span><b>Source:</b> {pilotLocalContext.source_agency} · {pilotLocalContext.source_release_vintage}</span>
-              <span><b>Published uncertainty:</b> {formatPublishedLocalContextUncertainty(pilotLocalContext)}</span>
-              <span><b>Allowed interpretation:</b> {pilotLocalContext.allowed_interpretation}</span>
-            </div>
-            <div className="pilot-local-context-actions">
-              <button className="text-button" type="button" onClick={clearPilotLocalContext}>Remove from Pilot</button>
-            </div>
-          </> : <div className="empty-state compact">
-            <strong>No local implementation context is currently attached to this Pilot scenario.</strong>
-            <p>Absence of a selected record does not mean there is no implementation constraint.</p>
-          </div>}
-          <p className="subtle">
-            Reviewed local implementation context is for analyst judgment only. Attaching, replacing, or removing it does not alter reach, capacity, timing, cost, pathway, or mechanism parameters.
-          </p>
-        </section>
 
-        <WorkspaceDisclosure id="pilot-decision-details" title="Follow the decision trace"><section id="pilot-trace" className="pilot-decision-trace" aria-labelledby="pilot-decision-trace-title">
-          <h2 id="pilot-decision-trace-title">Decision trace</h2>
-          <DecisionTrace
-            burdenEstimateCount={burdenEstimateCount}
-            pilotLocalContext={pilotLocalContext}
-            localContextStatus={localContextStatus}
-            scenario={scenario}
-            currentDataRequestCount={currentOperationalDataRequests.length}
-            evidence={bundle?.evidence ?? []}
-            dataRequestHref="/pilot#sensitivity"
-          />
-        </section></WorkspaceDisclosure>
-  </section>;
+          <div className="atlas-slider-stack">
+            {SLIDERS.map(spec => {
+              const field = pilotInputFields.find(item => item.key === spec.key)!;
+              const inputId = `pilot-${spec.key}`;
+              const rangeId = `${inputId}-range`;
+              const helperId = `${inputId}-helper`;
+              const errorId = `${inputId}-error`;
+              const error = evaluation.errors[spec.key];
+              const helper = error ? null : formatPilotInputHelper(spec.key, draft[spec.key]);
+              const numericVal = Number(draft[spec.key]);
+              const appliedNumeric = spec.key === "reach" ? scenario.reach * 100 : scenario[spec.key];
+              const appliedSliderVal = Number.isFinite(appliedNumeric)
+                ? Math.min(spec.max, Math.max(spec.min, appliedNumeric))
+                : spec.min;
+              const sliderDecoupled = Boolean(error) || !Number.isFinite(numericVal);
+              const sliderVal = sliderDecoupled
+                ? appliedSliderVal
+                : Math.min(spec.max, Math.max(spec.min, numericVal));
+              const describedBy = [helper ? helperId : null, error ? errorId : null]
+                .filter(Boolean)
+                .join(" ") || undefined;
+
+              return (
+                <div className="atlas-slider-row" key={spec.key}>
+                  <div className="atlas-slider-head">
+                    <label htmlFor={inputId}>{spec.shortLabel}</label>
+                    <div className={`input-wrap atlas-slider-num${error ? " invalid" : ""}`}>
+                      <input
+                        id={inputId}
+                        type="text"
+                        inputMode="decimal"
+                        value={draft[spec.key]}
+                        onChange={event => updateDraft(spec.key, event.target.value)}
+                        aria-invalid={Boolean(error)}
+                        aria-label={field.label}
+                        aria-describedby={describedBy}
+                      />
+                      {field.suffix && <small aria-hidden="true">{field.suffix}</small>}
+                    </div>
+                  </div>
+                  <input
+                    id={rangeId}
+                    type="range"
+                    className={`atlas-range${sliderDecoupled ? " is-decoupled" : ""}`}
+                    min={spec.min}
+                    max={spec.max}
+                    step={spec.step}
+                    value={sliderVal}
+                    aria-label={`${field.label} slider`}
+                    onChange={event => updateDraft(spec.key, event.target.value)}
+                  />
+                  {helper && <small id={helperId} className="subtle">{helper}</small>}
+                  {sliderDecoupled && (
+                    <small className="subtle">Slider reflects last applied scenario until draft is fixed.</small>
+                  )}
+                  {error && <span id={errorId} className="field-error" aria-live="polite">{error}</span>}
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="atlas-more-params">
+            <button
+              type="button"
+              className="text-button"
+              onClick={() => setMoreOpen(open => !open)}
+              aria-expanded={showExtraFields}
+            >
+              {showExtraFields ? "Hide base parameters" : "More parameters (Population, Horizon, Fixed cost)"}
+            </button>
+
+            {showExtraFields && (
+              <div className="atlas-extra-grid">
+                {EXTRA_FIELDS.map(key => {
+                  const field = pilotInputFields.find(item => item.key === key)!;
+                  const inputId = `pilot-${key}`;
+                  const helperId = `${inputId}-helper`;
+                  const errorId = `${inputId}-error`;
+                  const error = evaluation.errors[key];
+                  const helper = error ? null : formatPilotInputHelper(key, draft[key]);
+                  const describedBy = [helper ? helperId : null, error ? errorId : null]
+                    .filter(Boolean)
+                    .join(" ") || undefined;
+                  return (
+                    <div className="atlas-extra-field" key={key}>
+                      <label htmlFor={inputId}>{field.label}</label>
+                      <div className={`input-wrap atlas-slider-num${error ? " invalid" : ""}`}>
+                        <input
+                          id={inputId}
+                          type="text"
+                          inputMode="decimal"
+                          value={draft[key]}
+                          onChange={event => updateDraft(key, event.target.value)}
+                          aria-invalid={Boolean(error)}
+                          aria-describedby={describedBy}
+                        />
+                        {field.suffix && <small aria-hidden="true">{field.suffix}</small>}
+                      </div>
+                      {helper && !error && <small id={helperId} className="subtle">{helper}</small>}
+                      {error && <span id={errorId} className="field-error" aria-live="polite">{error}</span>}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {evaluation.formError && (
+            <p className="field-error form-error" aria-live="polite">{evaluation.formError}</p>
+          )}
+        </form>
+
+        {/* Region 2: Applied Calculations & Visuals */}
+        <article id="pilot-results" className="card atlas-studio-output">
+          {invalidDraft && (
+            <div className="caution draft-not-applied" role="status">
+              <strong>Draft not applied</strong>
+              <span>Showing last valid planning assumptions.</span>
+            </div>
+          )}
+
+          <dl className="atlas-kpi-grid pilot-headlines" aria-label="Four applied planning quantities">
+            <div className="atlas-kpi">
+              <dt>Participants served</dt>
+              <dd>{renderPlanningText(formatPlanningNumber(scenarioResult.reached_participants, resultNumber))}</dd>
+            </div>
+            <div className={`atlas-kpi${scenarioResult.capacity_gap > 0 ? " is-gap" : ""}`}>
+              <dt>Capacity gap</dt>
+              <dd>{renderPlanningText(formatPlanningNumber(scenarioResult.capacity_gap, resultNumber))}</dd>
+            </div>
+            <div className="atlas-kpi">
+              <dt>Exposure difference</dt>
+              <dd>{renderPlanningText(formatPlanningNumber(scenarioResult.difference_person_months, resultNumber))} pm</dd>
+            </div>
+            <div className="atlas-kpi">
+              <dt>Resource requirement</dt>
+              <dd>{renderPlanningText(formatPlanningCurrency(scenarioResult.program_resource_requirement))}</dd>
+            </div>
+          </dl>
+
+          <PilotDecisionVisuals scenario={scenario} result={scenarioResult} />
+
+          <div className="atlas-output-footer">
+            <p className="micro-caption">Planning math · Not savings or ROI.</p>
+            <div className="atlas-output-actions">
+              {invalidDraft ? (
+                <button className="button" type="button" disabled>Open Brief</button>
+              ) : (
+                <Link className="button" to="/brief">Open Planning Brief →</Link>
+              )}
+            </div>
+          </div>
+
+          <div className="sr-only" aria-live="polite" aria-atomic="true">{resultAnnouncement}</div>
+        </article>
+
+        {/* Region 3: Collapsible Contextual Decision Inspector */}
+        {inspectorOpen && (() => {
+          const roundedCap = Math.max(0, Math.round(scenario.capacity));
+          const unusedSlots = Math.max(0, roundedCap - scenarioResult.reached_participants);
+          const windowDelta = scenario.baseline_window_months - scenario.alternative_window_months;
+          return (
+            <aside id="pilot-decision-inspector" className="card atlas-decision-inspector" aria-labelledby="pilot-inspector-title">
+              <header>
+                <p className="eyebrow">DECISION INTELLIGENCE</p>
+                <h2 id="pilot-inspector-title">Scenario boundary &amp; gap checks</h2>
+                <p className="subtle">Rule-based checks on the applied scenario, not AI predictions or forecasts.</p>
+              </header>
+              <div className="atlas-inspector-item">
+                <h3>Capacity &amp; reach</h3>
+                {invalidDraft ? (
+                  <p>Draft inputs contain validation errors; cards and counts reflect the last valid scenario.</p>
+                ) : scenarioResult.capacity_gap > 0 ? (
+                  <p>
+                    <strong>{formatPlanningNumber(scenarioResult.capacity_gap, resultNumber)}</strong> intended participants exceed assumed capacity ({formatPlanningNumber(scenarioResult.intended_reach, resultNumber)} intended vs. {formatPlanningNumber(roundedCap, resultNumber)} effective slots).
+                  </p>
+                ) : (
+                  <p>
+                    Assumed capacity ({formatPlanningNumber(roundedCap, resultNumber)} effective slots) covers all {formatPlanningNumber(scenarioResult.intended_reach, resultNumber)} intended participants ({formatPlanningNumber(unusedSlots, resultNumber)} unused slots). Real-world staffing feasibility remains unverified.
+                  </p>
+                )}
+              </div>
+              <div className="atlas-inspector-item">
+                <h3>Window &amp; cost boundaries</h3>
+                <p>
+                  Recognition window assumption shifts {scenario.baseline_window_months} → {scenario.alternative_window_months} mo (−{windowDelta} mo; {formatPlanningNumber(scenarioResult.difference_person_months, resultNumber)} pm exposure difference). Resource split: {formatPlanningCurrency(scenarioResult.fixed_program_cost)} fixed + {formatPlanningCurrency(scenarioResult.variable_program_cost)} variable; capacity expansion cost is excluded.
+                </p>
+              </div>
+              <div className="atlas-inspector-item">
+                <h3>Implementation context</h3>
+                {pilotLocalContext ? (
+                  <p>
+                    <strong>{pilotLocalContext.label}:</strong>{" "}
+                    <span className="pilot-local-context-value">{formatLocalContextValue(pilotLocalContext)}</span>{" "}
+                    — implementation context only; it never changes the arithmetic.
+                  </p>
+                ) : (
+                  <p>No local indicator attached. Context informs interpretation; it never changes the arithmetic.</p>
+                )}
+                <Link className="text-button" to="/local-context">Inspect local indicators →</Link>
+              </div>
+              <div className="atlas-inspector-item">
+                <h3>Information needs &amp; evidence</h3>
+                <p>
+                  {currentOperationalDataRequests.length} current analyst-generated operational data {currentOperationalDataRequests.length === 1 ? "request" : "requests"} ({bundle?.evidence.length ?? 0} approved intervention-effect records loaded). Requests remain separate from evidence.
+                </p>
+                <Link className="text-button" to="/data-requests">Review requests →</Link>
+              </div>
+              {advisorAvailable && <div className="atlas-inspector-ai">
+                <h3>Strategy AI Studio</h3>
+                <p>Prompt Studio, Illustrative exploration, and gated preview guidance. AI output does not set scenario parameters or establish effectiveness.</p>
+                <Link className="button secondary" to="/advisor">Open Strategy AI Studio →</Link>
+              </div>}
+            </aside>
+          );
+        })()}
+      </div>
+
+      {/* Bottom Tabs: Sensitivity | All Quantities | Context & Requests */}
+      <div className="atlas-studio-tabs">
+        <div className="atlas-tab-bar" role="tablist" aria-label="Simulator analysis panels">
+          {BOTTOM_TABS.map(tab => (
+            <button
+              key={tab.id}
+              ref={el => { tabButtonRefs.current[tab.id] = el; }}
+              id={`pilot-tab-${tab.id}`}
+              type="button"
+              role="tab"
+              tabIndex={bottomTab === tab.id ? 0 : -1}
+              aria-selected={bottomTab === tab.id}
+              aria-controls={`pilot-panel-${tab.id}`}
+              className={`atlas-tab${bottomTab === tab.id ? " is-active" : ""}`}
+              onKeyDown={event => handleTabKeyDown(event, tab.id)}
+              onClick={() => setBottomTab(tab.id)}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        <div
+          id={`pilot-panel-${bottomTab}`}
+          className="card atlas-tab-panel"
+          role="tabpanel"
+          aria-labelledby={`pilot-tab-${bottomTab}`}
+        >
+          {bottomTab === "sensitivity" && (
+            invalidDraft ? (
+              <section id="sensitivity" className="empty-state" aria-labelledby="sensitivity-paused-title">
+                <h3 id="sensitivity-paused-title">Sensitivity analysis paused</h3>
+                <p>Fix invalid draft inputs before running sensitivity.</p>
+              </section>
+            ) : (
+              <SensitivityExplorer
+                scenario={scenario}
+                onUpsertDataRequest={addSensitivityDataRequest}
+                dataRequestStatus={sensitivityDataRequestStatus}
+              />
+            )
+          )}
+
+          {bottomTab === "compare" && (() => {
+            const rows = buildScenarioComparisonRows(scenario);
+            return (
+              <section id="pilot-compare" className="atlas-compare-panel" aria-labelledby="compare-strategies-title">
+                <div className="atlas-compare-head">
+                  <div>
+                    <p className="visual-kicker">MULTI-SCENARIO COMPARISON</p>
+                    <h3 id="compare-strategies-title">Compare candidate strategies deterministically</h3>
+                  </div>
+                </div>
+                <p className="micro-caption">
+                  Arithmetic comparison across presets and current inputs via the canonical engine. Not observed evidence, effectiveness rankings, or ROI.
+                </p>
+                <p className="micro-caption comparison-cap-note">
+                  When scenarios with different intended reach both exceed the same capacity cap, served participants is capped at capacity (reached = min(intended reach, capacity)), so participant counts and variable resource costs match until capacity increases.
+                </p>
+                <div
+                  className="comparison-table-wrap"
+                  role="region"
+                  aria-labelledby="compare-strategies-title"
+                  tabIndex={0}
+                >
+                  <table className="comparison-table">
+                    <caption className="sr-only">
+                      Deterministic scenario comparison across Strategy Lab presets and current active inputs
+                    </caption>
+                    <thead>
+                      <tr>
+                        <th scope="col">Strategy</th>
+                        <th scope="col">Reach</th>
+                        <th scope="col">Capacity</th>
+                        <th scope="col">Served</th>
+                        <th scope="col">Capacity gap</th>
+                        <th scope="col">Exposure diff.</th>
+                        <th scope="col">Resources</th>
+                        <th scope="col">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {rows.map(row => {
+                        const res = row.result;
+                        const dReached = formatSignedDelta(row.deltaReached);
+                        const dGap = formatSignedDelta(row.deltaGap);
+                        const dExp = formatSignedDelta(row.deltaExposure);
+                        const dCost = formatSignedDelta(row.deltaCost, true);
+                        return (
+                          <tr key={row.id} className={row.isCurrent ? "is-active-row" : undefined}>
+                            <th scope="row">
+                              <span className="comparison-strategy-name">{row.label}</span>
+                              {row.isCurrent && <span className="status status-selection">Active</span>}
+                              <small>{row.summary}</small>
+                            </th>
+                            <td>{formatPlanningPercent(row.scenario.reach)}</td>
+                            <td>{renderPlanningText(formatPlanningNumber(row.scenario.capacity, resultNumber))}</td>
+                            <td>
+                              {res ? (
+                                <>
+                                  {renderPlanningText(formatPlanningNumber(res.reached_participants, resultNumber))}
+                                  {dReached && <small className="comparison-delta">{dReached}</small>}
+                                </>
+                              ) : "Invalid"}
+                            </td>
+                            <td>
+                              {res ? (
+                                <>
+                                  {renderPlanningText(formatPlanningNumber(res.capacity_gap, resultNumber))}
+                                  {dGap && <small className="comparison-delta">{dGap}</small>}
+                                </>
+                              ) : "Invalid"}
+                            </td>
+                            <td>
+                              {res ? (
+                                <>
+                                  {renderPlanningText(formatPlanningNumber(res.difference_person_months, resultNumber))} pm
+                                  {dExp && <small className="comparison-delta">{dExp} pm</small>}
+                                </>
+                              ) : "Invalid"}
+                            </td>
+                            <td>
+                              {res ? (
+                                <>
+                                  {renderPlanningText(formatPlanningCurrency(res.program_resource_requirement))}
+                                  {dCost && <small className="comparison-delta">{dCost}</small>}
+                                </>
+                              ) : "Invalid"}
+                            </td>
+                            <td>
+                              {row.preset ? (
+                                <button
+                                  type="button"
+                                  className="button secondary comparison-load-btn"
+                                  disabled={row.isCurrent}
+                                  onClick={() => applyPreset(row.preset!)}
+                                >
+                                  {row.isCurrent ? "Active" : "Load preset"}
+                                </button>
+                              ) : (
+                                <span className="subtle">Applied</span>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+            );
+          })()}
+
+          {bottomTab === "quantities" && (
+            <div className="atlas-quantities-panel">
+              <dl className="atlas-quantities-list pilot-result-ledger">
+                <div><dt>Intended reach</dt><dd>{renderPlanningText(formatPlanningNumber(scenarioResult.intended_reach, resultNumber))}</dd></div>
+                <div><dt>Reached participants</dt><dd>{renderPlanningText(formatPlanningNumber(scenarioResult.reached_participants, resultNumber))}</dd></div>
+                <div><dt>Capacity gap</dt><dd>{renderPlanningText(formatPlanningNumber(scenarioResult.capacity_gap, resultNumber))}</dd></div>
+                <div><dt>Baseline person-months</dt><dd>{renderPlanningText(formatPlanningNumber(scenarioResult.baseline_person_months, resultNumber))}</dd></div>
+                <div><dt>Planning person-months</dt><dd>{renderPlanningText(formatPlanningNumber(scenarioResult.alternative_person_months, resultNumber))}</dd></div>
+                <div><dt>Difference in person-months</dt><dd>{renderPlanningText(formatPlanningNumber(scenarioResult.difference_person_months, resultNumber))}</dd></div>
+                <div><dt>Program-resource requirement</dt><dd>{renderPlanningText(formatPlanningCurrency(scenarioResult.program_resource_requirement))}</dd></div>
+              </dl>
+              <DecisionTrace
+                burdenEstimateCount={burdenEstimateCount}
+                pilotLocalContext={pilotLocalContext}
+                localContextStatus={localContextStatus}
+                scenario={scenario}
+                currentDataRequestCount={currentOperationalDataRequests.length}
+                evidence={bundle?.evidence ?? []}
+                dataRequestHref="/data-requests"
+              />
+            </div>
+          )}
+
+          {bottomTab === "context" && (
+            <section id="pilot-context" className="atlas-pilot-context">
+              <div className="card-title-row">
+                <div>
+                  <p className="eyebrow">ATTACHED LOCAL CONTEXT</p>
+                  <h3>Local planning context</h3>
+                </div>
+                <Link className="text-button" to="/local-context">
+                  {pilotLocalContext ? "Change in Local context →" : "Select in Local context →"}
+                </Link>
+              </div>
+              {pilotLocalContext ? (
+                <div className="atlas-context-chip-card">
+                  <strong>{pilotLocalContext.label}</strong>
+                  <span>{formatLocalContextValue(pilotLocalContext)}</span>
+                  <small>{pilotLocalContext.geography_name} · {formatPublishedLocalContextUncertainty(pilotLocalContext)}</small>
+                  <button type="button" className="text-button" onClick={clearPilotLocalContext}>
+                    Remove from Strategy Lab
+                  </button>
+                </div>
+              ) : (
+                <p className="subtle">No local indicator attached; context never alters numeric scenario math.</p>
+              )}
+              <div className="atlas-footer-links">
+                <Link className="button secondary" to="/data-requests">
+                  Open Data Requests ({currentOperationalDataRequests.length})
+                </Link>
+              </div>
+            </section>
+          )}
+        </div>
+      </div>
+
+      <DetailDrawer
+        open={boundaryOpen}
+        eyebrow="SCIENTIFIC BOUNDARY"
+        title="Modeled pathway boundary"
+        onClose={() => setBoundaryOpen(false)}
+      >
+        <dl className="atlas-drawer-list">
+          <div>
+            <dt>Target pathway step</dt>
+            <dd>{pathwayBoundary.pathwayStepLabel}</dd>
+          </div>
+          <div>
+            <dt>Assumed mechanism</dt>
+            <dd>{pathwayBoundary.mechanismLabel}</dd>
+          </div>
+          <div>
+            <dt>Modeled boundary</dt>
+            <dd>{pathwayBoundary.modeledBoundaryStatement}</dd>
+          </div>
+          <div>
+            <dt>Assumption limit</dt>
+            <dd>{pathwayBoundary.assumptionBoundaryStatement}</dd>
+          </div>
+          <div>
+            <dt>Outside this model</dt>
+            <dd>{pathwayBoundary.outsideModelItems.join("; ")}.</dd>
+          </div>
+          <div>
+            <dt>Applied values</dt>
+            <dd>
+              <ul className="atlas-compact-list">
+                {pilotInputFields.map(field => (
+                  <li key={field.key}>{field.label}: {formatAppliedAssumption(scenario, field)}</li>
+                ))}
+              </ul>
+            </dd>
+          </div>
+        </dl>
+      </DetailDrawer>
+    </section>
+  );
 }

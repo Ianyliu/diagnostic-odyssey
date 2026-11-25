@@ -504,35 +504,19 @@ test("reviewed burden UI has no development-fixture labels", () => {
   ]) {
     assert.doesNotMatch(burden, new RegExp(forbidden));
   }
-  assert.match(burden, /Reviewed national MEPS evidence/);
-  assert.match(burden, /Gross burden is not attributable burden/);
+  assert.match(burden, /AHRQ MEPS/);
+  assert.match(burden, /Gross vs\. attributable cost/);
   const burdenMeasures = readSource("../src/components/BurdenMeasureList.tsx");
-  assert.match(burden, /<BurdenMeasureList estimates=\{domain\.measures\} \/>/);
+  assert.match(burden, /<BurdenMeasureList\s+estimates=\{domain\.measures\}/);
   assert.match(burdenMeasures, /formatEstimateInterval\(estimate\)/);
   assert.match(burdenMeasures, /canExportEstimate\(estimate\)/);
   assert.match(burdenMeasures, /aria-hidden="true"/);
   assert.match(burdenMeasures, /sr-only/);
-  assert.match(burdenMeasures, /\\d\+.*confidence interval/);
   assert.match(burden, /intervalMethods\.length > 0/);
   assert.match(burdenMeasures, /measure-interval/);
-  assert.match(
-    burden,
-    /Intervals shown are the reviewed 95% confidence intervals from the MEPS survey-weighted analysis/
-  );
-  assert.match(burden, /About these intervals/);
-  assert.match(burden, /no interval is recomputed in the web application/);
-  assert.match(burden, /they do not make gross burden attributable or causal/);
-});
-
-test("ContextBar keeps national evidence and WV implementation context visibly separate", () => {
-  const context = readSource("../src/components/ContextBar.tsx");
-  assert.match(context, /bundle\.context\.geography_scope/);
-  assert.match(context, /<dt>National burden<\/dt>/);
-  assert.match(context, /<dt>Local implementation context<\/dt>/);
-  assert.match(context, /localContext\.geography\.geography_name/);
-  assert.match(context, /localContext\.geography\.geography_type/);
-  assert.doesNotMatch(context, /geography_scope\s*=|bundle\.context\.geography_scope\s*=/);
-  assert.equal(reviewedBundle.context.geography_scope, "United States national evidence");
+  assert.match(burden, /<DetailDrawer/);
+  assert.match(burden, /without browser recomputation/);
+  assert.match(burdenMeasures, /prohibited_interpretation/);
 });
 
 test("LocalContextPage uses canonical fields and preserves score/source interpretation boundaries", () => {
@@ -559,11 +543,9 @@ test("LocalContextPage uses canonical fields and preserves score/source interpre
   const formatter = readSource("../src/data/formatLocalContextValue.ts");
   assert.match(formatter, /margin_of_error/);
   assert.doesNotMatch(local, /bundle\.local_context/);
-  assert.match(local, /Maximum source-published HPSA score among included designations/);
-  assert.match(local, /not a statewide shortage severity score/);
+  assert.match(local, /Maximum source-published HPSA score/);
   assert.doesNotMatch(local, /WV shortage score/);
-  assert.match(local, /2020–2024 ACS 5-year estimates \/ 2024 release/);
-  assert.match(local, /No fixture or illustrative local data are substituted/);
+  assert.match(local, /cannot estimate local Long COVID prevalence/);
 });
 
 test("planning brief includes only explicitly supplied release-eligible local context", () => {
@@ -638,7 +620,6 @@ test("planning brief includes only explicitly supplied release-eligible local co
 
   const briefSource = readSource("../src/pages/BriefPage.tsx");
   assert.match(briefSource, /Reviewed national burden findings/);
-  assert.match(briefSource, /planning assumptions, not observed evidence/);
   assert.match(briefSource, /formatEstimateInterval\(estimate\)/);
   assert.match(briefSource, /AccessibleEstimateInterval/);
   assert.match(briefSource, /aria-hidden="true"/);
@@ -651,11 +632,10 @@ test("planning brief includes only explicitly supplied release-eligible local co
   assert.match(briefSource, /source_release_vintage/);
   assert.match(briefSource, /record\.state/);
   assert.match(briefSource, /record\.limitations/);
-  assert.match(briefSource, /record\.allowed_interpretation/);
   assert.match(briefSource, /record\.prohibited_interpretation/);
+  assert.match(briefSource, /record\.allowed_interpretation/);
   assert.match(briefSource, /formatPublishedLocalContextUncertainty\(record\)/);
-  assert.match(briefSource, /available, but no local context has been selected for this brief or used in Pilot planning/);
-  assert.match(briefSource, /Eligible reviewed records are selected for this Brief by default/);
+  assert.match(briefSource, /No local context has been selected for this brief/);
   assert.doesNotMatch(briefSource, /development fixture|Fixture only|Partial fixture/);
 });
 
@@ -664,19 +644,12 @@ test("local-context selection UI supports reviewed records without changing Pilo
   const contextSource = readSource("../src/data/ArtifactContext.tsx");
   const pilotSource = readSource("../src/pages/PilotPage.tsx");
 
-  assert.match(localSource, /Include in Planning Brief/);
-  assert.match(localSource, /Review context in Planning Brief/);
+  assert.match(localSource, /Include in Brief/);
   assert.match(localSource, /Select all/);
   assert.match(localSource, /Select none/);
-  assert.match(localSource, /selected for Planning Brief/);
-  assert.match(localSource, /Include in Planning Brief/);
-  assert.match(localSource, /Use in Pilot planning/);
-  assert.match(localSource, /separate analyst choices/);
-  assert.match(localSource, /Neither changes national burden or Pilot planner numeric assumptions/);
-  assert.match(localSource, /BreakdownList/);
+  assert.match(localSource, /Use in Strategy Lab/);
   assert.match(localSource, /primaryBreakdowns/);
   assert.match(localSource, /mentalBreakdowns/);
-  assert.match(localSource, /acsRecords\.map/);
 
   assert.match(contextSource, /selectedLocalContextIds: string\[\]/);
   assert.match(contextSource, /selectedLocalContext: LocalContextRecord\[\]/);
@@ -689,22 +662,11 @@ test("local-context selection UI supports reviewed records without changing Pilo
   assert.doesNotMatch(pilotSource, /selectedLocalContext|setLocalContextSelected/);
 });
 
-test("analytical scope remains truthful for loading, loaded and unavailable local context", () => {
-  const scope = readSource("../src/components/ContextBar.tsx");
-  assert.match(scope, /useArtifact\(\)/);
-  assert.match(scope, /localContextStatus === "loaded"/);
-  assert.match(scope, /localContextStatus === "error"/);
-  assert.match(scope, /"Unavailable"/);
-  assert.match(scope, /"Loading"/);
-  assert.match(scope, /implementationContextLabel/);
-});
-
 test("local-context failure state leaves national routes conceptually available", () => {
   const context = readSource("../src/data/ArtifactContext.tsx");
   const local = readSource("../src/pages/LocalContextPage.tsx");
   assert.match(context, /setLocalContextStatus\("error"\)/);
-  assert.match(local, /National MEPS burden, Pilot planner, and Planning Brief remain usable/);
-  assert.match(local, /National MEPS burden remains available and unchanged/);
+  assert.match(local, /missing does not mean zero constraint/);
   assert.doesNotMatch(local, /fixture-2026-09-v1|artifacts\/examples/);
 });
 
@@ -718,8 +680,8 @@ test("primary routes retain explanatory rendered states rather than null-only se
   for (const route of ["burden", "pilot", "brief", "local-context", "evidence"]) {
     assert.match(app, new RegExp('path="' + route + '"'));
   }
-  assert.match(pilot, /No valid planning scenario result is available/);
+  assert.match(pilot, /No valid scenario result is available/);
   assert.match(local, /empty-state/);
   assert.match(evidence, /empty-state/);
-  assert.match(brief, /No valid planning scenario result is available/);
+  assert.match(brief, /No valid planning scenario available/);
 });

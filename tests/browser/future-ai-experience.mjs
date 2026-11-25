@@ -29,7 +29,7 @@ async function ready(page, path = "/concept/future-ai") {
   await page.goto(base + path); await page.locator("main h1").waitFor(); await prepareWorkspace(page);
   if (!disabled && path === "/concept/future-ai") await page.locator(".fc-finding").first().waitFor();
 }
-async function goal(page, name) { await page.getByRole("tab", {name, exact: false}).click(); }
+async function goal(page, name) { await page.locator(".fc-goal-selector").getByRole("tab", {name, exact: false}).click(); }
 async function nav(page, name) { await navigateWorkspace(page, name); }
 async function exportBrief(page, name) {
   await prepareWorkspace(page);
@@ -63,11 +63,11 @@ if (disabled) {
       const page = await ctx.newPage(); await ready(page);
       for (let i = 0; i < goals.length; i++) {
         await goal(page, goals[i]);
-        const panel = page.getByRole("tabpanel");
+        const panel = page.locator("#fc-output");
         assert.equal(await panel.locator("h2").count(), 1);
-        assert.equal(await page.getByRole("tab", {selected: true}).count(), 1);
+        assert.equal(await page.locator(".fc-goal-selector").getByRole("tab", {selected: true}).count(), 1);
         assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
-        assert.equal(await page.locator(".fc-banner").isVisible(), true);
+        assert.equal(await page.locator(".fc-hero-meta").isVisible(), true);
         assert.equal(await panel.locator([".fc-finding", ".fc-study", ".fc-map", ".fc-strategy"][i]).count(), [3, 3, 1, 3][i]);
         await page.evaluate(() => window.scrollTo(0, 0));
         await page.screenshot({path: `${output}/goal-${i + 1}-${width}-${theme}.png`, fullPage: true});
@@ -83,29 +83,34 @@ if (disabled) {
   await check("visitor-controlled preview visibility is reversible within the app without exporting state", async () => {
     const ctx = await context({acceptDownloads: true}); const page = await ctx.newPage();
     await ready(page, "/brief");
-    const toggle = page.getByRole("checkbox", {name: "Show future AI concept", exact: true});
+    const toggle = page.getByRole("checkbox", {name: /(?:Show future AI concept|Show Strategy AI Studio)/});
     assert.equal(await toggle.isChecked(), true);
     await toggle.uncheck();
-    assert.equal(await page.locator('a[href="/concept/future-ai"]').count(), 0);
+    assert.equal(await page.locator('a[href="/concept/future-ai"], a[href="/advisor"]').count(), 0);
     await toggle.check();
-    await page.getByRole("link", {name: "Explore future AI concept" }).click();
-    await page.getByRole("button", {name: "Hide future AI concept", exact: true}).click();
+    await page.getByRole("link", {name: /(?:Explore future AI concept|Open Strategy AI Studio)/}).first().click();
+    await page.getByRole("button", {name: /(?:Hide future AI concept|Hide studio)/}).click();
     await page.waitForURL("**/brief");
     assert.equal(await toggle.isChecked(), false);
     await toggle.check();
-    assert.equal(await page.locator('a[href="/concept/future-ai"]').count(), 1);
+    assert.ok(await page.locator('a[href="/concept/future-ai"], a[href="/advisor"]').count() >= 1);
     return {defaultVisible: true, canHide: true, canRestore: true};
   });
   await check("keyboard goal navigation has one tab stop and meaningful accessible states", async () => {
     const page = await (await context()).newPage(); await ready(page);
-    const first = page.getByRole("tab").first(); await first.focus(); await page.keyboard.press("ArrowRight");
-    assert.equal(await page.getByRole("tab", {selected: true}).getAttribute("id"), "fc-tab-explore_interventions");
-    assert.equal(await page.getByRole("tab", {selected: true}).evaluate(el => el === document.activeElement), true);
-    await page.keyboard.press("End"); assert.match(await page.getByRole("tab", {selected: true}).innerText(), /Compare strategies/);
-    await page.keyboard.press("Home"); assert.match(await page.getByRole("tab", {selected: true}).innerText(), /Explain my Brief/);
-    assert.equal(await page.locator('[role="tab"][tabindex="0"]').count(), 1);
-    await page.keyboard.press("Tab"); assert.equal(await page.getByRole("tabpanel").evaluate(el => el === document.activeElement), true);
-    const semantics = await page.getByRole("tabpanel").ariaSnapshot(); assert.match(semantics, /Current reviewed Brief/);
+    const tabs = page.locator(".fc-goal-selector");
+    const first = tabs.getByRole("tab").first(); await first.focus(); await page.keyboard.press("ArrowRight");
+    assert.equal(await tabs.getByRole("tab", {selected: true}).getAttribute("id"), "fc-tab-explore_interventions");
+    assert.equal(await tabs.getByRole("tab", {selected: true}).evaluate(el => el === document.activeElement), true);
+    await page.keyboard.press("End"); assert.match(await tabs.getByRole("tab", {selected: true}).innerText(), /Compare strategies/);
+    await page.keyboard.press("Home"); assert.match(await tabs.getByRole("tab", {selected: true}).innerText(), /Explain my Brief/);
+    assert.equal(await page.locator('.fc-goal-selector [role="tab"][tabindex="0"]').count(), 1);
+    await page.keyboard.press("Tab");
+    if (!await page.locator("#fc-output").evaluate(el => el === document.activeElement)) {
+      await page.keyboard.press("Tab");
+    }
+    assert.equal(await page.locator("#fc-output").evaluate(el => el === document.activeElement), true);
+    const semantics = await page.locator("#fc-output").ariaSnapshot(); assert.match(semantics, /Current reviewed Brief/);
     await page.getByRole("button", {name: /Examine assumptions/}).click(); assert.match(await page.locator("#fc-role-explanation").innerText(), /deterministic planning/);
   });
   await check("research lenses, topic filter, provenance and investigation disclosures stay unverified", async () => {
@@ -143,7 +148,7 @@ if (disabled) {
     assert.equal(await page.getByRole("checkbox", {name: "Care navigation", exact: true}).isDisabled(), false);
     await page.getByLabel("Comparison lens").selectOption("evidence"); assert.equal(await page.locator("tbody tr").count(), 3);
     assert.match(await page.locator("tbody").innerText(), /No matched comparative estimate/); assert.match(await page.locator("tbody").innerText(), /Not evaluated for local Pilot/);
-    assert.match(await page.locator(".fc-demo-analysis").innerText(), /Not a winner/);
+    assert.match(await page.locator(".fc-comparison").innerText(), /Framework only/);
     assert.equal(await page.locator(".fc-strategy .fc-demo-insight").count(), 2);
     await page.getByText("Inspect transferability questions", {exact: true}).first().click();
     assert.match(await page.locator(".fc-strategy").first().innerText(), /Geography & health system/);
@@ -167,15 +172,15 @@ if (disabled) {
     await request.getByRole("checkbox").check(); const requestBefore = await request.innerText();
     await nav(page, "Planning brief"); const before = await exportBrief(page, "before-exploration");
     assert.equal(before.local_context.length, 1); assert.equal(before.data_requests.length, 1);
-    await page.getByRole("link", {name: "Explore future AI concept"}).click();
+    await page.getByRole("link", {name: /(?:Explore future AI concept|Open Strategy AI Studio)/}).first().click();
     assert.match(await page.locator(".fc-local").innerText(), new RegExp(before.local_context[0].label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
     await page.locator(".fc-finding summary").first().click(); assert.match(await page.locator(".fc-finding").first().innerText(), /Exact locator/);
     for (const name of goals) await goal(page, name);
-    await page.getByRole("link", {name: "Return to assumption-based Pilot"}).click();
+    await page.getByRole("link", {name: /(?:Return to assumption-based Pilot|Return to Simulate)/}).click();
     await nav(page, "Data requests"); assert.equal(await request.innerText(), requestBefore);
     await nav(page, "Planning brief"); assert.deepEqual(await exportBrief(page, "after-exploration"), before);
-    assert.equal(await page.locator(".brief-concept-entry").isVisible(), true);
-    await page.emulateMedia({media: "print"}); assert.equal(await page.locator(".brief-concept-entry a").isVisible(), false);
+    assert.equal(await page.locator(".brief-concept-strip").isVisible(), true);
+    await page.emulateMedia({media: "print"}); assert.equal(await page.locator(".brief-concept-strip a").isVisible(), false);
     await page.pdf({path: `${output}/canonical-brief.pdf`, format: "Letter", printBackground: true});
     return {selectedLocal: 1, selectedRequests: 1, exactCanonicalEquality: true};
   });
@@ -201,7 +206,7 @@ if (disabled) {
     assert.equal(staleWarnings.length, 1);
     const realWarnings = await page.locator("#brief-interpretation-boundaries li").allTextContents();
     assert.deepEqual(realWarnings, before.warnings);
-    await page.getByRole("link", {name: "Explore future AI concept"}).click();
+    await page.getByRole("link", {name: /(?:Explore future AI concept|Open Strategy AI Studio)/}).first().click();
     await page.locator(".fc-boundaries summary").click();
     assert.deepEqual(await page.locator(".fc-boundaries li").allTextContents(), realWarnings);
     await page.evaluate(() => window.scrollTo(0, 0));
@@ -221,7 +226,7 @@ if (disabled) {
     await nav(page, "Planning brief");
     const deselected = await exportBrief(page, "stale-explicitly-deselected");
     assert.equal(deselected.warnings.some(warning => /selected data request is stale/.test(warning)), false);
-    await page.getByRole("link", {name: "Explore future AI concept"}).click();
+    await page.getByRole("link", {name: /(?:Explore future AI concept|Open Strategy AI Studio)/}).first().click();
     assert.deepEqual(await page.locator(".fc-boundaries li").allTextContents(), deselected.warnings);
     await goal(page, goals[2]); await page.getByRole("link", {name: "Open real Data Requests"}).click();
     assert.equal(await request.innerText(), unselectedBefore);
@@ -235,9 +240,10 @@ if (disabled) {
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
       assert.equal(await page.locator(".fc-output-content").evaluate(el => getComputedStyle(el).animationName), "none");
     }
-    await page.locator(".fc-activation summary").click(); assert.match(await page.locator(".fc-activation").innerText(), /accountable reviewer/);
-    assert.equal(await page.locator(".fc-banner").evaluate(el => { const r = el.getBoundingClientRect(); return el.contains(document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2)); }), true, "Concept label must remain visible below the sticky product header");
+    await goal(page, goals[0]);
+    await page.locator(".fc-boundaries summary").click(); assert.match(await page.locator(".fc-boundaries").innerText(), /Gross burden is not attributable burden/);
     await page.evaluate(() => window.scrollTo(0, 0));
+    assert.equal(await page.locator(".fc-hero-meta").evaluate(el => { const r = el.getBoundingClientRect(); return el.contains(document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2)); }), true, "Studio header must remain visible below the sticky product header");
     await page.screenshot({path: `${output}/comparison-320-dark.png`, fullPage: true});
     await page.emulateMedia({media: "print"}); assert.equal(await page.locator(".future-concept").isVisible(), false);
   });

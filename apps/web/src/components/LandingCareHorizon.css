@@ -1,0 +1,238 @@
+/* Chapter I Care Horizon — deliberate 2.6s opening choreography on porcelain/obsidian. */
+.atlas-care-horizon {
+  width: min(1120px, 100%);
+  margin: clamp(18px, 3vh, 30px) auto 0;
+  padding: clamp(8px, 1.6vw, 20px) clamp(8px, 2.5vw, 28px) 12px;
+  border-block: 1px solid var(--do-border);
+  background: linear-gradient(90deg, transparent, var(--do-surface-elevated) 28% 72%, transparent);
+  display: grid;
+  gap: 8px;
+}
+
+.atlas-horizon-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.horizon-axis {
+  stroke: var(--do-border);
+}
+
+.horizon-ribbon-evidence {
+  stroke: var(--do-reviewed-text);
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+}
+
+.horizon-ribbon-context {
+  stroke: var(--do-selection-text);
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+}
+
+.horizon-ribbon-assumption {
+  stroke: var(--do-journey-accent);
+  opacity: 0.92;
+}
+
+.horizon-hatch-bg {
+  fill: var(--do-assumption-bg);
+}
+
+.horizon-hatch-stroke {
+  stroke: var(--do-journey-accent);
+}
+
+.horizon-node {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.horizon-node-evidence {
+  fill: var(--do-reviewed-text);
+  stroke: var(--do-canvas);
+  stroke-width: 2;
+}
+
+.horizon-node-context {
+  fill: var(--do-canvas);
+  stroke: var(--do-selection-text);
+  stroke-width: 2.5;
+}
+
+.horizon-node-assumption {
+  stroke: var(--do-journey-accent);
+  stroke-width: 2;
+}
+
+.horizon-brief-outline {
+  fill: var(--do-surface);
+  stroke: var(--do-text);
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+}
+
+.horizon-brief-fold {
+  stroke: var(--do-border);
+}
+
+.horizon-brief-rule.is-evidence {
+  stroke: var(--do-reviewed-text);
+}
+
+.horizon-brief-rule.is-context {
+  stroke: var(--do-selection-text);
+}
+
+.horizon-brief-rule.is-assumption {
+  stroke: var(--do-journey-accent);
+}
+
+.atlas-horizon-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 22px;
+  font-family: var(--do-font-mono);
+  font-size: 0.7rem;
+  color: var(--do-text-muted);
+}
+
+.atlas-horizon-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.atlas-horizon-legend i {
+  display: inline-block;
+  width: 14px;
+  height: 3px;
+  border-radius: 2px;
+}
+
+.atlas-horizon-legend .is-evidence i {
+  background: var(--do-reviewed-text);
+}
+
+.atlas-horizon-legend .is-context i {
+  background: var(--do-selection-text);
+}
+
+.atlas-horizon-legend .is-assumption i {
+  height: 0;
+  border-top: 2.5px dashed var(--do-journey-accent);
+}
+
+@media screen and (prefers-reduced-motion: no-preference) {
+  .overview-page.is-opening .horizon-ribbon-evidence {
+    animation: atlas-horizon-draw 1.45s cubic-bezier(0.22, 1, 0.36, 1) 0.45s both;
+  }
+
+  .overview-page.is-opening .horizon-ribbon-context {
+    animation: atlas-horizon-draw 1.45s cubic-bezier(0.22, 1, 0.36, 1) 0.72s both;
+  }
+
+  .overview-page.is-opening .horizon-ribbon-assumption {
+    animation: atlas-horizon-fade 1.35s cubic-bezier(0.22, 1, 0.36, 1) 1.0s both;
+  }
+
+  .overview-page.is-opening .horizon-node {
+    animation: atlas-horizon-pop 420ms cubic-bezier(0.22, 1, 0.36, 1) 1.75s both;
+  }
+
+  .overview-page.is-opening .horizon-brief-mark {
+    animation: atlas-horizon-brief-in 850ms cubic-bezier(0.22, 1, 0.36, 1) 1.75s both;
+  }
+
+  .overview-page.is-opening .atlas-horizon-legend {
+    animation: atlas-horizon-fade 650ms ease-out 1.95s both;
+  }
+
+  @supports ((animation-timeline: view()) and (animation-range: exit)) {
+    .atlas-care-horizon {
+      animation: atlas-horizon-exit linear both;
+      animation-timeline: view();
+      animation-range: exit 0% exit 80%;
+    }
+  }
+}
+
+@keyframes atlas-horizon-draw {
+  from {
+    stroke-dashoffset: 1;
+    opacity: 0.35;
+  }
+  to {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
+@keyframes atlas-horizon-fade {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 0.96;
+    transform: translateX(0);
+  }
+}
+
+@keyframes atlas-horizon-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes atlas-horizon-brief-in {
+  from {
+    opacity: 0;
+    transform: translateX(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes atlas-horizon-exit {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-20px);
+    opacity: 0.35;
+  }
+}
+
+@media (max-width: 680px) {
+  .atlas-care-horizon {
+    margin-top: 6px;
+  }
+  .atlas-horizon-legend {
+    justify-content: center;
+    gap: 6px 14px;
+    font-size: 0.68rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce), print {
+  .atlas-care-horizon,
+  .atlas-care-horizon * {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+    stroke-dashoffset: 0 !important;
+  }
+}

@@ -12,7 +12,7 @@ const html = get("../index.html");
 const bootstrap = get("../public/theme-init.js");
 
 function validate(input: any): void {
-  assert.deepEqual(input.rewrites, [{ source: "/(.*)", destination: "/index.html" }], "SPA catch-all must remain intact");
+  assert.deepEqual(input.rewrites, [{ source: "/:path((?!api/).*)", destination: "/index.html" }], "SPA catch-all must remain intact");
   assert.equal(input.headers?.length, 1, "one unconditional header rule");
   assert.equal(input.headers[0].source, "/(.*)", "cover documents, routes, JS, CSS, and images");
   assert.equal(input.headers[0].has, undefined);
@@ -72,7 +72,7 @@ test("bootstrap retains storage, system, light/dark and fallback behavior", () =
       document: {documentElement: {dataset}, querySelector: () => meta}
     });
     assert.deepEqual({theme:dataset.theme, preference:dataset.themePreference, color:meta.content},
-      {theme:entry.expected, preference:entry.preference, color:entry.expected === "dark" ? "#09131b" : "#f5f2eb"});
+      {theme:entry.expected, preference:entry.preference, color:entry.expected === "dark" ? "#0b1119" : "#f5f7fc"});
   }
   const dataset: Record<string,string> = {};
   const meta={content:""};
@@ -83,7 +83,7 @@ test("bootstrap retains storage, system, light/dark and fallback behavior", () =
   });
   assert.equal(dataset.theme,"light");
   assert.equal(dataset.themePreference,"system");
-  assert.equal(meta.content,"#f5f2eb");
+  assert.equal(meta.content,"#f5f7fc");
 });
 test("fail closed on missing headers, policy weakening, and route gaps", () => {
   const mutate = (change: (copy: any, values: Map<string, any>) => void) => {

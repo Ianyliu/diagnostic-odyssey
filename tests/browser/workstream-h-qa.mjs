@@ -50,7 +50,7 @@ async function setup(name) {
       }
     }
     if (name === "pilot-only" || name === "pilot-overlap") {
-      await page.getByRole("button", {name: /Use .* in Pilot planning/}).first().click();
+      await page.getByRole("button", {name: /Use .* in (?:Pilot planning|Strategy Lab)/}).first().click();
     }
     await nav(page, "Planning brief");
     if (name === "pilot-overlap") {
@@ -164,6 +164,8 @@ try {
     const {page, context} = await setup("default");
     try {
       await nav(page, "Pilot planner");
+      const moreParams = page.getByRole("button", {name: /More parameters/});
+      if (await moreParams.count()) await moreParams.click();
       await page.locator("#pilot-fixed_cost").fill(String(Number.MAX_VALUE));
       await nav(page, "Planning brief");
       const extreme = JSON.parse(await jsonBytes(page));

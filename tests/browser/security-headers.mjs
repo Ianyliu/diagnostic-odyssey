@@ -76,6 +76,12 @@ for(const [theme,width] of [["light",390],["dark",1440]]){
    page.on("request",request=>{if(!request.url().startsWith(base)&&!request.url().startsWith("blob:"))external.push(request.url());});
    await page.goto(base+path,{waitUntil:"networkidle"});
    await page.locator("main h1").waitFor();
+   if(path==="/burden"){
+     await page.locator("#burden-economic-healthcare .ledger-group-title button").click();
+     await page.getByRole("button", {name:/Show details for .*mean annual.*spending/i}).first().click();
+     const mark=page.locator(".metric-visual-svg .metric-svg-interval, .metric-visual-svg .metric-svg-point").first();
+     assert.ok(await mark.isVisible(),"SVG metric visuals render without inline CSS");
+   }
    const observed=await page.evaluate(()=>({
      first:window.__themeAtDCL,current:document.documentElement.dataset.theme,
      meta:document.querySelector('meta[name="theme-color"]').content,
@@ -84,15 +90,11 @@ for(const [theme,width] of [["light",390],["dark",1440]]){
    }));
    assert.equal(observed.first,theme);
    assert.equal(observed.current,theme);
-   assert.equal(observed.meta,theme==="dark"?"#09131b":"#f5f2eb");
+   assert.equal(observed.meta,theme==="dark"?"#0b1119":"#f5f7fc");
    assert.equal(observed.bootstrap,true,"parser-blocking theme initializer loaded");
    assert.deepEqual(errors,[]);
    assert.deepEqual(observed.violations,[],"unintended CSP violations");
    assert.deepEqual(external,[],"static app must not issue cross-origin requests");
-   if(path==="/burden"){
-     const span=page.locator(".metric-visual-interval").first();
-     if(await span.count())assert.ok(await span.evaluate(el=>el.style.left.endsWith("%") && el.style.width.endsWith("%")),"React percentage positions and widths remain set via CSSOM (including legitimate zero-width intervals)");
-   }
    report.violations.push(...observed.violations.map(v=>({...v,path,theme})));
    report.externalRequests.push(...external.map(url=>({url,path,theme})));
    await context.close();
