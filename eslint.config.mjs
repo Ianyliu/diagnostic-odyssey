@@ -65,6 +65,11 @@ export default tseslint.config(
     languageOptions: { globals: globals.node }
   },
   {
+    // Drives a browser; its page.evaluate callbacks run in the page and use DOM globals.
+    files: ["tests/browser/pilot-parity.mjs"],
+    languageOptions: { globals: { ...globals.node, ...globals.browser } }
+  },
+  {
     files: typedSources,
     languageOptions: {
       parserOptions: {
