@@ -1,3 +1,5 @@
+import { execFileSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
 import assert from "node:assert/strict";
 import test from "node:test";
 import { allowLocalCommunityPulseFixtures, isProtectedFixturePreview, showCommunityPulseFixtures }
@@ -56,4 +58,21 @@ test("source failure is a safe JSON 503", async () => {
   const failure = await readCommunityPulse(request(), true, { async read() { throw Error("private store path"); } });
   assert.equal(failure.status, 503);
   assert.deepEqual(await failure.json(), { error: "intelligence_unavailable" });
+});
+
+test("the committed Vercel module matches the source and runs without TypeScript dependencies", () => {
+  const root = fileURLToPath(new URL("../../../", import.meta.url));
+  execFileSync(process.execPath, ["scripts/community-pulse/build-endpoint.mjs", "--check"], { cwd: root });
+  const requestScript = [
+    'import endpoint from "./apps/web/api/community-pulse.js";',
+    'const response = await endpoint.fetch(new Request("https://preview.example.invalid/api/community-pulse"));',
+    'const body = await response.json();',
+    'process.stdout.write(JSON.stringify({status: response.status, count: body.inbox?.length}));'
+  ].join("");
+  const invoke = (environment: "preview" | "production") => JSON.parse(execFileSync(process.execPath,
+    ["--input-type=module", "-e", requestScript],
+    { cwd: root, encoding: "utf8", env: { VERCEL: "1", VERCEL_ENV: environment, COMMUNITY_PULSE_MODE: "fixture" } }
+  )) as { status: number; count?: number };
+  assert.deepEqual(invoke("preview"), { status: 200, count: 6 });
+  assert.deepEqual(invoke("production"), { status: 404 });
 });
