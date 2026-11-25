@@ -40,10 +40,10 @@ Public-use federal data + reviewed literature + approved qualitative evidence
 ## Monorepo boundaries
 
 ### `apps/web`
-React/TypeScript/Vite shell. It owns routing, screen composition, browser state, accessible interactions, and artifact-backed presentation. It must not contain statistical estimation logic.
+React/TypeScript/Vite shell. It owns routing, screen composition, browser state, accessible interactions, and artifact-backed presentation. It must not contain statistical estimation logic. Large pages are composed of focused modules: the Strategy Lab (`src/pages/PilotPage.tsx`) keeps all state and effects and renders stateless sections from `src/pages/pilot/` (`AssumptionsForm`, `ResultsPanel`, `DecisionInspector`, `CompareStrategiesPanel`, `QuantitiesPanel`, `ContextPanel`, `PathwayBoundaryDrawer`). It is type-checked as three projects (browser `src`, server `api`/`build`/`src/server`/`vite.config.ts`, and tests); see [ADR 0002](adr/0002-split-typescript-projects-and-keep-tests-hermetic.md).
 
 ### `packages/contracts`
-Canonical TypeScript contracts and JSON-Schema-like runtime validators for artifacts and domain objects. Scientific status vocabulary lives here so it cannot drift between UI modules.
+Canonical TypeScript contracts and JSON-Schema-like runtime validators for artifacts and domain objects. Scientific status vocabulary lives here so it cannot drift between UI modules. `src/index.ts` is an explicit barrel over `constants`, `types`, per-domain `validate-*` modules and `gates`; internal guard helpers are not exported. The public API is pinned by `packages/contracts/test/public-api.test.ts` and the characterization suite.
 
 ### `packages/scenario-engine`
 Pure deterministic TypeScript functions. It accepts a validated `Scenario` and returns a `ScenarioResult`. It cannot access network services, AI, analytics code, or local-context multipliers.
@@ -70,7 +70,7 @@ Offline deterministic input/egress/candidate/output contracts and Draft 2020-12 
 Isolated contracts and validation rules for reviewed narrative intervention references; production narrative release remains unpopulated.
 
 ### `apps/web/api`
-Vercel serverless endpoints for isolated Preview-only Gemini operator testing (`POST /api/ai-guidance`, disabled `404` in public production) and permanently retired `404` `/api/ai-preview`. Paired with strict CSP headers in `apps/web/vercel.json` and parser-blocking `/theme-init.js`.
+Vercel serverless endpoints for isolated Preview-only Gemini operator testing (`POST /api/ai-guidance`, disabled `404` in public production) and permanently retired `404` `/api/ai-preview`. Paired with strict CSP headers in `apps/web/vercel.json` and parser-blocking `/theme-init.js`. Every file in `apps/web/api` is a public function and must be self-contained (Node built-ins only): the Vercel builder does not trace local `.ts` modules into the deployed function ([ADR 0003](adr/0003-vercel-api-functions-stay-self-contained.md)); this is enforced by `apps/web/test/api-self-contained.test.ts` and checked end to end by `scripts/verify/vercel-function-build.sh`.
 
 ### `analysis/r`
 Offline survey-aware analysis entry points for MEPS/NHIS and related validation. Large source data and generated analytical outputs remain outside Git.

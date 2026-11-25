@@ -25,6 +25,6 @@
       }
     }
   },
-  "postCreateCommand": "npm install --no-audit --no-fund && Rscript analysis/r/install_dependencies.R",
+  "postCreateCommand": "npm ci --no-audit --no-fund && Rscript analysis/r/install_dependencies.R",
   "postStartCommand": "printf '\\nDiagnostic Odyssey is ready. Run npm run dev to start the web app.\\n'"
 }

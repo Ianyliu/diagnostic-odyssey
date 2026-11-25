@@ -156,7 +156,7 @@ These `VITE_*` flags are public build-time switches baked into static assets; th
 
 ### Run locally
 
-**Runtime:** Node.js **22** is the tested development/CI baseline (`engines` permits `>=22`). R and Python are not needed to view the app.
+**Runtime:** Node.js **22.23.3** (pinned in [`.nvmrc`](.nvmrc)) is the tested development/CI baseline (`engines` permits `>=22`). R and Python are not needed to view the app.
 
 ```bash
 npm ci
@@ -167,22 +167,22 @@ Open the local URL printed by Vite, usually [`http://localhost:5173`](http://loc
 
 ### Run the checks
 
-The full unit suite includes Python-backed JSON Schema agreement tests. Install Python 3 and activate a virtual environment so `python3` resolves to it:
+The full unit suite includes Python-backed JSON Schema agreement tests. Install Python 3 and activate a virtual environment so `python3` resolves to it. Test commands never install packages themselves; the pinned dependency lives in [`requirements-test.txt`](requirements-test.txt):
 
 ```bash
 python3 -m venv .venv
 . .venv/bin/activate
-python3 -m pip install jsonschema==4.26.0
+python3 -m pip install -r requirements-test.txt
 ```
 
 ```bash
-npm run typecheck
-npm test
-npm run lint
-npm run build
+npm run check        # fast local gate (see below)
+npm run check:full   # adds Python unit tests, synthetic R tests and repeated-build byte stability
 ```
 
-These commands cover TypeScript, the complete unit suite (including WCAG 2.1 AA token contrast, Strategic Atlas layout/inventory, and CSP header contracts), ESLint, and the production Vite build (which runs `prebuild` to verify/regenerate `apps/web/public/og-image.png`). Schema subprocesses have a 15-second bound and report executable, timeout, exit, and stderr diagnostics; a missing Python dependency is a failure, not a skipped test. Browser acceptance is separate: see [testing instructions](docs/testing.md) and [browser tests](tests/browser/README.md).
+`npm run check` runs `typecheck` (all workspaces, the `apps/web` browser/server/test projects, and repository tooling), `lint` (zero warnings), `test` (all workspace unit tests), `test:tools`, `test:characterization` (exact equivalence with the recorded pre-refactor baseline), `verify:artifacts` (reviewed artifacts against an explicit checksum inventory), `verify:docs` (relative links and anchors in maintained docs) and `build`. `check:full` additionally runs `test:py`, `test:r` (needs R with `haven`, `jsonlite`, `survey`, `testthat`) and `verify:build`. Browser suites, the offline Vercel build check (`scripts/verify/vercel-function-build.sh`) and `npm run test:offline` (suite with outbound networking denied) are separate; see [Contributing](CONTRIBUTING.md#what-npm-run-check-covers) and [Testing](docs/testing.md). `npm run test:coverage` is informational only.
+
+The individual commands are `npm run typecheck`, `npm test`, `npm run lint` and `npm run build`. Together with the above they cover TypeScript, the complete unit suite (including WCAG 2.1 AA token contrast, Strategic Atlas layout/inventory, and CSP header contracts), ESLint, and the production Vite build (which runs `prebuild` to verify/regenerate `apps/web/public/og-image.png`). Schema subprocesses have a 15-second bound and report executable, timeout, exit, and stderr diagnostics; a missing Python dependency is a failure, not a skipped test. Browser acceptance is separate: see [testing instructions](docs/testing.md) and [browser tests](tests/browser/README.md).
 
 ### Use the dev container
 
@@ -289,6 +289,7 @@ packages/
   planning-guidance/         deterministic planning-guidance contracts
   narrative-references/      reviewed-reference contracts and provenance
   ui/                        Strategic Atlas design tokens (light/dark/print CSS variables)
+  (each package has its own README with purpose, public API and how to test)
 analysis/
   r/                         offline survey-analysis entry points
   local_context/             HRSA + ACS candidate pipeline/config/tests
@@ -310,8 +311,14 @@ docs/                        documentation index, design spec, architecture, met
 scripts/
   og/                        deterministic non-numeric og-image.png renderer
   maintenance/               governed regression snapshot/comparison tools
+  verify/                    reviewed-artifact inventory check, doc link check, offline runner, Vercel build check
+  testing/                   Python validator runner used by workspace tests
 tests/
-  browser/                   Playwright + axe + PDF browser acceptance suites
+  browser/                   Playwright + axe + PDF browser acceptance suites (incl. pilot-parity.mjs)
+  characterization/          exact-equivalence goldens for scientific, API and endpoint behavior
+  unit/                      tests of repository tooling
+.github/
+  workflows/ actions/        CI workflows and the local setup-workspace composite action
 ```
 
 ## Data and working agreements
@@ -334,6 +341,9 @@ Browse the full [documentation index](docs/README.md) or jump directly to:
 | [Architecture](docs/architecture.md) | Package boundaries, routing, CSP shell, and runtime flow |
 | [Scientific guardrails](docs/scientific-guardrails.md) | Interpretation and release constraints |
 | [Testing](docs/testing.md) | Unit, contrast, browser, PDF, and security validation |
+| [Capability status](docs/capability-status.md) | Production vs Preview-only vs illustrative vs candidate-only vs not implemented |
+| [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md) | Setup, what `npm run check` covers, hard rules; reporting and security scope |
+| [CI workflows](docs/operations/ci-workflows.md) · [ADRs](docs/adr/README.md) | Workflow matrix, pins, required-check compatibility; engineering decisions |
 | [Implementation plan](docs/implementation-plan.md) | Delivery phases and current Edition 01 status |
 | [MEPS Long COVID methods](docs/methods/meps-2024-long-covid.md) | Analytical method notes |
 | [Gemini Preview setup](docs/gemini-preview-setup.md) | Retired `/api/ai-preview` and Preview-only `/api/ai-guidance` overview |
