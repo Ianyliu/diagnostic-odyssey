@@ -1,0 +1,1533 @@
+{
+ "contracts": {
+  "AcquisitionHintReference": {
+   "kind": "interface",
+   "declared": "AcquisitionHintReference",
+   "members": [
+    "hint_id: \"ACQ26-TIMING-01\" | \"ACQ26-CAPACITY-01\"",
+    "hint_version: \"2\"",
+    "policy_sha256: string",
+    "registry_sha256: string",
+    "request_fingerprint: string",
+    "review_sha256: string",
+    "schema_version: \"1\"",
+    "source_index_sha256: string"
+   ]
+  },
+  "AdmissibilityStatus": {
+   "kind": "type",
+   "declared": "\"supported\" | \"supported_with_bounds\" | \"limited_use\" | \"insufficient\""
+  },
+  "admissibilityStatuses": {
+   "kind": "variable",
+   "type": "readonly [\"supported\", \"supported_with_bounds\", \"limited_use\", \"insufficient\"]"
+  },
+  "AnalysisContext": {
+   "kind": "interface",
+   "declared": "AnalysisContext",
+   "members": [
+    "age_range: string",
+    "artifact_version: string",
+    "cohort_id: string",
+    "condition_id: string",
+    "evidence_year: number",
+    "geography_scope: string",
+    "local_context_id: string | null",
+    "severity_filter: string | null"
+   ]
+  },
+  "ArtifactBundle": {
+   "kind": "interface",
+   "declared": "ArtifactBundle",
+   "members": [
+    "burden_domains: BurdenDomain[]",
+    "context: AnalysisContext",
+    "data_requests: DataRequest[]",
+    "evidence: EvidenceRecord[]",
+    "local_context: LocalContextRecord[]",
+    "manifest: ArtifactManifest",
+    "qualitative_evidence: QualitativeEvidence[]",
+    "scenario_examples: Scenario[]",
+    "sources: SourceManifestEntry[]"
+   ]
+  },
+  "ArtifactManifest": {
+   "kind": "interface",
+   "declared": "ArtifactManifest",
+   "members": [
+    "artifact_version: string",
+    "code_commit: string",
+    "dataset_releases: string[]",
+    "display_status: \"illustrative\" | \"analytical_artifact\"",
+    "generated_at: string",
+    "run_id: string"
+   ]
+  },
+  "assertValidArtifactBundle": {
+   "kind": "function",
+   "type": "(value: unknown) => asserts value is ArtifactBundle",
+   "signatures": [
+    "(value: unknown) => asserts value is ArtifactBundle"
+   ]
+  },
+  "assertValidLinkedConditionCandidate": {
+   "kind": "function",
+   "type": "(candidateFile: unknown, manifest: unknown, diagnostics: unknown) => void",
+   "signatures": [
+    "(candidateFile: unknown, manifest: unknown, diagnostics: unknown) => void"
+   ]
+  },
+  "assertValidLocalContextArtifact": {
+   "kind": "function",
+   "type": "(value: unknown) => asserts value is LocalContextArtifact",
+   "signatures": [
+    "(value: unknown) => asserts value is LocalContextArtifact"
+   ]
+  },
+  "assertValidReviewedLinkedConditionPackage": {
+   "kind": "function",
+   "type": "(input: { candidateFile: unknown; reviewedDiagnostics: unknown; sourceMetadata: unknown; runManifest: unknown; reviewManifest: unknown; productPolicy: unknown; }) => void",
+   "signatures": [
+    "(input: { candidateFile: unknown; reviewedDiagnostics: unknown; sourceMetadata: unknown; runManifest: unknown; reviewManifest: unknown; productPolicy: unknown; }) => void"
+   ]
+  },
+  "BoundedEffect": {
+   "kind": "interface",
+   "declared": "BoundedEffect",
+   "members": [
+    "evidence_id: string",
+    "parameter_id: string",
+    "pathway_step: string",
+    "target_mechanism: string",
+    "unit: string",
+    "value_high: number",
+    "value_low: number"
+   ]
+  },
+  "BriefManifest": {
+   "kind": "interface",
+   "declared": "BriefManifest",
+   "members": [
+    "brief_id: string",
+    "context: AnalysisContext",
+    "data_requests: DataRequest[]",
+    "evidence_ids: string[]",
+    "generated_at: string",
+    "included_estimates: string[]",
+    "omitted_sections: string[]",
+    "scenario_id?: string | null",
+    "version: string",
+    "warnings: string[]"
+   ]
+  },
+  "BurdenDomain": {
+   "kind": "interface",
+   "declared": "BurdenDomain",
+   "members": [
+    "availability_state: \"loading\" | \"loaded\" | \"partial\" | \"empty\" | \"suppressed\" | \"error\" | \"stale_fallback\" | \"unsupported_combination\"",
+    "domain_id: string",
+    "label: string",
+    "limitations: string[]",
+    "measures: Estimate[]"
+   ]
+  },
+  "canDisplayDistributionSummary": {
+   "kind": "variable",
+   "type": "(estimate: Estimate) => boolean",
+   "signatures": [
+    "(estimate: Estimate) => boolean"
+   ]
+  },
+  "canExportEstimate": {
+   "kind": "variable",
+   "type": "(estimate: Estimate) => boolean",
+   "signatures": [
+    "(estimate: Estimate) => boolean"
+   ]
+  },
+  "canLoadReviewedLocalContextArtifact": {
+   "kind": "function",
+   "type": "(artifact: unknown) => artifact is LocalContextArtifact",
+   "signatures": [
+    "(artifact: unknown) => artifact is LocalContextArtifact"
+   ]
+  },
+  "DataRequest": {
+   "kind": "interface",
+   "declared": "DataRequest",
+   "members": [
+    "acquisition_hint?: AcquisitionHintReference",
+    "feasibility_privacy_notes: string",
+    "fields_needed: string[]",
+    "granularity_time_window: string",
+    "likely_source_owner: string",
+    "pathway_step: string",
+    "rationale: string",
+    "request_id: string",
+    "target_mechanism?: string | null",
+    "target_question: string"
+   ]
+  },
+  "DataState": {
+   "kind": "type",
+   "declared": "\"loading\" | \"loaded\" | \"partial\" | \"empty\" | \"suppressed\" | \"error\" | \"stale_fallback\" | \"unsupported_combination\""
+  },
+  "dataStates": {
+   "kind": "variable",
+   "type": "readonly [\"loading\", \"loaded\", \"partial\", \"empty\", \"suppressed\", \"error\", \"stale_fallback\", \"unsupported_combination\"]"
+  },
+  "DisplayStatus": {
+   "kind": "type",
+   "declared": "\"illustrative\" | \"analytical_artifact\""
+  },
+  "displayStatuses": {
+   "kind": "variable",
+   "type": "readonly [\"illustrative\", \"analytical_artifact\"]"
+  },
+  "DistributionSummary": {
+   "kind": "interface",
+   "declared": "DistributionSummary",
+   "members": [
+    "limitations: string[]",
+    "p25: number",
+    "p50: number",
+    "p75: number",
+    "source_variable: string",
+    "statistics_method: string",
+    "summary_type: \"survey_weighted_quantiles\"",
+    "unweighted_n: number",
+    "variance_psu_variable: string",
+    "variance_stratum_variable: string",
+    "weight_variable: string",
+    "weighted_denominator: number"
+   ]
+  },
+  "Estimate": {
+   "kind": "interface",
+   "declared": "Estimate",
+   "members": [
+    "allowed_interpretation: string",
+    "artifact_version: string",
+    "ci_degrees_of_freedom?: number | null",
+    "ci_df_source?: string | null",
+    "cohort_definition?: string | null",
+    "component_of_measure_id?: string | null",
+    "denominator: string",
+    "display_status: \"illustrative\" | \"analytical_artifact\"",
+    "distribution_summary?: DistributionSummary",
+    "estimate_id: string",
+    "evidence_type: \"survey_estimate\" | \"adjusted_association\" | \"contextual_indicator\" | \"literature_derived\" | \"scenario_assumption\" | \"qualitative_evidence\"",
+    "interval_high: number | null",
+    "interval_low: number | null",
+    "interval_type: string | null",
+    "interval_width?: number | null",
+    "label: string",
+    "limitations: string[]",
+    "measure_id: string",
+    "pathway_step?: string | null",
+    "prohibited_interpretation: string[]",
+    "relative_standard_error?: number | null",
+    "release_status: \"suppressed\" | \"preliminary\" | \"reviewed_released\" | \"not_released\" | \"unavailable\"",
+    "source_locator?: string | null",
+    "source_ref: string",
+    "standard_error?: number | null",
+    "statistics_method?: string | null",
+    "system_boundary: string",
+    "unit: string",
+    "universe: string",
+    "unweighted_excluded_or_missing_n?: number | null",
+    "unweighted_n?: number | null",
+    "unweighted_numerator_n?: number | null",
+    "value: number | null",
+    "variance_psu_variable?: string | null",
+    "variance_stratum_variable?: string | null",
+    "weight_variable?: string | null",
+    "weighted_denominator?: number | null"
+   ]
+  },
+  "evaluateLinkedConditionPrecision": {
+   "kind": "function",
+   "type": "(value: unknown) => LinkedConditionPrecisionDecision",
+   "signatures": [
+    "(value: unknown) => LinkedConditionPrecisionDecision"
+   ]
+  },
+  "EvidenceRecord": {
+   "kind": "interface",
+   "declared": "EvidenceRecord",
+   "members": [
+    "admissibility_status: \"supported\" | \"supported_with_bounds\" | \"limited_use\" | \"insufficient\"",
+    "allowed_use: string",
+    "condition_definition: string",
+    "effect_or_parameter: string | null",
+    "evidence_id: string",
+    "geography: string",
+    "limitations: string[]",
+    "locator: string",
+    "outcome: string",
+    "pathway_step?: string | null",
+    "payer: string",
+    "population: string",
+    "reviewer_status: \"draft\" | \"needs_review\" | \"approved\" | \"rejected\"",
+    "source: string",
+    "system_boundary: string",
+    "target_mechanism?: string | null",
+    "uncertainty: string | null",
+    "year: number"
+   ]
+  },
+  "EvidenceType": {
+   "kind": "type",
+   "declared": "\"survey_estimate\" | \"adjusted_association\" | \"contextual_indicator\" | \"literature_derived\" | \"scenario_assumption\" | \"qualitative_evidence\""
+  },
+  "evidenceTypes": {
+   "kind": "variable",
+   "type": "readonly [\"survey_estimate\", \"adjusted_association\", \"contextual_indicator\", \"literature_derived\", \"scenario_assumption\", \"qualitative_evidence\"]"
+  },
+  "linkedConditionCandidateAPresentationV1": {
+   "kind": "variable",
+   "type": "{ readonly candidate_id: \"u09_linked_service_use_person_share\"; readonly section_heading: \"Documented U09-linked service-use footprint\"; readonly measure_label: \"Share with at least one 2024 encounter linked in MEPS to an exact U09 condition record\"; readonly always_visible_explanation: \"This is not the share diagnosed or recognized with Long COVID and does not measure Long-COVID-attributable healthcare use.\"; readonly technical_limitations: readonly [\"Exact U09 is not equivalent to the governed operational-current Long COVID definition.\", \"Absence of U09 does not mean absence of Long COVID.\", \"Absence of a qualifying linked encounter does not mean absence of healthcare.\", \"Calendar-year 2024 encounters may occur before or after the Round 3/1 current-status anchor.\", \"Condition-event linkage does not establish causation.\", \"116 of 259 qualifying U09-linked events also carry at least one non-U09 condition link.\"]; }"
+  },
+  "LinkedConditionCandidateEstimate": {
+   "kind": "interface",
+   "declared": "LinkedConditionCandidateEstimate",
+   "members": [
+    "allowed_interpretation: string",
+    "candidate_id: \"u09_linked_service_use_person_share\" | \"u09_linked_service_use_encounters_mean\" | \"u09_linked_service_use_office_encounters_mean\" | \"u09_linked_service_use_outpatient_encounters_mean\" | \"u09_linked_service_use_emergency_encounters_mean\" | \"u09_linked_service_use_inpatient_encounters_mean\"",
+    "ci_degrees_of_freedom: number",
+    "ci_df_source: string",
+    "cohort_definition: string",
+    "computationally_valid: boolean",
+    "interval_high: number",
+    "interval_low: number",
+    "interval_type: string",
+    "interval_width: number | null",
+    "label: string",
+    "limitations: string[]",
+    "nonzero_support: LinkedConditionSupport",
+    "observed_qualifying_event_n: number",
+    "precision_reason_codes: (\"sample_n_below_60\" | \"rse_30_to_50\" | \"rse_above_50\" | \"low_percentage_exception\" | \"zero_positive_support\" | \"precision_input_invalid\")[]",
+    "precision_reporting_status: \"reportable\" | \"reportable_with_caution\" | \"suppress_precision\" | \"suppress_insufficient_sample\" | \"suppress_unsupported_zero\" | \"suppress_pending_review\"",
+    "precision_rule_version: \"meps_hc_precision_v1\"",
+    "precision_status: \"meps_precise\" | \"meps_questionable_precision\" | \"meps_low_percentage_exception\" | \"meps_unstable_precision\" | \"insufficient_sample\" | \"unsupported_zero\" | \"review_required\"",
+    "product_release_eligible: false",
+    "prohibited_interpretation: string[]",
+    "relative_standard_error: number | null",
+    "source_refs: string[]",
+    "standard_error: number",
+    "statistics_method: string",
+    "target_support: LinkedConditionSupport",
+    "unit: \"proportion\" | \"encounters/person/year\"",
+    "unweighted_nonzero_person_n: number",
+    "unweighted_target_n: number",
+    "value: number",
+    "variance_psu_variable: \"VARPSU\"",
+    "variance_stratum_variable: \"VARSTR\"",
+    "weight_variable: \"PERWT24F\"",
+    "weighted_denominator: number"
+   ]
+  },
+  "LinkedConditionCandidateFile": {
+   "kind": "interface",
+   "declared": "LinkedConditionCandidateFile",
+   "members": [
+    "artifact_family: \"linked_condition_service_use_candidate\"",
+    "candidates: LinkedConditionCandidateEstimate[]",
+    "code_commit: string",
+    "generated_at: string",
+    "schema_version: \"2.0\"",
+    "status: \"preliminary-candidate-only\""
+   ]
+  },
+  "LinkedConditionCandidateId": {
+   "kind": "type",
+   "declared": "\"u09_linked_service_use_person_share\" | \"u09_linked_service_use_encounters_mean\" | \"u09_linked_service_use_office_encounters_mean\" | \"u09_linked_service_use_outpatient_encounters_mean\" | \"u09_linked_service_use_emergency_encounters_mean\" | \"u09_linked_service_use_inpatient_encounters_mean\""
+  },
+  "linkedConditionCandidateIds": {
+   "kind": "variable",
+   "type": "readonly [\"u09_linked_service_use_person_share\", \"u09_linked_service_use_encounters_mean\", \"u09_linked_service_use_office_encounters_mean\", \"u09_linked_service_use_outpatient_encounters_mean\", \"u09_linked_service_use_emergency_encounters_mean\", \"u09_linked_service_use_inpatient_encounters_mean\"]"
+  },
+  "LinkedConditionCandidateManifest": {
+   "kind": "interface",
+   "declared": "LinkedConditionCandidateManifest",
+   "members": [
+    "artifact_family: \"linked_condition_service_use_candidate\"",
+    "automatic_release: false",
+    "candidate_estimates_generated: true",
+    "code_commit: string",
+    "code_commit_matches_github_sha: boolean | null",
+    "diagnostics_file: \"diagnostics.json\"",
+    "estimates_file: \"linked-condition-candidate-estimates.json\"",
+    "github_sha: string | null",
+    "hc256_source_metadata_file: \"hc256-source-metadata.json\"",
+    "linked_condition_source_metadata_file: \"linked-condition-source-metadata.json\"",
+    "precision_rule_reviewed: true",
+    "precision_rule_version: \"meps_hc_precision_v1\"",
+    "reviewed_artifact_modified: false",
+    "runtime_eligible: false",
+    "runtime_selection_changed: false",
+    "schema_version: \"2.0\"",
+    "status: \"preliminary-candidate-only\""
+   ]
+  },
+  "linkedConditionCandidateSourceRefs": {
+   "kind": "variable",
+   "type": "readonly [\"meps-hc256-2024\", \"meps-hc255-2024\", \"meps-hc254i-2024\", \"meps-hc254g-2024\", \"meps-hc254f-2024\", \"meps-hc254e-2024\", \"meps-hc254d-2024\"]"
+  },
+  "LinkedConditionCandidateValidationIssue": {
+   "kind": "interface",
+   "declared": "LinkedConditionCandidateValidationIssue",
+   "members": [
+    "message: string",
+    "path: string"
+   ]
+  },
+  "LinkedConditionPrecisionDecision": {
+   "kind": "interface",
+   "declared": "LinkedConditionPrecisionDecision",
+   "members": [
+    "computationally_valid: boolean",
+    "precision_reason_codes: (\"sample_n_below_60\" | \"rse_30_to_50\" | \"rse_above_50\" | \"low_percentage_exception\" | \"zero_positive_support\" | \"precision_input_invalid\")[]",
+    "precision_reporting_status: \"reportable\" | \"reportable_with_caution\" | \"suppress_precision\" | \"suppress_insufficient_sample\" | \"suppress_unsupported_zero\" | \"suppress_pending_review\"",
+    "precision_rule_version: \"meps_hc_precision_v1\"",
+    "precision_status: \"meps_precise\" | \"meps_questionable_precision\" | \"meps_low_percentage_exception\" | \"meps_unstable_precision\" | \"insufficient_sample\" | \"unsupported_zero\" | \"review_required\"",
+    "product_release_eligible: false"
+   ]
+  },
+  "LinkedConditionPrecisionReasonCode": {
+   "kind": "type",
+   "declared": "\"sample_n_below_60\" | \"rse_30_to_50\" | \"rse_above_50\" | \"low_percentage_exception\" | \"zero_positive_support\" | \"precision_input_invalid\""
+  },
+  "linkedConditionPrecisionReasonCodes": {
+   "kind": "variable",
+   "type": "readonly [\"sample_n_below_60\", \"rse_30_to_50\", \"rse_above_50\", \"low_percentage_exception\", \"zero_positive_support\", \"precision_input_invalid\"]"
+  },
+  "LinkedConditionPrecisionReportingStatus": {
+   "kind": "type",
+   "declared": "\"reportable\" | \"reportable_with_caution\" | \"suppress_precision\" | \"suppress_insufficient_sample\" | \"suppress_unsupported_zero\" | \"suppress_pending_review\""
+  },
+  "linkedConditionPrecisionReportingStatuses": {
+   "kind": "variable",
+   "type": "readonly [\"reportable\", \"reportable_with_caution\", \"suppress_precision\", \"suppress_insufficient_sample\", \"suppress_unsupported_zero\", \"suppress_pending_review\"]"
+  },
+  "linkedConditionPrecisionRuleVersion": {
+   "kind": "variable",
+   "type": "\"meps_hc_precision_v1\""
+  },
+  "LinkedConditionPrecisionStatus": {
+   "kind": "type",
+   "declared": "\"meps_precise\" | \"meps_questionable_precision\" | \"meps_low_percentage_exception\" | \"meps_unstable_precision\" | \"insufficient_sample\" | \"unsupported_zero\" | \"review_required\""
+  },
+  "linkedConditionPrecisionStatuses": {
+   "kind": "variable",
+   "type": "readonly [\"meps_precise\", \"meps_questionable_precision\", \"meps_low_percentage_exception\", \"meps_unstable_precision\", \"insufficient_sample\", \"unsupported_zero\", \"review_required\"]"
+  },
+  "linkedConditionProductPolicyV1": {
+   "kind": "variable",
+   "type": "{ readonly u09_linked_service_use_person_share: \"admitted_secondary_descriptive\"; readonly u09_linked_service_use_encounters_mean: \"reviewed_not_product_admitted\"; readonly u09_linked_service_use_office_encounters_mean: \"reviewed_not_product_admitted\"; readonly u09_linked_service_use_outpatient_encounters_mean: \"suppressed_precision\"; readonly u09_linked_service_use_emergency_encounters_mean: \"suppressed_precision\"; readonly u09_linked_service_use_inpatient_encounters_mean: \"suppressed_unsupported_zero\"; }"
+  },
+  "linkedConditionProductPolicyVersion": {
+   "kind": "variable",
+   "type": "\"linked_condition_product_policy_v1\""
+  },
+  "LinkedConditionSupport": {
+   "kind": "interface",
+   "declared": "LinkedConditionSupport",
+   "members": [
+    "label: string",
+    "represented_singleton_strata_n: number",
+    "represented_strata_n: number",
+    "represented_stratum_psu_pairs_n: number",
+    "unweighted_person_n: number"
+   ]
+  },
+  "LocalContextArtifact": {
+   "kind": "interface",
+   "declared": "LocalContextArtifact",
+   "members": [
+    "geography: LocalContextGeography",
+    "indicators: LocalContextRecord[]",
+    "manifest: LocalContextManifest",
+    "sources: LocalContextSource[]"
+   ]
+  },
+  "LocalContextGeography": {
+   "kind": "interface",
+   "declared": "LocalContextGeography",
+   "members": [
+    "county_fips: string | null",
+    "geography_name: string",
+    "geography_type: \"state\" | \"county\"",
+    "state_fips: string"
+   ]
+  },
+  "LocalContextManifest": {
+   "kind": "interface",
+   "declared": "LocalContextManifest",
+   "members": [
+    "artifact_family: \"local_context\"",
+    "artifact_version: string",
+    "code_commit: string",
+    "generated_at: string",
+    "national_meps_artifact_version: string",
+    "national_meps_burden_unchanged: true",
+    "release_status: \"preliminary\" | \"reviewed_released\"",
+    "run_id: string"
+   ]
+  },
+  "LocalContextRecord": {
+   "kind": "interface",
+   "declared": "LocalContextRecord",
+   "members": [
+    "allowed_interpretation: string",
+    "confidence_level: number | null",
+    "context_type: \"contextual_indicator\"",
+    "county_fips: string | null",
+    "geography?: string",
+    "geography_name: string",
+    "geography_type: \"state\" | \"county\"",
+    "indicator?: string",
+    "indicator_id: string",
+    "label: string",
+    "limitations: string[]",
+    "margin_of_error: number | null",
+    "observation_as_of_date: string | null",
+    "prohibited_interpretation: string[]",
+    "release_status: \"preliminary\" | \"reviewed_released\"",
+    "source?: string",
+    "source_agency: string",
+    "source_locator: string",
+    "source_ref: string",
+    "source_release_vintage: string",
+    "state: \"loading\" | \"loaded\" | \"partial\" | \"empty\" | \"suppressed\" | \"error\" | \"stale_fallback\" | \"unsupported_combination\"",
+    "state_fips: string",
+    "uncertainty_type: string | null",
+    "unit: string",
+    "universe: string",
+    "value: string | number | null",
+    "year?: number"
+   ]
+  },
+  "LocalContextReleaseStatus": {
+   "kind": "type",
+   "declared": "\"preliminary\" | \"reviewed_released\""
+  },
+  "LocalContextSource": {
+   "kind": "interface",
+   "declared": "LocalContextSource",
+   "members": [
+    "byte_size: number | null",
+    "limitations: string[]",
+    "observation_as_of_date: string | null",
+    "published_update_date: string | null",
+    "retrieved_at: string",
+    "sha256: string | null",
+    "source_agency: string",
+    "source_locator: string",
+    "source_name: string",
+    "source_ref: string",
+    "source_release_vintage: string"
+   ]
+  },
+  "LocalGeographyType": {
+   "kind": "type",
+   "declared": "\"state\" | \"county\""
+  },
+  "QualitativeEvidence": {
+   "kind": "interface",
+   "declared": "QualitativeEvidence",
+   "members": [
+    "approved_for_display: boolean",
+    "limitation: string",
+    "scope: string",
+    "source_type: string",
+    "summary: string",
+    "theme_id: string"
+   ]
+  },
+  "ReleaseStatus": {
+   "kind": "type",
+   "declared": "\"suppressed\" | \"preliminary\" | \"reviewed_released\" | \"not_released\" | \"unavailable\""
+  },
+  "releaseStatuses": {
+   "kind": "variable",
+   "type": "readonly [\"preliminary\", \"reviewed_released\", \"not_released\", \"suppressed\", \"unavailable\"]"
+  },
+  "reviewedLinkedConditionArtifactVersion": {
+   "kind": "variable",
+   "type": "\"meps-2024-linked-condition-service-use-reviewed-20260929-v1\""
+  },
+  "reviewedLinkedConditionProvenanceV1": {
+   "kind": "variable",
+   "type": "{ readonly candidate_workflow_run_id: \"36609436930\"; readonly candidate_artifact_id: \"11053325408\"; readonly candidate_artifact_digest: \"sha256:48aadea0db4e1c0bb6a2191286f0481dd256279f5ee020037aa15d2a2909296a\"; readonly analytical_sha: \"2a0309d1d29e623aac0d285fe49cf99717a3c777\"; readonly candidate_schema_version: \"2.0\"; readonly source_candidate_estimates_sha256: \"f87336132f84646606502a5e5acd4e4fa130a9e0ed5676e51f170d8c8ec0c24a\"; }"
+  },
+  "reviewedLinkedConditionReconciliationV1": {
+   "kind": "variable",
+   "type": "{ readonly target_n: 380; readonly target_nonzero_person_n: 22; readonly target_zero_person_n: 358; readonly target_unique_events_n: 109; readonly family_counts: { readonly office: 86; readonly outpatient: 21; readonly emergency: 2; readonly inpatient: 0; }; readonly overall_u09_linked_unique_events_n: 259; readonly events_with_additional_non_u09_condition_link_n: 116; readonly represented_target_strata_n: 99; readonly represented_target_stratum_psu_pairs_n: 185; readonly weighted_target_denominator: 6831165.107549; }"
+  },
+  "ReviewerStatus": {
+   "kind": "type",
+   "declared": "\"draft\" | \"needs_review\" | \"approved\" | \"rejected\""
+  },
+  "Scenario": {
+   "kind": "interface",
+   "declared": "Scenario",
+   "members": [
+    "alternative_window_months: number",
+    "artifact_version: string",
+    "assumption_refs: string[]",
+    "baseline_window_months: number",
+    "capacity: number",
+    "eligible_population: number",
+    "fixed_cost: number",
+    "horizon_months: number",
+    "mechanism: string",
+    "per_participant_cost: number",
+    "reach: number",
+    "scenario_id: string",
+    "target_pathway_step: string"
+   ]
+  },
+  "ScenarioResult": {
+   "kind": "interface",
+   "declared": "ScenarioResult",
+   "members": [
+    "alternative_person_months: number",
+    "baseline_person_months: number",
+    "bounded_effect?: BoundedEffect",
+    "capacity_gap: number",
+    "difference_person_months: number",
+    "fixed_program_cost: number",
+    "intended_reach: number",
+    "program_resource_requirement: number",
+    "reached_participants: number",
+    "scenario_id: string",
+    "target_mechanism: string",
+    "target_pathway_step: string",
+    "variable_program_cost: number"
+   ]
+  },
+  "SourceManifestEntry": {
+   "kind": "interface",
+   "declared": "SourceManifestEntry",
+   "members": [
+    "limitations: string[]",
+    "locator: string",
+    "official_url: string",
+    "release_year: number",
+    "source_name: string",
+    "source_ref: string"
+   ]
+  },
+  "validateAcquisitionHintReference": {
+   "kind": "function",
+   "type": "(value: unknown, path?: string) => ValidationIssue[]",
+   "signatures": [
+    "(value: unknown, path?: string) => ValidationIssue[]"
+   ]
+  },
+  "validateArtifactBundle": {
+   "kind": "function",
+   "type": "(value: unknown) => ValidationIssue[]",
+   "signatures": [
+    "(value: unknown) => ValidationIssue[]"
+   ]
+  },
+  "validateDataRequest": {
+   "kind": "function",
+   "type": "(value: unknown, path?: string) => ValidationIssue[]",
+   "signatures": [
+    "(value: unknown, path?: string) => ValidationIssue[]"
+   ]
+  },
+  "validateEstimate": {
+   "kind": "function",
+   "type": "(value: unknown, path?: string) => ValidationIssue[]",
+   "signatures": [
+    "(value: unknown, path?: string) => ValidationIssue[]"
+   ]
+  },
+  "validateLinkedConditionCandidateDiagnostics": {
+   "kind": "function",
+   "type": "(value: unknown) => LinkedConditionCandidateValidationIssue[]",
+   "signatures": [
+    "(value: unknown) => LinkedConditionCandidateValidationIssue[]"
+   ]
+  },
+  "validateLinkedConditionCandidateEstimate": {
+   "kind": "function",
+   "type": "(value: unknown, path?: string) => LinkedConditionCandidateValidationIssue[]",
+   "signatures": [
+    "(value: unknown, path?: string) => LinkedConditionCandidateValidationIssue[]"
+   ]
+  },
+  "validateLinkedConditionCandidateFile": {
+   "kind": "function",
+   "type": "(value: unknown) => LinkedConditionCandidateValidationIssue[]",
+   "signatures": [
+    "(value: unknown) => LinkedConditionCandidateValidationIssue[]"
+   ]
+  },
+  "validateLinkedConditionCandidateManifest": {
+   "kind": "function",
+   "type": "(value: unknown) => LinkedConditionCandidateValidationIssue[]",
+   "signatures": [
+    "(value: unknown) => LinkedConditionCandidateValidationIssue[]"
+   ]
+  },
+  "validateLinkedConditionProductPolicy": {
+   "kind": "function",
+   "type": "(x: unknown) => LinkedConditionCandidateValidationIssue[]",
+   "signatures": [
+    "(x: unknown) => LinkedConditionCandidateValidationIssue[]"
+   ]
+  },
+  "validateLocalContextArtifact": {
+   "kind": "function",
+   "type": "(value: unknown) => ValidationIssue[]",
+   "signatures": [
+    "(value: unknown) => ValidationIssue[]"
+   ]
+  },
+  "validateLocalContextRecord": {
+   "kind": "function",
+   "type": "(value: unknown, path?: string) => ValidationIssue[]",
+   "signatures": [
+    "(value: unknown, path?: string) => ValidationIssue[]"
+   ]
+  },
+  "validateReviewedLinkedConditionCandidateSnapshot": {
+   "kind": "function",
+   "type": "(x: unknown) => LinkedConditionCandidateValidationIssue[]",
+   "signatures": [
+    "(x: unknown) => LinkedConditionCandidateValidationIssue[]"
+   ]
+  },
+  "validateReviewedLinkedConditionDiagnostics": {
+   "kind": "function",
+   "type": "(x: unknown) => LinkedConditionCandidateValidationIssue[]",
+   "signatures": [
+    "(x: unknown) => LinkedConditionCandidateValidationIssue[]"
+   ]
+  },
+  "validateReviewedLinkedConditionManifest": {
+   "kind": "function",
+   "type": "(x: unknown) => LinkedConditionCandidateValidationIssue[]",
+   "signatures": [
+    "(x: unknown) => LinkedConditionCandidateValidationIssue[]"
+   ]
+  },
+  "validateReviewedLinkedConditionRunManifest": {
+   "kind": "function",
+   "type": "(x: unknown) => LinkedConditionCandidateValidationIssue[]",
+   "signatures": [
+    "(x: unknown) => LinkedConditionCandidateValidationIssue[]"
+   ]
+  },
+  "validateReviewedLinkedConditionSources": {
+   "kind": "function",
+   "type": "(x: unknown) => LinkedConditionCandidateValidationIssue[]",
+   "signatures": [
+    "(x: unknown) => LinkedConditionCandidateValidationIssue[]"
+   ]
+  },
+  "validateScenario": {
+   "kind": "function",
+   "type": "(value: unknown, path?: string) => ValidationIssue[]",
+   "signatures": [
+    "(value: unknown, path?: string) => ValidationIssue[]"
+   ]
+  },
+  "validateScenarioResult": {
+   "kind": "function",
+   "type": "(value: unknown, path?: string) => ValidationIssue[]",
+   "signatures": [
+    "(value: unknown, path?: string) => ValidationIssue[]"
+   ]
+  },
+  "ValidationIssue": {
+   "kind": "interface",
+   "declared": "ValidationIssue",
+   "members": [
+    "message: string",
+    "path: string"
+   ]
+  }
+ },
+ "scenario-engine": {
+  "attachBoundedEffect": {
+   "kind": "function",
+   "type": "(scenario: Scenario, result: ScenarioResult, effect: BoundedEffect) => ScenarioResult",
+   "signatures": [
+    "(scenario: Scenario, result: ScenarioResult, effect: BoundedEffect) => ScenarioResult"
+   ]
+  },
+  "calculateScenario": {
+   "kind": "function",
+   "type": "(scenario: Scenario) => ScenarioResult",
+   "signatures": [
+    "(scenario: Scenario) => ScenarioResult"
+   ]
+  },
+  "capacityGap": {
+   "kind": "function",
+   "type": "(scenario: Scenario) => number",
+   "signatures": [
+    "(scenario: Scenario) => number"
+   ]
+  },
+  "intendedReach": {
+   "kind": "function",
+   "type": "(scenario: Scenario) => number",
+   "signatures": [
+    "(scenario: Scenario) => number"
+   ]
+  },
+  "InvalidScenarioError": {
+   "kind": "class",
+   "declared": "InvalidScenarioError",
+   "members": [
+    "cause?: unknown",
+    "message: string",
+    "name: string",
+    "readonly issues: ValidationIssue[]",
+    "stack?: string"
+   ],
+   "extends": [
+    "Error"
+   ],
+   "type": "typeof InvalidScenarioError"
+  },
+  "InvalidScenarioResultError": {
+   "kind": "class",
+   "declared": "InvalidScenarioResultError",
+   "members": [
+    "cause?: unknown",
+    "message: string",
+    "name: string",
+    "readonly issues: ValidationIssue[]",
+    "stack?: string"
+   ],
+   "extends": [
+    "Error"
+   ],
+   "type": "typeof InvalidScenarioResultError"
+  },
+  "oneWaySensitivity": {
+   "kind": "function",
+   "type": "(scenario: Scenario, field: \"reach\" | \"capacity\" | \"alternative_window_months\", values: number[]) => SensitivityPoint[]",
+   "signatures": [
+    "(scenario: Scenario, field: \"reach\" | \"capacity\" | \"alternative_window_months\", values: number[]) => SensitivityPoint[]"
+   ]
+  },
+  "personMonthExposure": {
+   "kind": "function",
+   "type": "(participants: number, windowMonths: number, horizonMonths: number) => number",
+   "signatures": [
+    "(participants: number, windowMonths: number, horizonMonths: number) => number"
+   ]
+  },
+  "programResourceRequirement": {
+   "kind": "function",
+   "type": "(scenario: Scenario, participants: number) => { fixed: number; variable: number; total: number; }",
+   "signatures": [
+    "(scenario: Scenario, participants: number) => { fixed: number; variable: number; total: number; }"
+   ]
+  },
+  "reachedParticipants": {
+   "kind": "function",
+   "type": "(scenario: Scenario) => number",
+   "signatures": [
+    "(scenario: Scenario) => number"
+   ]
+  },
+  "SensitivityPoint": {
+   "kind": "interface",
+   "declared": "SensitivityPoint",
+   "members": [
+    "input_value: number",
+    "label: string",
+    "result: ScenarioResult"
+   ]
+  }
+ },
+ "evidence-core": {
+  "canDriveScenarioParameter": {
+   "kind": "function",
+   "type": "(evidence: EvidenceRecord, scenario: Scenario) => EvidenceUseDecision",
+   "signatures": [
+    "(evidence: EvidenceRecord, scenario: Scenario) => EvidenceUseDecision"
+   ]
+  },
+  "evidenceClaimLabel": {
+   "kind": "function",
+   "type": "(record: EvidenceRecord) => string",
+   "signatures": [
+    "(record: EvidenceRecord) => string"
+   ]
+  },
+  "EvidenceUseDecision": {
+   "kind": "interface",
+   "declared": "EvidenceUseDecision",
+   "members": [
+    "allowed: boolean",
+    "reason: string"
+   ]
+  }
+ },
+ "condition-adapters": {
+  "ConditionAdapter": {
+   "kind": "interface",
+   "declared": "ConditionAdapter",
+   "members": [
+    "burden_domain_ids: string[]",
+    "compatibility_status: \"reference_implementation\" | \"partial_compatibility\" | \"planned\"",
+    "condition_id: string",
+    "label: string",
+    "limitations: string[]",
+    "pathway_steps: PathwayStep[]",
+    "reference_cohort_id: string",
+    "supported_age_ranges: string[]"
+   ]
+  },
+  "conditionAdapters": {
+   "kind": "variable",
+   "type": "{ [x: string]: ConditionAdapter; }"
+  },
+  "getConditionAdapter": {
+   "kind": "function",
+   "type": "(conditionId: string) => ConditionAdapter | undefined",
+   "signatures": [
+    "(conditionId: string) => ConditionAdapter | undefined"
+   ]
+  },
+  "longCovidAdapter": {
+   "kind": "variable",
+   "type": "ConditionAdapter"
+  },
+  "mecfsAdapter": {
+   "kind": "variable",
+   "type": "ConditionAdapter"
+  },
+  "PathwayStep": {
+   "kind": "interface",
+   "declared": "PathwayStep",
+   "members": [
+    "description: string",
+    "id: string",
+    "label: string"
+   ]
+  }
+ },
+ "brief-core": {
+  "acquisitionWithheldWarning": {
+   "kind": "variable",
+   "type": "\"Optional acquisition guidance was withheld because its reference, release identity or current applicability could not be verified. Valid base requests are retained.\""
+  },
+  "BriefInput": {
+   "kind": "interface",
+   "declared": "BriefInput",
+   "members": [
+    "context: AnalysisContext",
+    "dataRequests: DataRequest[]",
+    "estimates: Estimate[]",
+    "evidence: EvidenceRecord[]",
+    "generatedAt?: string",
+    "localContext: LocalContextRecord[]",
+    "scenario?: { input: Scenario; result: ScenarioResult; } | null"
+   ]
+  },
+  "buildPlanningBrief": {
+   "kind": "variable",
+   "type": "(input: BriefInput) => PlanningBrief",
+   "signatures": [
+    "(input: BriefInput) => PlanningBrief"
+   ]
+  },
+  "createBriefCodec": {
+   "kind": "function",
+   "type": "(resolver: AcquisitionResolver) => Readonly<{ buildPlanningBrief: (input: BriefInput) => PlanningBrief; serializeBriefJson: (brief: PlanningBrief) => string; }>",
+   "signatures": [
+    "(resolver: AcquisitionResolver) => { readonly buildPlanningBrief: (input: BriefInput) => PlanningBrief; readonly serializeBriefJson: (brief: PlanningBrief) => string; }"
+   ]
+  },
+  "PlanningBrief": {
+   "kind": "interface",
+   "declared": "PlanningBrief",
+   "members": [
+    "acquisition_guidance?: AcquisitionGuidance[]",
+    "artifact_version: string",
+    "burden_findings: Estimate[]",
+    "context: AnalysisContext",
+    "data_requests: DataRequest[]",
+    "evidence: EvidenceRecord[]",
+    "generated_at: string",
+    "local_context: LocalContextRecord[]",
+    "scenario: { input: Scenario; result: ScenarioResult; } | null",
+    "title: string",
+    "warnings: string[]"
+   ]
+  },
+  "serializeBriefJson": {
+   "kind": "variable",
+   "type": "(brief: PlanningBrief) => string",
+   "signatures": [
+    "(brief: PlanningBrief) => string"
+   ]
+  },
+  "staleSelectedDataRequestExclusionWarning": {
+   "kind": "function",
+   "type": "(count: number) => string | null",
+   "signatures": [
+    "(count: number) => string | null"
+   ]
+  }
+ },
+ "acquisition-hints": {
+  "AcquisitionGuidance": {
+   "kind": "interface",
+   "declared": "AcquisitionGuidance",
+   "members": [
+    "field_crosswalk: { existing_field: string; possible_spec_elements: string | null; limits: string; }[]",
+    "local_confirmation: string[]",
+    "local_only_preparation: string",
+    "mapping_limits: string[]",
+    "minimum_necessary_output: string",
+    "official_support: { version: \"FHIR R4 4.0.1\"; url: string; source_path: string; source_sha256: string; retrieved_at: string; publication_note: string; elements: { element: string; official_locator: string; }[]; }[]",
+    "privacy_boundary: \"Aggregate steward-approved summaries and counts only. No individual-level intervals, raw dates, identifiers, patient or employee records enter this app.\"",
+    "privacy_limits: string[]",
+    "reference: AcquisitionHintReference",
+    "registry_id: string",
+    "registry_version: string",
+    "request_id: string",
+    "required_information: string[]",
+    "review: { reviewer: string; reviewed_at: string; evidence_url: string; code_commit: string; }",
+    "source_owner_system: string",
+    "wording: string"
+   ]
+  },
+  "AcquisitionMapping": {
+   "kind": "interface",
+   "declared": "AcquisitionMapping",
+   "members": [
+    "candidate_hint_id: \"ACQ26-TIMING-01\" | \"ACQ26-CAPACITY-01\"",
+    "candidate_version: \"2\"",
+    "eligible_request_family: string",
+    "existing_requested_fields: string[]",
+    "field_crosswalk: { existing_field: string; possible_spec_elements: string | null; limits: string; }[]",
+    "local_confirmation: string[]",
+    "local_only_preparation: string",
+    "mapping_limits: string[]",
+    "minimum_necessary_output: string",
+    "official_support: { version: \"FHIR R4 4.0.1\"; url: string; source_path: string; source_sha256: string; retrieved_at: string; publication_note: string; elements: { element: string; official_locator: string; }[]; }[]",
+    "preparation_recommendation: string",
+    "privacy_limits: string[]",
+    "proposed_guidance_wording: string",
+    "required_information: string[]",
+    "review_provenance: unknown",
+    "review_status: string",
+    "source_owner_system: string"
+   ]
+  },
+  "AcquisitionReleaseBytes": {
+   "kind": "interface",
+   "declared": "AcquisitionReleaseBytes",
+   "members": [
+    "applicationContext: string",
+    "artifact: string",
+    "mapping: string",
+    "policy: string",
+    "registry: string",
+    "review: string",
+    "sourceIndex: string"
+   ]
+  },
+  "AcquisitionResolution": {
+   "kind": "interface",
+   "declared": "AcquisitionResolution",
+   "members": [
+    "guidance?: AcquisitionGuidance",
+    "request: DataRequest",
+    "state: \"not_offered\" | \"awaiting_admission\" | \"available_to_attach\" | \"reviewed\" | \"invalid_reference\" | \"stale_reference\" | \"not_applicable\" | \"artifact_unavailable\""
+   ]
+  },
+  "acquisitionResolver": {
+   "kind": "variable",
+   "type": "AcquisitionResolver"
+  },
+  "AcquisitionResolver": {
+   "kind": "interface",
+   "declared": "AcquisitionResolver",
+   "members": [
+    "attach: (request: unknown, context: AnalysisContext, scenario: Scenario | null) => AcquisitionResolution",
+    "resolve: (request: unknown, context: AnalysisContext, scenario: Scenario | null) => AcquisitionResolution"
+   ]
+  },
+  "AcquisitionState": {
+   "kind": "type",
+   "declared": "\"not_offered\" | \"awaiting_admission\" | \"available_to_attach\" | \"reviewed\" | \"invalid_reference\" | \"stale_reference\" | \"not_applicable\" | \"artifact_unavailable\""
+  },
+  "aggregatePrivacyBoundary": {
+   "kind": "variable",
+   "type": "\"Aggregate steward-approved summaries and counts only. No individual-level intervals, raw dates, identifiers, patient or employee records enter this app.\""
+  },
+  "createAcquisitionResolver": {
+   "kind": "function",
+   "type": "(bytes: AcquisitionReleaseBytes | null, allowedRegistryDigests: readonly string[]) => AcquisitionResolver",
+   "signatures": [
+    "(bytes: AcquisitionReleaseBytes | null, allowedRegistryDigests: readonly string[]) => AcquisitionResolver"
+   ]
+  },
+  "createSensitivityDataRequest": {
+   "kind": "function",
+   "type": "(scenario: Scenario, field: SensitivityField) => DataRequest",
+   "signatures": [
+    "(scenario: Scenario, field: \"capacity\" | \"reach\" | \"alternative_window_months\") => DataRequest"
+   ]
+  },
+  "dataRequestsMatch": {
+   "kind": "function",
+   "type": "(stored: DataRequest, expected: DataRequest) => boolean",
+   "signatures": [
+    "(stored: DataRequest, expected: DataRequest) => boolean"
+   ]
+  },
+  "getSensitivityDataRequestStatus": {
+   "kind": "function",
+   "type": "(scenario: Scenario, field: SensitivityField, requests: DataRequest[]) => SensitivityDataRequestStatus",
+   "signatures": [
+    "(scenario: Scenario, field: \"capacity\" | \"reach\" | \"alternative_window_months\", requests: DataRequest[]) => \"absent\" | \"current\" | \"stale\""
+   ]
+  },
+  "isDataRequestCurrentForScenario": {
+   "kind": "function",
+   "type": "(request: DataRequest, scenario: Scenario | null) => boolean",
+   "signatures": [
+    "(request: DataRequest, scenario: Scenario | null) => boolean"
+   ]
+  },
+  "requestFingerprint": {
+   "kind": "function",
+   "type": "(request: unknown, context: AnalysisContext, scenario: Scenario) => string",
+   "signatures": [
+    "(request: unknown, context: AnalysisContext, scenario: Scenario) => string"
+   ]
+  },
+  "sanitizeBaseDataRequest": {
+   "kind": "function",
+   "type": "(value: unknown) => DataRequest",
+   "signatures": [
+    "(value: unknown) => DataRequest"
+   ]
+  },
+  "sensitivityDataRequestId": {
+   "kind": "function",
+   "type": "(field: SensitivityField) => string",
+   "signatures": [
+    "(field: \"capacity\" | \"reach\" | \"alternative_window_months\") => string"
+   ]
+  },
+  "SensitivityDataRequestStatus": {
+   "kind": "type",
+   "declared": "\"absent\" | \"current\" | \"stale\""
+  },
+  "SensitivityField": {
+   "kind": "type",
+   "declared": "\"capacity\" | \"reach\" | \"alternative_window_months\""
+  },
+  "sensitivityFieldFromDataRequestId": {
+   "kind": "function",
+   "type": "(requestId: string) => SensitivityField | null",
+   "signatures": [
+    "(requestId: string) => SensitivityField | null"
+   ]
+  }
+ },
+ "planning-guidance": {
+  "AllowedUse": {
+   "kind": "type",
+   "declared": "\"planning_option_to_investigate\" | \"background_context_only\""
+  },
+  "assertCandidate": {
+   "kind": "function",
+   "type": "(x: unknown) => asserts x is ModelCandidateV1",
+   "signatures": [
+    "(x: unknown) => asserts x is { schema_version: \"pg.v1\"; snapshot_fingerprint: string; finding_ids: string[]; options: { reference_id: string; claim_code: string; }[]; requests: { template_id: string; gap_id: string; hint_id: string | null; }[]; }"
+   ]
+  },
+  "assertEgress": {
+   "kind": "function",
+   "type": "(x: unknown) => asserts x is ModelEgressV1",
+   "signatures": [
+    "(x: unknown) => asserts x is { schema_version: \"pg.v1\"; snapshot_fingerprint: string; context: Context; finding_ids: string[]; local_ids: string[]; assumption_ids: string[]; result_ids: string[]; warning_ids: string[]; gap_ids: string[]; template_ids: string[]; references: { id: string; claim_code: string; }[]; hint_ids: string[]; }"
+   ]
+  },
+  "assertInput": {
+   "kind": "function",
+   "type": "(x: unknown, authority?: VerifiedAuthority) => asserts x is PlanningGuidanceInputV1",
+   "signatures": [
+    "(x: unknown, authority?: { narrative: { release_sha256: string; review_sha256: string; applicability_sha256: string; applicability_policy_version: string; applicability_policy_sha256: string; references: Reference[]; } | null; hints: { release_sha256: string; policy_sha256: string; hints: Hint[]; } | null; }) => asserts x is { schema_version: \"pg.v1\"; captured_at: string; versions: { national_release_id: string; national_release_sha256: string; brief_version: string; brief_content_sha256: string; scenario_revision: string; scenario_content_sha256: string; local_release_id: string | null; local_release_sha256: string | null; request_policy_id: string; request_policy_sha256: string; }; context: Context; national_estimate_count: 21; national_findings: (NumericRecord & { role: \"national_reviewed\"; estimate_id: string; uncertainty_kind: \"iqr\" | \"confidence_interval\" | \"none\"; lower: number | null; upper: number | null; })[]; selected_local_context: (NumericRecord & { role: \"local_context\"; vintage_id: string; })[]; scenario_assumptions: (NumericRecord & { role: \"analyst_assumption\"; })[]; deterministic_results: (NumericRecord & { role: \"deterministic_planning_result\"; metric_code: \"person_months\" | \"planning_count\" | \"resource_units\"; })[]; warnings: { id: string; code: string; }[]; gaps: { id: string; pathway_step_id: string; mechanism_id: string; }[]; request_templates: { id: string; gap_id: string; field_codes: string[]; owner_code: string; granularity_code: string; window_code: string; privacy_code: string; }[]; narrative_admission: { release_sha256: string | null; review_sha256: string | null; applicability_sha256: string | null; applicability_policy_version: string | null; applicability_policy_sha256: string | null; references: Reference[]; }; hint_admission: { release_sha256: string | null; policy_sha256: string | null; hints: Hint[]; }; }"
+   ]
+  },
+  "assertOutput": {
+   "kind": "function",
+   "type": "(out: unknown, input: PlanningGuidanceInputV1, authority: VerifiedAuthority) => asserts out is PlanningGuidanceOutputV1",
+   "signatures": [
+    "(out: unknown, input: { schema_version: \"pg.v1\"; captured_at: string; versions: { national_release_id: string; national_release_sha256: string; brief_version: string; brief_content_sha256: string; scenario_revision: string; scenario_content_sha256: string; local_release_id: string | null; local_release_sha256: string | null; request_policy_id: string; request_policy_sha256: string; }; context: Context; national_estimate_count: 21; national_findings: (NumericRecord & { role: \"national_reviewed\"; estimate_id: string; uncertainty_kind: \"iqr\" | \"confidence_interval\" | \"none\"; lower: number | null; upper: number | null; })[]; selected_local_context: (NumericRecord & { role: \"local_context\"; vintage_id: string; })[]; scenario_assumptions: (NumericRecord & { role: \"analyst_assumption\"; })[]; deterministic_results: (NumericRecord & { role: \"deterministic_planning_result\"; metric_code: \"person_months\" | \"planning_count\" | \"resource_units\"; })[]; warnings: { id: string; code: string; }[]; gaps: { id: string; pathway_step_id: string; mechanism_id: string; }[]; request_templates: { id: string; gap_id: string; field_codes: string[]; owner_code: string; granularity_code: string; window_code: string; privacy_code: string; }[]; narrative_admission: { release_sha256: string | null; review_sha256: string | null; applicability_sha256: string | null; applicability_policy_version: string | null; applicability_policy_sha256: string | null; references: Reference[]; }; hint_admission: { release_sha256: string | null; policy_sha256: string | null; hints: Hint[]; }; }, authority: { narrative: { release_sha256: string; review_sha256: string; applicability_sha256: string; applicability_policy_version: string; applicability_policy_sha256: string; references: Reference[]; } | null; hints: { release_sha256: string; policy_sha256: string; hints: Hint[]; } | null; }) => asserts out is { schema_version: \"pg.v1\"; snapshot_fingerprint: string; generation: { state: \"available\" | \"unavailable\" | \"invalid\" | \"stale\"; id: string | null; at: string | null; }; sections: { findings: \"available\" | \"unavailable\" | \"insufficient_evidence\"; interventions: \"available\" | \"unavailable\" | \"insufficient_evidence\"; requests: \"available\" | \"unavailable\" | \"insufficient_evidence\"; }; supported_findings: (NumericRecord & { role: \"national_reviewed\"; estimate_id: string; uncertainty_kind: \"iqr\" | \"confidence_interval\" | \"none\"; lower: number | null; upper: number | null; })[]; intervention_options: { proposal_id: string; reference_id: string; claim_code: string; release_sha256: string; review_sha256: string; applicability_sha256: string; applicability_policy_version: string; applicability_decision_id: string; applicability_policy_sha256: string; disposition: \"pending\"; }[]; draft_requests: { proposal_id: string; template: { id: string; gap_id: string; field_codes: string[]; owner_code: string; granularity_code: string; window_code: string; privacy_code: string; }; hint_id: string | null; disposition: \"pending\"; }[]; warnings: { id: string; code: string; }[]; boundary: \"AI_assisted_draft_independently_verify\" | \"no_model_execution\"; }"
+   ]
+  },
+  "bindCandidate": {
+   "kind": "function",
+   "type": "(input: PlanningGuidanceInputV1, authority: VerifiedAuthority, candidate: unknown, generationId: string, generatedAt: string, expectedFingerprint: string) => PlanningGuidanceOutputV1",
+   "signatures": [
+    "(input: { schema_version: \"pg.v1\"; captured_at: string; versions: { national_release_id: string; national_release_sha256: string; brief_version: string; brief_content_sha256: string; scenario_revision: string; scenario_content_sha256: string; local_release_id: string | null; local_release_sha256: string | null; request_policy_id: string; request_policy_sha256: string; }; context: Context; national_estimate_count: 21; national_findings: (NumericRecord & { role: \"national_reviewed\"; estimate_id: string; uncertainty_kind: \"iqr\" | \"confidence_interval\" | \"none\"; lower: number | null; upper: number | null; })[]; selected_local_context: (NumericRecord & { role: \"local_context\"; vintage_id: string; })[]; scenario_assumptions: (NumericRecord & { role: \"analyst_assumption\"; })[]; deterministic_results: (NumericRecord & { role: \"deterministic_planning_result\"; metric_code: \"person_months\" | \"planning_count\" | \"resource_units\"; })[]; warnings: { id: string; code: string; }[]; gaps: { id: string; pathway_step_id: string; mechanism_id: string; }[]; request_templates: { id: string; gap_id: string; field_codes: string[]; owner_code: string; granularity_code: string; window_code: string; privacy_code: string; }[]; narrative_admission: { release_sha256: string | null; review_sha256: string | null; applicability_sha256: string | null; applicability_policy_version: string | null; applicability_policy_sha256: string | null; references: Reference[]; }; hint_admission: { release_sha256: string | null; policy_sha256: string | null; hints: Hint[]; }; }, authority: { narrative: { release_sha256: string; review_sha256: string; applicability_sha256: string; applicability_policy_version: string; applicability_policy_sha256: string; references: Reference[]; } | null; hints: { release_sha256: string; policy_sha256: string; hints: Hint[]; } | null; }, candidate: unknown, generationId: string, generatedAt: string, expectedFingerprint: string) => { schema_version: \"pg.v1\"; snapshot_fingerprint: string; generation: { state: \"available\" | \"unavailable\" | \"invalid\" | \"stale\"; id: string | null; at: string | null; }; sections: { findings: \"available\" | \"unavailable\" | \"insufficient_evidence\"; interventions: \"available\" | \"unavailable\" | \"insufficient_evidence\"; requests: \"available\" | \"unavailable\" | \"insufficient_evidence\"; }; supported_findings: (NumericRecord & { role: \"national_reviewed\"; estimate_id: string; uncertainty_kind: \"iqr\" | \"confidence_interval\" | \"none\"; lower: number | null; upper: number | null; })[]; intervention_options: { proposal_id: string; reference_id: string; claim_code: string; release_sha256: string; review_sha256: string; applicability_sha256: string; applicability_policy_version: string; applicability_decision_id: string; applicability_policy_sha256: string; disposition: \"pending\"; }[]; draft_requests: { proposal_id: string; template: { id: string; gap_id: string; field_codes: string[]; owner_code: string; granularity_code: string; window_code: string; privacy_code: string; }; hint_id: string | null; disposition: \"pending\"; }[]; warnings: { id: string; code: string; }[]; boundary: \"AI_assisted_draft_independently_verify\" | \"no_model_execution\"; }"
+   ]
+  },
+  "canonicalJSON": {
+   "kind": "function",
+   "type": "(x: unknown) => string",
+   "signatures": [
+    "(x: unknown) => string"
+   ]
+  },
+  "compareIds": {
+   "kind": "variable",
+   "type": "(a: string, b: string) => number",
+   "signatures": [
+    "(a: string, b: string) => number"
+   ]
+  },
+  "Context": {
+   "kind": "type",
+   "declared": "{ condition_id: string; cohort_id: string; population_id: string; setting_id: string; payer_id: string; geography_id: string; pathway_step_id: string; mechanism_id: string; }",
+   "members": [
+    "cohort_id: string",
+    "condition_id: string",
+    "geography_id: string",
+    "mechanism_id: string",
+    "pathway_step_id: string",
+    "payer_id: string",
+    "population_id: string",
+    "setting_id: string"
+   ]
+  },
+  "contextKey": {
+   "kind": "function",
+   "type": "(c: Context) => string",
+   "signatures": [
+    "(c: { condition_id: string; cohort_id: string; population_id: string; setting_id: string; payer_id: string; geography_id: string; pathway_step_id: string; mechanism_id: string; }) => string"
+   ]
+  },
+  "Digest": {
+   "kind": "type",
+   "declared": "string"
+  },
+  "fingerprint": {
+   "kind": "function",
+   "type": "(input: PlanningGuidanceInputV1, authority: VerifiedAuthority) => string",
+   "signatures": [
+    "(input: { schema_version: \"pg.v1\"; captured_at: string; versions: { national_release_id: string; national_release_sha256: string; brief_version: string; brief_content_sha256: string; scenario_revision: string; scenario_content_sha256: string; local_release_id: string | null; local_release_sha256: string | null; request_policy_id: string; request_policy_sha256: string; }; context: Context; national_estimate_count: 21; national_findings: (NumericRecord & { role: \"national_reviewed\"; estimate_id: string; uncertainty_kind: \"iqr\" | \"confidence_interval\" | \"none\"; lower: number | null; upper: number | null; })[]; selected_local_context: (NumericRecord & { role: \"local_context\"; vintage_id: string; })[]; scenario_assumptions: (NumericRecord & { role: \"analyst_assumption\"; })[]; deterministic_results: (NumericRecord & { role: \"deterministic_planning_result\"; metric_code: \"person_months\" | \"planning_count\" | \"resource_units\"; })[]; warnings: { id: string; code: string; }[]; gaps: { id: string; pathway_step_id: string; mechanism_id: string; }[]; request_templates: { id: string; gap_id: string; field_codes: string[]; owner_code: string; granularity_code: string; window_code: string; privacy_code: string; }[]; narrative_admission: { release_sha256: string | null; review_sha256: string | null; applicability_sha256: string | null; applicability_policy_version: string | null; applicability_policy_sha256: string | null; references: Reference[]; }; hint_admission: { release_sha256: string | null; policy_sha256: string | null; hints: Hint[]; }; }, authority: { narrative: { release_sha256: string; review_sha256: string; applicability_sha256: string; applicability_policy_version: string; applicability_policy_sha256: string; references: Reference[]; } | null; hints: { release_sha256: string; policy_sha256: string; hints: Hint[]; } | null; }) => string"
+   ]
+  },
+  "Hint": {
+   "kind": "type",
+   "declared": "{ id: string; template_id: string; context_key: string; }",
+   "members": [
+    "context_key: string",
+    "id: string",
+    "template_id: string"
+   ]
+  },
+  "Id": {
+   "kind": "type",
+   "declared": "string"
+  },
+  "ModelCandidateV1": {
+   "kind": "type",
+   "declared": "{ schema_version: \"pg.v1\"; snapshot_fingerprint: string; finding_ids: string[]; options: { reference_id: string; claim_code: string; }[]; requests: { template_id: string; gap_id: string; hint_id: string | null; }[]; }",
+   "members": [
+    "finding_ids: string[]",
+    "options: { reference_id: string; claim_code: string; }[]",
+    "requests: { template_id: string; gap_id: string; hint_id: string | null; }[]",
+    "schema_version: \"pg.v1\"",
+    "snapshot_fingerprint: string"
+   ]
+  },
+  "ModelEgressV1": {
+   "kind": "type",
+   "declared": "{ schema_version: \"pg.v1\"; snapshot_fingerprint: string; context: Context; finding_ids: string[]; local_ids: string[]; assumption_ids: string[]; result_ids: string[]; warning_ids: string[]; gap_ids: string[]; template_ids: string[]; references: { id: string; claim_code: string; }[]; hint_ids: string[]; }",
+   "members": [
+    "assumption_ids: string[]",
+    "context: { condition_id: string; cohort_id: string; population_id: string; setting_id: string; payer_id: string; geography_id: string; pathway_step_id: string; mechanism_id: string; }",
+    "finding_ids: string[]",
+    "gap_ids: string[]",
+    "hint_ids: string[]",
+    "local_ids: string[]",
+    "references: { id: string; claim_code: string; }[]",
+    "result_ids: string[]",
+    "schema_version: \"pg.v1\"",
+    "snapshot_fingerprint: string",
+    "template_ids: string[]",
+    "warning_ids: string[]"
+   ]
+  },
+  "NumericRecord": {
+   "kind": "type",
+   "declared": "{ id: string; source_id: string; value: number; unit_code: string; role: \"national_reviewed\" | \"local_context\" | \"analyst_assumption\" | \"deterministic_planning_result\"; }",
+   "members": [
+    "id: string",
+    "role: \"national_reviewed\" | \"local_context\" | \"analyst_assumption\" | \"deterministic_planning_result\"",
+    "source_id: string",
+    "unit_code: string",
+    "value: number"
+   ]
+  },
+  "PlanningGuidanceInputV1": {
+   "kind": "type",
+   "declared": "{ schema_version: \"pg.v1\"; captured_at: string; versions: { national_release_id: string; national_release_sha256: string; brief_version: string; brief_content_sha256: string; scenario_revision: string; scenario_content_sha256: string; local_release_id: string | null; local_release_sha256: string | null; request_policy_id: string; request_policy_sha256: string; }; context: Context; national_estimate_count: 21; national_findings: (NumericRecord & { role: \"national_reviewed\"; estimate_id: string; uncertainty_kind: \"iqr\" | \"confidence_interval\" | \"none\"; lower: number | null; upper: number | null; })[]; selected_local_context: (NumericRecord & { role: \"local_context\"; vintage_id: string; })[]; scenario_assumptions: (NumericRecord & { role: \"analyst_assumption\"; })[]; deterministic_results: (NumericRecord & { role: \"deterministic_planning_result\"; metric_code: \"person_months\" | \"planning_count\" | \"resource_units\"; })[]; warnings: { id: string; code: string; }[]; gaps: { id: string; pathway_step_id: string; mechanism_id: string; }[]; request_templates: { id: string; gap_id: string; field_codes: string[]; owner_code: string; granularity_code: string; window_code: string; privacy_code: string; }[]; narrative_admission: { release_sha256: string | null; review_sha256: string | null; applicability_sha256: string | null; applicability_policy_version: string | null; applicability_policy_sha256: string | null; references: Reference[]; }; hint_admission: { release_sha256: string | null; policy_sha256: string | null; hints: Hint[]; }; }",
+   "members": [
+    "captured_at: string",
+    "context: { condition_id: string; cohort_id: string; population_id: string; setting_id: string; payer_id: string; geography_id: string; pathway_step_id: string; mechanism_id: string; }",
+    "deterministic_results: (NumericRecord & { role: \"deterministic_planning_result\"; metric_code: \"person_months\" | \"planning_count\" | \"resource_units\"; })[]",
+    "gaps: { id: string; pathway_step_id: string; mechanism_id: string; }[]",
+    "hint_admission: { release_sha256: string | null; policy_sha256: string | null; hints: Hint[]; }",
+    "narrative_admission: { release_sha256: string | null; review_sha256: string | null; applicability_sha256: string | null; applicability_policy_version: string | null; applicability_policy_sha256: string | null; references: Reference[]; }",
+    "national_estimate_count: 21",
+    "national_findings: (NumericRecord & { role: \"national_reviewed\"; estimate_id: string; uncertainty_kind: \"iqr\" | \"confidence_interval\" | \"none\"; lower: number | null; upper: number | null; })[]",
+    "request_templates: { id: string; gap_id: string; field_codes: string[]; owner_code: string; granularity_code: string; window_code: string; privacy_code: string; }[]",
+    "scenario_assumptions: (NumericRecord & { role: \"analyst_assumption\"; })[]",
+    "schema_version: \"pg.v1\"",
+    "selected_local_context: (NumericRecord & { role: \"local_context\"; vintage_id: string; })[]",
+    "versions: { national_release_id: string; national_release_sha256: string; brief_version: string; brief_content_sha256: string; scenario_revision: string; scenario_content_sha256: string; local_release_id: string | null; local_release_sha256: string | null; request_policy_id: string; request_policy_sha256: string; }",
+    "warnings: { id: string; code: string; }[]"
+   ]
+  },
+  "PlanningGuidanceOutputV1": {
+   "kind": "type",
+   "declared": "{ schema_version: \"pg.v1\"; snapshot_fingerprint: string; generation: { state: \"available\" | \"unavailable\" | \"invalid\" | \"stale\"; id: string | null; at: string | null; }; sections: { findings: \"available\" | \"unavailable\" | \"insufficient_evidence\"; interventions: \"available\" | \"unavailable\" | \"insufficient_evidence\"; requests: \"available\" | \"unavailable\" | \"insufficient_evidence\"; }; supported_findings: (NumericRecord & { role: \"national_reviewed\"; estimate_id: string; uncertainty_kind: \"iqr\" | \"confidence_interval\" | \"none\"; lower: number | null; upper: number | null; })[]; intervention_options: { proposal_id: string; reference_id: string; claim_code: string; release_sha256: string; review_sha256: string; applicability_sha256: string; applicability_policy_version: string; applicability_decision_id: string; applicability_policy_sha256: string; disposition: \"pending\"; }[]; draft_requests: { proposal_id: string; template: { id: string; gap_id: string; field_codes: string[]; owner_code: string; granularity_code: string; window_code: string; privacy_code: string; }; hint_id: string | null; disposition: \"pending\"; }[]; warnings: { id: string; code: string; }[]; boundary: \"AI_assisted_draft_independently_verify\" | \"no_model_execution\"; }",
+   "members": [
+    "boundary: \"AI_assisted_draft_independently_verify\" | \"no_model_execution\"",
+    "draft_requests: { proposal_id: string; template: { id: string; gap_id: string; field_codes: string[]; owner_code: string; granularity_code: string; window_code: string; privacy_code: string; }; hint_id: string | null; disposition: \"pending\"; }[]",
+    "generation: { state: \"available\" | \"unavailable\" | \"invalid\" | \"stale\"; id: string | null; at: string | null; }",
+    "intervention_options: { proposal_id: string; reference_id: string; claim_code: string; release_sha256: string; review_sha256: string; applicability_sha256: string; applicability_policy_version: string; applicability_decision_id: string; applicability_policy_sha256: string; disposition: \"pending\"; }[]",
+    "schema_version: \"pg.v1\"",
+    "sections: { findings: \"available\" | \"unavailable\" | \"insufficient_evidence\"; interventions: \"available\" | \"unavailable\" | \"insufficient_evidence\"; requests: \"available\" | \"unavailable\" | \"insufficient_evidence\"; }",
+    "snapshot_fingerprint: string",
+    "supported_findings: (NumericRecord & { role: \"national_reviewed\"; estimate_id: string; uncertainty_kind: \"iqr\" | \"confidence_interval\" | \"none\"; lower: number | null; upper: number | null; })[]",
+    "warnings: { id: string; code: string; }[]"
+   ]
+  },
+  "projectEgress": {
+   "kind": "function",
+   "type": "(input: PlanningGuidanceInputV1, authority: VerifiedAuthority) => ModelEgressV1",
+   "signatures": [
+    "(input: { schema_version: \"pg.v1\"; captured_at: string; versions: { national_release_id: string; national_release_sha256: string; brief_version: string; brief_content_sha256: string; scenario_revision: string; scenario_content_sha256: string; local_release_id: string | null; local_release_sha256: string | null; request_policy_id: string; request_policy_sha256: string; }; context: Context; national_estimate_count: 21; national_findings: (NumericRecord & { role: \"national_reviewed\"; estimate_id: string; uncertainty_kind: \"iqr\" | \"confidence_interval\" | \"none\"; lower: number | null; upper: number | null; })[]; selected_local_context: (NumericRecord & { role: \"local_context\"; vintage_id: string; })[]; scenario_assumptions: (NumericRecord & { role: \"analyst_assumption\"; })[]; deterministic_results: (NumericRecord & { role: \"deterministic_planning_result\"; metric_code: \"person_months\" | \"planning_count\" | \"resource_units\"; })[]; warnings: { id: string; code: string; }[]; gaps: { id: string; pathway_step_id: string; mechanism_id: string; }[]; request_templates: { id: string; gap_id: string; field_codes: string[]; owner_code: string; granularity_code: string; window_code: string; privacy_code: string; }[]; narrative_admission: { release_sha256: string | null; review_sha256: string | null; applicability_sha256: string | null; applicability_policy_version: string | null; applicability_policy_sha256: string | null; references: Reference[]; }; hint_admission: { release_sha256: string | null; policy_sha256: string | null; hints: Hint[]; }; }, authority: { narrative: { release_sha256: string; review_sha256: string; applicability_sha256: string; applicability_policy_version: string; applicability_policy_sha256: string; references: Reference[]; } | null; hints: { release_sha256: string; policy_sha256: string; hints: Hint[]; } | null; }) => { schema_version: \"pg.v1\"; snapshot_fingerprint: string; context: Context; finding_ids: string[]; local_ids: string[]; assumption_ids: string[]; result_ids: string[]; warning_ids: string[]; gap_ids: string[]; template_ids: string[]; references: { id: string; claim_code: string; }[]; hint_ids: string[]; }"
+   ]
+  },
+  "Reference": {
+   "kind": "type",
+   "declared": "{ id: string; claim_code: string; context_key: string; allowed_use: AllowedUse; applicability_decision_id: string; }",
+   "members": [
+    "allowed_use: \"planning_option_to_investigate\" | \"background_context_only\"",
+    "applicability_decision_id: string",
+    "claim_code: string",
+    "context_key: string",
+    "id: string"
+   ]
+  },
+  "requestProposalId": {
+   "kind": "function",
+   "type": "(args: { snapshotFingerprint: string; generationId: string; templateId: string; gapId: string; hintId: string | null; hintReleaseSha256: string | null; }) => string",
+   "signatures": [
+    "(args: { snapshotFingerprint: string; generationId: string; templateId: string; gapId: string; hintId: string | null; hintReleaseSha256: string | null; }) => string"
+   ]
+  },
+  "snapshotContent": {
+   "kind": "function",
+   "type": "(input: PlanningGuidanceInputV1, authority: VerifiedAuthority) => Record<string, any>",
+   "signatures": [
+    "(input: { schema_version: \"pg.v1\"; captured_at: string; versions: { national_release_id: string; national_release_sha256: string; brief_version: string; brief_content_sha256: string; scenario_revision: string; scenario_content_sha256: string; local_release_id: string | null; local_release_sha256: string | null; request_policy_id: string; request_policy_sha256: string; }; context: Context; national_estimate_count: 21; national_findings: (NumericRecord & { role: \"national_reviewed\"; estimate_id: string; uncertainty_kind: \"iqr\" | \"confidence_interval\" | \"none\"; lower: number | null; upper: number | null; })[]; selected_local_context: (NumericRecord & { role: \"local_context\"; vintage_id: string; })[]; scenario_assumptions: (NumericRecord & { role: \"analyst_assumption\"; })[]; deterministic_results: (NumericRecord & { role: \"deterministic_planning_result\"; metric_code: \"person_months\" | \"planning_count\" | \"resource_units\"; })[]; warnings: { id: string; code: string; }[]; gaps: { id: string; pathway_step_id: string; mechanism_id: string; }[]; request_templates: { id: string; gap_id: string; field_codes: string[]; owner_code: string; granularity_code: string; window_code: string; privacy_code: string; }[]; narrative_admission: { release_sha256: string | null; review_sha256: string | null; applicability_sha256: string | null; applicability_policy_version: string | null; applicability_policy_sha256: string | null; references: Reference[]; }; hint_admission: { release_sha256: string | null; policy_sha256: string | null; hints: Hint[]; }; }, authority: { narrative: { release_sha256: string; review_sha256: string; applicability_sha256: string; applicability_policy_version: string; applicability_policy_sha256: string; references: Reference[]; } | null; hints: { release_sha256: string; policy_sha256: string; hints: Hint[]; } | null; }) => { [x: string]: any; }"
+   ]
+  },
+  "unavailable": {
+   "kind": "function",
+   "type": "(input: PlanningGuidanceInputV1, authority: VerifiedAuthority, state?: \"unavailable\" | \"invalid\" | \"stale\") => PlanningGuidanceOutputV1",
+   "signatures": [
+    "(input: { schema_version: \"pg.v1\"; captured_at: string; versions: { national_release_id: string; national_release_sha256: string; brief_version: string; brief_content_sha256: string; scenario_revision: string; scenario_content_sha256: string; local_release_id: string | null; local_release_sha256: string | null; request_policy_id: string; request_policy_sha256: string; }; context: Context; national_estimate_count: 21; national_findings: (NumericRecord & { role: \"national_reviewed\"; estimate_id: string; uncertainty_kind: \"iqr\" | \"confidence_interval\" | \"none\"; lower: number | null; upper: number | null; })[]; selected_local_context: (NumericRecord & { role: \"local_context\"; vintage_id: string; })[]; scenario_assumptions: (NumericRecord & { role: \"analyst_assumption\"; })[]; deterministic_results: (NumericRecord & { role: \"deterministic_planning_result\"; metric_code: \"person_months\" | \"planning_count\" | \"resource_units\"; })[]; warnings: { id: string; code: string; }[]; gaps: { id: string; pathway_step_id: string; mechanism_id: string; }[]; request_templates: { id: string; gap_id: string; field_codes: string[]; owner_code: string; granularity_code: string; window_code: string; privacy_code: string; }[]; narrative_admission: { release_sha256: string | null; review_sha256: string | null; applicability_sha256: string | null; applicability_policy_version: string | null; applicability_policy_sha256: string | null; references: Reference[]; }; hint_admission: { release_sha256: string | null; policy_sha256: string | null; hints: Hint[]; }; }, authority: { narrative: { release_sha256: string; review_sha256: string; applicability_sha256: string; applicability_policy_version: string; applicability_policy_sha256: string; references: Reference[]; } | null; hints: { release_sha256: string; policy_sha256: string; hints: Hint[]; } | null; }, state?: \"unavailable\" | \"invalid\" | \"stale\") => { schema_version: \"pg.v1\"; snapshot_fingerprint: string; generation: { state: \"available\" | \"unavailable\" | \"invalid\" | \"stale\"; id: string | null; at: string | null; }; sections: { findings: \"available\" | \"unavailable\" | \"insufficient_evidence\"; interventions: \"available\" | \"unavailable\" | \"insufficient_evidence\"; requests: \"available\" | \"unavailable\" | \"insufficient_evidence\"; }; supported_findings: (NumericRecord & { role: \"national_reviewed\"; estimate_id: string; uncertainty_kind: \"iqr\" | \"confidence_interval\" | \"none\"; lower: number | null; upper: number | null; })[]; intervention_options: { proposal_id: string; reference_id: string; claim_code: string; release_sha256: string; review_sha256: string; applicability_sha256: string; applicability_policy_version: string; applicability_decision_id: string; applicability_policy_sha256: string; disposition: \"pending\"; }[]; draft_requests: { proposal_id: string; template: { id: string; gap_id: string; field_codes: string[]; owner_code: string; granularity_code: string; window_code: string; privacy_code: string; }; hint_id: string | null; disposition: \"pending\"; }[]; warnings: { id: string; code: string; }[]; boundary: \"AI_assisted_draft_independently_verify\" | \"no_model_execution\"; }"
+   ]
+  },
+  "validate": {
+   "kind": "function",
+   "type": "<T>(x: unknown, fn: (x: unknown) => asserts x is T) => { ok: true; value: T; } | { ok: false; error: string; }",
+   "signatures": [
+    "<T>(x: unknown, fn: (x: unknown) => asserts x is T) => { ok: true; value: T; } | { ok: false; error: string; }"
+   ]
+  },
+  "VerifiedAuthority": {
+   "kind": "type",
+   "declared": "{ narrative: { release_sha256: string; review_sha256: string; applicability_sha256: string; applicability_policy_version: string; applicability_policy_sha256: string; references: Reference[]; } | null; hints: { release_sha256: string; policy_sha256: string; hints: Hint[]; } | null; }",
+   "members": [
+    "hints: { release_sha256: string; policy_sha256: string; hints: Hint[]; } | null",
+    "narrative: { release_sha256: string; review_sha256: string; applicability_sha256: string; applicability_policy_version: string; applicability_policy_sha256: string; references: Reference[]; } | null"
+   ]
+  },
+  "VERSION": {
+   "kind": "variable",
+   "type": "\"pg.v1\""
+  }
+ },
+ "narrative-references": {
+  "assertValidNarrativeReference": {
+   "kind": "function",
+   "type": "(value: unknown) => asserts value is NarrativeReference",
+   "signatures": [
+    "(value: unknown) => asserts value is NarrativeReference"
+   ]
+  },
+  "assertValidNarrativeReferenceCatalog": {
+   "kind": "function",
+   "type": "(value: unknown) => asserts value is NarrativeReferenceCatalog",
+   "signatures": [
+    "(value: unknown) => asserts value is NarrativeReferenceCatalog"
+   ]
+  },
+  "NarrativeAllowedUse": {
+   "kind": "type",
+   "declared": "\"planning_option_to_investigate\" | \"background_context_only\""
+  },
+  "NarrativeApplicability": {
+   "kind": "interface",
+   "declared": "NarrativeApplicability",
+   "members": [
+    "applicability_limits: string[]",
+    "condition_definition: string",
+    "geography: string",
+    "mechanism: string",
+    "pathway_step: string",
+    "payer: string",
+    "population: string",
+    "setting: string"
+   ]
+  },
+  "NarrativeCausalUseClass": {
+   "kind": "type",
+   "declared": "\"clinical_guidance_non_effect\" | \"qualitative_experience\" | \"observational_pathway_description\" | \"noncausal_service_evaluation\""
+  },
+  "NarrativeLocatorKind": {
+   "kind": "type",
+   "declared": "\"section\" | \"table\" | \"page\" | \"paragraph\" | \"figure\" | \"web_heading\""
+  },
+  "NarrativeReference": {
+   "kind": "interface",
+   "declared": "NarrativeReference",
+   "members": [
+    "allowed_use: \"planning_option_to_investigate\" | \"background_context_only\"",
+    "applicability: NarrativeApplicability",
+    "approved_claim_wording: string | null",
+    "causal_use_class: \"clinical_guidance_non_effect\" | \"qualitative_experience\" | \"observational_pathway_description\" | \"noncausal_service_evaluation\"",
+    "claim_id: string",
+    "limitations: string[]",
+    "prohibited_stronger_claims: string[]",
+    "proposed_claim_wording: string",
+    "quantitative_effect_eligible: false",
+    "release_status: \"rejected\" | \"candidate\" | \"reviewed_not_released\" | \"reviewed_released\"",
+    "review: NarrativeReview",
+    "reviewer_status: \"draft\" | \"needs_review\" | \"approved\" | \"rejected\"",
+    "source: NarrativeSource"
+   ]
+  },
+  "NarrativeReferenceCatalog": {
+   "kind": "interface",
+   "declared": "NarrativeReferenceCatalog",
+   "members": [
+    "manifest: NarrativeReferenceManifest",
+    "records: NarrativeReference[]"
+   ]
+  },
+  "NarrativeReferenceManifest": {
+   "kind": "interface",
+   "declared": "NarrativeReferenceManifest",
+   "members": [
+    "applicability_manifest_sha256: string | null",
+    "artifact_family: \"narrative_intervention_references\"",
+    "automatic_release: false",
+    "catalog_id: string",
+    "code_commit: string",
+    "generated_at: string",
+    "quantitative_effect_eligible: false",
+    "release_status: \"candidate\" | \"reviewed_released\"",
+    "review_manifest_sha256: string | null",
+    "schema_version: \"1.0\""
+   ]
+  },
+  "NarrativeReleaseStatus": {
+   "kind": "type",
+   "declared": "\"rejected\" | \"candidate\" | \"reviewed_not_released\" | \"reviewed_released\""
+  },
+  "NarrativeReview": {
+   "kind": "interface",
+   "declared": "NarrativeReview",
+   "members": [
+    "review_note: string",
+    "reviewed_at: string | null",
+    "reviewer_id: string | null"
+   ]
+  },
+  "NarrativeReviewerStatus": {
+   "kind": "type",
+   "declared": "\"draft\" | \"needs_review\" | \"approved\" | \"rejected\""
+  },
+  "NarrativeSource": {
+   "kind": "interface",
+   "declared": "NarrativeSource",
+   "members": [
+    "authors: string[]",
+    "citation: string",
+    "doi: string | null",
+    "locators: NarrativeSourceLocator[]",
+    "pmcid: string | null",
+    "publication_year: number",
+    "retrieved_at: string | null",
+    "source_id: string",
+    "source_kind: \"clinical_guidance\" | \"peer_reviewed_article\" | \"official_report\"",
+    "source_sha256: string | null",
+    "title: string",
+    "url: string"
+   ]
+  },
+  "NarrativeSourceKind": {
+   "kind": "type",
+   "declared": "\"clinical_guidance\" | \"peer_reviewed_article\" | \"official_report\""
+  },
+  "NarrativeSourceLocator": {
+   "kind": "interface",
+   "declared": "NarrativeSourceLocator",
+   "members": [
+    "detail: string",
+    "kind: \"section\" | \"table\" | \"page\" | \"paragraph\" | \"figure\" | \"web_heading\""
+   ]
+  },
+  "NarrativeValidationIssue": {
+   "kind": "interface",
+   "declared": "NarrativeValidationIssue",
+   "members": [
+    "message: string",
+    "path: string"
+   ]
+  },
+  "validateNarrativeReference": {
+   "kind": "function",
+   "type": "(value: unknown, path?: string) => NarrativeValidationIssue[]",
+   "signatures": [
+    "(value: unknown, path?: string) => NarrativeValidationIssue[]"
+   ]
+  },
+  "validateNarrativeReferenceCatalog": {
+   "kind": "function",
+   "type": "(value: unknown, path?: string) => NarrativeValidationIssue[]",
+   "signatures": [
+    "(value: unknown, path?: string) => NarrativeValidationIssue[]"
+   ]
+  }
+ }
+}
