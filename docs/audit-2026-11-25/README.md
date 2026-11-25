@@ -45,4 +45,55 @@ See [final acceptance results](#final-acceptance-results).
 
 ## Final acceptance results
 
-_Pending: recorded by the final local acceptance gate._
+Gate run from a **fresh clone** of the branch HEAD (`bcb18ea`) with an isolated toolchain (Node 22.23.3 / npm 10.9.9, Python 3.12.14 with
+`jsonschema==4.26.0`, R 4.5.2). Nothing was pushed, merged or deployed. These are **local** results only.
+
+| Gate | Command | Result |
+| --- | --- | --- |
+| Clean install | `npm ci` | pass |
+| Types | `npm run typecheck` | pass (all workspaces, `apps/web` browser/server/test projects, tools) |
+| Lint | `npm run lint` | pass, 0 warnings |
+| Unit tests | `npm test` | 515 / 515 pass (baseline 508 / 508; all 508 baseline tests present and passing, 7 added) |
+| Tooling tests | `npm run test:tools` | 12 / 12 |
+| Equivalence | `npm run test:characterization` | 3 / 3: ~3,650 behavior cases, type-level API of 8 packages, 387 endpoint cases, all byte-identical to the pre-refactor goldens |
+| Reviewed artifacts | `npm run verify:artifacts` | 23 files in 4 releases match the inventory; `git diff 5b81f5f..HEAD -- artifacts/` is empty |
+| Docs | `npm run verify:docs` | 56 maintained Markdown files, links and anchors resolve |
+| Python | `npm run test:py` | 32 + 51 tests and the candidate-output verifier pass |
+| R | `npm run test:r` | synthetic MEPS pipeline tests pass |
+| Build | `npm run build` | pass |
+| Reproducibility | `npm run verify:build` | repeated builds emit 50 identical files |
+| Hermeticity | `npm run test:offline` | pass with outbound networking denied |
+| Coverage (informational) | `npm run test:coverage` | 94.80 % lines, 83.63 % branches, 91.24 % functions across packages and web tests; no thresholds |
+| Vercel build | `scripts/verify/vercel-function-build.sh` | functions are exactly `ai-guidance` and `ai-preview`, headers/routing intact, no TS diagnostics, both load |
+| Workflows | actionlint 1.7.12 | no errors; 11 pre-existing shellcheck style warnings, same as baseline |
+| Aggregate | `npm run check` | pass |
+| Browser regression | 9 existing suites (acceptance, continuity, visual-quality, motion, guided-workspace, planning-insights, planning-request-handoff, opening-circuit, landing-evidence) | 9 / 9 pass on the final build (baseline 9 / 9) |
+| Rendered parity | `tests/browser/pilot-parity.mjs` | `/pilot` at 390 / 768 / 1440 px, light and dark, 12 states each: `<main>` HTML, ARIA tree and focus order identical in all 72 states; 0 screenshot differences beyond rasterization noise that also occurs within the baseline build |
+
+Not run: GitHub Actions; an isolated Vercel Preview; `tests/browser/test_workstream_h_inventory.py` (needs PyMuPDF); browser PDF suites that need extra Python packages.
+
+### Bundle differences, explained
+
+- `index-*.css` is **byte-identical** to the baseline. (An earlier intermediate state reordered 39 `.decision-trace` rules; the acceptance audit found it by comparing CSS bundles rule by rule, rendered parity had not flagged it, and it was fixed and guarded by `pilot-css-order.test.ts`.)
+- `index-*.js`, `FutureAIExperiencePage-*.js` and `index.html` differ in hash. Identified causes: the build-provenance stamp (`sourceSha`, `sourceCommitDate`), the chunk filename references between the two JS files and `index.html`, minifier identifier renames after module restructuring, and about 1.2 KB of additional module wrappers. The JS was not attributed byte for byte; scientific equivalence rests on the characterization, parity and browser evidence above, not on bundle hashes.
+
+### Residual risks
+
+- CI changes are statically validated only; the first PR run is the real test (for example the added Python install steps and the composite action).
+- Vercel behavior of `apps/web/api` is verified with the local builder (`@vercel/node` 32.0.0), not the production builder.
+- R packages are installed unpinned in CI; browser suites use system Chrome and cover Chromium only.
+- Large golden files (~0.6 MB) must be reviewed as data, not skimmed.
+
+### Reviewer handoff
+
+```bash
+git switch chore/audit-docs-ci-tests-debt-20261125        # base: main@5b81f5f; first commit is the user's pre-existing doc edits, verbatim
+nvm use                                                     # 22.23.3
+python3 -m venv .venv && . .venv/bin/activate && python3 -m pip install -r requirements-test.txt
+npm ci && npm run check:full
+scripts/verify/vercel-function-build.sh                      # downloads a pinned Vercel CLI; no login
+git diff --stat 5b81f5f..HEAD -- artifacts/                  # must be empty
+```
+
+Review in this order: [ADR 0001](../adr/0001-behavior-preserving-changes-need-exact-equivalence-evidence.md) (how equivalence is proven), `tests/characterization/golden/PROVENANCE.md`,
+the `contracts` and `PilotPage` commits (mechanical moves), the CI commit with [the workflow matrix](../operations/ci-workflows.md), then docs.
