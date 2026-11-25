@@ -19,8 +19,9 @@
     "test:offline": "scripts/verify/run-offline.sh npm test",
     "test:coverage": "mkdir -p coverage && node --experimental-strip-types --experimental-test-coverage --test-coverage-exclude='**/test/**' --test-coverage-exclude='**/node_modules/**' --test-reporter=spec --test-reporter-destination=stdout --test-reporter=lcov --test-reporter-destination=coverage/lcov.info --test 'apps/web/test/*.test.ts' 'packages/*/test/*.test.ts'",
     "verify:artifacts": "node scripts/verify/reviewed-artifacts.mjs",
+    "verify:docs": "node scripts/verify/doc-links.mjs",
     "verify:build": "node apps/web/scripts/verify-repeated-build.mjs",
-    "check": "npm run typecheck && npm run lint && npm test && npm run test:tools && npm run test:characterization && npm run verify:artifacts && npm run build",
+    "check": "npm run typecheck && npm run lint && npm test && npm run test:tools && npm run test:characterization && npm run verify:artifacts && npm run verify:docs && npm run build",
     "check:full": "npm run check && npm run test:py && npm run test:r && npm run verify:build"
   },
   "engines": {
