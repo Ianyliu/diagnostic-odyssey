@@ -1,4 +1,4 @@
-/* global process, console, document, window, localStorage, getComputedStyle, Buffer */
+/* global process, console, document, window, localStorage, getComputedStyle, requestAnimationFrame, Buffer */
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";
 import { mkdir, writeFile } from "node:fs/promises";
@@ -156,6 +156,73 @@ for (const width of [1440, 768, 390]) for (const theme of ["light", "dark"]) {
     assert.ok(measurements.contrast.minimum >= 4.5, "Normal caption text must have at least 4.5:1 contrast");
   });
 }
+for (const [width, height] of [[320, 640], [390, 844]]) {
+  await check(`Brief keyboard focus ${width}×${height}`, async measurements => {
+    const p = await browser.newPage({
+      viewport: { width, height }, isMobile: true, hasTouch: true, reducedMotion: "reduce"
+    });
+    p.on("pageerror", error => errors.push(String(error)));
+    await p.goto(`${base}/brief`);
+    await p.locator("main h1").waitFor();
+    await p.evaluate(() => document.fonts.ready);
+
+    const pending = new Set(["Show local records", "Show national findings"]);
+    measurements.controls = [];
+    // Reproduce the auditor's natural Tab sequence, including the browser's own focus scrolling.
+    for (let step = 0; step < 45 && pending.size; step++) {
+      await p.keyboard.press("Tab");
+      const control = await p.evaluate(async names => {
+        await new Promise(resolve => requestAnimationFrame(resolve));
+        const focused = document.activeElement;
+        const name = focused.innerText?.trim();
+        if (!names.includes(name)) return null;
+
+        const label = document.createRange();
+        label.selectNodeContents(focused);
+        const dock = document.querySelector(".brief-dock");
+        const lines = Array.from(label.getClientRects());
+        const covered = lines.some(rect => {
+          const x = (rect.left + rect.right) / 2;
+          return [0.15, 0.45, 0.7, 0.9].some(fraction =>
+            dock.contains(document.elementFromPoint(x, rect.top + fraction * rect.height)));
+        });
+        return { name, covered, focusVisible: focused.matches(":focus-visible") };
+      }, [...pending]);
+      if (!control) continue;
+      pending.delete(control.name);
+      measurements.controls.push(control);
+      const focused = p.locator(":focus");
+      await p.keyboard.press("Enter");
+      assert.equal(await focused.getAttribute("aria-expanded"), "true", `${control.name} opens with Enter`);
+      await p.keyboard.press("Enter");
+      assert.equal(await focused.getAttribute("aria-expanded"), "false", `${control.name} closes with Enter`);
+    }
+    assert.deepEqual([...pending], [], "Both Brief disclosures must be reachable by Tab");
+    for (const control of measurements.controls) {
+      assert.ok(control.focusVisible, `${control.name} must show keyboard focus`);
+      assert.equal(control.covered, false, `The export toolbar covers the focused label for ${control.name}`);
+    }
+  });
+}
+await check("Brief desktop toolbar stays sticky", async measurements => {
+  const p = await page(1440, "light", "reduce");
+  await p.goto(`${base}/brief`);
+  const dock = p.locator(".brief-dock");
+  await dock.waitFor();
+  await p.evaluate(() => document.fonts.ready);
+  measurements.position = await dock.evaluate(element => getComputedStyle(element).position);
+  assert.equal(measurements.position, "sticky");
+  const positions = [];
+  for (const offset of [1100, 1450]) {
+    await p.evaluate(y => window.scrollTo(0, y), offset);
+    await p.waitForFunction(y => window.scrollY === y, offset);
+    positions.push((await dock.boundingBox()).y);
+  }
+  measurements.verticalPositions = positions;
+  assert.ok(positions[0] >= 0 && positions[0] === positions[1], "Toolbar stays pinned as the Brief scrolls");
+  const print = await dock.getByRole("button", { name: "Print / save PDF" }).boundingBox();
+  assert.ok(print && print.y >= 0 && print.y + print.height <= p.viewportSize().height);
+});
 await browser.close();
 assert.deepEqual(errors, []);
 console.log(JSON.stringify(results.map(({ name, status, measurements }) => ({ name, status, viewport: measurements.viewport, contrast: measurements.contrast })), null, 2));

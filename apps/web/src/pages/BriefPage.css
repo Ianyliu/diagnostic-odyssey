@@ -305,7 +305,10 @@
 .brief-request-trace { display: block; margin-top: 4px; color: var(--do-text-muted); }
 
 @media (max-width: 680px) {
-  .brief-dock { border-radius: 16px; }
+  .brief-dock {
+    position: static;
+    border-radius: 16px;
+  }
   .brief-executive-grid,
   .brief-executive-roles,
   .brief-applied-assumptions,
