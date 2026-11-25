@@ -1,0 +1,19 @@
+From: researcher@example.invalid
+To: pulse@example.invalid
+Message-ID: <hourly@example.invalid>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary=fixture
+
+--fixture
+Content-Type: text/plain; charset=us-ascii
+
+Community Pulse Research Report v0.2.1
+Run-ID: fixture-20261125-hourly
+Report-Type: hourly_scout
+Status: no_change
+Title: Hourly scout found no substantive change
+--fixture
+Content-Type: text/html; charset=us-ascii
+
+<p>Ignored alternate content.</p>
+--fixture--
