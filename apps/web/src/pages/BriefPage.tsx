@@ -403,7 +403,7 @@ export function BriefPage({
             {brief.local_context.length > 0 ? (
               <>
                 <div className="brief-screen-disclosure">
-                  <p>{brief.local_context.length} reviewed West Virginia records included. The Strategy Lab attachment is listed separately in the summary above.</p>
+                  <p>{brief.local_context.length} reviewed West Virginia records included. See the summary above for any Strategy Lab attachment.</p>
                   <button type="button" className="text-button" aria-controls="brief-local-records" aria-expanded={contextDetailsOpen} onClick={() => setContextDetailsOpen(open => !open)}>
                     {contextDetailsOpen ? "Hide local records" : "Show local records"}
                   </button>

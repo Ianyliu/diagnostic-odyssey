@@ -52,7 +52,7 @@ export function DataRequestsPage() {
           Use planning requests to identify what to verify with a local data owner. Review which requests to include before exporting the Brief.
         </p>
         <p className="micro-caption">
-          Request status reflects how closely it matches the applied scenario. Confirm source availability and reporting periods with the local owner.
+          Request status reflects whether it matches the applied scenario. Confirm source availability and reporting periods with the local owner.
         </p>
       </header>
       <p className="sr-only" role="status" aria-live="polite" aria-atomic="true">{announcement}</p>
@@ -170,13 +170,13 @@ export function DataRequestsPage() {
                     </section>
                   )}
 
-                  <p className="request-owner"><strong>Likely owner:</strong> {request.likely_source_owner}</p>
+                  <p className="request-owner"><strong>Likely owner:</strong> {request.likely_source_owner}. Availability is unconfirmed.</p>
 
                   <WorkspaceDisclosure id={`request-details-${request.request_id}`} title="Request details & collection guidance">
                     <section className="request-next-step" aria-labelledby={`request-next-${request.request_id}`}>
                       <h3 id={`request-next-${request.request_id}`}>Next step with the local data owner</h3>
                       <ol>
-                        <li>Confirm who owns this question and which local source system can supply the fields and time window below. Availability is unconfirmed.</li>
+                        <li>Confirm who owns this question and which local source system can supply the fields and time window below.</li>
                         <li>Agree on the minimum necessary aggregate summary, definitions, reporting period, and small-cell protections before collection. Keep identifiers, row-level dates, and linkage with the local steward; do not send them to this app.</li>
                         <li>If the summary is unavailable or incomplete, document the gap with the owner and revise the planning assumption or pilot scope. Rerun sensitivity before using the request in the Brief.</li>
                       </ol>

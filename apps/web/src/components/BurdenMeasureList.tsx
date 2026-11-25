@@ -32,15 +32,16 @@ function EstimateIntervalText({ estimate }: { estimate: Estimate }) {
 }
 
 export function EstimateProvenanceDetails({ estimate: activeEstimate }: { estimate: Estimate }) {
+  const released = canExportEstimate(activeEstimate);
   return (
     <>
       <div className="atlas-drawer-stat">
         <strong>
           {canDisplayDistributionSummary(activeEstimate)
             ? <DistributionSummaryText estimate={activeEstimate} />
-            : formatEstimateValue(activeEstimate)}
+            : released || activeEstimate.value === null ? formatEstimateValue(activeEstimate) : "Not released"}
         </strong>
-        <span>{formatEstimateInterval(activeEstimate) || "Interval not published"}</span>
+        {released && <span>{formatEstimateInterval(activeEstimate)}</span>}
       </div>
 
       <dl className="atlas-drawer-list">
@@ -167,7 +168,7 @@ export function BurdenMeasureList({
                 <div className="atlas-measure-figure">
                   {canDisplayDistributionSummary(estimate)
                     ? <DistributionSummaryText estimate={estimate} />
-                    : formatEstimateValue(estimate)}
+                    : reviewed || estimate.value === null ? formatEstimateValue(estimate) : "Not released"}
                 </div>
                 <EstimateIntervalText estimate={estimate} />
                 {!reviewed && (

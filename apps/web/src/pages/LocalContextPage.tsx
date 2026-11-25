@@ -108,6 +108,7 @@ export function LocalContextPage() {
   };
 
   const changePresentation = (mode: Presentation) => {
+    if (mode === presentation) return;
     setPresentation(mode);
     setCategory("all");
     setGroups({});
@@ -214,17 +215,6 @@ export function LocalContextPage() {
         className={`ledger-indicator-row atlas-terrain-row${isGoverningTotal ? " is-governing-total" : ""}${selected ? " is-selected" : ""}${pilotSelected ? " is-pilot" : ""}${isInspected ? " is-inspected" : ""}`}
       >
         <div className="atlas-terrain-row-main">
-          <div className="atlas-terrain-row-head">
-            <button
-              type="button"
-              className="atlas-detail-trigger"
-              aria-haspopup="dialog"
-              onClick={() => handleInspect(record)}
-            >
-              Provenance ↗
-            </button>
-          </div>
-
           <h3 id={accessibility.titleId}>{accessibility.displayTitle}</h3>
           {accessibility.disambiguatorId && (
             <span id={accessibility.disambiguatorId} className="sr-only">{record.label}</span>
@@ -232,13 +222,25 @@ export function LocalContextPage() {
 
           <p className="micro-caption">
             {record.source_agency} · {record.observation_as_of_date ?? record.source_release_vintage}
-            {record.margin_of_error !== null && ` · ${formatPublishedLocalContextUncertainty(record)}`}
+            {record.margin_of_error !== null && ` · ${formatLocalContextUncertaintyType(record.uncertainty_type)}`}
           </p>
+          <button
+            type="button"
+            className="atlas-detail-trigger"
+            aria-label={`Provenance for ${record.label}`}
+            aria-haspopup="dialog"
+            onClick={() => handleInspect(record)}
+          >
+            Provenance ↗
+          </button>
         </div>
 
         <div className="atlas-terrain-row-metrics">
           <div className="atlas-terrain-figure">
             <strong className="ledger-record-value">{formatLocalContextValue(record)}</strong>
+            {record.margin_of_error !== null && (
+              <small className="micro-caption">{formatPublishedLocalContextUncertainty(record)}</small>
+            )}
           </div>
 
           {presentation === "overview" && selectable && typeof record.value === "number" && (
@@ -334,7 +336,7 @@ export function LocalContextPage() {
         <header className="page-heading">
           <p className="eyebrow">02 · LOCAL CONTEXT · EDITION 01</p>
           <h1>West Virginia access conditions</h1>
-          <p>Reviewed statewide indicators from HRSA and the 2024 Census ACS describe conditions for delivering care in West Virginia.</p>
+          <p>Reviewed indicators from HRSA and the 2024 Census ACS describe statewide access conditions in West Virginia. They cannot estimate local Long COVID prevalence.</p>
           <p className="ledger-orientation">Open an indicator group to review Brief selections, or attach one indicator as context for your Strategy Lab scenario.</p>
         </header>
 

@@ -122,7 +122,7 @@ export function OverviewPage({ advisorAvailable = false }: { advisorAvailable?: 
                   <span className="atlas-lens-kicker">HRSA &amp; Census ACS · Statewide West Virginia</span>
                   <h3>West Virginia access</h3>
                   <p>
-                    {localIndicatorCount ?? "—"} statewide indicators cover shortage designations, insurance, broadband, poverty, and household vehicle access. Designations count areas, facilities, or population groups. County-level data and local prevalence are outside this release.
+                    {localIndicatorCount ?? "—"} statewide indicators cover HRSA shortage designations, insurance, broadband, poverty, and household vehicle access. Designations count areas, facilities, or population groups. County-level data and local prevalence are outside this release.
                   </p>
                   <span className="atlas-lens-link">Open 02 Local context ↗</span>
                 </Link>

@@ -507,7 +507,7 @@ test("reviewed burden UI has no development-fixture labels", () => {
   assert.match(burden, /AHRQ MEPS/);
   assert.match(burden, /Gross vs\. attributable cost/);
   const burdenMeasures = readSource("../src/components/BurdenMeasureList.tsx");
-  assert.match(burden, /<BurdenMeasureList estimates=\{domain\.measures\} \/>/);
+  assert.match(burden, /<BurdenMeasureList\s+estimates=\{domain\.measures\}/);
   assert.match(burdenMeasures, /formatEstimateInterval\(estimate\)/);
   assert.match(burdenMeasures, /canExportEstimate\(estimate\)/);
   assert.match(burdenMeasures, /aria-hidden="true"/);
@@ -545,7 +545,7 @@ test("LocalContextPage uses canonical fields and preserves score/source interpre
   assert.doesNotMatch(local, /bundle\.local_context/);
   assert.match(local, /Maximum source-published HPSA score/);
   assert.doesNotMatch(local, /WV shortage score/);
-  assert.match(local, /Access conditions, not prevalence/);
+  assert.match(local, /cannot estimate local Long COVID prevalence/);
 });
 
 test("planning brief includes only explicitly supplied release-eligible local context", () => {

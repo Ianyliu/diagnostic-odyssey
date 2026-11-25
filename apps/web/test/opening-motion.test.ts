@@ -131,7 +131,7 @@ test("first-screen hero and reduced-motion choreography stay intact", () => {
   assert.match(overview, /<LandingJourney \/>/);
   assert.match(overview, /useEditionDrawer\(\)/);
   assert.match(appShell, /<EditionDrawer/);
-  assert.match(overview, /Never blended/);
+  assert.match(overview, /State indicators cannot be used to rescale national estimates/);
   assert.match(motionCss, /@keyframes atlas-rise/);
   assert.match(motionCss, /@media \(prefers-reduced-motion: reduce\)/);
 });

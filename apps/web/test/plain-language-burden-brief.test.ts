@@ -115,7 +115,7 @@ test("Burden and Domain pages share plain-language measure presentation with Det
 
   assert.match(burden, /className="burden-domain-stack"/);
   assert.match(burden, /formatDataStateLabel\(domain\.availability_state\)/);
-  assert.match(burden, /<BurdenMeasureList estimates=\{domain\.measures\} \/>/);
+  assert.match(burden, /<BurdenMeasureList\s+estimates=\{domain\.measures\}/);
   assert.doesNotMatch(burden, /Reviewed analytical estimate/);
   assert.doesNotMatch(burden, />\{domain\.availability_state\}</);
 

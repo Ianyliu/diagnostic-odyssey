@@ -1,6 +1,9 @@
 /** Existing analytical suites use the expanded workspace. The guided-workspace
  * suite separately checks default collapsed state, discoverability and opening. */
 export async function prepareWorkspace(page) {
+  const local = page.locator(".local-ledger-page");
+  const overview = local.getByRole("button", {name: "Overview", exact: true, pressed: false});
+  if (await overview.isVisible()) await overview.click();
   for (const disclosure of await page.locator("details.workspace-disclosure").all()) {
     if (!await disclosure.evaluate(element => element.open) && await disclosure.locator(":scope > summary").isVisible()) {
       await disclosure.locator(":scope > summary").click();

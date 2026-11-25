@@ -486,6 +486,7 @@ await check("local context labels preserve native scores and exported uncertaint
     assert.ok(localText.includes("Published 90% margin of error"));
     assert.ok(!localText.includes("published_90_percent_margin_of_error"));
     await navigate(page, "Pilot planner");
+    await page.getByRole("button", {name: "Show inspector", exact: true}).click();
     assert.equal(await page.locator(".pilot-local-context-value").innerText(), "23 points");
     await navigate(page, "Planning brief");
     const values = await page.locator(".brief-local-context-value").allTextContents();
@@ -958,10 +959,13 @@ await check(
     });
     const page = await context.newPage();
     page.setDefaultTimeout(5000);
-    await ready(page, "/local-context");
+    await page.goto(baseURL + "/local-context");
+    await page.locator(".local-ledger-page").waitFor();
     // Keep this journey keyboard-only while clearing the new all-selected default.
     const clearLocal = page.getByRole("button", {name: "Select none", exact: true}).first();
     await tabTo(page, clearLocal);
+    await page.keyboard.press("Enter");
+    await tabTo(page, page.getByRole("button", {name: /Primary care shortage designations/}));
     await page.keyboard.press("Enter");
     const selection = page
       .getByRole("checkbox")

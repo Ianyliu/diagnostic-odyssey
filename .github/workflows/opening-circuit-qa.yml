@@ -4,6 +4,8 @@ on:
     paths:
       - "apps/web/src/components/LandingJourney.tsx"
       - "apps/web/src/components/LandingJourney.css"
+      - "apps/web/src/components/LandingBurdenStrata.tsx"
+      - "apps/web/src/components/LandingBurdenStrata.css"
       - "apps/web/src/motion.css"
       - "apps/web/src/workspace.css"
       - "apps/web/src/pages/openingMotion.ts"
@@ -12,6 +14,7 @@ on:
       - "apps/web/src/pages/OverviewPage.css"
       - "apps/web/test/opening-motion.test.ts"
       - "tests/browser/opening-circuit.mjs"
+      - "tests/browser/landing-evidence.mjs"
       - ".github/workflows/opening-circuit-qa.yml"
 permissions:
   contents: read
@@ -54,6 +57,7 @@ jobs:
           done
           curl --fail http://127.0.0.1:4188/ -o /dev/null
           node tests/browser/opening-circuit.mjs
+          QA_OUTPUT="$QA_OUTPUT/landing-evidence" node tests/browser/landing-evidence.mjs
       - name: Upload visual evidence
         if: always()
         uses: actions/upload-artifact@v4

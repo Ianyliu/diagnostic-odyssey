@@ -34,6 +34,7 @@ const optionalSpur = "M 602 232 C 646 298, 696 316, 758 316";
 export function LandingJourney() {
   const navRef = useRef<HTMLElement>(null);
   const hasAutoPlayedRef = useRef(false);
+  const scrollEligibleRef = useRef(false);
   const [playing, setPlaying] = useState(false);
   const [scrollReady, setScrollReady] = useState(false);
   const [runId, setRunId] = useState(0);
@@ -52,21 +53,14 @@ export function LandingJourney() {
     const root = navRef.current;
     if (!root || typeof IntersectionObserver === "undefined") return;
 
+    const { pathname, search, hash } = window.location;
     const triggerIfEligible = () => {
       if (hasAutoPlayedRef.current) return;
-      const entry = typeof window !== "undefined"
-        ? {
-            pathname: window.location.pathname,
-            search: window.location.search,
-            hash: window.location.hash,
-            reducedMotion: reducedMotionRequested(),
-            storage: sessionStorageOrNull()
-          }
-        : { pathname: "/", search: "", hash: "", reducedMotion: true, storage: null };
-
+      const entry = { pathname, search, hash, reducedMotion: reducedMotionRequested(), storage: sessionStorageOrNull() };
       if (!shouldPlayJourney(entry)) {
         try {
           if (!entry.search && !entry.hash && !entry.reducedMotion && entry.storage?.getItem(JOURNEY_SESSION_KEY) === "seen") {
+            scrollEligibleRef.current = true;
             setScrollReady(true);
           }
         } catch {
@@ -74,7 +68,8 @@ export function LandingJourney() {
         }
         return;
       }
-      if (!markOpeningSeen(sessionStorageOrNull(), JOURNEY_SESSION_KEY)) return;
+      if (!markOpeningSeen(entry.storage, JOURNEY_SESSION_KEY)) return;
+      scrollEligibleRef.current = true;
       hasAutoPlayedRef.current = true;
       setRunId(previous => previous + 1);
       setPlaying(true);
@@ -103,7 +98,10 @@ export function LandingJourney() {
       return;
     }
 
-    const settle = () => setPlaying(false);
+    const settle = () => {
+      setPlaying(false);
+      if (scrollEligibleRef.current) setScrollReady(true);
+    };
     const handlePointerDown = (event: PointerEvent) => {
       if (event.target instanceof Element && event.target.closest(".preview-replay")) return;
       settle();
@@ -126,10 +124,7 @@ export function LandingJourney() {
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("pagehide", settle);
     document.addEventListener("visibilitychange", settleOnHidden);
-    const timer = window.setTimeout(() => {
-      settle();
-      if (sessionStorageOrNull() && !window.location.search && !window.location.hash) setScrollReady(true);
-    }, JOURNEY_DURATION_MS);
+    const timer = window.setTimeout(settle, JOURNEY_DURATION_MS);
 
     return () => {
       window.clearTimeout(timer);
@@ -160,55 +155,55 @@ export function LandingJourney() {
       aria-label="Explore the evidence-to-action pathway"
     >
       <div className="atlas-journey-canvas" data-replay-cycle={runId % 2}>
-          <svg key={runId} viewBox="0 0 1024 380" className="atlas-journey-path" aria-hidden="true">
-            <defs>
-              <pattern id="atlas-journey-hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-                <rect width="8" height="8" fill="#251d40" />
-                <path d="M0 0V8" stroke="#b8a5ff" strokeWidth="2.5" />
-              </pattern>
-            </defs>
-            <path d={route} fill="none" stroke="#556b92" strokeWidth="1.5" strokeDasharray="3 8" />
-            <path
-              d={route}
-              pathLength={1}
-              className="atlas-journey-reveal"
-              fill="none"
-              stroke="#b8a5ff"
-              strokeOpacity="0.95"
-              strokeWidth="2.8"
-              strokeLinecap="round"
+        <svg key={runId} viewBox="0 0 1024 380" className="atlas-journey-path" aria-hidden="true">
+          <defs>
+            <pattern id="atlas-journey-hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+              <rect width="8" height="8" fill="#251d40" />
+              <path d="M0 0V8" stroke="#b8a5ff" strokeWidth="2.5" />
+            </pattern>
+          </defs>
+          <path d={route} fill="none" stroke="#556b92" strokeWidth="1.5" strokeDasharray="3 8" />
+          <path
+            d={route}
+            pathLength={1}
+            className="atlas-journey-reveal"
+            fill="none"
+            stroke="#b8a5ff"
+            strokeOpacity="0.95"
+            strokeWidth="2.8"
+            strokeLinecap="round"
+          />
+          <path
+            d={optionalSpur}
+            pathLength={1}
+            className="atlas-journey-spur"
+            fill="none"
+            stroke="#9fb3d1"
+            strokeOpacity="0.82"
+            strokeWidth="2.2"
+            strokeDasharray="6 5"
+            strokeLinecap="round"
+          />
+          <g className="atlas-journey-scroll-accent">
+            <path d={route} pathLength={1} className="atlas-journey-scroll-trace" fill="none"
+              stroke="#f5f0ff" strokeWidth="4.5" strokeLinecap="round" />
+          </g>
+          <circle cx={916} cy={88} r={14} className="atlas-journey-halo" />
+          {waypoints.map((item, idx) => (
+            <circle
+              key={item.to}
+              className={`atlas-journey-point atlas-journey-point-${idx} is-${item.type}`}
+              cx={item.x}
+              cy={item.y}
+              r={item.type === "brief" ? 14 : item.type === "gap" ? 9 : 11}
+              fill={item.type === "assumption" ? "url(#atlas-journey-hatch)" : undefined}
+              strokeWidth="2.6"
             />
-            <path
-              d={optionalSpur}
-              pathLength={1}
-              className="atlas-journey-spur"
-              fill="none"
-              stroke="#9fb3d1"
-              strokeOpacity="0.82"
-              strokeWidth="2.2"
-              strokeDasharray="6 5"
-              strokeLinecap="round"
-            />
-            <g className="atlas-journey-scroll-accent">
-              <path d={route} pathLength={1} className="atlas-journey-scroll-trace" fill="none"
-                stroke="#f5f0ff" strokeWidth="4.5" strokeLinecap="round" />
-            </g>
-            <circle cx={916} cy={88} r={14} className="atlas-journey-halo" />
-            {waypoints.map((item, idx) => (
-              <circle
-                key={item.to}
-                className={`atlas-journey-point atlas-journey-point-${idx} is-${item.type}`}
-                cx={item.x}
-                cy={item.y}
-                r={item.type === "brief" ? 14 : item.type === "gap" ? 9 : 11}
-                fill={item.type === "assumption" ? "url(#atlas-journey-hatch)" : undefined}
-                strokeWidth="2.6"
-              />
-            ))}
-          </svg>
-        <ol className="atlas-journey-mobile">
+          ))}
+        </svg>
+        <ol className="atlas-journey-mobile" role="list">
           {waypoints.map((item, index) => (
-            <li key={item.to} className={`is-${item.type}`}>
+            <li key={item.to} className={`is-${item.type}`} role="listitem">
               <Link
                 to={item.to}
                 className={`atlas-journey-stop atlas-journey-stop-${index}${item.type === "gap" ? " is-optional-spur" : ""}`}

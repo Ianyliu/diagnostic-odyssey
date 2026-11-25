@@ -144,6 +144,7 @@ await check("visible selections, collapsed category state and unchanged Pilot in
   assert.match(await page.locator("#local-selection-summary").innerText(), /1 of 34 in Brief/);
   await navigateWorkspace(page, "Pilot planner");
   assert.equal(await page.locator("#pilot-capacity").inputValue(), "3000");
+  await page.getByRole("button", {name: "Show inspector", exact: true}).click();
   assert.match(await page.locator(".atlas-decision-inspector").innerText(), /never changes the arithmetic/);
   await page.locator("#pilot-capacity").fill("2345");
   await page.locator("#pilot-capacity").fill("2e");

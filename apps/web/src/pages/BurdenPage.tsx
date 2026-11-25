@@ -58,10 +58,10 @@ export function BurdenPage() {
   const linkedMeasure = allMeasures.find(measure => hash === `#burden-measure-${measure.estimate_id}`);
   const focusedId = focus?.hash === hash ? focus.id : linkedMeasure?.estimate_id ?? null;
   const changePresentation = (mode: Presentation) => {
+    if (mode === presentation) return;
     setPresentation(mode);
     setActiveTab("all");
     setGroups(Object.fromEntries(bundle.burden_domains.map(domain => [domain.domain_id, mode === "overview"])));
-    if (mode === "focus") setFocus({ hash, id: null });
   };
 
   const intervalMethods = Array.from(new Set(
@@ -77,8 +77,8 @@ export function BurdenPage() {
         <header className="page-heading">
           <p className="eyebrow">01 · BURDEN</p>
           <h1>National burden overview</h1>
-          <p>National AHRQ MEPS estimates describe U.S. adults ages 18–64 classified as operational-current Long COVID at the 2024 Round 3/1 interview.</p>
-          <p className="ledger-orientation">Open a topic to see its measures. Use Details for a chart or source, then continue to West Virginia access conditions.</p>
+          <p>2024 national survey estimates for U.S. adults ages 18–64 classified as operational-current Long COVID at their Round 3/1 interview.</p>
+          <p className="ledger-orientation">Open a topic to explore its measures and sources.</p>
         </header>
         <button
           type="button"
@@ -96,7 +96,9 @@ export function BurdenPage() {
             return (
               <article className="atlas-bento-card" key={spec.estimateId}>
                 <strong>{heroFigure(estimate)}</strong>
-                <span>{spec.label(estimate)}</span>
+                <span>{estimate.unit === "hours/person/year"
+                  ? "Survey-weighted annualized mean hours per person managing bills and insurance"
+                  : spec.label(estimate)}</span>
                 {interval && <small className="measure-interval">{interval}</small>}
               </article>
             );

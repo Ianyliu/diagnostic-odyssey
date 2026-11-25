@@ -43,7 +43,7 @@ test("ordinary estimate count uses reviewed export eligibility rather than a lit
 test("Overview keeps Two-Lens separation without blending and displays concise descriptive captions", () => {
   const source = readFileSync(new URL("../src/pages/OverviewPage.tsx", import.meta.url), "utf8");
   assert.match(source, /National reality\. Local ground\./);
-  assert.match(source, /Never blended/);
-  assert.match(source, /National descriptive · Not causal/);
+  assert.match(source, /State indicators cannot be used to rescale national estimates/);
+  assert.match(source, /National spending is all-cause and descriptive/);
   assert.doesNotMatch(source, /overview-role-grid|roles\.map/);
 });

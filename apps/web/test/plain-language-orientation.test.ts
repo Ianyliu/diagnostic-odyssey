@@ -60,8 +60,8 @@ test("Overview keeps the workflow visual and narrative-led across four stages", 
   for (const phrase of [
     "What does chronic illness",
     "From data to",
-    "Never blended",
-    "National descriptive · Not causal"
+    "State indicators cannot be used to rescale national estimates",
+    "National spending is all-cause and descriptive"
   ]) {
     assert.ok(source.includes(phrase), phrase);
   }
@@ -83,7 +83,7 @@ test("Local Context humanizes statuses and preserves interpretation boundaries i
   assert.match(source, /formatReleaseStatusLabel\(inspectRecord\.release_status\)/);
   assert.match(source, /formatDataStateLabel\(inspectRecord\.state\)/);
   assert.doesNotMatch(source, /<small>\{record\.release_status\} · \{record\.state\}<\/small>/);
-  assert.match(source, /Access conditions, not prevalence/);
+  assert.match(source, /cannot estimate local Long COVID prevalence/);
   assert.match(source, /<DetailDrawer/);
   assert.match(source, /Include in Brief/);
   assert.match(source, /Use in Strategy Lab/);

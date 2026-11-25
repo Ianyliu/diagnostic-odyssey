@@ -15,5 +15,5 @@ test("direct burden links preserve standalone domain pages and U09 secondary nav
   assert.match(page, /to="\/burden\/medical#linked-condition-secondary-heading"/);
   assert.match(page, /to="\/evidence"/);
   assert.match(page, /to="\/local-context"/);
-  assert.match(page, /<BurdenMeasureList estimates=\{domain\.measures\} \/>/);
+  assert.match(page, /<BurdenMeasureList\s+estimates=\{domain\.measures\}/);
 });

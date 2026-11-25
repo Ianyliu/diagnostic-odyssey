@@ -215,7 +215,7 @@
     .atlas-journey { view-timeline-name: --atlas-journey; }
     .atlas-journey-scroll-accent { transition: opacity 320ms ease; }
     .atlas-journey.is-scroll-ready:not(.is-playing) .atlas-journey-scroll-accent { opacity: 1; }
-    .atlas-journey-scroll-trace {
+    .atlas-journey.is-scroll-ready:not(.is-playing) .atlas-journey-scroll-trace {
       animation: atlas-trace linear both;
       animation-timeline: --atlas-journey;
       animation-range: entry 20% exit 45%;
@@ -252,6 +252,8 @@
         opacity: 0;
         transform-origin: top;
         transition: opacity 320ms ease;
+      }
+      .atlas-journey.is-scroll-ready:not(.is-playing) .atlas-journey-mobile::before {
         animation: atlas-mobile-trace linear both;
         animation-timeline: --atlas-journey;
         animation-range: entry 20% exit 45%;
