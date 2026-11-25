@@ -1,0 +1,10 @@
+{
+  "schema_version": "0.2.1",
+  "kind": "research_report",
+  "run_id": "fixture-20261125-hourly",
+  "report_type": "hourly_scout",
+  "status": "no_change",
+  "title": "Hourly scout found no substantive change",
+  "items": [],
+  "reason_codes": []
+}

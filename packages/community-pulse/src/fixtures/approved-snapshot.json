@@ -1,0 +1,597 @@
+{
+  "schema_version": "0.2.1",
+  "kind": "event_snapshot",
+  "snapshot_id": "00000000-0000-4000-8000-000000000100",
+  "created_at": "2026-11-25T13:00:00Z",
+  "previous_snapshot_id": "00000000-0000-4000-8000-000000000099",
+  "records": [
+    {
+      "record_id": "00000000-0000-4000-8000-000000000001",
+      "revision": 1,
+      "title": "Proposed diagnostic referral eligibility update",
+      "change_type": "rule_change",
+      "domains": [
+        "diagnostic_access",
+        "coverage_eligibility"
+      ],
+      "status": "proposed",
+      "status_as_of": "2026-11-24",
+      "dates": [
+        {
+          "role": "announced",
+          "precision": "date",
+          "value": "2026-11-19",
+          "as_written": "2026-11-19",
+          "evidence_ids": [
+            "proposal"
+          ]
+        },
+        {
+          "role": "comment_deadline",
+          "precision": "date",
+          "value": "2026-12-09",
+          "as_written": "2026-12-09",
+          "evidence_ids": [
+            "proposal"
+          ]
+        }
+      ],
+      "geographic_relations": [
+        {
+          "relation": "rules_apply_to",
+          "geo_type": "state",
+          "as_written": "West Virginia",
+          "fips_codes": [
+            "54"
+          ],
+          "resolution_method": "documented_registry",
+          "evidence_ids": [
+            "proposal"
+          ]
+        }
+      ],
+      "claims": [
+        {
+          "claim_id": "claim-1",
+          "text": "The office published a draft eligibility proposal and opened a comment period.",
+          "assertion_type": "documented_action",
+          "attributed_to": null,
+          "evidence_ids": [
+            "proposal"
+          ]
+        }
+      ],
+      "supersedes": [],
+      "reviewed_interpretation": null,
+      "verification_path": "Check the issuer’s latest notice before using this record in planning."
+    },
+    {
+      "record_id": "00000000-0000-4000-8000-000000000002",
+      "revision": 1,
+      "title": "Coverage documentation rule takes effect",
+      "change_type": "rule_change",
+      "domains": [
+        "coverage_eligibility"
+      ],
+      "status": "effective",
+      "status_as_of": "2026-11-24",
+      "dates": [
+        {
+          "role": "announced",
+          "precision": "date",
+          "value": "2026-11-19",
+          "as_written": "2026-11-19",
+          "evidence_ids": [
+            "effective"
+          ]
+        },
+        {
+          "role": "effective_start",
+          "precision": "date",
+          "value": "2026-11-23",
+          "as_written": "2026-11-23",
+          "evidence_ids": [
+            "effective"
+          ]
+        }
+      ],
+      "geographic_relations": [
+        {
+          "relation": "rules_apply_to",
+          "geo_type": "state",
+          "as_written": "West Virginia",
+          "fips_codes": [
+            "54"
+          ],
+          "resolution_method": "documented_registry",
+          "evidence_ids": [
+            "effective"
+          ]
+        }
+      ],
+      "claims": [
+        {
+          "claim_id": "claim-2",
+          "text": "The coverage office confirmed the effective documentation rule in its notice.",
+          "assertion_type": "documented_action",
+          "attributed_to": null,
+          "evidence_ids": [
+            "effective"
+          ]
+        }
+      ],
+      "supersedes": [],
+      "reviewed_interpretation": null,
+      "verification_path": "Check the issuer’s latest notice before using this record in planning."
+    },
+    {
+      "record_id": "00000000-0000-4000-8000-000000000003",
+      "revision": 2,
+      "title": "Implementation date postponed",
+      "change_type": "rule_change",
+      "domains": [
+        "public_policy",
+        "coverage_eligibility"
+      ],
+      "status": "stayed",
+      "status_as_of": "2026-11-24",
+      "dates": [
+        {
+          "role": "announced",
+          "precision": "date",
+          "value": "2026-11-24",
+          "as_written": "2026-11-24",
+          "evidence_ids": [
+            "delay"
+          ]
+        },
+        {
+          "role": "effective_start",
+          "precision": "unknown",
+          "value": null,
+          "as_written": null,
+          "evidence_ids": [
+            "delay"
+          ]
+        }
+      ],
+      "geographic_relations": [
+        {
+          "relation": "rules_apply_to",
+          "geo_type": "state",
+          "as_written": "West Virginia",
+          "fips_codes": [
+            "54"
+          ],
+          "resolution_method": "documented_registry",
+          "evidence_ids": [
+            "delay"
+          ]
+        }
+      ],
+      "claims": [
+        {
+          "claim_id": "claim-3",
+          "text": "A follow-up notice postponed the previously announced implementation date.",
+          "assertion_type": "documented_action",
+          "attributed_to": null,
+          "evidence_ids": [
+            "delay"
+          ]
+        }
+      ],
+      "supersedes": [
+        {
+          "record_id": "00000000-0000-4000-8000-000000000003",
+          "revision": 1
+        }
+      ],
+      "reviewed_interpretation": null,
+      "verification_path": "Check the issuer’s latest notice before using this record in planning."
+    },
+    {
+      "record_id": "00000000-0000-4000-8000-000000000004",
+      "revision": 1,
+      "title": "Transportation voucher rule rescinded",
+      "change_type": "program_change",
+      "domains": [
+        "economic_infrastructure",
+        "public_policy"
+      ],
+      "status": "rescinded",
+      "status_as_of": "2026-11-24",
+      "dates": [
+        {
+          "role": "announced",
+          "precision": "date",
+          "value": "2026-11-22",
+          "as_written": "2026-11-22",
+          "evidence_ids": [
+            "rescinded"
+          ]
+        }
+      ],
+      "geographic_relations": [
+        {
+          "relation": "rules_apply_to",
+          "geo_type": "state",
+          "as_written": "West Virginia",
+          "fips_codes": [
+            "54"
+          ],
+          "resolution_method": "documented_registry",
+          "evidence_ids": [
+            "rescinded"
+          ]
+        }
+      ],
+      "claims": [
+        {
+          "claim_id": "claim-4",
+          "text": "The authority rescinded the upcoming voucher change.",
+          "assertion_type": "documented_action",
+          "attributed_to": null,
+          "evidence_ids": [
+            "rescinded"
+          ]
+        }
+      ],
+      "supersedes": [],
+      "reviewed_interpretation": null,
+      "verification_path": "Check the issuer’s latest notice before using this record in planning."
+    },
+    {
+      "record_id": "00000000-0000-4000-8000-000000000005",
+      "revision": 1,
+      "title": "Ridgeview announces fewer diagnostic clinic hours",
+      "change_type": "capacity_change",
+      "domains": [
+        "institutional_capacity",
+        "diagnostic_access"
+      ],
+      "status": "announced",
+      "status_as_of": "2026-11-24",
+      "dates": [
+        {
+          "role": "announced",
+          "precision": "date",
+          "value": "2026-11-19",
+          "as_written": "2026-11-19",
+          "evidence_ids": [
+            "capacity"
+          ]
+        },
+        {
+          "role": "effective_start",
+          "precision": "date",
+          "value": "2026-12-08",
+          "as_written": "2026-12-08",
+          "evidence_ids": [
+            "capacity"
+          ]
+        }
+      ],
+      "geographic_relations": [
+        {
+          "relation": "located_in",
+          "geo_type": "county",
+          "as_written": "Boyd County, Kentucky",
+          "fips_codes": [
+            "21019"
+          ],
+          "resolution_method": "documented_registry",
+          "evidence_ids": [
+            "capacity"
+          ]
+        },
+        {
+          "relation": "serves",
+          "geo_type": "county",
+          "as_written": "Wayne County, West Virginia",
+          "fips_codes": [
+            "54099"
+          ],
+          "resolution_method": "documented_registry",
+          "evidence_ids": [
+            "capacity"
+          ]
+        }
+      ],
+      "claims": [
+        {
+          "claim_id": "claim-5",
+          "text": "Ridgeview announced a revised schedule starting next month. The notice documents service to Wayne County.",
+          "assertion_type": "documented_action",
+          "attributed_to": null,
+          "evidence_ids": [
+            "capacity",
+            "reprint"
+          ]
+        }
+      ],
+      "supersedes": [],
+      "reviewed_interpretation": {
+        "text": "Verify appointment availability with the clinic before assuming that visit capacity changed.",
+        "claim_ids": [
+          "claim-5"
+        ]
+      },
+      "verification_path": "Check the issuer’s latest notice before using this record in planning."
+    },
+    {
+      "record_id": "00000000-0000-4000-8000-000000000006",
+      "revision": 1,
+      "title": "Rural diagnostic access grant application window",
+      "change_type": "funding_window",
+      "domains": [
+        "funding",
+        "diagnostic_access"
+      ],
+      "status": "announced",
+      "status_as_of": "2026-11-24",
+      "dates": [
+        {
+          "role": "announced",
+          "precision": "date",
+          "value": "2026-11-19",
+          "as_written": "2026-11-19",
+          "evidence_ids": [
+            "grant"
+          ]
+        },
+        {
+          "role": "expires",
+          "precision": "date",
+          "value": "2026-12-11",
+          "as_written": "2026-12-11",
+          "evidence_ids": [
+            "grant"
+          ]
+        }
+      ],
+      "geographic_relations": [
+        {
+          "relation": "rules_apply_to",
+          "geo_type": "state",
+          "as_written": "West Virginia",
+          "fips_codes": [
+            "54"
+          ],
+          "resolution_method": "documented_registry",
+          "evidence_ids": [
+            "grant"
+          ]
+        }
+      ],
+      "claims": [
+        {
+          "claim_id": "claim-6",
+          "text": "The fund opened applications for eligible diagnostic access projects.",
+          "assertion_type": "documented_action",
+          "attributed_to": null,
+          "evidence_ids": [
+            "grant"
+          ]
+        }
+      ],
+      "supersedes": [],
+      "reviewed_interpretation": null,
+      "verification_path": "Check the issuer’s latest notice before using this record in planning."
+    },
+    {
+      "record_id": "00000000-0000-4000-8000-000000000007",
+      "revision": 1,
+      "title": "Dataset revision notice with geography unspecified",
+      "change_type": "methodology_change",
+      "domains": [
+        "data_methods"
+      ],
+      "status": "unknown",
+      "status_as_of": "2026-11-24",
+      "dates": [],
+      "geographic_relations": [
+        {
+          "relation": "mentioned_only",
+          "geo_type": "unknown",
+          "as_written": null,
+          "fips_codes": [],
+          "resolution_method": "not_resolved",
+          "evidence_ids": [
+            "data-notice"
+          ]
+        }
+      ],
+      "claims": [
+        {
+          "claim_id": "claim-7",
+          "text": "A revised data dictionary was announced. The available notice does not establish geographic coverage.",
+          "assertion_type": "documented_action",
+          "attributed_to": null,
+          "evidence_ids": [
+            "data-notice"
+          ]
+        }
+      ],
+      "supersedes": [],
+      "reviewed_interpretation": null,
+      "verification_path": "Check the issuer’s latest notice before using this record in planning."
+    }
+  ],
+  "evidence": [
+    {
+      "evidence_id": "proposal",
+      "source_id": "fixture-proposal",
+      "canonical_url": "https://community-pulse.example.invalid/proposal",
+      "publisher": "Illustrative WV Coverage Office",
+      "origin_publisher": "Illustrative WV Coverage Office",
+      "republished_from": null,
+      "locator": "Section 2, relevant notice",
+      "retrieved_at": "2026-11-25T13:00:00Z",
+      "published_at": "2026-11-19T12:00:00Z",
+      "provenance_class": "primary_official_document"
+    },
+    {
+      "evidence_id": "effective",
+      "source_id": "fixture-effective",
+      "canonical_url": "https://community-pulse.example.invalid/effective",
+      "publisher": "Illustrative WV Coverage Office",
+      "origin_publisher": "Illustrative WV Coverage Office",
+      "republished_from": null,
+      "locator": "Section 2, relevant notice",
+      "retrieved_at": "2026-11-25T13:00:00Z",
+      "published_at": "2026-11-19T12:00:00Z",
+      "provenance_class": "primary_official_document"
+    },
+    {
+      "evidence_id": "delay",
+      "source_id": "fixture-delay",
+      "canonical_url": "https://community-pulse.example.invalid/delay",
+      "publisher": "Illustrative WV Coverage Office",
+      "origin_publisher": "Illustrative WV Coverage Office",
+      "republished_from": null,
+      "locator": "Section 2, relevant notice",
+      "retrieved_at": "2026-11-25T13:00:00Z",
+      "published_at": "2026-11-24T12:00:00Z",
+      "provenance_class": "primary_official_document"
+    },
+    {
+      "evidence_id": "rescinded",
+      "source_id": "fixture-rescinded",
+      "canonical_url": "https://community-pulse.example.invalid/rescinded",
+      "publisher": "Illustrative WV Program Authority",
+      "origin_publisher": "Illustrative WV Program Authority",
+      "republished_from": null,
+      "locator": "Section 2, relevant notice",
+      "retrieved_at": "2026-11-25T13:00:00Z",
+      "published_at": "2026-11-22T12:00:00Z",
+      "provenance_class": "primary_official_document"
+    },
+    {
+      "evidence_id": "capacity",
+      "source_id": "fixture-capacity",
+      "canonical_url": "https://community-pulse.example.invalid/capacity",
+      "publisher": "Ridgeview Regional Diagnostic Center",
+      "origin_publisher": "Ridgeview Regional Diagnostic Center",
+      "republished_from": null,
+      "locator": "Section 2, relevant notice",
+      "retrieved_at": "2026-11-25T13:00:00Z",
+      "published_at": "2026-11-19T12:00:00Z",
+      "provenance_class": "primary_official_document"
+    },
+    {
+      "evidence_id": "reprint",
+      "source_id": "fixture-reprint",
+      "canonical_url": "https://community-pulse.example.invalid/reprint",
+      "publisher": "Illustrative Regional Digest",
+      "origin_publisher": "Ridgeview Regional Diagnostic Center",
+      "republished_from": "https://community-pulse.example.invalid/capacity",
+      "locator": "Section 2, relevant notice",
+      "retrieved_at": "2026-11-25T13:00:00Z",
+      "published_at": "2026-11-20T12:00:00Z",
+      "provenance_class": "official_statement_as_reported"
+    },
+    {
+      "evidence_id": "grant",
+      "source_id": "fixture-grant",
+      "canonical_url": "https://community-pulse.example.invalid/grant",
+      "publisher": "Illustrative Appalachian Access Fund",
+      "origin_publisher": "Illustrative Appalachian Access Fund",
+      "republished_from": null,
+      "locator": "Section 2, relevant notice",
+      "retrieved_at": "2026-11-25T13:00:00Z",
+      "published_at": "2026-11-19T12:00:00Z",
+      "provenance_class": "primary_official_document"
+    },
+    {
+      "evidence_id": "data-notice",
+      "source_id": "fixture-data-notice",
+      "canonical_url": "https://community-pulse.example.invalid/data-notice",
+      "publisher": "Illustrative Public Data Office",
+      "origin_publisher": "Illustrative Public Data Office",
+      "republished_from": null,
+      "locator": "Section 2, relevant notice",
+      "retrieved_at": "2026-11-25T13:00:00Z",
+      "published_at": "2026-11-19T12:00:00Z",
+      "provenance_class": "primary_official_document"
+    }
+  ],
+  "coverage": [
+    {
+      "scope": "west_virginia",
+      "county_fips": null,
+      "domain": "coverage_eligibility",
+      "status": "complete",
+      "eligible": 2,
+      "due": 2,
+      "checked": 2,
+      "window_started_at": "2026-11-19T00:00:00Z",
+      "window_ended_at": "2026-11-25T13:00:00Z",
+      "last_success_at": "2026-11-25T13:00:00Z",
+      "reason_codes": []
+    },
+    {
+      "scope": "west_virginia",
+      "county_fips": null,
+      "domain": "diagnostic_access",
+      "status": "partial",
+      "eligible": 3,
+      "due": 2,
+      "checked": 1,
+      "window_started_at": "2026-11-19T00:00:00Z",
+      "window_ended_at": "2026-11-25T13:00:00Z",
+      "last_success_at": "2026-11-25T13:00:00Z",
+      "reason_codes": [
+        "source_gap"
+      ]
+    },
+    {
+      "scope": "county",
+      "county_fips": "54099",
+      "domain": "diagnostic_access",
+      "status": "complete",
+      "eligible": 1,
+      "due": 1,
+      "checked": 1,
+      "window_started_at": "2026-11-19T00:00:00Z",
+      "window_ended_at": "2026-11-25T13:00:00Z",
+      "last_success_at": "2026-11-25T13:00:00Z",
+      "reason_codes": []
+    },
+    {
+      "scope": "county",
+      "county_fips": "54047",
+      "domain": "diagnostic_access",
+      "status": "not_monitored",
+      "eligible": 0,
+      "due": 0,
+      "checked": 0,
+      "window_started_at": "2026-11-19T00:00:00Z",
+      "window_ended_at": "2026-11-25T13:00:00Z",
+      "last_success_at": null,
+      "reason_codes": [
+        "no_enrolled_source"
+      ]
+    }
+  ],
+  "tombstones": [
+    {
+      "record_id": "00000000-0000-4000-8000-000000000003",
+      "revision": 1,
+      "action": "correct",
+      "at": "2026-11-24T13:00:00Z",
+      "reason_code": "implementation_postponed",
+      "replacement": {
+        "record_id": "00000000-0000-4000-8000-000000000003",
+        "revision": 2
+      }
+    },
+    {
+      "record_id": "00000000-0000-4000-8000-000000000008",
+      "revision": 1,
+      "action": "retract",
+      "at": "2026-11-24T13:00:00Z",
+      "reason_code": "source_withdrew_notice",
+      "replacement": null
+    }
+  ]
+}

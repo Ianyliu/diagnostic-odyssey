@@ -1,0 +1,81 @@
+{
+  "schema_version": "0.2.1",
+  "kind": "research_report",
+  "run_id": "fixture-20261125-daily",
+  "report_type": "daily_synthesis",
+  "status": "completed",
+  "title": "Diagnostic access and eligibility research",
+  "items": [
+    {
+      "kind": "source_grounded_development",
+      "title": "Ridgeview schedule notice",
+      "text": "The research report found a notice concerning clinic hours. Implementation has not been checked.",
+      "sources": [
+        {
+          "url": "https://community-pulse.example.invalid/capacity",
+          "publisher": "Illustrative publisher",
+          "locator": "Relevant official notice"
+        }
+      ]
+    },
+    {
+      "kind": "cross_source_synthesis",
+      "title": "Same notice, two distribution channels",
+      "text": "The two documents may share an origin. Do not count them as independent support.",
+      "sources": [
+        {
+          "url": "https://community-pulse.example.invalid/capacity",
+          "publisher": "Illustrative publisher",
+          "locator": "Relevant official notice"
+        },
+        {
+          "url": "https://community-pulse.example.invalid/reprint",
+          "publisher": "Illustrative publisher",
+          "locator": "Relevant official notice"
+        }
+      ]
+    },
+    {
+      "kind": "planning_implication",
+      "title": "Check changes to referral options",
+      "text": "A planner could verify whether nearby clinics still accept referrals.",
+      "sources": []
+    },
+    {
+      "kind": "open_question",
+      "title": "Which patients fall under the proposed rule?",
+      "text": "Check the agency’s final notice when it is published.",
+      "sources": []
+    },
+    {
+      "kind": "verification_needed",
+      "title": "Conflicting deadline descriptions",
+      "text": "Two documents appear to give different application dates.",
+      "sources": [
+        {
+          "url": "https://community-pulse.example.invalid/grant",
+          "publisher": "Illustrative publisher",
+          "locator": "Relevant official notice"
+        },
+        {
+          "url": "https://community-pulse.example.invalid/reprint",
+          "publisher": "Illustrative publisher",
+          "locator": "Relevant official notice"
+        }
+      ]
+    },
+    {
+      "kind": "funding_opportunity",
+      "title": "Potential planning grant",
+      "text": "An institutional announcement describes eligibility and a filing deadline.",
+      "sources": [
+        {
+          "url": "https://community-pulse.example.invalid/grant",
+          "publisher": "Illustrative publisher",
+          "locator": "Relevant official notice"
+        }
+      ]
+    }
+  ],
+  "reason_codes": []
+}

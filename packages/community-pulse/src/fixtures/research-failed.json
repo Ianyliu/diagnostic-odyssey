@@ -1,0 +1,12 @@
+{
+  "schema_version": "0.2.1",
+  "kind": "research_report",
+  "run_id": "fixture-20261125-demand",
+  "report_type": "on_demand",
+  "status": "failed",
+  "title": "On-demand filing check",
+  "items": [],
+  "reason_codes": [
+    "source_unavailable"
+  ]
+}

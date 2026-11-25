@@ -1,0 +1,37 @@
+{
+  "schema_version": "0.2.1",
+  "kind": "research_report",
+  "run_id": "fixture-20261125-weekly",
+  "report_type": "weekly_strategic_review",
+  "status": "partial",
+  "title": "Cross-border access research",
+  "items": [
+    {
+      "kind": "strategic_hypothesis",
+      "title": "Explore alternatives to the announced schedule",
+      "text": "A referral review could identify an alternative. No capacity impact has been quantified.",
+      "sources": [
+        {
+          "url": "https://community-pulse.example.invalid/capacity",
+          "publisher": "Illustrative publisher",
+          "locator": "Relevant official notice"
+        }
+      ]
+    },
+    {
+      "kind": "source_nomination",
+      "title": "County program notice archive",
+      "text": "Candidate archive for independent retrieval and rights review.",
+      "sources": [
+        {
+          "url": "https://community-pulse.example.invalid/proposal",
+          "publisher": "Illustrative publisher",
+          "locator": "Relevant official notice"
+        }
+      ]
+    }
+  ],
+  "reason_codes": [
+    "one_source_unavailable"
+  ]
+}
