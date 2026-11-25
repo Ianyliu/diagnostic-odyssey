@@ -97,3 +97,38 @@ git diff --stat 5b81f5f..HEAD -- artifacts/                  # must be empty
 
 Review in this order: [ADR 0001](../adr/0001-behavior-preserving-changes-need-exact-equivalence-evidence.md) (how equivalence is proven), `tests/characterization/golden/PROVENANCE.md`,
 the `contracts` and `PilotPage` commits (mechanical moves), the CI commit with [the workflow matrix](../operations/ci-workflows.md), then docs.
+
+## Integration qualification
+
+Independent review of `a60c0b9` (disposition `INTEGRATION_QUALIFICATION_AUTHORIZED`, `MERGE_HOLD`) raised four findings.
+They were remediated in separate commits on top of the 25 accepted commits; no accepted work was reverted and no golden was regenerated.
+
+| Finding | Remediation | Evidence |
+| --- | --- | --- |
+| `scripts/verify/vercel-function-build.sh` overwrote `.vercel/project.json` and deleted `.vercel` | Builds in a private `mktemp` copy of git-visible files (no `.vercel`, no `.env*`), throwaway project and global CLI config; trap cleanup on EXIT/INT/TERM/HUP limited to its own temp directory; `VERCEL_BIN` skips the network-dependent CLI provisioning | `tests/unit/vercel-function-build-safety.test.mjs`: sentinel `.vercel` and `.env.local` byte-identical after success, build failure and SIGTERM. Real CLI 66.6.0 run with a sentinel: both functions load, sentinel unchanged |
+| `tests/browser/pilot-parity.mjs` ignored click failures and could drop whole screenshots | Schema `pilot-parity/v2`: stable ids, every interaction verifies its post-state, explicit 3 viewport x 2 theme x 14 state inventory plus focus traces, captures rejected if empty, incomplete, duplicated, malformed or skipped; screenshot noise exclusion only where baseline repeats differ, bounded and listed | `tests/unit/pilot-parity.test.mjs` (negative tests) |
+| Shared concurrency groups could drop pending non-PR runs; coverage `tee` into a missing directory | Unique per-run groups for non-PR events, PR runs still supersede; `mkdir -p coverage`, `PIPESTATUS` reported in the summary and as a warning (step stays informational) | actionlint; [workflow matrix](../operations/ci-workflows.md) |
+| Secondary Vercel project `diagnostic-odyssey-strategy-lab` fails | Pre-existing on `main`; root `apps/strategy-lab` never existed on `main`. Not modified | [Vercel projects](../operations/vercel-projects.md) |
+
+### Strengthened rendered parity (`/pilot`, baseline `5b81f5f` vs candidate working tree on `a60c0b9`)
+
+Three captures of each build (one primary, two repeats used only as noise evidence).
+
+| Comparison | Rendered states (HTML + ARIA identical) | Focus-order traces identical | Screenshots byte-identical | Excluded as noise | Differing |
+| --- | --- | --- | --- | --- | --- |
+| baseline vs candidate | 84 / 84 | 6 / 6 | 84 / 84 | 0 | 0 |
+| baseline vs baseline repeat | 84 / 84 | 6 / 6 | 84 / 84 | 0 | 0 |
+| candidate vs candidate repeat | 84 / 84 | 6 / 6 | 82 / 84 | 0 | 2 |
+
+The candidate self-comparison fails, as designed, because two screenshots of the *same build* differed between runs
+(`tablet-768-light/inputs-non-numeric`: 135 px, max channel delta 49; `desktop-1440-dark/initial`: 936 px, max delta 35)
+while the one remaining repeat did not reproduce the difference, so the harness had no evidence to classify it as noise.
+This is Chromium rasterization nondeterminism, not an application difference: DOM, ARIA and focus order were identical, and
+the cross-build comparison was byte-identical in all 84 screenshots. Focus traces are counted separately and are not screenshots.
+
+### Remote qualification
+
+Recorded in the pull request and final handoff: GitHub Actions results for the final candidate SHA, the immutable Vercel Preview
+for that SHA, and deployed checks. The Preview is protected by Vercel deployment protection (SSO); automated deployed-browser
+testing needs an owner-provided bypass mechanism (open item 9) and was not circumvented. `main`, production aliases and Vercel
+project settings were not modified.

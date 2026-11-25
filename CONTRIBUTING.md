@@ -44,8 +44,10 @@ networking denied (macOS `sandbox-exec`, Linux `unshare`) to prove it.
 Not covered by either command, and required where relevant to your change:
 
 - Browser acceptance, accessibility and PDF suites: [docs/testing.md](docs/testing.md#browser-acceptance).
-- `scripts/verify/vercel-function-build.sh`: offline Vercel build of `apps/web/api` (downloads a pinned
-  CLI; no login). Run it when touching `apps/web/api`, `vercel.json` or the TypeScript project files.
+- `scripts/verify/vercel-function-build.sh`: local Vercel build of `apps/web/api` in a private temporary copy of the
+  source tree (no login, no deployment). It never reads, writes or deletes `apps/web/.vercel`, never copies `.env*`
+  files and uses a throwaway CLI config. Provisioning the pinned CLI needs the npm registry; set `VERCEL_BIN` to an
+  existing CLI to skip that. Run it when touching `apps/web/api`, `vercel.json` or the TypeScript project files.
 - `python3 -m unittest discover -s tests/browser -p 'test_workstream_h_inventory.py'` (needs PyMuPDF).
 - `npm run test:coverage` is informational only; there are no coverage thresholds.
 
@@ -60,7 +62,9 @@ snapshot of every package, and 387 cases for the Preview-only endpoint, all gene
 
 - If a characterization test fails, investigate the first listed case. Do **not** regenerate goldens to make it pass.
 - A deliberate behavior change belongs in its own commit with a written justification and regenerated goldens.
-- For UI structure changes, `tests/browser/pilot-parity.mjs` shows how to compare rendered HTML, ARIA and focus order.
+- For UI structure changes, `tests/browser/pilot-parity.mjs` compares rendered HTML, ARIA, focus order and screenshots
+  over an explicit viewport x theme x interaction inventory; it fails on any failed interaction or incomplete capture
+  and reports every screenshot it excludes as baseline rasterization noise.
 - Source-text contract tests may not be weakened to accommodate moved code; update them to assert at least as much.
 
 ## Hard rules

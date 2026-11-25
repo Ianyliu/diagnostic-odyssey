@@ -3,31 +3,29 @@
 Last reconciled during the 2026-11-25 maintenance campaign (branch `chore/audit-docs-ci-tests-debt-20261125`).
 
 > [!IMPORTANT]
-> Everything below was verified **locally and statically** (actionlint 1.7.12, a programmatic before/after diff of all
-> 16 workflows, and local execution of the commands the workflows run). **No GitHub Actions run of these changes has
-> happened yet.** GitHub CI qualification and an isolated Vercel Preview check are a separate stage that requires push
-> authorization.
+> Statically verified with actionlint 1.7.12 and a programmatic before/after diff of all 16 workflows; integration
+> results on GitHub are recorded in the pull request and in the [audit report](../audit-2026-11-25/README.md#integration-qualification).
 
 ## Workflow matrix (after)
 
 | Workflow | Role | Triggers | Jobs (timeout) | Concurrency | Gates and responsibilities |
 | --- | --- | --- | --- | --- | --- |
-| `acquisition-browser-qa.yml` | Historical PR browser QA | pull_request (paths filtered) | `rendered-acquisition` (25 min) | cancels superseded PR runs | Runs only for PR #98 (stale; see open items) |
-| `ai-handoff-core.yml` | PR exact-head verification | pull_request (paths filtered) | `exact-head` (20 min) | cancels superseded PR runs | Typecheck, tests, lint, build, Python unit tests, reviewed-artifact inventory, browser AI-handoff checks |
-| `ci.yml` | Core CI | push (main only), pull_request | `verify` (20 min), `r-analysis-tests` (15 min) (before: `verify` (10 min), `r-analysis-tests` (15 min)) | cancels superseded PR runs | Typecheck, unit, tooling, characterization, Python validators, reviewed-artifact inventory, lint, build, repeated-build byte stability; separate R synthetic tests |
-| `future-ai-experience.yml` | PR browser QA (+R) | pull_request (paths filtered), workflow_dispatch | `concept-browser` (20 min), `integrated-r` (15 min) | cancels superseded PR runs | Concept/Studio browser checks with build flags on/off; integrated R tests |
-| `gate0-accessibility.yml` | PR accessibility gate | pull_request (paths filtered) | `exact-head-web` (20 min), `exact-head-r` (15 min) | cancels superseded PR runs | Exact-head web gate with axe, reflow, contrast, keyboard; R synthetic tests |
+| `acquisition-browser-qa.yml` | Historical PR browser QA | pull_request (paths filtered) | `rendered-acquisition` (25 min) | PR: one group per PR, superseded runs cancelled; other events: unique per-run group | Runs only for PR #98 (stale; see open items) |
+| `ai-handoff-core.yml` | PR exact-head verification | pull_request (paths filtered) | `exact-head` (20 min) | PR: one group per PR, superseded runs cancelled; other events: unique per-run group | Typecheck, tests, lint, build, Python unit tests, reviewed-artifact inventory, browser AI-handoff checks |
+| `ci.yml` | Core CI | push (main only), pull_request | `verify` (20 min), `r-analysis-tests` (15 min) (before: `verify` (10 min), `r-analysis-tests` (15 min)) | PR: one group per PR, superseded runs cancelled; other events: unique per-run group | Typecheck, unit, tooling, characterization, Python validators, reviewed-artifact inventory, lint, build, repeated-build byte stability; separate R synthetic tests |
+| `future-ai-experience.yml` | PR browser QA (+R) | pull_request (paths filtered), workflow_dispatch | `concept-browser` (20 min), `integrated-r` (15 min) | PR: one group per PR, superseded runs cancelled; other events: unique per-run group | Concept/Studio browser checks with build flags on/off; integrated R tests |
+| `gate0-accessibility.yml` | PR accessibility gate | pull_request (paths filtered) | `exact-head-web` (20 min), `exact-head-r` (15 min) | PR: one group per PR, superseded runs cancelled; other events: unique per-run group | Exact-head web gate with axe, reflow, contrast, keyboard; R synthetic tests |
 | `jules-pr-review.yml` | Automated PR review | pull_request | `review` (40 min) | unchanged (cancels superseded runs) | Third-party reviewer action; uses a repository secret |
 | `local-context-candidate.yml` | Evidence generation (manual) | workflow_dispatch | `generate-candidate` (20 min) | never cancelled (dispatch-only evidence) | HRSA+ACS candidate generation, verification, aggregate artifact upload |
 | `meps-candidate.yml` | Evidence generation (manual) | workflow_dispatch | `generate-candidate` (30 min) | never cancelled (dispatch-only evidence) | Survey-aware MEPS candidate generation with real data |
 | `meps-linked-condition-candidate.yml` | Evidence generation (manual) | workflow_dispatch | `linked-condition-candidate` (30 min) | never cancelled (dispatch-only evidence) | Linked-condition candidate generation |
 | `meps-linked-condition-feasibility.yml` | Evidence generation (manual) | workflow_dispatch | `linked-condition-feasibility` (30 min) | never cancelled (dispatch-only evidence) | Linked-condition feasibility analysis |
-| `opening-circuit-qa.yml` | PR browser QA | pull_request (paths filtered) | `browser` (25 min) | cancels superseded PR runs | Opening-circuit and landing-evidence browser suites |
-| `planning-intelligence-integration.yml` | PR browser QA | pull_request (paths filtered), workflow_dispatch | `combined-browser` (30 min) | cancels superseded PR runs | Combined planning-insights / AI-handoff browser matrix and PDF checks |
-| `planning-request-handoff.yml` | PR browser QA | pull_request (paths filtered) | `analyst-journey` (20 min) | cancels superseded PR runs | Sensitivity-to-request handoff and export parity |
-| `workspace-interactions.yml` | PR browser QA | pull_request (paths filtered), workflow_dispatch | `workspace` (15 min) | cancels superseded PR runs | Drafts, downloads, reflow, keyboard, motion, guided workspace, PDF |
-| `workstream-h-qa.yml` | PR browser QA | pull_request (paths filtered), workflow_dispatch | `combined-physical` (30 min) | cancels superseded PR runs | Fail-closed PDF/JSON acceptance |
-| `workstream-k-qa.yml` | PR security QA | pull_request (paths filtered), workflow_dispatch | `security-browser` (35 min) | cancels superseded PR runs | CSP/header regression behind simulated Vercel headers; optional immutable-preview URL input |
+| `opening-circuit-qa.yml` | PR browser QA | pull_request (paths filtered) | `browser` (25 min) | PR: one group per PR, superseded runs cancelled; other events: unique per-run group | Opening-circuit and landing-evidence browser suites |
+| `planning-intelligence-integration.yml` | PR browser QA | pull_request (paths filtered), workflow_dispatch | `combined-browser` (30 min) | PR: one group per PR, superseded runs cancelled; other events: unique per-run group | Combined planning-insights / AI-handoff browser matrix and PDF checks |
+| `planning-request-handoff.yml` | PR browser QA | pull_request (paths filtered) | `analyst-journey` (20 min) | PR: one group per PR, superseded runs cancelled; other events: unique per-run group | Sensitivity-to-request handoff and export parity |
+| `workspace-interactions.yml` | PR browser QA | pull_request (paths filtered), workflow_dispatch | `workspace` (15 min) | PR: one group per PR, superseded runs cancelled; other events: unique per-run group | Drafts, downloads, reflow, keyboard, motion, guided workspace, PDF |
+| `workstream-h-qa.yml` | PR browser QA | pull_request (paths filtered), workflow_dispatch | `combined-physical` (30 min) | PR: one group per PR, superseded runs cancelled; other events: unique per-run group | Fail-closed PDF/JSON acceptance |
+| `workstream-k-qa.yml` | PR security QA | pull_request (paths filtered), workflow_dispatch | `security-browser` (35 min) | PR: one group per PR, superseded runs cancelled; other events: unique per-run group | CSP/header regression behind simulated Vercel headers; optional immutable-preview URL input |
 
 Workflow permissions are `contents: read` everywhere (unchanged), except the third-party review job, which already
 declared its own scoped permissions.
@@ -36,7 +34,8 @@ declared its own scoped permissions.
 
 Programmatic comparison of `main@5b81f5f` against the branch for all 16 workflows:
 
-- **Unchanged:** every job id, every trigger (events and path filters), every job `if:` condition, every top-level `permissions`.
+- **Unchanged:** every job id, every trigger event, every job `if:` condition, every top-level `permissions`. Path
+  filters only gained entries (listed below); none was removed.
 - **Changed timeout:** only `ci.yml` / `verify`, 10 → 20 minutes, because the job gained characterization, tooling and
   informational coverage steps (their local runtime is a few seconds each; the raise is headroom, not a measured need).
 - **Pins:** all external actions are pinned to full commit SHAs (previously three workflows used floating `@v4`).
@@ -52,9 +51,26 @@ Programmatic comparison of `main@5b81f5f` against the branch for all 16 workflow
   mismatched directory, manifest or file. Candidate workflows keep their own checks of freshly generated outputs.
 - **Added to `ci.yml`:** tooling tests, characterization (exact equivalence to the recorded baseline), informational coverage
   with a job summary and a 14-day artifact. Coverage has no thresholds and `continue-on-error: true`.
-- **Concurrency:** supersedable PR validation workflows cancel older runs for the same PR only
-  (`cancel-in-progress` is false for `push` and `workflow_dispatch`). Evidence-generating candidate workflows and
-  `main` pushes are never cancelled.
+- **Concurrency:** pull-request runs share one group per PR (`<workflow>-pr-<number>`) with
+  `cancel-in-progress: true`, so a newer push supersedes older validation. Every other event (`push` to `main`,
+  `workflow_dispatch`) gets a unique group (`<workflow>-run-<run_id>`). This matters because GitHub keeps at most one
+  *pending* run per concurrency group even with `cancel-in-progress: false`; a shared group could silently drop a queued
+  `main` or dispatch run. Evidence-generating candidate workflows declare no concurrency group at all, so they are
+  never cancelled or replaced. `jules-pr-review.yml` keeps its pre-existing PR-scoped group.
+- **Coverage step:** `coverage/` is created before `tee` writes into it, the step runs under `bash` and records
+  `PIPESTATUS[0]`, and a generation failure is written to the job summary, raised as a warning annotation and returned
+  as the step's exit code. The step keeps `continue-on-error: true`, so coverage stays informational and never fails
+  the job, but a failure is no longer reported as success.
+- **Documentation links:** `npm run verify:docs` runs in `ci.yml` / `verify`; the checker's own tests run in
+  `npm run test:tools`.
+- **Path filters (narrow additions):** path-filtered browser workflows now also trigger on inputs that change what they
+  execute: `package-lock.json` and `.nvmrc` (dependency and Node changes alter the built bundle and the browser runner),
+  `.github/actions/setup-workspace/**` where the workflow calls that action, `requirements-test.txt` where the workflow
+  installs it, and `packages/**` for `planning-intelligence-integration` and `workstream-h-qa` (their PDF/JSON exports
+  are produced by package code bundled into the app). `ai-handoff-core` also tracks `package.json`, `tsconfig.base.json`,
+  `scripts/verify/reviewed-artifacts.*` and the packages it bundles (`contracts`, `brief-core`, `planning-guidance`).
+  TypeScript project files are not added to browser workflows: they do not change emitted bundles, and `ci.yml` runs
+  `typecheck` on every pull request.
 - **Composite action:** [`.github/actions/setup-workspace`](../../.github/actions/setup-workspace/action.yml) (Node from `.nvmrc`,
   `npm ci`, optional Python test deps) is now used by seven jobs in place of repeated setup-node + `npm ci` pairs. Checkout and exact-SHA
   verification steps stay in each workflow, before the action, with their original semantics.
@@ -105,5 +121,5 @@ auto-merge. R packages are not covered.
 | --- | --- |
 | Static validation (actionlint, YAML diff, Dependabot schema) | Done locally |
 | Local execution of the commands the workflows run (Node 22.23.3, Python 3.12, R 4.5.2) | Done locally |
-| Actual GitHub Actions execution | **Not done**: requires push authorization |
-| Isolated Vercel Preview verification | **Not done**: requires push authorization |
+| Actual GitHub Actions execution | See the pull request checks and the [audit report](../audit-2026-11-25/README.md#integration-qualification) |
+| Isolated Vercel Preview verification | See [Vercel projects](vercel-projects.md) and the audit report |
