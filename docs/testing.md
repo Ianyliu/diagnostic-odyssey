@@ -21,6 +21,13 @@
 ### Evidence
 - human review + admissibility + pathway/mechanism checks gate scenario parameter use.
 
+### Design, brand, contrast, and security
+- `wcag-contrast.test.ts`: enforces `>=4.5:1` text contrast and `>=3.0:1` UI border, focus, and chart contrast across light and dark palettes in `packages/ui/src/styles.css`.
+- `strategic-atlas-consolidation.test.ts`, `foundation-platform-ux.test.ts`, `lovable-visual-grammar.test.ts`, `opening-motion.test.ts`, `theme.test.ts`: enforce landing chapter order, Strategy Sandbox deterministic transfer, navigation stage labels, zero inline `style={{}}`, non-color/semantic role cues, and first-paint theme bootstrap.
+- `overview-inventory-claims.test.ts` & `social-preview.test.ts`: enforce exact reviewed inventory counts, no county/work-loss overclaims, and non-numeric deterministic `og-image.png` rendering.
+- `capacity-threshold-curve.test.ts` & `scenario-comparison.test.ts`: verify Strategy Lab's capacity sufficiency threshold geometry and deterministic multi-scenario comparison rows.
+- `security-headers.test.ts`, `ai-guidance.test.ts`, `ai-preview.test.ts`: enforce strict CSP headers in `apps/web/vercel.json`, Preview-only `/api/ai-guidance` validation/rate-limit/replay guards, and permanent `404` retirement of `/api/ai-preview`.
+
 ### CI
 Each push/PR runs TypeScript checks, unit tests, ESLint, and the Vite production build.
 
@@ -78,9 +85,27 @@ QA_OUTPUT=/tmp/odyssey-visual node tests/browser/visual-quality.mjs
 QA_OUTPUT=/tmp/odyssey-motion node tests/browser/motion.mjs
 ```
 
-The continuity suite verifies an unfinished numeric draft survives route navigation while exports retain the last valid scenario, and that a failed JSON download can recover. The visual suite checks intact number/unit tokens and no overflow at 320/390/768/1440px in both themes, plus keyboard menu closure and focus restoration. The motion suite checks a fresh opening, interruption, session replay suppression, deep links, reduced motion and layout stability.
+The continuity suite verifies an unfinished numeric draft survives route navigation while exports retain the last valid scenario, and that a failed JSON download can recover. The visual suite checks intact number/unit tokens, rendered burden topic groups, and no overflow at 320/390/768/1440px in both themes, plus keyboard menu closure and focus restoration. The motion suite checks a fresh opening, interruption, session replay suppression, deep links, reduced motion and layout stability.
 
-For AI handoff tests, also start the isolated fixture:
+Additional Strategic Atlas browser suites (run individually with the same `PLAYWRIGHT_RUNNER` and `QA_BASE_URL` exports; see also `.github/workflows/opening-circuit-qa.yml`):
+
+```bash
+QA_OUTPUT=/tmp/odyssey-opening-circuit node tests/browser/opening-circuit.mjs
+QA_OUTPUT=/tmp/odyssey-landing-evidence node tests/browser/landing-evidence.mjs
+QA_OUTPUT=/tmp/odyssey-guided node tests/browser/guided-workspace.mjs
+python3 tests/browser/verify-guided-pdf.py /tmp/odyssey-guided
+QA_OUTPUT=/tmp/odyssey-handoff-142 node tests/browser/planning-request-handoff.mjs
+QA_OUTPUT=/tmp/odyssey-exports-142 node tests/browser/planning-request-exports.mjs
+QA_OUTPUT=/tmp/odyssey-security node tests/browser/security-headers.mjs
+QA_OUTPUT=/tmp/odyssey-workstream-h node tests/browser/workstream-h-qa.mjs
+```
+
+- `opening-circuit.mjs` & `landing-evidence.mjs`: verify Chapter I *Care Horizon*, Chapter IV *From data to action* sweeping pathway geometry and reduced-motion/interruption semantics across viewports, plus live bundle fixture integrity on the landing strata.
+- `guided-workspace.mjs` & `verify-guided-pdf.py`: exercise `01 Burden`, `02 Local context`, `03 Strategy Lab`, `04 Planning Brief`, `Data requests`, `EditionDrawer`, Focus/Overview disclosures, `og-image.png` metadata, and Brief print pagination.
+- `security-headers.mjs` (behind `csp-preview-proxy.mjs` locally or against an immutable Vercel Preview URL): validates CSP, MIME types, `/theme-init.js`, and absence of external network egress.
+- `planning-request-handoff.mjs`, `planning-request-exports.mjs`, and `workstream-h-qa.mjs`: verify sensitivity-to-request handoff, exact JSON/PDF export parity, and fail-closed 4-mode PDF/JSON acceptance.
+
+For Strategy AI Studio (`/advisor` and `/concept/future-ai`) and AI handoff tests, also start the isolated fixture:
 
 ```bash
 ./node_modules/.bin/vite --config tests/browser/ai-handoff-fixture/vite.config.mjs

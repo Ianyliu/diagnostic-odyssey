@@ -1,6 +1,6 @@
 # ME/CFS compatibility proof
 
-ME/CFS is a partial compatibility target, not a second fully implemented burden model.
+ME/CFS is a partial compatibility target (`Partial compatibility` / `Coming soon` in the **Edition 01** Coverage & Roadmap drawer via [`apps/web/src/data/coverageCatalog.ts`](../../apps/web/src/data/coverageCatalog.ts)), not a second fully implemented burden model.
 
 The architecture may reuse:
 - core contracts;
