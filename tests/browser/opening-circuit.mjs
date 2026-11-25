@@ -73,7 +73,7 @@ async function checkHeroAndScrollJourney(page, label, expectedOpening, expectedJ
     const journey = document.querySelector(".atlas-journey").getBoundingClientRect();
     const replayEl = document.querySelector(".atlas-journey-replay");
     const btn = replayEl.getBoundingClientRect();
-    const canvas = document.querySelector(".atlas-journey-canvas");
+    const canvas = document.querySelector(".atlas-journey-path");
     const desktopVisible = getComputedStyle(canvas).display !== "none";
     const mobileVisible = getComputedStyle(document.querySelector(".atlas-journey-mobile")).display !== "none";
     const stopRects = Array.from(document.querySelectorAll(".atlas-journey-stop")).map(el => {

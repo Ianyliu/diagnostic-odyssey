@@ -1,4 +1,4 @@
-import { Fragment, useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   canReplayOpening,
@@ -20,11 +20,11 @@ import "./LandingJourney.css";
  * inertia never consumes or cancels the Chapter IV reveal.
  */
 const waypoints = [
-  { label: "Burden", n: "01", to: "/burden", x: 96, y: 296, type: "evidence" },
-  { label: "Local context", n: "02", to: "/local-context", x: 340, y: 178, type: "context" },
-  { label: "Strategy Lab", n: "03", to: "/pilot", x: 602, y: 232, type: "assumption" },
-  { label: "Data requests", n: "Optional", to: "/data-requests", x: 758, y: 316, type: "gap" },
-  { label: "Planning Brief", n: "04", to: "/brief", x: 916, y: 88, type: "brief" }
+  { label: "Burden", n: "01", to: "/burden", action: "Explore the burden", x: 96, y: 296, type: "evidence" },
+  { label: "Local context", n: "02", to: "/local-context", action: "Check local access", x: 340, y: 178, type: "context" },
+  { label: "Strategy Lab", n: "03", to: "/pilot", action: "Test a pilot scenario", x: 602, y: 232, type: "assumption" },
+  { label: "Data requests", n: "Optional", to: "/data-requests", action: "Identify what’s missing", x: 758, y: 316, type: "gap" },
+  { label: "Planning Brief", n: "04", to: "/brief", action: "Prepare a decision brief", x: 916, y: 88, type: "brief" }
 ] as const;
 
 const route =
@@ -35,6 +35,7 @@ export function LandingJourney() {
   const navRef = useRef<HTMLElement>(null);
   const hasAutoPlayedRef = useRef(false);
   const [playing, setPlaying] = useState(false);
+  const [scrollReady, setScrollReady] = useState(false);
   const [runId, setRunId] = useState(0);
   const [announcement, setAnnouncement] = useState("");
 
@@ -63,7 +64,16 @@ export function LandingJourney() {
           }
         : { pathname: "/", search: "", hash: "", reducedMotion: true, storage: null };
 
-      if (!shouldPlayJourney(entry)) return;
+      if (!shouldPlayJourney(entry)) {
+        try {
+          if (!entry.search && !entry.hash && !entry.reducedMotion && entry.storage?.getItem(JOURNEY_SESSION_KEY) === "seen") {
+            setScrollReady(true);
+          }
+        } catch {
+          // A blocked session uses the static pathway and manual motion control.
+        }
+        return;
+      }
       if (!markOpeningSeen(sessionStorageOrNull(), JOURNEY_SESSION_KEY)) return;
       hasAutoPlayedRef.current = true;
       setRunId(previous => previous + 1);
@@ -116,7 +126,10 @@ export function LandingJourney() {
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("pagehide", settle);
     document.addEventListener("visibilitychange", settleOnHidden);
-    const timer = window.setTimeout(settle, JOURNEY_DURATION_MS);
+    const timer = window.setTimeout(() => {
+      settle();
+      if (sessionStorageOrNull() && !window.location.search && !window.location.hash) setScrollReady(true);
+    }, JOURNEY_DURATION_MS);
 
     return () => {
       window.clearTimeout(timer);
@@ -143,12 +156,11 @@ export function LandingJourney() {
   return (
     <nav
       ref={navRef}
-      className={"atlas-journey" + (playing ? " is-playing" : "")}
+      className={`atlas-journey${playing ? " is-playing" : ""}${scrollReady ? " is-scroll-ready" : ""}`}
       aria-label="Explore the evidence-to-action pathway"
     >
       <div className="atlas-journey-canvas" data-replay-cycle={runId % 2}>
-        <Fragment key={runId}>
-          <svg viewBox="0 0 1024 380" className="atlas-journey-path" aria-hidden="true">
+          <svg key={runId} viewBox="0 0 1024 380" className="atlas-journey-path" aria-hidden="true">
             <defs>
               <pattern id="atlas-journey-hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
                 <rect width="8" height="8" fill="#251d40" />
@@ -177,6 +189,10 @@ export function LandingJourney() {
               strokeDasharray="6 5"
               strokeLinecap="round"
             />
+            <g className="atlas-journey-scroll-accent">
+              <path d={route} pathLength={1} className="atlas-journey-scroll-trace" fill="none"
+                stroke="#f5f0ff" strokeWidth="4.5" strokeLinecap="round" />
+            </g>
             <circle cx={916} cy={88} r={14} className="atlas-journey-halo" />
             {waypoints.map((item, idx) => (
               <circle
@@ -190,36 +206,23 @@ export function LandingJourney() {
               />
             ))}
           </svg>
-        </Fragment>
-        {waypoints.map((item, i) => (
-          <Link
-            key={item.to}
-            to={item.to}
-            className={"atlas-journey-stop atlas-journey-stop-" + i + (item.type === "gap" ? " is-optional-spur" : "")}
-          >
-            <span className="atlas-journey-stop-number">{item.n}</span>
-            <span className="atlas-journey-stop-label">{item.label}</span>
-          </Link>
-        ))}
-      </div>
-
-      <Fragment key={`mobile-${runId}`}>
         <ol className="atlas-journey-mobile">
-          {waypoints.map(item => (
-            <li key={item.to} className={"is-" + item.type}>
-              <Link to={item.to}>
-                <small>{item.n}</small>
-                <span>{item.label}</span>
-                <span aria-hidden="true">↗</span>
+          {waypoints.map((item, index) => (
+            <li key={item.to} className={`is-${item.type}`}>
+              <Link
+                to={item.to}
+                className={`atlas-journey-stop atlas-journey-stop-${index}${item.type === "gap" ? " is-optional-spur" : ""}`}
+              >
+                <span className="atlas-journey-stop-label">{item.action}</span>
+                <span className="atlas-journey-stop-number">{item.n} · {item.label}</span>
               </Link>
             </li>
           ))}
         </ol>
-      </Fragment>
+      </div>
 
       <div className="atlas-journey-controls">
-        {/* Replay button remains outside <Fragment key={runId}> to preserve DOM identity and focus. */}
-        <button type="button" className="preview-replay atlas-journey-replay" onClick={replay}>
+        <button type="button" className="preview-replay atlas-journey-replay" aria-label="Replay animation" onClick={replay}>
           <span aria-hidden="true">↻</span> Replay animation
         </button>
         <span className="sr-only" role="status" aria-live="polite">{announcement}</span>

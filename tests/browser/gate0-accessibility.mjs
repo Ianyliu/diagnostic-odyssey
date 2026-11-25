@@ -90,7 +90,8 @@ for (const mode of ["light", "dark", "system-light", "system-dark"]) for (const 
   await check(`C-01 390px ${mode} ${motion}`, async measurements => {
     const p = await page(390, mode.endsWith("dark") ? "dark" : "light", motion, !mode.startsWith("system"));
     await p.goto(`${base}/local-context`); await p.locator("main h1").waitFor();
-    const triggers = p.locator(".atlas-detail-trigger");
+    await p.getByRole("button", { name: /Primary care shortage designations/ }).click();
+    const triggers = p.locator(".atlas-detail-trigger:visible");
     const count = await triggers.count(); assert.ok(count > 0);
     const firstTrigger = triggers.first();
     await p.keyboard.press("Tab"); await firstTrigger.focus();

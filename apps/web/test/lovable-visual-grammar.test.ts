@@ -12,8 +12,8 @@ test("Overview separates national evidence, local terrain, and editions without 
     "atlas-lenses-grid",
     "atlas-lens-card is-national",
     "atlas-lens-card is-local",
-    "Never blended",
-    "National descriptive · Not causal"
+    "State indicators cannot be used to rescale national estimates",
+    "National spending is all-cause and descriptive"
   ]) {
     assert.ok(overview.includes(marker), `Missing semantic presentation: ${marker}`);
   }
