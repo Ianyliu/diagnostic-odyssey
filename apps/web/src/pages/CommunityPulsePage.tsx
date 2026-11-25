@@ -1,23 +1,20 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { NavLink, Link } from "react-router-dom";
 import {
   countyName,
+  reportTypes,
   westVirginiaCounties,
   type EventSnapshot,
   type LedgerRecord,
   type ResearchReport,
   type TypedDate,
 } from "../../../../packages/community-pulse/src/index";
-import {
-  parseCommunityPulseResponse,
-  type CommunityPulseResponse,
-  type InboxEntry,
-} from "../data/communityPulseResponse";
+import type { InboxEntry, StagingInboxMetrics } from "../data/communityPulseResponse";
+import { communityPulseStagingEnabled } from "../data/communityPulseFlag";
+import { fixtureFeed, stagingFeed, useCommunityPulseFeed } from "../data/useCommunityPulseFeed";
 import "./CommunityPulsePage.css";
 
 const ledgerPath = "/local-context/policy-access";
-const refreshInterval = 30_000;
-const maxResponseBytes = 1_048_576;
 const dateFormat = new Intl.DateTimeFormat("en-US", {dateStyle: "medium", timeZone: "UTC"});
 const instantFormat = new Intl.DateTimeFormat("en-US", {dateStyle: "medium", timeStyle: "short", timeZone: "UTC"});
 const dayMs = 86_400_000;
@@ -65,109 +62,6 @@ function formattedDate(date: TypedDate) {
   return date.precision === "date" || date.precision === "instant"
     ? dateFormat.format(Date.parse(date.value))
     : date.as_written ?? date.value;
-}
-
-function isVisible() {
-  return document.visibilityState !== "hidden";
-}
-
-function useFixtureFeed() {
-  const [feed, setFeed] = useState<CommunityPulseResponse | null>(null);
-  const [state, setState] = useState<"loading" | "unavailable" | "ready">("loading");
-  const [attempt, setAttempt] = useState(0);
-  useEffect(() => {
-    let disposed = false;
-    let timer: number | undefined;
-    let controller: AbortController | undefined;
-
-    async function refresh() {
-      if (disposed || controller || !isVisible()) return;
-      window.clearTimeout(timer);
-      const request = new AbortController();
-      controller = request;
-      const deadline = window.setTimeout(() => request.abort(), 8_000);
-      try {
-        const response = await fetch("/api/community-pulse", {
-          signal: request.signal,
-          cache: "no-store",
-          redirect: "error",
-          headers: {Accept: "application/json"},
-        });
-        if (!response.ok || !response.headers.get("content-type")?.includes("application/json")) {
-          throw new Error("Fixture feed unavailable");
-        }
-        const text = await boundedResponseText(response);
-        const data = parseCommunityPulseResponse(JSON.parse(text) as unknown);
-        if (!data) throw new Error("Invalid fixture feed");
-        if (!disposed && isVisible()) {
-          setFeed(data);
-          setState("ready");
-        }
-      } catch {
-        if (!disposed && isVisible()) {
-          setFeed(null);
-          setState("unavailable");
-        }
-      } finally {
-        window.clearTimeout(deadline);
-        controller = undefined;
-        if (!disposed && isVisible()) {
-          timer = window.setTimeout(() => { void refresh(); }, refreshInterval);
-        }
-      }
-    }
-
-    function onVisibility() {
-      if (document.visibilityState === "hidden") {
-        window.clearTimeout(timer);
-        controller?.abort();
-        setFeed(null);
-        setState("loading");
-      } else {
-        void refresh();
-      }
-    }
-
-    function onFocus() {
-      void refresh();
-    }
-
-    void refresh();
-    document.addEventListener("visibilitychange", onVisibility);
-    window.addEventListener("focus", onFocus);
-    return () => {
-      disposed = true;
-      window.clearTimeout(timer);
-      controller?.abort();
-      document.removeEventListener("visibilitychange", onVisibility);
-      window.removeEventListener("focus", onFocus);
-    };
-  }, [attempt]);
-
-  return {feed, state, reload: () => setAttempt(number => number + 1)};
-}
-
-async function boundedResponseText(response: Response) {
-  if (!response.body) throw new Error("Empty fixture feed");
-  const stream = response.body.getReader();
-  const decoder = new TextDecoder("utf-8", {fatal: true});
-  let size = 0;
-  let text = "";
-  try {
-    while (true) {
-      const {done, value} = await stream.read();
-      if (done) return text + decoder.decode();
-      size += value.byteLength;
-      if (size > maxResponseBytes) throw new Error("Fixture feed exceeds display limit");
-      text += decoder.decode(value, {stream: true});
-    }
-  } finally {
-    try {
-      await stream.cancel();
-    } finally {
-      stream.releaseLock();
-    }
-  }
 }
 
 const counties = Object.entries(westVirginiaCounties).sort(([, a], [, b]) => a.localeCompare(b));
@@ -459,7 +353,50 @@ function InboxCard({entry}: {entry: InboxEntry}) {
   );
 }
 
-function Intelligence({inbox, reload}: {inbox: InboxEntry[]; reload: () => void}) {
+function DeliveryHealth({metrics}: {metrics: StagingInboxMetrics}) {
+  return (
+    <section className="card pulse-side-card" aria-labelledby="pulse-delivery-heading">
+      <h2 id="pulse-delivery-heading">Delivery health</h2>
+      <dl className="pulse-facts">
+        <div>
+          <dt>Last successful update</dt>
+          <dd>{metrics.last_success_at
+            ? <time dateTime={metrics.last_success_at}>{formattedInstant(metrics.last_success_at)}</time>
+            : "None recorded"}</dd>
+        </div>
+        <div><dt>Counts cover</dt><dd>{metrics.window_hours} hours</dd></div>
+      </dl>
+      <ul className="pulse-side-list">
+        {reportTypes.map(type => {
+          const run = metrics.runs[type];
+          return (
+            <li key={type}>
+              <strong>{label(type)}</strong>
+              <span className={`status ${run.missed ? "status-gap" : "status-neutral"}`}>
+                {run.missed === null ? "Cadence monitoring off" : run.missed ? "Missed run" : "On cadence"}
+              </span>
+              <p className="micro-caption">
+                {run.completed} completed · {run.no_change} no change · {run.partial} partial · {run.failed} failed
+              </p>
+              <p className="micro-caption">Last successful {run.last_success_at
+                ? <time dateTime={run.last_success_at}>{formattedInstant(run.last_success_at)}</time>
+                : "None recorded"}</p>
+              <p className="micro-caption">Latest delivery {run.last_delivery_at
+                ? <time dateTime={run.last_delivery_at}>{formattedInstant(run.last_delivery_at)}</time>
+                : "None recorded"}</p>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  );
+}
+
+function Intelligence({inbox, reload, metrics}: {
+  inbox: InboxEntry[];
+  reload: () => void;
+  metrics?: StagingInboxMetrics;
+}) {
   const received = [...inbox].sort((a, b) => b.receipt.received_at.localeCompare(a.receipt.received_at));
   return (
     <div className="pulse-content-grid">
@@ -474,16 +411,18 @@ function Intelligence({inbox, reload}: {inbox: InboxEntry[]; reload: () => void}
         <p role="status" className="sr-only">
           {received.length > 0 ? `${received.length} intake receipts. Most recent receipt ${received[0]?.receipt.ingestion_id}.` : "No research receipts received."}
         </p>
-        {received.length === 0 && <div className="empty-state"><strong>No fixture receipts received.</strong></div>}
+        {received.length === 0 && <div className="empty-state"><strong>{metrics ? "No staging receipts received." : "No fixture receipts received."}</strong></div>}
         {received.map(entry => <InboxCard key={entry.receipt.ingestion_id} entry={entry} />)}
       </section>
       <aside className="pulse-aside" aria-label="Research and editorial review">
+        {metrics && <DeliveryHealth metrics={metrics} />}
         <section className="card pulse-side-card">
           <p className="visual-kicker">Review boundary</p>
           <h2>Research to publication</h2>
           <ol className="pulse-side-list">
             <li><strong>Raw research</strong><span className="micro-caption">Discoveries, hypotheses, source leads, and questions.</span></li>
             <li><strong>Candidate claims</strong><span className="micro-caption">Structured claims awaiting independent verification.</span></li>
+            {metrics && <li><strong>Independently reviewed evidence</strong><span className="micro-caption">Verified in a separate editorial workflow.</span></li>}
             <li><strong>Approved event ledger</strong><span className="micro-caption">Evidence-linked entries and separately labeled reviewed interpretations.</span></li>
           </ol>
           <Link className="text-button" to={ledgerPath}>View approved fixture ledger →</Link>
@@ -494,8 +433,11 @@ function Intelligence({inbox, reload}: {inbox: InboxEntry[]; reload: () => void}
 }
 
 export default function CommunityPulsePage({view}: {view: "ledger" | "intelligence"}) {
-  const {feed, state, reload} = useFixtureFeed();
   const internal = view === "intelligence";
+  const staged = internal && communityPulseStagingEnabled;
+  const fixture = useCommunityPulseFeed(fixtureFeed, !staged);
+  const staging = useCommunityPulseFeed(stagingFeed, staged);
+  const {state, reload} = staged ? staging : fixture;
 
   return (
     <section className="page page-stack pulse-page">
@@ -505,7 +447,7 @@ export default function CommunityPulsePage({view}: {view: "ledger" | "intelligen
         <p>{internal
           ? "Inspect exploratory research, intake receipts, and evidence gaps before editorial review."
           : "Inspect policy, eligibility, and access changes with their effective dates, scope, and supporting evidence."}</p>
-        <span className="status status-fixture">{internal ? "Internal fixture preview" : "Synthetic ledger"}</span>
+        <span className="status status-fixture">{internal ? (staged ? "Private staging inbox" : "Internal fixture preview") : "Synthetic ledger"}</span>
       </header>
       <nav className="pulse-nav" aria-label="Community Pulse views">
         <NavLink end to={ledgerPath}>Change ledger</NavLink>
@@ -513,15 +455,18 @@ export default function CommunityPulsePage({view}: {view: "ledger" | "intelligen
         <Link to="/local-context" className="pulse-back">← Local Context</Link>
       </nav>
       <div className="pulse-preview-note">
-        {internal ? "Fictional reports and receipts. Agent assertions are research candidates." :
+        {internal ? (staged ? "Reports and source leads await independent verification." :
+          "Fictional reports and receipts. Agent assertions are research candidates.") :
           "Fictional records for evaluating the workflow. Source links point to placeholder documents."}
-        {feed && !internal && <span>Snapshot created {formattedInstant(feed.snapshot.created_at)}</span>}
+        {fixture.feed && !internal && <span>Snapshot created {formattedInstant(fixture.feed.snapshot.created_at)}</span>}
       </div>
-      {feed
-        ? internal ? <Intelligence inbox={feed.inbox} reload={reload} /> : <Ledger snapshot={feed.snapshot} />
+      {staged && staging.feed ? <Intelligence inbox={staging.feed.inbox} metrics={staging.feed.metrics} reload={reload} />
+        : !staged && fixture.feed ? (internal
+          ? <Intelligence inbox={fixture.feed.inbox} reload={reload} />
+          : <Ledger snapshot={fixture.feed.snapshot} />)
         : <div className="state-card" role="status">
-          {state === "loading" ? <strong>Loading synthetic intelligence…</strong> : <>
-            <strong>Fixture intelligence is unavailable.</strong>
+          {state === "loading" ? <strong>{staged ? "Loading staging inbox…" : "Loading synthetic intelligence…"}</strong> : <>
+            <strong>{staged ? "Staging inbox is unavailable." : "Fixture intelligence is unavailable."}</strong>
             <p>Try refreshing, or continue using the existing Local Context indicators.</p>
             <button className="button secondary" type="button" onClick={reload}>Retry</button>
           </>}

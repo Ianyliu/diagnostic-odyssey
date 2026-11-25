@@ -1,0 +1,13 @@
+{
+  "main_module": "worker.mjs",
+  "compatibility_date": "2026-11-25",
+  "compatibility_flags": ["nodejs_compat"],
+  "bindings": [
+    { "type": "r2_bucket", "name": "PULSE_INTAKE", "bucket_name": "community-pulse-staging-intake" },
+    { "type": "plain_text", "name": "PULSE_STAGING_ENABLED", "text": "off" },
+    { "type": "plain_text", "name": "PULSE_RETENTION_DAYS", "text": "30" },
+    { "type": "plain_text", "name": "PULSE_EMAIL_PER_HOUR", "text": "12" },
+    { "type": "plain_text", "name": "PULSE_QUARANTINE_PER_HOUR", "text": "4" }
+  ],
+  "observability": { "enabled": true, "head_sampling_rate": 1 }
+}

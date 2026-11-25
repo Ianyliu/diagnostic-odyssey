@@ -167,7 +167,7 @@ function validateResearchReport(value) {
   }
   return issues.length === 0 ? result : { ok: false, issues };
 }
-var reportTypes, reportStatuses, researchItemKinds, source, item, researchReportSchema, legacyProposalTypes, legacyStatuses, legacySchema;
+var reportTypes, reportStatuses, researchItemKinds, itemTextLimit, source, item, researchReportSchema, legacyProposalTypes, legacyStatuses, legacySchema;
 var init_research = __esm({
   "packages/community-pulse/src/research.ts"() {
     "use strict";
@@ -184,8 +184,9 @@ var init_research = __esm({
       "source_nomination",
       "funding_opportunity"
     ];
+    itemTextLimit = 700;
     source = object({ url, publisher: line(120), locator: line(200) }, ["locator"]);
-    item = object({ kind: choice(researchItemKinds), title: line(120), text: line(700), sources: list(source, 5) });
+    item = object({ kind: choice(researchItemKinds), title: line(120), text: line(itemTextLimit), sources: list(source, 5) });
     researchReportSchema = {
       $schema: "https://json-schema.org/draft/2020-12/schema",
       $id: "urn:diagnostic-odyssey:community-pulse:research-report:0.2.1",
@@ -215,7 +216,7 @@ var init_research = __esm({
       proposals: list(object({
         proposal_type: choice(legacyProposalTypes),
         title: line(120),
-        summary: line(700),
+        summary: line(itemTextLimit),
         wv_relevance: nullable(line(400)),
         verification_question: line(400),
         limitations: list(line(240), 4),
@@ -1378,7 +1379,7 @@ var init_fixtures = __esm({
 
 // packages/community-pulse/src/mime.ts
 import { Buffer as Buffer2 } from "node:buffer";
-import { TextDecoder } from "node:util";
+import { TextDecoder as TextDecoder2 } from "node:util";
 function readHeaders(block) {
   if (block.length > MAX_HEADER_CHARS) throw new InvalidMime("oversized_headers");
   const result = /* @__PURE__ */ new Map();
@@ -1543,7 +1544,7 @@ var init_mime = __esm({
     MAX_PARTS = 12;
     MAX_DEPTH = 3;
     BOUNDARY_PATTERN = /^[A-Za-z0-9'()+_,./:=?-]{1,70}$/u;
-    decoder = new TextDecoder("utf-8", { fatal: true, ignoreBOM: true });
+    decoder = new TextDecoder2("utf-8", { fatal: true, ignoreBOM: true });
     InvalidMime = class extends Error {
     };
   }
@@ -1551,7 +1552,7 @@ var init_mime = __esm({
 
 // packages/community-pulse/src/transport.ts
 import { createHash, randomUUID } from "node:crypto";
-import { TextDecoder as TextDecoder2 } from "node:util";
+import { TextDecoder as TextDecoder3 } from "node:util";
 function createResearchIntakeState() {
   return { version: 1, receipts: [], candidates: [] };
 }
@@ -1563,7 +1564,9 @@ function normalizedMailbox(value) {
   const simple = value.trim();
   const displayName = /^(?:[^<>,"]{1,128}|"[^"\\]{1,128}")\s*<([^<>,]+)>$/u.exec(simple);
   const mailbox = displayName?.[1] ?? simple;
-  return mailboxPattern.test(mailbox) ? mailbox.toLowerCase() : null;
+  if (!mailboxPattern.test(mailbox)) return null;
+  const domain = mailbox.lastIndexOf("@") + 1;
+  return mailbox.slice(0, domain) + mailbox.slice(domain).toLowerCase();
 }
 function checkTrustedMail(metadata, policy, receivedAt) {
   if (!metadata || !policy || !safeToken.test(policy.boundary) || !safeToken.test(metadata.deliveryId) || metadata.boundary !== policy.boundary || metadata.dmarc !== "pass" || metadata.alignedDkim !== true) {
@@ -1802,7 +1805,7 @@ var init_transport = __esm({
     MAX_STORED_REPORT_BYTES = 3 * 1024 * 1024;
     MAX_DELIVERY_AGE_MS = 7 * 24 * 60 * 60 * 1e3;
     MAX_CLOCK_SKEW_MS = 5 * 60 * 1e3;
-    decoder2 = new TextDecoder2("utf-8", { fatal: true });
+    decoder2 = new TextDecoder3("utf-8", { fatal: true });
     safeToken = /^[A-Za-z0-9_.:@+-]{1,160}$/u;
     mailboxPattern = /^[A-Za-z0-9.!#$%&'*+/=?^_{}|~-]{1,64}@[A-Za-z0-9](?:[A-Za-z0-9.-]{0,251}[A-Za-z0-9])?\.[A-Za-z]{2,63}$/u;
     emailTransport = {
@@ -1985,7 +1988,7 @@ function displayText(value, limit) {
 function parseEntry(value) {
   if (!isRecord(value) || !isRecord(value.receipt)) return null;
   const r = value.receipt;
-  if (!displayText(r.ingestion_id, 150) || !displayText(r.received_at, 30) || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/.test(r.received_at) || !Number.isFinite(Date.parse(r.received_at)) || !(r.content_sha256 === null || typeof r.content_sha256 === "string" && /^[a-f0-9]{64}$/.test(r.content_sha256)) || !isOneOf(r.transport, ["email", "manual_file", "webhook"]) || !isOneOf(r.status, ["accepted", "duplicate", "quarantined"]) || !isOneOf(r.review_status, ["pending", "needs_verification", "rejected", "none"]) || !(r.reason_code === null || displayText(r.reason_code, 120)) || !(r.provider === null || displayText(r.provider, 120))) return null;
+  if (!displayText(r.ingestion_id, 150) || !isTimestamp(r.received_at) || !(r.content_sha256 === null || typeof r.content_sha256 === "string" && /^[a-f0-9]{64}$/.test(r.content_sha256)) || !isOneOf(r.transport, ["email", "manual_file", "webhook"]) || !isOneOf(r.status, ["accepted", "duplicate", "quarantined"]) || !isOneOf(r.review_status, ["pending", "needs_verification", "rejected", "none"]) || !(r.reason_code === null || displayText(r.reason_code, 120)) || !(r.provider === null || displayText(r.provider, 120))) return null;
   const receipt = {
     ingestion_id: r.ingestion_id,
     received_at: r.received_at,
@@ -2011,19 +2014,27 @@ function parseEntry(value) {
   }
   return { receipt, report: report.value, candidate_claims: claims };
 }
-function parseCommunityPulseResponse(value) {
-  if (!isRecord(value) || value.schema_version !== "0.2.1" || !Array.isArray(value.inbox) || value.inbox.length > 80) return null;
-  const snapshot = validateEventSnapshot(value.snapshot);
-  if (!snapshot.ok) return null;
+function parseInbox(value) {
+  if (!Array.isArray(value) || value.length > 80) return null;
   const inbox2 = [];
   const ids = /* @__PURE__ */ new Set();
-  for (const item2 of value.inbox) {
+  for (const item2 of value) {
     const entry = parseEntry(item2);
     if (!entry || ids.has(entry.receipt.ingestion_id)) return null;
     ids.add(entry.receipt.ingestion_id);
     inbox2.push(entry);
   }
+  return inbox2;
+}
+function parseCommunityPulseResponse(value) {
+  if (!isRecord(value) || value.schema_version !== "0.2.1") return null;
+  const snapshot = validateEventSnapshot(value.snapshot);
+  const inbox2 = parseInbox(value.inbox);
+  if (!snapshot.ok || !inbox2) return null;
   return { schema_version: "0.2.1", snapshot: snapshot.value, inbox: inbox2 };
+}
+function isTimestamp(value) {
+  return typeof value === "string" && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/.test(value) && Number.isFinite(Date.parse(value));
 }
 
 // apps/web/src/server/community-pulse/runtime.ts

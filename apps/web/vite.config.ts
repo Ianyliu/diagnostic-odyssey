@@ -2,7 +2,7 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 import type { Plugin } from "vite";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import { allowLocalCommunityPulseFixtures, showCommunityPulseFixtures } from "./src/server/community-pulse/environment";
+import { allowLocalCommunityPulseFixtures, showCommunityPulseFixtures, showCommunityPulseStaging } from "./src/server/community-pulse/environment";
 import { readCommunityPulse } from "./src/server/community-pulse/runtime";
 import { findSourceRoot, readGitSource, resolveBuildProvenance } from "./build/sourceProvenance";
 
@@ -81,6 +81,7 @@ export default defineConfig({
   define: {
     __DO_BUILD_PROVENANCE__: JSON.stringify(provenance),
     __DO_COMMUNITY_PULSE_FIXTURES__: JSON.stringify(showCommunityPulseFixtures(process.env)),
+    __DO_COMMUNITY_PULSE_STAGING__: JSON.stringify(showCommunityPulseStaging(process.env)),
     // Build-time public boolean only; never expose server secrets or production inference.
     __DO_GEMINI_STAGE2_PREVIEW__: JSON.stringify(
       process.env.VERCEL_ENV === "preview" &&

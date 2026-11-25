@@ -103,12 +103,14 @@ function sha256(bytes: Uint8Array | string): string {
   return createHash("sha256").update(bytes).digest("hex");
 }
 
-function normalizedMailbox(value: string | null): string | null {
+export function normalizedMailbox(value: string | null): string | null {
   if (!value || value.length > 400 || [...value].some(character => character.charCodeAt(0) < 32)) return null;
   const simple = value.trim();
   const displayName = /^(?:[^<>,"]{1,128}|"[^"\\]{1,128}")\s*<([^<>,]+)>$/u.exec(simple);
   const mailbox = displayName?.[1] ?? simple;
-  return mailboxPattern.test(mailbox) ? mailbox.toLowerCase() : null;
+  if (!mailboxPattern.test(mailbox)) return null;
+  const domain = mailbox.lastIndexOf("@") + 1;
+  return mailbox.slice(0, domain) + mailbox.slice(domain).toLowerCase();
 }
 
 function checkTrustedMail(
