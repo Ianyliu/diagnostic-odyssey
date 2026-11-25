@@ -33,3 +33,5 @@ The issuer reported planned changes to its hours.
 Add repeated `Reason-Code: code_here` lines after the report title when the outcome requires them. Use the two-hyphen separator between items and repeat the item block. The intake parser rejects duplicate JSON keys, excessive depth and unknown fields. Email delivery authentication is passed by a verified receiver outside MIME, and the trusted clock creates the intake timestamp. An agent-supplied outcome describes its claimed run result. The receipt disposition describes what the project actually accepted, deduplicated or quarantined.
 
 The prototype is local/offline. It has no vendor integration, live recurring jobs, or candidate publication API. For setup and release boundaries see the [Phase F addendum](PHASE_F.md).
+
+For native Instinct email bodies and legacy conversion behavior, see the [complete v0.2.1 research report contract](INSTINCT_AGENT_CONTRACT_v0.2.1.md). For staging ownership, sender authentication, and deployment qualification, see the [Phase S0 runbook](PHASE_S0.md).
