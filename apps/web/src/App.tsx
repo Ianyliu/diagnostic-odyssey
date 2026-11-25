@@ -13,10 +13,14 @@ import { PilotPage } from "./pages/PilotPage";
 import { EvidencePage } from "./pages/EvidencePage";
 import { DataRequestsPage } from "./pages/DataRequestsPage";
 import { BriefPage } from "./pages/BriefPage";
+import { communityPulseFixturesEnabled } from "./data/communityPulseFlag";
 
 // Illustrative concept / Strategy AI Studio is available by default; explicit build-time "off" excludes its route and chunk.
 const FutureAIExperiencePage = import.meta.env.VITE_FUTURE_AI_EXPERIENCE_DEMO !== "off"
   ? lazy(() => import("./concept/FutureAIExperiencePage")) : null;
+
+const CommunityPulsePage = communityPulseFixturesEnabled
+  ? lazy(() => import("./pages/CommunityPulsePage")) : null;
 
 export function App() {
   const [showFutureConcept, setShowFutureConcept] = useState(FutureAIExperiencePage !== null);
@@ -34,6 +38,18 @@ export function App() {
               <Route path="burden/admin" element={<DomainPage domainId="healthcare-work-admin" title="Administrative time" description="Healthcare paperwork, bills, and navigation hours." />} />
               <Route path="burden/human" element={<DomainPage domainId="mental-human" title="Human & distress measures" description="K6 and PHQ-2 remain screening measures, not diagnoses." />} />
               <Route path="local-context" element={<LocalContextPage />} />
+              {CommunityPulsePage && (
+                <>
+                  <Route
+                    path="local-context/policy-access"
+                    element={<Suspense fallback={<p className="page" role="status">Opening Policy &amp; Access Change Ledger…</p>}><CommunityPulsePage view="ledger" /></Suspense>}
+                  />
+                  <Route
+                    path="local-context/policy-access/intelligence"
+                    element={<Suspense fallback={<p className="page" role="status">Opening the Intelligence Brief…</p>}><CommunityPulsePage view="intelligence" /></Suspense>}
+                  />
+                </>
+              )}
               <Route path="pilot" element={<PilotPage advisorAvailable={advisorAvailable} />} />
               <Route path="evidence" element={<EvidencePage />} />
               <Route path="data-requests" element={<DataRequestsPage />} />

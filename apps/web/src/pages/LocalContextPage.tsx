@@ -19,6 +19,7 @@ import {
 } from "../data/localContextPresentation";
 import { formatDataStateLabel, formatReleaseStatusLabel } from "../data/presentationLabels";
 import { getLocalContextScaleDomain } from "../data/metricGeometry";
+import { communityPulseFixturesEnabled } from "../data/communityPulseFlag";
 import "./Ledger.css";
 
 type TerrainCategory = "all" | "primary-care" | "mental-health" | "acs";
@@ -376,6 +377,18 @@ export function LocalContextPage() {
       <p className="sr-only" role="status" aria-live="polite">
         {selectedCount} {selectedCount === 1 ? "record" : "records"} selected for Planning Brief.
       </p>
+
+      {communityPulseFixturesEnabled && (
+        <aside className="atlas-soon-strip" aria-label="Community Pulse preview">
+          <div>
+            <p className="visual-kicker">Community Pulse · Fixture preview</p>
+            <strong>Synthetic policy, eligibility, service, and access changes</strong>
+          </div>
+          <Link className="text-button" to="/local-context/policy-access">
+            Open Policy &amp; Access Change Ledger →
+          </Link>
+        </aside>
+      )}
 
       <div className="atlas-local-summary-strip" aria-label="Reviewed West Virginia statewide summary">
         <article className="atlas-local-summary-tile">

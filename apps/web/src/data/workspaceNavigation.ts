@@ -8,6 +8,7 @@ export const workspaceStages = [
 
 export function workspaceStageForPath(path: string): string | null {
   if (path === "/evidence" || path.startsWith("/burden")) return "/burden";
+  if (path === "/local-context/policy-access" || path === "/local-context/policy-access/intelligence") return "/local-context";
   if (path === "/data-requests") return null;
   if (path.startsWith("/concept/") || path === "/advisor") return null;
   return workspaceStages.find(stage => stage.to === path)?.to ?? null;
@@ -21,6 +22,8 @@ export function pageTitleForPath(path: string): string {
   if (path === "/burden/human") return "Human & Distress · Burden | Diagnostic Odyssey";
   if (path.startsWith("/burden")) return "Burden | Diagnostic Odyssey";
   if (path === "/local-context") return "Local context | Diagnostic Odyssey";
+  if (path === "/local-context/policy-access") return "Policy & Access Change Ledger | Diagnostic Odyssey";
+  if (path === "/local-context/policy-access/intelligence") return "Intelligence Brief | Diagnostic Odyssey";
   if (path === "/pilot") return "Strategy Lab | Diagnostic Odyssey";
   if (path === "/data-requests") return "Data requests | Diagnostic Odyssey";
   if (path === "/brief") return "Planning Brief | Diagnostic Odyssey";

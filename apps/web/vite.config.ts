@@ -1,6 +1,9 @@
+import type { IncomingMessage, ServerResponse } from "node:http";
 import type { Plugin } from "vite";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import { allowLocalCommunityPulseFixtures, showCommunityPulseFixtures } from "./src/server/community-pulse/environment";
+import { readCommunityPulse } from "./src/server/community-pulse/runtime";
 import { findSourceRoot, readGitSource, resolveBuildProvenance } from "./build/sourceProvenance";
 
 const CRITICAL_PRELOAD_FONTS = [
@@ -35,6 +38,32 @@ function stableWebfontLoading(): Plugin {
   };
 }
 
+/** Use the same read handler in offline Vite workflows without serving it over a LAN. */
+function offlinePulseApi(): Plugin {
+  const middleware = async (req: IncomingMessage, res: ServerResponse, next: () => void) => {
+    const url = new URL(req.url ?? "/", "http://127.0.0.1");
+    if (url.pathname !== "/api/community-pulse") return next();
+    const local = ["127.0.0.1", "::1", "::ffff:127.0.0.1"].includes(req.socket.remoteAddress ?? "");
+    const response = await readCommunityPulse(
+      new Request(url, { method: req.method ?? "GET" }),
+      local && allowLocalCommunityPulseFixtures(process.env),
+      {
+        async read() {
+          const { fixtureDataSource } = await import("./src/server/community-pulse/fixtureDataSource.ts");
+          return fixtureDataSource.read();
+        }
+      }
+    );
+    res.writeHead(response.status, Object.fromEntries(response.headers));
+    res.end(await response.text());
+  };
+  return {
+    name: "offline-community-pulse-api",
+    configureServer(server) { server.middlewares.use(middleware); },
+    configurePreviewServer(server) { server.middlewares.use(middleware); }
+  };
+}
+
 /**
  * VITE_SOURCE_SHA is the complete source commit downloaded for this build.
  * Native Git checkouts verify it against HEAD; archives require an explicit SHA.
@@ -48,9 +77,10 @@ const provenance = resolveBuildProvenance({
 });
 
 export default defineConfig({
-  plugins: [react(), stableWebfontLoading()],
+  plugins: [react(), stableWebfontLoading(), offlinePulseApi()],
   define: {
     __DO_BUILD_PROVENANCE__: JSON.stringify(provenance),
+    __DO_COMMUNITY_PULSE_FIXTURES__: JSON.stringify(showCommunityPulseFixtures(process.env)),
     // Build-time public boolean only; never expose server secrets or production inference.
     __DO_GEMINI_STAGE2_PREVIEW__: JSON.stringify(
       process.env.VERCEL_ENV === "preview" &&
