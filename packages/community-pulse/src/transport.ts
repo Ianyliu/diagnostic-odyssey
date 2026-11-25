@@ -42,6 +42,8 @@ export type ResearchDelivery = {
 } | {
   channel: "email";
   bytes: Uint8Array;
+  /** Set by a trusted provider adapter for authoritative API-extracted plain text. */
+  format?: "verified_plain_text";
   mail: VerifiedMailMetadata | null;
 };
 
@@ -86,6 +88,15 @@ export const emailTransport: ResearchTransport<{
 }> = {
   receive({ raw, verifiedMail }) {
     return { channel: "email", bytes: raw, mail: verifiedMail };
+  }
+};
+
+/** Exact UTF-8 text supplied by a verified mailbox API. Receipt content digests cover these bytes. */
+export const providerPlainTextTransport: ResearchTransport<{
+  raw: Uint8Array; verifiedMail: VerifiedMailMetadata | null;
+}> = {
+  receive({ raw, verifiedMail }) {
+    return { channel: "email", bytes: raw, format: "verified_plain_text", mail: verifiedMail };
   }
 };
 
@@ -245,7 +256,7 @@ export function inspectResearchReportBytes(bytes: Uint8Array):
 }
 
 function extractReport(delivery: ResearchDelivery, receipt: IntakeReceipt): ResearchReport {
-  if (delivery.channel === "manual") {
+  if (delivery.channel === "manual" || delivery.format === "verified_plain_text") {
     if (delivery.bytes.byteLength > MAX_REPORT_BYTES) throw new RejectedInput("oversized_report");
     let text: string;
     try {
@@ -253,7 +264,7 @@ function extractReport(delivery: ResearchDelivery, receipt: IntakeReceipt): Rese
     } catch {
       throw new RejectedInput("invalid_utf8");
     }
-    return parseBody(text, delivery.format === "json" ? "json" : "text");
+    return parseBody(text, delivery.format === "markdown" ? "text" : "json");
   }
 
   let message;

@@ -59,7 +59,7 @@ interface StagingReceipt {
   transport: "email";
   status: Disposition;
   reason_code: string | null;
-  provider: "instinct-staging-email";
+  provider: "instinct-staging-email" | "agentmail-staging-email";
   review_status: "pending" | "rejected" | "none";
 }
 
@@ -193,7 +193,7 @@ function row(receipt: IntakeReceipt, id: string, received: string): StagingRecei
     transport: "email",
     status: "accepted",
     reason_code: null,
-    provider: "instinct-staging-email",
+    provider: receipt.provider === "agentmail" ? "agentmail-staging-email" : "instinct-staging-email",
     review_status: "pending"
   };
 }

@@ -40,6 +40,8 @@ const lengths = items?.flatMap((item, index) => typeof item?.text === "string"
 const diagnostics = {
   accepted: receipt.disposition === "accepted",
   bytes: bytes.length,
+  content_sha256: receipt.rawSha256,
+  canonical_report_sha256: receipt.reportSha256,
   max_bytes: MAX_REPORT_BYTES,
   item_count: items?.length ?? null,
   max_items: itemList.maxItems,

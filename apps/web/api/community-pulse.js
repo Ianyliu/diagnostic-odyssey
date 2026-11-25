@@ -1688,7 +1688,7 @@ function parseBody(text, mode) {
   return validated.value;
 }
 function extractReport(delivery, receipt) {
-  if (delivery.channel === "manual") {
+  if (delivery.channel === "manual" || delivery.format === "verified_plain_text") {
     if (delivery.bytes.byteLength > MAX_REPORT_BYTES) throw new RejectedInput("oversized_report");
     let text;
     try {
@@ -1696,7 +1696,7 @@ function extractReport(delivery, receipt) {
     } catch {
       throw new RejectedInput("invalid_utf8");
     }
-    return parseBody(text, delivery.format === "json" ? "json" : "text");
+    return parseBody(text, delivery.format === "markdown" ? "text" : "json");
   }
   let message;
   try {

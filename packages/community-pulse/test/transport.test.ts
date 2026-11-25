@@ -5,7 +5,8 @@ import test from "node:test";
 import { syntheticResearchReports } from "../src/fixtures.ts";
 import { buildSyntheticInbox, fixtureMailPolicy, syntheticMail } from "../src/transport-fixtures.ts";
 import {
-  createResearchIntakeState, MAX_DELIVERY_BYTES, ingestResearchDelivery, manualTransport, type ResearchDelivery
+  createResearchIntakeState, MAX_DELIVERY_BYTES, MAX_REPORT_BYTES, ingestResearchDelivery, manualTransport,
+  providerPlainTextTransport, type ResearchDelivery
 } from "../src/transport.ts";
 
 const now = () => new Date("2026-11-25T13:01:00Z");
@@ -88,4 +89,27 @@ test("duplicate JSON property names, HTML-only messages, and invalid reports are
     assert.equal(result.receipt.disposition, "quarantined");
     assert.deepEqual(result.state.candidates, []);
   }
+});
+
+
+test("provider-extracted text uses the verified email boundary and hashes the exact UTF-8 body", () => {
+  const fixture = syntheticMail(input, "provider-api-fixture") as Extract<ResearchDelivery, { channel: "email" }>;
+  assert.ok(fixture.mail);
+  const body = "  " + input + "\n";
+  const raw = new TextEncoder().encode(body);
+  const delivery = providerPlainTextTransport.receive({ raw, verifiedMail: fixture.mail });
+  const result = ingestResearchDelivery(delivery, createResearchIntakeState(), options);
+  assert.equal(result.receipt.disposition, "accepted");
+  assert.equal(result.receipt.channel, "email");
+  assert.equal(result.receipt.rawSha256, createHash("sha256").update(raw).digest("hex"));
+  assert.equal(result.receipt.assertedMessageId, null);
+  assert.deepEqual(result.state.candidates[0]?.report, scout);
+
+  const unverified = { ...delivery, mail: null };
+  assert.deepEqual(ingestResearchDelivery(unverified, createResearchIntakeState(), options).receipt.reasonCodes,
+    ["unauthenticated_mail"]);
+  const exceeded = { ...delivery, bytes: new TextEncoder().encode(input.padEnd(MAX_REPORT_BYTES + 1, " ")) };
+  assert.deepEqual(ingestResearchDelivery(exceeded, createResearchIntakeState(), options).receipt.reasonCodes, ["oversized_report"]);
+  const decorated = { ...delivery, bytes: new TextEncoder().encode("Introductory prose\n" + input) };
+  assert.deepEqual(ingestResearchDelivery(decorated, createResearchIntakeState(), options).receipt.reasonCodes, ["invalid_json"]);
 });
