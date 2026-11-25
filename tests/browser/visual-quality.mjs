@@ -87,7 +87,10 @@ for (const width of [320, 390, 768, 1024, 1440]) for (const theme of ["light", "
       await assertNoPageOverflow(page, routeLabel);
       await page.screenshot({path: `${output}/${routeLabel}.png`, fullPage: true});
       if (route === "/burden") {
-        assert.equal(await page.locator(".domain-card").count(), 3, "All three reviewed burden domains render on /burden");
+        const groups = page.locator(".burden-domain-stack > .ledger-group:visible");
+        assert.deepEqual(await groups.evaluateAll(elements => elements.map(element => element.id).sort()), [
+          "burden-economic-healthcare", "burden-healthcare-work-admin", "burden-mental-human"
+        ], "All three reviewed burden groups are visible on /burden");
         assert.equal(await page.locator('a[href="/burden/admin"]').count(), 1);
         assert.equal(await page.locator('a[href="/burden/human"]').count(), 1);
         if (width === 390 && motion === "reduce") {
