@@ -43,6 +43,11 @@ export function isProtectedStagingPreview(env: CommunityPulseEnvironment): boole
     && env.PULSE_STAGING_INBOX_ENABLED === "on";
 }
 
+export function isProtectedHistoryDemo(env: CommunityPulseEnvironment): boolean {
+  return isProtectedFixturePreview(env) && env.VERCEL_GIT_COMMIT_REF === stagingBranch &&
+    env.PULSE_STAGING_INBOX_ENABLED !== "on";
+}
+
 export function showCommunityPulseStaging(env: CommunityPulseEnvironment): boolean {
   return showCommunityPulseFixtures(env) && isProtectedStagingPreview(env);
 }

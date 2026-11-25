@@ -161,7 +161,33 @@ var researchReportSchema = {
   })
 };
 function validateResearchReport(value) {
-  const result = validateShape(researchReportSchema, value);
+  return validateReportSemantics(validateShape(researchReportSchema, value));
+}
+var expandedReportLimits = {
+  hourly_scout: { items: 12, text: 700 },
+  daily_synthesis: { items: 20, text: 1500 },
+  weekly_strategic_review: { items: 40, text: 2e3 },
+  on_demand: { items: 40, text: 2e3 }
+};
+var expandedSchemas = Object.fromEntries(reportTypes.map((type) => {
+  const limits = expandedReportLimits[type];
+  return [type, object({
+    ...researchReportSchema.properties,
+    schema_version: choice(["0.2.2"]),
+    report_type: choice([type]),
+    items: list(object({ kind: choice(researchItemKinds), title: line(120), text: line(limits.text), sources: list(source, 5) }), limits.items)
+  })];
+}));
+function validateExpandedResearchReport(value) {
+  const type = value && typeof value === "object" && "report_type" in value ? value.report_type : void 0;
+  const checkedType = reportTypes.find((candidate) => candidate === type);
+  if (!checkedType) return { ok: false, issues: ["$.report_type: not a permitted value"] };
+  return validateReportSemantics(validateShape(expandedSchemas[checkedType], value));
+}
+function validateReadableResearchReport(value) {
+  return value && typeof value === "object" && "schema_version" in value && value.schema_version === "0.2.2" ? validateExpandedResearchReport(value) : validateResearchReport(value);
+}
+function validateReportSemantics(result) {
   if (!result.ok) return result;
   const { status, items, reason_codes: reasonCodes } = result.value;
   const issues = [];
@@ -487,7 +513,7 @@ function parseEntry(value) {
     return value.report === null && value.candidate_claims === void 0 ? { receipt, report: null } : null;
   }
   if (receipt.content_sha256 === null) return null;
-  const report = validateResearchReport(value.report);
+  const report = validateReadableResearchReport(value.report);
   if (!report.ok) return null;
   if (value.candidate_claims === void 0) return { receipt, report: report.value };
   if (!Array.isArray(value.candidate_claims) || value.candidate_claims.length > 32) return null;
@@ -528,23 +554,22 @@ function parseRun(value) {
     missed: value.missed
   };
 }
-function parseStagingInboxResponse(value) {
-  if (!isRecord(value) || value.schema_version !== "0.2.1" || !isRecord(value.metrics) || "snapshot" in value) return null;
-  const metrics = value.metrics;
-  if (!isTimestamp(metrics.as_of) || !isCount(metrics.window_hours) || metrics.window_hours < 1 || metrics.window_hours > 2160 || !(metrics.last_success_at === null || isTimestamp(metrics.last_success_at)) || !isRecord(metrics.runs)) return null;
+function parseStagingMetrics(metrics) {
+  if (!isRecord(metrics) || !isTimestamp(metrics.as_of) || !isCount(metrics.window_hours) || metrics.window_hours < 1 || metrics.window_hours > 2160 || !(metrics.last_success_at === null || isTimestamp(metrics.last_success_at)) || !isRecord(metrics.runs)) return null;
   const runs = {};
   for (const type of reportTypes) {
     const row = parseRun(metrics.runs[type]);
     if (!row) return null;
     runs[type] = row;
   }
+  return { as_of: metrics.as_of, window_hours: metrics.window_hours, last_success_at: metrics.last_success_at, runs };
+}
+function parseStagingInboxResponse(value) {
+  if (!isRecord(value) || value.schema_version !== "0.2.1" || "snapshot" in value) return null;
+  const metrics = parseStagingMetrics(value.metrics);
   const inbox = parseInbox(value.inbox);
-  if (!inbox || inbox.some((entry) => entry.candidate_claims !== void 0)) return null;
-  return {
-    schema_version: "0.2.1",
-    inbox,
-    metrics: { as_of: metrics.as_of, window_hours: metrics.window_hours, last_success_at: metrics.last_success_at, runs }
-  };
+  if (!metrics || !inbox || inbox.some((entry) => entry.candidate_claims !== void 0)) return null;
+  return { schema_version: "0.2.1", inbox, metrics };
 }
 function inboxETag(value) {
   return value && /^(?:W\/)?"[a-zA-Z0-9:_.-]{1,100}"$/.test(value) ? value : null;

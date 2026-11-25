@@ -1,9 +1,9 @@
 import {
   reportTypes,
   validateEventSnapshot,
-  validateResearchReport,
+  validateReadableResearchReport,
   type EventSnapshot,
-  type ResearchReport,
+  type ReadableResearchReport,
   type ReportType,
 } from "../../../../packages/community-pulse/src/index.ts";
 
@@ -20,7 +20,7 @@ export type InboxReceipt = {
 
 export type InboxEntry = {
   receipt: InboxReceipt;
-  report: ResearchReport | null;
+  report: ReadableResearchReport | null;
   candidate_claims?: {
     text: string;
     verification: "unverified" | "unsupported" | "conflicting";
@@ -75,7 +75,7 @@ function parseEntry(value: unknown): InboxEntry | null {
   }
 
   if (receipt.content_sha256 === null) return null;
-  const report = validateResearchReport(value.report);
+  const report = validateReadableResearchReport(value.report);
   if (!report.ok) return null;
   if (value.candidate_claims === undefined) return {receipt, report: report.value};
   if (!Array.isArray(value.candidate_claims) || value.candidate_claims.length > 32) return null;
@@ -155,10 +155,8 @@ function parseRun(value: unknown): StagingRunMetrics | null {
   };
 }
 
-export function parseStagingInboxResponse(value: unknown): StagingInboxResponse | null {
-  if (!isRecord(value) || value.schema_version !== "0.2.1" || !isRecord(value.metrics) || "snapshot" in value) return null;
-  const metrics = value.metrics;
-  if (!isTimestamp(metrics.as_of) || !isCount(metrics.window_hours) || metrics.window_hours < 1 ||
+export function parseStagingMetrics(metrics: unknown): StagingInboxMetrics | null {
+  if (!isRecord(metrics) || !isTimestamp(metrics.as_of) || !isCount(metrics.window_hours) || metrics.window_hours < 1 ||
     metrics.window_hours > 2160 || !(metrics.last_success_at === null || isTimestamp(metrics.last_success_at)) ||
     !isRecord(metrics.runs)) return null;
   const runs = {} as Record<ReportType, StagingRunMetrics>;
@@ -167,12 +165,15 @@ export function parseStagingInboxResponse(value: unknown): StagingInboxResponse 
     if (!row) return null;
     runs[type] = row;
   }
+  return { as_of: metrics.as_of, window_hours: metrics.window_hours, last_success_at: metrics.last_success_at, runs };
+}
+
+export function parseStagingInboxResponse(value: unknown): StagingInboxResponse | null {
+  if (!isRecord(value) || value.schema_version !== "0.2.1" || "snapshot" in value) return null;
+  const metrics = parseStagingMetrics(value.metrics);
   const inbox = parseInbox(value.inbox);
-  if (!inbox || inbox.some(entry => entry.candidate_claims !== undefined)) return null;
-  return {
-    schema_version: "0.2.1", inbox,
-    metrics: {as_of: metrics.as_of, window_hours: metrics.window_hours, last_success_at: metrics.last_success_at, runs},
-  };
+  if (!metrics || !inbox || inbox.some(entry => entry.candidate_claims !== undefined)) return null;
+  return { schema_version: "0.2.1", inbox, metrics };
 }
 
 /** A single bounded, opaque validator is enough for this private projection. */

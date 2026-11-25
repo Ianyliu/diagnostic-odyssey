@@ -1,7 +1,7 @@
 import { createHash, randomUUID } from "node:crypto";
 import { TextDecoder } from "node:util";
 import { InvalidMime, parseMime } from "./mime.ts";
-import { validateResearchReport, type ResearchReport } from "./research.ts";
+import { validateReadableResearchReport, validateResearchReport, type ReadableResearchReport, type ResearchReport } from "./research.ts";
 
 export const MAX_DELIVERY_BYTES = 256 * 1024;
 export const MAX_REPORT_BYTES = 64 * 1024;
@@ -224,6 +224,26 @@ function parseBody(text: string, mode: "json" | "text"): ResearchReport {
   return validated.value;
 }
 
+/** Offline compatibility check. It does not admit a report or grant a writer a version. */
+export function inspectResearchReportBytes(bytes: Uint8Array):
+  { ok: true; value: ReadableResearchReport; digest: string } | { ok: false; reason: string } {
+  if (bytes.byteLength > MAX_REPORT_BYTES) return { ok: false, reason: "oversized_report" };
+  let text: string;
+  try {
+    text = decoder.decode(bytes);
+  } catch {
+    return { ok: false, reason: "invalid_utf8" };
+  }
+  try {
+    const checked = validateReadableResearchReport(parseJson(text));
+    return checked.ok ? { ...checked, digest: researchReportDigest(checked.value) }
+      : { ok: false, reason: "invalid_report_schema" };
+  } catch (error) {
+    if (!(error instanceof RejectedInput)) throw error;
+    return { ok: false, reason: error.message };
+  }
+}
+
 function extractReport(delivery: ResearchDelivery, receipt: IntakeReceipt): ResearchReport {
   if (delivery.channel === "manual") {
     if (delivery.bytes.byteLength > MAX_REPORT_BYTES) throw new RejectedInput("oversized_report");
@@ -254,6 +274,10 @@ function extractReport(delivery: ResearchDelivery, receipt: IntakeReceipt): Rese
   }
   const report = reports[0]!;
   return parseBody(report.text, report.mediaType === "application/json" ? "json" : "text");
+}
+
+export function researchReportDigest(report: ReadableResearchReport): string {
+  return sha256(canonicalJson(report));
 }
 
 function canonicalJson(value: unknown): string {
@@ -333,7 +357,7 @@ export function ingestResearchDelivery(
     }
 
     report = extractReport(delivery, receipt);
-    receipt.reportSha256 = sha256(canonicalJson(report));
+    receipt.reportSha256 = researchReportDigest(report);
     receipt.runId = report.run_id;
     receipt.reportType = report.report_type;
     receipt.reportedRunStatus = report.status;

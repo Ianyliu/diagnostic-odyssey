@@ -147,7 +147,18 @@ var init_schema = __esm({
 
 // packages/community-pulse/src/research.ts
 function validateResearchReport(value) {
-  const result = validateShape(researchReportSchema, value);
+  return validateReportSemantics(validateShape(researchReportSchema, value));
+}
+function validateExpandedResearchReport(value) {
+  const type = value && typeof value === "object" && "report_type" in value ? value.report_type : void 0;
+  const checkedType = reportTypes.find((candidate) => candidate === type);
+  if (!checkedType) return { ok: false, issues: ["$.report_type: not a permitted value"] };
+  return validateReportSemantics(validateShape(expandedSchemas[checkedType], value));
+}
+function validateReadableResearchReport(value) {
+  return value && typeof value === "object" && "schema_version" in value && value.schema_version === "0.2.2" ? validateExpandedResearchReport(value) : validateResearchReport(value);
+}
+function validateReportSemantics(result) {
   if (!result.ok) return result;
   const { status, items, reason_codes: reasonCodes } = result.value;
   const issues = [];
@@ -167,7 +178,7 @@ function validateResearchReport(value) {
   }
   return issues.length === 0 ? result : { ok: false, issues };
 }
-var reportTypes, reportStatuses, researchItemKinds, itemTextLimit, source, item, researchReportSchema, legacyProposalTypes, legacyStatuses, legacySchema;
+var reportTypes, reportStatuses, researchItemKinds, itemTextLimit, source, item, researchReportSchema, expandedReportLimits, expandedSchemas, legacyProposalTypes, legacyStatuses, legacySchema;
 var init_research = __esm({
   "packages/community-pulse/src/research.ts"() {
     "use strict";
@@ -201,6 +212,21 @@ var init_research = __esm({
         reason_codes: unique(identifier, 8)
       })
     };
+    expandedReportLimits = {
+      hourly_scout: { items: 12, text: 700 },
+      daily_synthesis: { items: 20, text: 1500 },
+      weekly_strategic_review: { items: 40, text: 2e3 },
+      on_demand: { items: 40, text: 2e3 }
+    };
+    expandedSchemas = Object.fromEntries(reportTypes.map((type) => {
+      const limits = expandedReportLimits[type];
+      return [type, object({
+        ...researchReportSchema.properties,
+        schema_version: choice(["0.2.2"]),
+        report_type: choice([type]),
+        items: list(object({ kind: choice(researchItemKinds), title: line(120), text: line(limits.text), sources: list(source, 5) }), limits.items)
+      })];
+    }));
     legacyProposalTypes = [
       "source_nomination",
       "possible_change",
@@ -1690,6 +1716,9 @@ function extractReport(delivery, receipt) {
   const report = reports[0];
   return parseBody(report.text, report.mediaType === "application/json" ? "json" : "text");
 }
+function researchReportDigest(report) {
+  return sha256(canonicalJson(report));
+}
 function canonicalJson(value) {
   if (Array.isArray(value)) return "[" + value.map(canonicalJson).join(",") + "]";
   if (value !== null && typeof value === "object") {
@@ -1753,7 +1782,7 @@ function ingestResearchDelivery(delivery, state, options = {}) {
       };
     }
     report = extractReport(delivery, receipt);
-    receipt.reportSha256 = sha256(canonicalJson(report));
+    receipt.reportSha256 = researchReportDigest(report);
     receipt.runId = report.run_id;
     receipt.reportType = report.report_type;
     receipt.reportedRunStatus = report.status;
@@ -2003,7 +2032,7 @@ function parseEntry(value) {
     return value.report === null && value.candidate_claims === void 0 ? { receipt, report: null } : null;
   }
   if (receipt.content_sha256 === null) return null;
-  const report = validateResearchReport(value.report);
+  const report = validateReadableResearchReport(value.report);
   if (!report.ok) return null;
   if (value.candidate_claims === void 0) return { receipt, report: report.value };
   if (!Array.isArray(value.candidate_claims) || value.candidate_claims.length > 32) return null;

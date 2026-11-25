@@ -72,7 +72,7 @@ try {
     }
   });
   await page.clock.install();
-  await page.goto(base + "/local-context/policy-access/intelligence");
+  await page.goto(base + "/local-context/policy-access/intelligence?inspect=receipts");
   await page.getByText("Private staging inbox", {exact: true}).waitFor();
   await page.getByText("Last successful update", {exact: true}).waitFor();
   await page.getByText("Missed run", {exact: true}).waitFor();

@@ -6,7 +6,8 @@ import { build } from "esbuild";
 const repo = fileURLToPath(new URL("../../", import.meta.url));
 const routes = [
   ["previewEndpoint.ts", "community-pulse.js"],
-  ["stagingEndpoint.ts", "community-pulse-staging.js"]
+  ["stagingEndpoint.ts", "community-pulse-staging.js"],
+  ["historyEndpoint.ts", "community-pulse-history.js"]
 ];
 
 for (const [source, name] of routes) {

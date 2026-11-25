@@ -1,9 +1,10 @@
-import type { IntakeBucket, IntakeObject } from "../src/storage.ts";
+import type { IntakeBucket, IntakeObject } from "./storage.ts";
 
 /** Models atomic predicate evaluation, immutable reads, live pagination and optional write interruption. */
 export class MemoryR2 implements IntakeBucket {
   objects = new Map<string, IntakeObject & { body: string }>();
   readKeys: string[] = [];
+  trackReads = true;
   version = 0;
   clock: Date;
   pageLimit = 1000;
@@ -14,7 +15,7 @@ export class MemoryR2 implements IntakeBucket {
   }
 
   async get(key: string) {
-    this.readKeys.push(key);
+    if (this.trackReads) this.readKeys.push(key);
     const object = this.objects.get(key);
     if (!object) return null;
     const { body, ...header } = object;

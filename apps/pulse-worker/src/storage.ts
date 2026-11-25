@@ -1,9 +1,14 @@
-import { createHash } from "node:crypto";
+import { Buffer } from "node:buffer";
+import { createHash, createHmac, timingSafeEqual } from "node:crypto";
 import {
-  reportStatuses, reportTypes, validateResearchReport,
-  type ReportStatus, type ReportType, type ResearchReport
+  reportStatuses, reportTypes, validateReadableResearchReport,
+  type ReportStatus, type ReportType, type ReadableResearchReport
 } from "../../../packages/community-pulse/src/research.ts";
-import type { IntakeReceipt } from "../../../packages/community-pulse/src/transport.ts";
+import { MAX_REPORT_BYTES, researchReportDigest, type IntakeReceipt } from "../../../packages/community-pulse/src/transport.ts";
+import {
+  receiptReference, historyCursor, historyPageSize, type HistoryQuery, type ResearchDetail,
+  type ResearchHistoryPage, type ResearchSummary,
+} from "../../../packages/community-pulse/src/history.ts";
 
 export interface IntakeObject {
   key: string;
@@ -60,7 +65,7 @@ interface StagingReceipt {
 
 export interface StagingInboxEntry {
   receipt: StagingReceipt;
-  report: ResearchReport | null;
+  report: ReadableResearchReport | null;
 }
 
 interface RunSummary extends Record<ReportStatus, number> {
@@ -81,6 +86,7 @@ export interface StagingInbox {
 }
 
 interface ProgressEntry {
+  substantive?: string | null;
   success: string | null;
   delivery: string | null;
 }
@@ -97,7 +103,7 @@ interface DeliveryClaim {
 interface RunObject {
   digest: string;
   receiptId: string;
-  report: ResearchReport;
+  report: ReadableResearchReport;
 }
 
 interface Journal {
@@ -107,6 +113,8 @@ interface Journal {
   digest: string | null;
   type: ReportType | null;
   outcome: ReportStatus | null;
+  title?: string;
+  items?: number;
 }
 
 const ROOT = "s0/";
@@ -211,7 +219,9 @@ function metadata(journal: Journal): Record<string, string> {
     received_at: journal.receipt.received_at,
     disposition: journal.receipt.status,
     type: journal.type ?? "",
-    outcome: journal.outcome ?? ""
+    outcome: journal.outcome ?? "",
+    ...(journal.receipt.status === "accepted" && journal.title !== undefined && journal.items !== undefined
+      ? { title: journal.title, items: String(journal.items) } : {})
   };
 }
 
@@ -248,11 +258,12 @@ export function createIntakeStore(bucket: IntakeBucket, options: IntakeStoreOpti
     return false;
   }
 
-  function recordProgress(progress: Progress, type: ReportType, outcome: ReportStatus, at: string): void {
+  function recordProgress(progress: Progress, type: ReportType, outcome: ReportStatus, at: string, substantive = false): void {
     const current = progress[type];
     progress[type] = {
       delivery: newer(current?.delivery ?? null, at),
-      success: newer(current?.success ?? null, isSuccess(outcome) ? at : null)
+      success: newer(current?.success ?? null, isSuccess(outcome) ? at : null),
+      substantive: newer(current?.substantive ?? null, substantive ? at : null)
     };
   }
 
@@ -264,7 +275,8 @@ export function createIntakeStore(bucket: IntakeBucket, options: IntakeStoreOpti
       for (const type of reportTypes) {
         const delivery = noOlderThan(newer(saved[type]?.delivery ?? null, incoming[type]?.delivery ?? null), cutoff);
         const success = noOlderThan(newer(saved[type]?.success ?? null, incoming[type]?.success ?? null), cutoff);
-        if (delivery || success) next[type] = { delivery, success };
+        const substantive = noOlderThan(newer(saved[type]?.substantive ?? null, incoming[type]?.substantive ?? null), cutoff);
+        if (delivery || success || substantive) next[type] = { delivery, success, ...(substantive ? { substantive } : {}) };
       }
       if (canonical(saved) === canonical(next)) return;
       if (await write(PROGRESS, next, existing?.etag ?? null)) return;
@@ -275,7 +287,7 @@ export function createIntakeStore(bucket: IntakeBucket, options: IntakeStoreOpti
   async function updateProgress(journal: Journal): Promise<void> {
     if (journal.receipt.status !== "accepted" || journal.type === null || journal.outcome === null) return;
     const update: Progress = {};
-    recordProgress(update, journal.type, journal.outcome, journal.receipt.received_at);
+    recordProgress(update, journal.type, journal.outcome, journal.receipt.received_at, (journal.items ?? 0) > 0);
     await mergeProgress(update);
   }
 
@@ -288,7 +300,11 @@ export function createIntakeStore(bucket: IntakeBucket, options: IntakeStoreOpti
     const conflicting = actual.digest !== intended.digest || (accepted && intended.runKey === null);
     let receipt = quarantine(intended.receipt, "run_id_conflict");
     if (!conflicting) receipt = accepted ? intended.receipt : duplicate(intended.receipt);
-    const ready: Journal = { ...intended, stage: "ready", receipt, runKey: receipt.status === "accepted" ? intended.runKey : null };
+    const acceptedReport = receipt.status === "accepted" ? actual.report : null;
+    const ready: Journal = {
+      ...intended, stage: "ready", receipt, runKey: acceptedReport ? intended.runKey : null,
+      ...(acceptedReport ? { title: acceptedReport.title, items: acceptedReport.items.length } : {})
+    };
     if (await write(key, ready, pending.etag, metadata(ready))) return ready;
     const stored = await read<Journal>(key);
     if (stored?.data.stage === "ready") return stored.data;
@@ -306,7 +322,7 @@ export function createIntakeStore(bucket: IntakeBucket, options: IntakeStoreOpti
     return outcome(stored.data.receipt);
   }
 
-  async function saveDelivery(parsed: IntakeReceipt, report: ResearchReport | null): Promise<DeliveryResult> {
+  async function saveDelivery(parsed: IntakeReceipt, report: ReadableResearchReport | null): Promise<DeliveryResult> {
     if (parsed.channel !== "email") throw Error("Staging inbox accepts email deliveries only");
     const time = new Date(instant(parsed.receivedAt)).toISOString();
     if (!RECEIPT_ID.test(parsed.receiptId)) throw Error("Invalid trusted receipt identifier");
@@ -315,16 +331,18 @@ export function createIntakeStore(bucket: IntakeBucket, options: IntakeStoreOpti
       return saveQuarantine(quarantine(initial, parsed.reasonCodes[0]));
     }
 
-    const checked = validateResearchReport(report);
+    const checked = validateReadableResearchReport(report);
     if (!checked.ok || parsed.rawSha256 === null || !SHA.test(parsed.rawSha256) ||
-      parsed.reportSha256 !== hash(canonical(report)) || parsed.runId !== report.run_id ||
+      parsed.reportSha256 !== researchReportDigest(report) || parsed.runId !== report.run_id ||
       parsed.reportType !== report.report_type || parsed.reportedRunStatus !== report.status ||
       !parsed.provider || !parsed.deliveryId) {
       return saveQuarantine(quarantine(initial, "intake_receipt_mismatch"));
     }
 
     const candidateSize = encoder.encode(JSON.stringify({ digest: parsed.reportSha256, receiptId: parsed.receiptId, report: checked.value })).byteLength;
-    if (candidateSize > DEFAULT_MAX_OBJECT) return saveQuarantine(quarantine(initial, "oversized_normalized_report"));
+    if (parsed.bytesReceived > 256 * 1024 ||
+      (report.schema_version === "0.2.2" && encoder.encode(JSON.stringify(report)).byteLength > MAX_REPORT_BYTES) ||
+      candidateSize > DEFAULT_MAX_OBJECT) return saveQuarantine(quarantine(initial, "oversized_normalized_report"));
 
     // Bind the signed identity to the validated report across retries with new mail trace headers.
     const aliasKey = ROOT + "delivery/" + hash(JSON.stringify([parsed.provider, parsed.deliveryId]));
@@ -405,7 +423,7 @@ export function createIntakeStore(bucket: IntakeBucket, options: IntakeStoreOpti
       const m = row.customMetadata;
       if (m?.stage === "ready" && m.disposition === "accepted" && m.received_at &&
         oneOf(m.type, reportTypes) && oneOf(m.outcome, reportStatuses)) {
-        recordProgress(updates, m.type, m.outcome, m.received_at);
+        recordProgress(updates, m.type, m.outcome, m.received_at, Number(m.items ?? 0) > 0);
       }
     }
     let visited = 0;
@@ -419,7 +437,7 @@ export function createIntakeStore(bucket: IntakeBucket, options: IntakeStoreOpti
       if (!data) continue; // Requires the original delivery again. No receipt claims acceptance.
       const result = await finish(row.key, journal, data.data);
       if (result.type && result.outcome && result.receipt.status === "accepted") {
-        recordProgress(updates, result.type, result.outcome, result.receipt.received_at);
+        recordProgress(updates, result.type, result.outcome, result.receipt.received_at, (result.items ?? 0) > 0);
       }
       finished++;
     }
@@ -439,7 +457,7 @@ export function createIntakeStore(bucket: IntakeBucket, options: IntakeStoreOpti
     return { deleted: expired.length, cursor: batch.truncated ? batch.cursor ?? null : null };
   }
 
-  async function readInboxIfChanged(now: Date, ifNoneMatch?: string): Promise<{ etag: string; data: StagingInbox | null }> {
+  async function summarize(now: Date) {
     const cutoff = now.getTime() - WINDOW_HOURS * HOUR;
     const retained = now.getTime() - retentionDays * DAY;
     const [rows, progress] = await Promise.all([recentObjects(cutoff), read<Progress>(PROGRESS)]);
@@ -448,16 +466,21 @@ export function createIntakeStore(bucket: IntakeBucket, options: IntakeStoreOpti
       last_success_at: noOlderThan(progress?.data[type]?.success, retained),
       last_delivery_at: noOlderThan(progress?.data[type]?.delivery, retained), missed: null
     }])) as Record<ReportType, RunSummary>;
-    const selected: IntakeObject[] = [];
+    const ready: IntakeObject[] = [];
+    let lastSubstantive = reportTypes.reduce<string | null>((last, type) =>
+      newer(last, noOlderThan(progress?.data[type]?.substantive, retained)), null);
     for (const item of rows) {
       const m = item.customMetadata;
       if (!m || m.stage !== "ready" || !m.received_at || Date.parse(m.received_at) > now.getTime()) continue;
-      if (selected.length < MAX_INBOX) selected.push(item);
+      ready.push(item);
       if (m.disposition === "accepted" && oneOf(m.type, reportTypes) && oneOf(m.outcome, reportStatuses)) {
         const run = runs[m.type];
         run[m.outcome]++;
         run.last_delivery_at = newer(run.last_delivery_at, m.received_at);
         if (isSuccess(m.outcome)) run.last_success_at = newer(run.last_success_at, m.received_at);
+        if (Number(m.items ?? (m.outcome === "completed" ? 1 : 0)) > 0) {
+          lastSubstantive = newer(lastSubstantive, m.received_at);
+        }
       }
     }
 
@@ -467,7 +490,26 @@ export function createIntakeStore(bucket: IntakeBucket, options: IntakeStoreOpti
       runs.hourly_scout.missed = now.getTime() - anchor >= HOUR + 30 * 60 * 1000;
     }
     const lastSuccess = reportTypes.reduce<string | null>((last, type) => newer(last, runs[type].last_success_at), null);
-    const etag = '"' + hash(canonical([runs, selected.map(item => [item.key, item.etag])])) + '"';
+    return { ready, lastSubstantive, metrics: { as_of: now.toISOString(), window_hours: WINDOW_HOURS,
+      last_success_at: lastSuccess, runs } };
+  }
+
+  async function verifiedReport(journal: Journal): Promise<ReadableResearchReport | null> {
+    if (!journal.runKey || !journal.digest) return null;
+    const candidate = await read<RunObject>(journal.runKey);
+    if (!candidate) return null;
+    const checked = validateReadableResearchReport(candidate.data.report);
+    if (!checked.ok || candidate.data.receiptId !== journal.receipt.ingestion_id ||
+      candidate.data.digest !== journal.digest || candidate.data.digest !== researchReportDigest(checked.value)) {
+      throw Error("Staging run failed verification");
+    }
+    return checked.value;
+  }
+
+  async function readInboxIfChanged(now: Date, ifNoneMatch?: string): Promise<{ etag: string; data: StagingInbox | null }> {
+    const { ready, metrics } = await summarize(now);
+    const selected = ready.slice(0, MAX_INBOX);
+    const etag = '"' + hash(canonical([metrics.runs, selected.map(item => [item.key, item.etag])])) + '"';
     if (ifNoneMatch === etag) return { etag, data: null };
 
     const inbox = await Promise.all(selected.map(async (item): Promise<StagingInboxEntry> => {
@@ -475,20 +517,15 @@ export function createIntakeStore(bucket: IntakeBucket, options: IntakeStoreOpti
       if (!stored || stored.data.stage !== "ready") throw Error("Staging receipt no longer available");
       const journal = stored.data;
       if (journal.receipt.status !== "accepted") return { receipt: journal.receipt, report: null };
-      if (!journal.runKey) throw Error("Ready staging receipt missing run reference");
-      const candidate = await read<RunObject>(journal.runKey);
-      const checked = validateResearchReport(candidate?.data.report);
-      if (!candidate || !checked.ok || candidate.data.receiptId !== journal.receipt.ingestion_id ||
-        candidate.data.digest !== journal.digest || candidate.data.digest !== hash(canonical(checked.value))) {
-        throw Error("Staging run failed verification");
-      }
-      return { receipt: journal.receipt, report: checked.value };
+      const report = await verifiedReport(journal);
+      if (!report) throw Error("Ready staging receipt missing report");
+      return { receipt: journal.receipt, report };
     }));
     return {
       etag,
       data: {
         schema_version: "0.2.1", inbox,
-        metrics: { as_of: now.toISOString(), window_hours: WINDOW_HOURS, last_success_at: lastSuccess, runs }
+        metrics
       }
     };
   }
@@ -499,5 +536,117 @@ export function createIntakeStore(bucket: IntakeBucket, options: IntakeStoreOpti
     return result.data;
   }
 
-  return { tryConsumeRate, saveDelivery, readInbox, readInboxIfChanged, recoverPending, purgeExpired };
+  async function readHistoryHealth(now: Date) {
+    const { ready, metrics, lastSubstantive } = await summarize(now);
+    const records = ready.map(toHistorySummary).filter((row): row is ResearchSummary => row !== null);
+    const details = {
+      latest_ref: records[0]?.ref ?? null,
+      latest_at: records[0]?.received_at ?? null,
+      latest_substantive_ref: records.find(substantiveReport)?.ref ?? null,
+      last_substantive_at: lastSubstantive,
+    };
+    return { data: { schema_version: "1" as const, metrics, ...details },
+      etag: 'W/"' + hash(canonical([metrics.runs, details])) + '"' };
+  }
+
+  async function readHistory(now: Date, query: HistoryQuery, secret: string): Promise<ResearchHistoryPage | null> {
+    const scope = hash(canonical(query.filters));
+    const nowTime = now.getTime();
+    const decoded = query.cursor ? readHistoryCursor(query.cursor, scope, secret, nowTime) : null;
+    if (query.cursor && !decoded) return null;
+    // Restrict the whole traversal to the original view. Date cutoffs are UTC and inclusive.
+    const anchor = decoded?.anchor ?? nowTime;
+    const cutoff = Math.max(nowTime - retentionDays * DAY,
+      query.filters.from ? Date.parse(query.filters.from) : -Infinity);
+    const until = query.filters.to ? Date.parse(query.filters.to) + DAY : Infinity;
+    const records: ResearchSummary[] = [];
+    let cursor = decoded?.next;
+    for (let scan = 0; scan < 4 && records.length < historyPageSize; scan++) {
+      const batch = await bucket.list({ prefix: JOURNAL, limit: historyPageSize - records.length,
+        include: ["customMetadata"], ...(cursor ? { cursor } : {}) });
+      let reachedCutoff = false;
+      for (const object of batch.objects) {
+        const row = toHistorySummary(object);
+        if (!row) continue;
+        const time = Date.parse(row.received_at);
+        if (time < cutoff) {
+          reachedCutoff = true;
+          break;
+        }
+        if (time >= anchor || time >= until || object.uploaded.getTime() >= anchor) continue;
+        if (query.filters.mode === "substantive" && !substantiveReport(row)) continue;
+        if (query.filters.type && query.filters.type !== row.report_type) continue;
+        if (query.filters.outcome && query.filters.outcome !== (row.outcome ?? row.disposition)) continue;
+        records.push(row);
+      }
+      if (batch.truncated && !batch.cursor) throw Error("Missing history continuation");
+      cursor = !reachedCutoff && batch.truncated ? batch.cursor : undefined;
+      if (!cursor) break;
+    }
+    const next_cursor = cursor ? signHistoryCursor({ next: cursor, anchor, scope }, secret) : null;
+    return { schema_version: "1", records, next_cursor, as_of: new Date(anchor).toISOString(),
+      latest_ref: records[0]?.ref ?? null };
+  }
+
+  async function readReport(now: Date, ref: string): Promise<ResearchDetail | null> {
+    if (!receiptReference.test(ref)) return null;
+    const time = MAX_TIMESTAMP - Number(ref.slice(0, 13));
+    if (time > now.getTime() || time < now.getTime() - retentionDays * DAY) return null;
+    const key = JOURNAL + ref;
+    const stored = await read<Journal>(key);
+    const journal = stored?.data;
+    if (!journal || journal.stage !== "ready" || journal.receipt.status !== "accepted" || !journal.digest ||
+      journalKey(journal.receipt) !== key) return null;
+    const report = await verifiedReport(journal);
+    return report ? { schema_version: "1", ref, received_at: journal.receipt.received_at,
+      digest: journal.digest, report } : null;
+  }
+
+  return { tryConsumeRate, saveDelivery, readInbox, readInboxIfChanged, recoverPending, purgeExpired,
+    readHistory, readHistoryHealth, readReport };
+}
+
+
+type HistoryCursorData = { anchor: number; next: string; scope: string };
+
+function signHistoryCursor(data: HistoryCursorData, secret: string): string {
+  const body = Buffer.from(JSON.stringify(data), "utf8").toString("base64url");
+  if (body.length > 2700) throw Error("History continuation exceeds limit");
+  return body + "." + createHmac("sha256", secret).update("pulse-history:" + body).digest("hex");
+}
+
+function readHistoryCursor(cursor: string, scope: string, secret: string, now: number): HistoryCursorData | null {
+  if (!historyCursor.test(cursor)) return null;
+  const [body, signature] = cursor.split(".") as [string, string];
+  const expected = createHmac("sha256", secret).update("pulse-history:" + body).digest();
+  if (!timingSafeEqual(Buffer.from(signature, "hex"), expected)) return null;
+  try {
+    const data = JSON.parse(Buffer.from(body, "base64url").toString("utf8")) as Partial<HistoryCursorData>;
+    if (typeof data.anchor !== "number" || !Number.isSafeInteger(data.anchor) || data.anchor > now ||
+      now - data.anchor > 30 * 60 * 1000 || data.scope !== scope ||
+      typeof data.next !== "string" || !data.next || data.next.length > 1700) return null;
+    return { anchor: data.anchor, next: data.next, scope };
+  } catch {
+    return null;
+  }
+}
+
+function substantiveReport(row: ResearchSummary): boolean {
+  // Historical completed receipts were always required to have at least one item.
+  return row.disposition === "accepted" && (row.item_count ?? (row.outcome === "completed" ? 1 : 0)) > 0;
+}
+
+function toHistorySummary(object: IntakeObject): ResearchSummary | null {
+  const m = object.customMetadata;
+  const ref = object.key.slice(JOURNAL.length);
+  if (!m || m.stage !== "ready" || !m.received_at || !ISO.test(m.received_at) ||
+    !receiptReference.test(ref) || !oneOf(m.disposition, ["accepted", "duplicate", "quarantined"] as const)) return null;
+  const itemCount = m.items && /^(?:[0-9]|[1-3][0-9]|40)$/u.test(m.items) ? Number(m.items) : null;
+  return {
+    ref, received_at: m.received_at, disposition: m.disposition,
+    report_type: m.disposition === "accepted" && oneOf(m.type, reportTypes) ? m.type : null,
+    outcome: m.disposition === "accepted" && oneOf(m.outcome, reportStatuses) ? m.outcome : null,
+    title: m.title && m.title.length <= 120 && !/[\p{Cc}\p{Cf}]/u.test(m.title) ? m.title : null,
+    item_count: itemCount,
+  };
 }

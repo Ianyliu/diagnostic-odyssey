@@ -1,4 +1,5 @@
 import { allowedReadToken, equalSecret } from "./authentication.ts";
+import { historyRoutes, serveResearchHistory } from "./historyEndpoint.ts";
 import { receiveStagingEmail, type InboundEmail } from "./email.ts";
 import { createIntakeStore, type IntakeBucket, type StagingInbox } from "./storage.ts";
 
@@ -90,6 +91,9 @@ const worker = {
     }
   },
   fetch(request: Request, env: StagingWorkerEnv): Promise<Response> {
+    if (historyRoutes.some(path => path === new URL(request.url).pathname)) {
+      return serveResearchHistory(request, env.PULSE_STAGING_ENABLED === "on", env.PULSE_INBOX_TOKEN, () => storeFor(env));
+    }
     return serveStagingInbox(request, env.PULSE_STAGING_ENABLED === "on", env.PULSE_INBOX_TOKEN,
       ifNoneMatch => storeFor(env).readInboxIfChanged(new Date(), ifNoneMatch));
   },

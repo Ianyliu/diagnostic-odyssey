@@ -5,7 +5,7 @@ import type { ResearchReport } from "../../../packages/community-pulse/src/resea
 import { fixtureMailPolicy, syntheticMail } from "../../../packages/community-pulse/src/transport-fixtures.ts";
 import { createResearchIntakeState, ingestResearchDelivery } from "../../../packages/community-pulse/src/transport.ts";
 import { createIntakeStore } from "../src/storage.ts";
-import { MemoryR2 } from "./memoryR2.ts";
+import { MemoryR2 } from "../src/offlineBucket.ts";
 
 const day = 24 * 60 * 60 * 1000;
 const instant = "2026-11-25T13:01:00.000Z";

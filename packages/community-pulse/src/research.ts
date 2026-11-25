@@ -36,6 +36,9 @@ export interface ResearchReport {
   reason_codes: string[];
 }
 
+export type ExpandedResearchReport = Omit<ResearchReport, "schema_version"> & { schema_version: "0.2.2" };
+export type ReadableResearchReport = ResearchReport | ExpandedResearchReport;
+
 const itemTextLimit = 700;
 const source = object({ url, publisher: line(120), locator: line(200) }, ["locator"]);
 const item = object({ kind: choice(researchItemKinds), title: line(120), text: line(itemTextLimit), sources: list(source, 5) });
@@ -51,7 +54,39 @@ export const researchReportSchema = {
 };
 
 export function validateResearchReport(value: unknown): ValidationResult<ResearchReport> {
-  const result = validateShape<ResearchReport>(researchReportSchema, value);
+  return validateReportSemantics(validateShape<ResearchReport>(researchReportSchema, value));
+}
+
+export const expandedReportLimits = {
+  hourly_scout: { items: 12, text: 700 },
+  daily_synthesis: { items: 20, text: 1500 },
+  weekly_strategic_review: { items: 40, text: 2000 },
+  on_demand: { items: 40, text: 2000 }
+} satisfies Record<ReportType, { items: number; text: number }>;
+
+const expandedSchemas = Object.fromEntries(reportTypes.map(type => {
+  const limits = expandedReportLimits[type];
+  return [type, object({
+    ...researchReportSchema.properties,
+    schema_version: choice(["0.2.2"]), report_type: choice([type]),
+    items: list(object({ kind: choice(researchItemKinds), title: line(120), text: line(limits.text), sources: list(source, 5) }), limits.items)
+  })];
+})) as Record<ReportType, ReturnType<typeof object>>;
+
+export function validateExpandedResearchReport(value: unknown): ValidationResult<ExpandedResearchReport> {
+  const type = value && typeof value === "object" && "report_type" in value ? value.report_type : undefined;
+  const checkedType = reportTypes.find(candidate => candidate === type);
+  if (!checkedType) return { ok: false, issues: ["$.report_type: not a permitted value"] };
+  return validateReportSemantics(validateShape<ExpandedResearchReport>(expandedSchemas[checkedType], value));
+}
+
+/** For readers only. The live email intake calls the immutable v0.2.1 validator directly. */
+export function validateReadableResearchReport(value: unknown): ValidationResult<ReadableResearchReport> {
+  return value && typeof value === "object" && "schema_version" in value && value.schema_version === "0.2.2"
+    ? validateExpandedResearchReport(value) : validateResearchReport(value);
+}
+
+function validateReportSemantics<T extends ReadableResearchReport>(result: ValidationResult<T>): ValidationResult<T> {
   if (!result.ok) return result;
   const { status, items, reason_codes: reasonCodes } = result.value;
   const issues: string[] = [];

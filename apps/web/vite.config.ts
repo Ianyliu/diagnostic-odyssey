@@ -42,8 +42,20 @@ function stableWebfontLoading(): Plugin {
 function offlinePulseApi(): Plugin {
   const middleware = async (req: IncomingMessage, res: ServerResponse, next: () => void) => {
     const url = new URL(req.url ?? "/", "http://127.0.0.1");
-    if (url.pathname !== "/api/community-pulse") return next();
+    if (url.pathname !== "/api/community-pulse" && url.pathname !== "/api/community-pulse-history") return next();
     const local = ["127.0.0.1", "::1", "::ffff:127.0.0.1"].includes(req.socket.remoteAddress ?? "");
+    if (url.pathname === "/api/community-pulse-history") {
+      const { readHistoryEndpoint } = await import("./src/server/community-pulse/historyEndpoint.ts");
+      const request = new Request(url, { method: req.method ?? "GET", headers: {
+        "If-None-Match": typeof req.headers["if-none-match"] === "string" ? req.headers["if-none-match"] : "",
+        "Sec-Fetch-Site": typeof req.headers["sec-fetch-site"] === "string" ? req.headers["sec-fetch-site"] : "none",
+      } });
+      const response = local ? await readHistoryEndpoint(request, process.env, fetch, allowLocalCommunityPulseFixtures(process.env))
+        : new Response(null, { status: 404 });
+      res.writeHead(response.status, Object.fromEntries(response.headers));
+      res.end(await response.text());
+      return;
+    }
     const response = await readCommunityPulse(
       new Request(url, { method: req.method ?? "GET" }),
       local && allowLocalCommunityPulseFixtures(process.env),

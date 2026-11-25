@@ -7,7 +7,7 @@ import { authenticateCloudflareMail, isPrivateRecipient } from "../src/authentic
 import { receiveStagingEmail, type EmailReceiverOptions, type InboundEmail, type ReceiverStore } from "../src/email.ts";
 
 import worker from "../src/index.ts";
-import { MemoryR2 } from "./memoryR2.ts";
+import { MemoryR2 } from "../src/offlineBucket.ts";
 import { readStagingInbox } from "../../web/src/server/community-pulse/stagingEndpoint.ts";
 
 const receivedAt = new Date("2026-11-25T13:01:00.000Z");

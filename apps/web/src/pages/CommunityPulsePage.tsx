@@ -1,17 +1,18 @@
 import { useState } from "react";
-import { NavLink, Link } from "react-router-dom";
+import { NavLink, Link, useSearchParams } from "react-router-dom";
 import {
   countyName,
   reportTypes,
   westVirginiaCounties,
   type EventSnapshot,
   type LedgerRecord,
-  type ResearchReport,
+  type ReadableResearchReport,
   type TypedDate,
 } from "../../../../packages/community-pulse/src/index";
 import type { InboxEntry, StagingInboxMetrics } from "../data/communityPulseResponse";
 import { communityPulseStagingEnabled } from "../data/communityPulseFlag";
 import { fixtureFeed, stagingFeed, useCommunityPulseFeed } from "../data/useCommunityPulseFeed";
+import { ResearchHistoryPanel, ResearchThreadPanel } from "./CommunityPulseHistoryPanel";
 import "./CommunityPulsePage.css";
 
 const ledgerPath = "/local-context/policy-access";
@@ -271,7 +272,7 @@ function Ledger({snapshot}: {snapshot: EventSnapshot}) {
   );
 }
 
-const researchSections: readonly {title: string; kinds: ResearchReport["items"][number]["kind"][]}[] = [
+const researchSections: readonly {title: string; kinds: ReadableResearchReport["items"][number]["kind"][]}[] = [
   {title: "Reported developments", kinds: ["source_grounded_development", "funding_opportunity", "source_nomination"]},
   {title: "Cross-source synthesis", kinds: ["cross_source_synthesis"]},
   {title: "Potential planning implications", kinds: ["planning_implication", "strategic_hypothesis"]},
@@ -279,7 +280,7 @@ const researchSections: readonly {title: string; kinds: ResearchReport["items"][
   {title: "Evidence requiring verification", kinds: ["verification_needed"]},
 ];
 
-function ResearchSections({report}: {report: ResearchReport}) {
+function ResearchSections({report}: {report: ReadableResearchReport}) {
   return (
     <div className="pulse-research-sections">
       {researchSections.map(section => {
@@ -353,17 +354,21 @@ function InboxCard({entry}: {entry: InboxEntry}) {
   );
 }
 
-function DeliveryHealth({metrics}: {metrics: StagingInboxMetrics}) {
+function DeliveryHealth({metrics, substantive}: {metrics: StagingInboxMetrics; substantive?: string | null}) {
   return (
     <section className="card pulse-side-card" aria-labelledby="pulse-delivery-heading">
       <h2 id="pulse-delivery-heading">Delivery health</h2>
       <dl className="pulse-facts">
         <div>
-          <dt>Last successful update</dt>
+          <dt>{substantive === undefined ? "Last successful update" : "Last successful check"}</dt>
           <dd>{metrics.last_success_at
             ? <time dateTime={metrics.last_success_at}>{formattedInstant(metrics.last_success_at)}</time>
             : "None recorded"}</dd>
         </div>
+        {substantive !== undefined && <div>
+          <dt>Last substantive report</dt>
+          <dd>{substantive ? <time dateTime={substantive}>{formattedInstant(substantive)}</time> : "None recorded"}</dd>
+        </div>}
         <div><dt>Counts cover</dt><dd>{metrics.window_hours} hours</dd></div>
       </dl>
       <ul className="pulse-side-list">
@@ -435,9 +440,14 @@ function Intelligence({inbox, reload, metrics}: {
 export default function CommunityPulsePage({view}: {view: "ledger" | "intelligence"}) {
   const internal = view === "intelligence";
   const staged = internal && communityPulseStagingEnabled;
-  const fixture = useCommunityPulseFeed(fixtureFeed, !staged);
-  const staging = useCommunityPulseFeed(stagingFeed, staged);
-  const {state, reload} = staged ? staging : fixture;
+  const [params, setParams] = useSearchParams();
+  const inspect = params.get("inspect");
+  const history = internal && (inspect === "history" || (staged && inspect !== "receipts"));
+  const threads = internal && !staged && inspect === "threads";
+  const legacy = internal && staged && inspect === "receipts";
+  const fixture = useCommunityPulseFeed(fixtureFeed, !staged && !history && !threads);
+  const staging = useCommunityPulseFeed(stagingFeed, legacy);
+  const {state, reload} = legacy ? staging : fixture;
 
   return (
     <section className="page page-stack pulse-page">
@@ -460,7 +470,18 @@ export default function CommunityPulsePage({view}: {view: "ledger" | "intelligen
           "Fictional records for evaluating the workflow. Source links point to placeholder documents."}
         {fixture.feed && !internal && <span>Snapshot created {formattedInstant(fixture.feed.snapshot.created_at)}</span>}
       </div>
-      {staged && staging.feed ? <Intelligence inbox={staging.feed.inbox} metrics={staging.feed.metrics} reload={reload} />
+      {internal && !staged && <nav className="pulse-history-tabs" aria-label="Intelligence workspace">
+        <button className="text-button" type="button" aria-pressed={!history && !threads}
+          onClick={() => setParams({})}>Fixture inbox</button>
+        <button className="text-button" type="button" aria-pressed={history}
+          onClick={() => setParams({ inspect: "history" })}>Research history</button>
+        <button className="text-button" type="button" aria-pressed={threads}
+          onClick={() => setParams({ inspect: "threads" })}>Intelligence threads</button>
+      </nav>}
+      {history ? <ResearchHistoryPanel renderReport={report => <ResearchSections report={report} />}
+        renderHealth={health => <DeliveryHealth metrics={health.metrics} substantive={health.last_substantive_at} />} />
+        : threads ? <ResearchThreadPanel renderReport={report => <ResearchSections report={report} />} />
+        : legacy && staging.feed ? <Intelligence inbox={staging.feed.inbox} metrics={staging.feed.metrics} reload={reload} />
         : !staged && fixture.feed ? (internal
           ? <Intelligence inbox={fixture.feed.inbox} reload={reload} />
           : <Ledger snapshot={fixture.feed.snapshot} />)
