@@ -1,6 +1,12 @@
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { useLocation } from "react-router-dom";
 import type { Scenario, ScenarioResult } from "@diagnostic-odyssey/contracts";
+// Import order is stylesheet order: each component below imports its own CSS, and the bundled
+// cascade must stay DetailDrawer, DecisionTrace, PilotDecisionVisuals, SensitivityExplorer exactly as
+// before the page was split into modules. Guarded by test/pilot-css-order.test.ts.
+import { PathwayBoundaryDrawer } from "./pilot/PathwayBoundaryDrawer"; // DetailDrawer
+import { QuantitiesPanel } from "./pilot/QuantitiesPanel"; // DecisionTrace
+import { ResultsPanel } from "./pilot/ResultsPanel"; // PilotDecisionVisuals
 import { SensitivityExplorer } from "../components/SensitivityExplorer";
 import { useArtifact } from "../data/ArtifactContext";
 import {
@@ -23,10 +29,7 @@ import { AssumptionsForm } from "./pilot/AssumptionsForm";
 import { CompareStrategiesPanel } from "./pilot/CompareStrategiesPanel";
 import { ContextPanel } from "./pilot/ContextPanel";
 import { DecisionInspector } from "./pilot/DecisionInspector";
-import { PathwayBoundaryDrawer } from "./pilot/PathwayBoundaryDrawer";
 import { BOTTOM_TABS, EXTRA_FIELDS, type BottomTab } from "./pilot/pilotConfig";
-import { QuantitiesPanel } from "./pilot/QuantitiesPanel";
-import { ResultsPanel } from "./pilot/ResultsPanel";
 import "./PilotPage.css";
 
 export function PilotPage({ advisorAvailable = false }: { advisorAvailable?: boolean }) {
