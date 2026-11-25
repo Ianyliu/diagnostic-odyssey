@@ -21,6 +21,16 @@ The owner-supplied 38,478-byte `on_demand` report was valid JSON and within the 
 
 **Alternatives.** If no existing eligible zone can be used, the owner may price a separate low-cost domain, including renewal. Domain purchase needs separate approval. If a domain is unavailable, an explicitly authorized dedicated project mailbox can receive the synthetic report for local preflight and controlled manual import. This fallback tests report generation and delivery only. It does not qualify the Cloudflare Email Worker or its receiver-authentication boundary. A later mailbox automation would need its own authentication and replay qualification. No personal mailbox, Google Cloud service, or paid API is needed for the current work. [Domain registration dashboard](https://dash.cloudflare.com/?to=/:account/domains/registrations) · [Cloudflare registration terms and restrictions](https://developers.cloudflare.com/registrar/get-started/register-domain/)
 
+## Implementation status and first live delivery
+
+S2 implements the private history readers, a synthetic reviewer-thread prototype, and the v0.2.2 read contract. The first live delivery remains v0.2.1. The corrected Instinct payload passed the original runtime and offline intake. The earlier payload still fails under its declared v0.2.1 version. Both originals and their validation receipts are held outside Git.
+
+On the protected synthetic preview, open **Intelligence Brief → Research history** to exercise compact pages and lazy detail with both versions. The list defaults to substantive reports. Choose **All delivery outcomes** to inspect no-change receipts, and use the UTC date, type, and outcome filters to narrow the page. **Intelligence threads** shows a synthetic reviewer-created membership, an open question, a milestone, supersession, and an unavailable citation. The prototype persists versioned thread changes through a bounded conditional R2 adapter tested offline. The preview is read-only. There is no reviewer mutation route on the public or protected app.
+
+The cloud inbox polls only delivery health and keeps the selected history page stable. Worker records were extended with metadata for new accepted titles and item counts. Older receipts continue to load through their original digest and can have unknown summary fields. Health separates the last successful check from the last substantive report, and report detail verifies the canonical digest at the Worker and proxy. Email and manual intake still call the strict v0.2.1 writer. The v0.2.2 offline inspection path does not admit or persist reports through either transport.
+
+Test the first synthetic v0.2.1 message through the authorized Cloudflare endpoint before enabling operations. Before any v0.2.2 email activation, measure source-heavy, Unicode, and mixed-version cases on the actual eligible Cloudflare runtime. Confirm readers are on the intended exact preview and take the legacy path out of operational use. Keep recurring Instinct off until specifically authorized.
+
 ## Keep v0.2.1 for S1
 
 | Report type | Draft item ceiling | Draft text ceiling per item |
@@ -38,7 +48,7 @@ The existing inbox reads, validates, and hashes up to ten full reports when its 
 
 If the draft passes those gates, keep the current v0.2.1 validator frozen and dispatch a separate v0.2.2 research body validator by version. Do not bump the shared version used by extraction, snapshots, and inbox envelopes. Deploy browser/Vercel and Worker storage readers before enabling intake of v0.2.2 JSON, and retire any older protected preview readers connected to the same inbox. Do not rewrite existing objects or their digests. Retries keep their exact original report version and run ID. A distinct report version is for new logical runs. Roll back the writer and retain readers for versions already stored.
 
-## Proposed private history and intelligence threads
+## Private history and intelligence thread design
 
 Use the existing newest-first R2 receipt journal as the history index. List at most 25 projected summary rows per page from a bounded number of R2 pages. Keep the opaque cursor short-lived and signed, and bind it to the filters and a high-water timestamp. Enforce the current retention cutoff and allowlist the date, type, and outcome filters. Deduplicate across appends. Handle expiration between list and detail. Fetch a single report on demand via a trusted lookup of its opaque receipt reference, verifying the content digest. Keep the same protected preview identity, server credential, and private response policy. Automatic refresh should poll summary and health only. Keep pagination position stable and offer a new-deliveries indicator.
 
@@ -46,4 +56,4 @@ Show received reports with substantive items in the default view. Roll up no-cha
 
 For persistent threads, start with operator-owned R2 records that have opaque IDs, a topic, owner, review status, and an as-of timestamp. Append immutable revisions and update a head pointer conditionally. Store citation edges to receipt ID, report digest, version, and item index. Keep reviewer write access and audit identity separate from intake and the staging reader. When candidate retention expires or access is revoked, mark the reference unavailable. Never duplicate raw content to extend retention. Any future core intelligence engine should use an independently authorized read-only projection of reviewed evidence with revision and withdrawal semantics. Keep the existing Cloudflare and Vercel boundaries and introduce no Google Cloud dependency.
 
-The proposed history and thread model add no database or knowledge graph. They are independent of first-email qualification.
+The history and thread model add no database or knowledge graph. They are independent of first-email qualification. The thread object holds up to 12 reviewer revisions and 12 distinct report references for the prototype. The existing R2 retention policy still governs the objects. Any longer thread retention requires a separate owner decision.
