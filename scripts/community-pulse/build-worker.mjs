@@ -8,7 +8,9 @@ const repo = fileURLToPath(new URL("../../", import.meta.url));
 const metadata = JSON.parse(await readFile(new URL("../../apps/pulse-worker/staging-upload.json", import.meta.url), "utf8"));
 const output = process.argv[2] ? resolve(process.argv[2]) : undefined;
 
-if (!metadata.bindings.some(binding => binding.name === "PULSE_STAGING_ENABLED" && binding.text === "off") ||
+const disabledBindings = ["PULSE_STAGING_ENABLED", "PULSE_AGENTMAIL_MODE", "PULSE_AGENTMAIL_RECONCILE"];
+if (!disabledBindings.every(name => metadata.bindings.some(binding =>
+      binding.name === name && binding.type === "plain_text" && binding.text === "off")) ||
     metadata.bindings.some(binding => binding.type === "secret_text") ||
     metadata.main_module !== "worker.mjs") {
   throw new Error("Expected the disabled, secret-free staging upload.");

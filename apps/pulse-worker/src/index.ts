@@ -1,13 +1,11 @@
+import { agentMailRecoveryCron, agentMailWebhookPath, reconcileAgentMail, serveAgentMailWebhook, type AgentMailEnvironment } from "./agentmail.ts";
 import { allowedReadToken, equalSecret } from "./authentication.ts";
 import { historyRoutes, serveResearchHistory } from "./historyEndpoint.ts";
 import { receiveStagingEmail, type InboundEmail } from "./email.ts";
-import { createIntakeStore, type IntakeBucket, type StagingInbox } from "./storage.ts";
+import { createIntakeStore, type StagingInbox } from "./storage.ts";
 
-export interface StagingWorkerEnv {
-  PULSE_STAGING_ENABLED?: string;
-  PULSE_INTAKE: IntakeBucket;
+export interface StagingWorkerEnv extends AgentMailEnvironment {
   PULSE_STAGING_RECIPIENT?: string;
-  PULSE_EXPECTED_SENDER?: string;
   PULSE_EXPECTED_ENVELOPE_SENDER?: string;
   PULSE_DKIM_DOMAIN?: string;
   PULSE_INBOX_TOKEN?: string;
@@ -91,16 +89,23 @@ const worker = {
     }
   },
   fetch(request: Request, env: StagingWorkerEnv): Promise<Response> {
-    if (historyRoutes.some(path => path === new URL(request.url).pathname)) {
+    const path = new URL(request.url).pathname;
+    if (path === agentMailWebhookPath) return serveAgentMailWebhook(request, env, () => storeFor(env));
+    if (historyRoutes.some(route => route === path)) {
       return serveResearchHistory(request, env.PULSE_STAGING_ENABLED === "on", env.PULSE_INBOX_TOKEN, () => storeFor(env));
     }
     return serveStagingInbox(request, env.PULSE_STAGING_ENABLED === "on", env.PULSE_INBOX_TOKEN,
       ifNoneMatch => storeFor(env).readInboxIfChanged(new Date(), ifNoneMatch));
   },
-  async scheduled(_event: unknown, env: StagingWorkerEnv): Promise<void> {
+  async scheduled(event: { cron?: string }, env: StagingWorkerEnv): Promise<void> {
     if (env.PULSE_STAGING_ENABLED !== "on") return;
     const store = storeFor(env);
     const now = new Date();
+    if (event.cron === agentMailRecoveryCron) {
+      const outcome = await reconcileAgentMail(env, () => store, now);
+      if (outcome.deferred) throw Error("AgentMail reconciliation deferred");
+      return;
+    }
     await store.recoverPending(now);
     await store.purgeExpired(now);
   },

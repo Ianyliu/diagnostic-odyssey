@@ -5,6 +5,8 @@
   "bindings": [
     { "type": "r2_bucket", "name": "PULSE_INTAKE", "bucket_name": "community-pulse-staging-intake" },
     { "type": "plain_text", "name": "PULSE_STAGING_ENABLED", "text": "off" },
+    { "type": "plain_text", "name": "PULSE_AGENTMAIL_MODE", "text": "off" },
+    { "type": "plain_text", "name": "PULSE_AGENTMAIL_RECONCILE", "text": "off" },
     { "type": "plain_text", "name": "PULSE_RETENTION_DAYS", "text": "30" },
     { "type": "plain_text", "name": "PULSE_EMAIL_PER_HOUR", "text": "12" },
     { "type": "plain_text", "name": "PULSE_QUARANTINE_PER_HOUR", "text": "4" }
