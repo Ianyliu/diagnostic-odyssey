@@ -77,7 +77,7 @@ export function BurdenPage() {
         <header className="page-heading">
           <p className="eyebrow">01 · BURDEN</p>
           <h1>National burden overview</h1>
-          <p>2024 national survey estimates for U.S. adults ages 18–64 classified as operational-current Long COVID at their Round 3/1 interview.</p>
+          <p>2024 AHRQ MEPS estimates for U.S. adults ages 18–64 classified as operational-current Long COVID at their Round 3/1 interview.</p>
           <p className="ledger-orientation">Open a topic to explore its measures and sources.</p>
         </header>
         <button
