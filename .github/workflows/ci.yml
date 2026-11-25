@@ -8,13 +8,21 @@ on:
 permissions:
   contents: read
 
+# Only superseded pull-request runs are cancelled. Pushes to main always run to completion.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+# Job ids (`verify`, `r-analysis-tests`) are unchanged so existing required status checks
+# ("CI / verify", "CI / r-analysis-tests") keep working. See docs/operations/ci-workflows.md.
 jobs:
   verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    # Raised from 10 to cover the added characterization, tooling and coverage steps.
+    timeout-minutes: 20
     steps:
       - name: Checkout
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - name: Verify exact source checkout
@@ -22,49 +30,33 @@ jobs:
           EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
 
-      - name: Use Node 22
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+      - name: Set up workspace (Node from .nvmrc, npm ci, pinned Python test dependencies)
+        uses: ./.github/actions/setup-workspace
         with:
-          node-version: 22
-
-      - name: Install dependencies
-        run: npm ci --no-audit --no-fund
+          python-test-dependencies: "true"
 
       - name: Typecheck
         run: npm run typecheck
 
-      - name: Install Draft 2020-12 test validator
-        run: python3 -m pip install --disable-pip-version-check jsonschema==4.26.0
-
       - name: Unit tests
         run: npm test
+
+      - name: Tooling unit tests (reviewed-artifact verifier)
+        run: npm run test:tools
+
+      - name: Scientific and contract characterization (exact equivalence to recorded baseline)
+        run: npm run test:characterization
 
       - name: Offline synthetic provenance verification
         run: python3 -m unittest discover -s packages/narrative-references/test -p 'test_provenance.py'
 
       - name: Local-context contract tests
         run: |
-          python -m unittest discover -s analysis/local_context/tests -p 'test_*.py'
+          python3 -m unittest discover -s analysis/local_context/tests -p 'test_*.py'
           bash analysis/local_context/tests/test_candidate_output_verifier.sh
 
-      - name: Verify immutable reviewed artifact checksums
-        run: |
-          (
-            cd artifacts/reviewed/meps-2024-long-covid-candidate-20260923T020607Z/
-            sha256sum -c SHA256SUMS
-          )
-          (
-            cd artifacts/reviewed/meps-2024-long-covid-candidate-20260926T011343Z/
-            sha256sum -c SHA256SUMS
-          )
-          (
-            cd artifacts/reviewed/local-context-wv-hrsa-acs-candidate-20260924T052332Z/
-            sha256sum -c SHA256SUMS
-          )
-          (
-            cd artifacts/reviewed/meps-2024-linked-condition-service-use-reviewed-20260929-v1/
-            sha256sum -c SHA256SUMS
-          )
+      - name: Verify immutable reviewed artifact checksums (authoritative inventory)
+        run: npm run verify:artifacts
 
       - name: Lint
         run: npm run lint
@@ -75,12 +67,32 @@ jobs:
       - name: Verify repeated-build provenance and byte stability
         run: node apps/web/scripts/verify-repeated-build.mjs
 
+      # Informational diagnostic only: no threshold, never fails the job.
+      - name: Test coverage (informational)
+        continue-on-error: true
+        run: |
+          npm run test:coverage 2>&1 | tee coverage/spec-output.txt
+          {
+            echo '### Test coverage (informational, no thresholds)'
+            echo '```'
+            grep -E '(all files|file +\|)' coverage/spec-output.txt || echo 'coverage summary unavailable'
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: coverage-${{ github.event.pull_request.head.sha || github.sha }}
+          path: coverage/
+          if-no-files-found: ignore
+          retention-days: 14
+
   r-analysis-tests:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - name: Checkout
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - name: Verify exact source checkout
@@ -89,7 +101,7 @@ jobs:
         run: test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
 
       - name: Set up R
-        uses: r-lib/actions/setup-r@f9a764fea8d5c63df6ef9a5c7795bf7deb5d7e05 # v2
+        uses: r-lib/actions/setup-r@f9a764fea8d5c63df6ef9a5c7795bf7deb5d7e05 # v2.14.0
         with:
           use-public-rspm: true
 

@@ -19,7 +19,7 @@ jobs:
       contents: read
       statuses: write
     steps:
-      - uses: sanjay3290/jules-pr-reviewer@66c23eff45e2103fb3d2d6873ba073e6e281ef31 # v1
+      - uses: sanjay3290/jules-pr-reviewer@66c23eff45e2103fb3d2d6873ba073e6e281ef31 # v1.0.2
         with:
           jules_api_key: ${{ secrets.JULES_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
