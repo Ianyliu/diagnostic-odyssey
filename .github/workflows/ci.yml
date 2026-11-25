@@ -8,9 +8,10 @@ on:
 permissions:
   contents: read
 
-# Only superseded pull-request runs are cancelled. Pushes to main always run to completion.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  # Pull requests share one group per PR, so a newer push supersedes older runs. Every other event
+  # (push to main, workflow_dispatch) gets a unique group per run, so no pending run is ever dropped.
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || format('run-{0}', github.run_id) }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 # Job ids (`verify`, `r-analysis-tests`) are unchanged so existing required status checks
@@ -18,7 +19,7 @@ concurrency:
 jobs:
   verify:
     runs-on: ubuntu-latest
-    # Raised from 10 to cover the added characterization, tooling and coverage steps.
+    # Raised from 10 to cover the added characterization, tooling, docs and coverage steps.
     timeout-minutes: 20
     steps:
       - name: Checkout
@@ -41,8 +42,11 @@ jobs:
       - name: Unit tests
         run: npm test
 
-      - name: Tooling unit tests (reviewed-artifact verifier)
+      - name: Tooling unit tests (reviewed-artifact, doc-links, Vercel safety, parity harness)
         run: npm run test:tools
+
+      - name: Documentation link integrity
+        run: npm run verify:docs
 
       - name: Scientific and contract characterization (exact equivalence to recorded baseline)
         run: npm run test:characterization
@@ -67,17 +71,28 @@ jobs:
       - name: Verify repeated-build provenance and byte stability
         run: node apps/web/scripts/verify-repeated-build.mjs
 
-      # Informational diagnostic only: no threshold, never fails the job.
+      # Informational diagnostic only: no threshold and it never fails the job, but a failure to
+      # generate coverage is reported as a failed (continue-on-error) step and in the job summary.
       - name: Test coverage (informational)
         continue-on-error: true
+        shell: bash
         run: |
+          mkdir -p coverage
+          set +e
           npm run test:coverage 2>&1 | tee coverage/spec-output.txt
+          status=${PIPESTATUS[0]}
+          set -e
           {
             echo '### Test coverage (informational, no thresholds)'
+            if [ "$status" -ne 0 ]; then echo "**Coverage generation failed (exit $status).** The numbers below, if any, are incomplete."; fi
             echo '```'
             grep -E '(all files|file +\|)' coverage/spec-output.txt || echo 'coverage summary unavailable'
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
+          if [ "$status" -ne 0 ]; then
+            echo "::warning title=Coverage generation failed::npm run test:coverage exited $status (informational step; job result unaffected)"
+            exit "$status"
+          fi
       - name: Upload coverage report
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2

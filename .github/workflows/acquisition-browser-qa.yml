@@ -14,7 +14,9 @@ permissions:
   contents: read
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  # Pull requests share one group per PR, so a newer push supersedes older runs. Every other event
+  # (push to main, workflow_dispatch) gets a unique group per run, so no pending run is ever dropped.
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || format('run-{0}', github.run_id) }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
