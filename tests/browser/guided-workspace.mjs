@@ -49,16 +49,21 @@ await check("reviewed OpenGraph preview is a served, valid 1200x630 PNG", async 
 await check("Burden charts expose numeric confidence bounds and distinguish descriptive IQR",async()=>{
  const page=await pageAt("/burden",390);
  const tracks=page.locator('.burden-domain-stack .metric-visual-svg[role="img"]');
- const labels=await tracks.evaluateAll(nodes=>nodes.map(n=>n.getAttribute("aria-label")??""));
- assert.ok(labels.some(label=>/(?:95% CI|95% confidence interval).*to/i.test(label)), "numeric sampling CI is accessible");
- assert.ok(labels.some(label=>/IQR.*25th–75th percentile.*to/i.test(label)), "IQR is distinguished from sampling CI");
- const normal=page.locator('.burden-domain-stack .metric-svg-interval').first();
- assert.ok(await normal.count()>0);
+ assert.equal(await tracks.count(),0,"Focus starts without charts competing for attention");
+ await page.getByRole("button",{name:"Overview",exact:true}).click();
+ await page.getByRole("button",{name:/Show details for Serious nonspecific psychological distress/}).click();
+ const confidenceLabel=await tracks.getAttribute("aria-label");
+ assert.match(confidenceLabel,/(?:95% CI|95% confidence interval).*to/i,"numeric sampling CI is accessible");
+ const normal=page.locator('.burden-domain-stack .metric-svg-interval');
+ assert.ok(await normal.isVisible());
  const xAttr = Number(await normal.getAttribute("x"));
  const wAttr = Number(await normal.getAttribute("width"));
  assert.ok(Number.isFinite(xAttr) && Number.isFinite(wAttr) && wAttr > 0);
+ await page.getByRole("button",{name:/Show details for Mean annual all-cause medical spending/}).click();
+ const distributionLabel=await tracks.getAttribute("aria-label");
+ assert.match(distributionLabel,/IQR.*25th–75th percentile.*to/i,"IQR is distinguished from sampling CI");
  await overflow(page);
- return {charts:labels.length,firstInterval:{x:xAttr,width:wAttr}};
+ return {confidenceLabel,distributionLabel,firstInterval:{x:xAttr,width:wAttr}};
 });
 for (const width of [320, 360, 390, 768, 1024, 1440]) for (const theme of ["light", "dark"]) {
   await check(`default guided layouts ${width} ${theme}`, async () => {
