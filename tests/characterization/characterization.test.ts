@@ -4,6 +4,7 @@ import test from "node:test";
 import { fileURLToPath } from "node:url";
 import { buildApiSnapshot, renderApiSnapshot } from "./api-snapshot.ts";
 import { buildCharacterization, renderCharacterization } from "./capture.ts";
+import { buildEndpointCharacterization, renderEndpointCharacterization } from "./endpoint.ts";
 
 const golden = (name: string): string => readFileSync(fileURLToPath(new URL(`./golden/${name}`, import.meta.url)), "utf8");
 
@@ -39,4 +40,10 @@ test("type-level public API of every workspace package is unchanged", () => {
     }
   }
   assert.fail(`public API drift in ${lines.length} export(s):\n${lines.slice(0, 15).join("\n")}`);
+});
+
+test("Preview-only /api/ai-guidance access, validation, replay, rate-limit, provider and egress behavior is unchanged", async () => {
+  const expected = golden("endpoint.json");
+  const actual = renderEndpointCharacterization(await buildEndpointCharacterization());
+  if (actual !== expected) assert.fail(describeCaseDrift(expected, actual));
 });
