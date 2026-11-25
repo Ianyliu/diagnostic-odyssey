@@ -30,3 +30,6 @@ Thumbs.db
 # Local Python bytecode
 __pycache__/
 *.py[cod]
+
+# Local Vercel build output (scripts/verify/vercel-function-build.sh)
+.vercel/
