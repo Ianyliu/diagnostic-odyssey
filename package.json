@@ -17,7 +17,7 @@
     "test:py": "python3 -m unittest discover -s packages/narrative-references/test -p 'test_provenance.py' && python3 -m unittest discover -s analysis/local_context/tests -p 'test_*.py' && bash analysis/local_context/tests/test_candidate_output_verifier.sh",
     "test:r": "Rscript analysis/r/tests/run_tests.R",
     "test:offline": "scripts/verify/run-offline.sh npm test",
-    "test:coverage": "node --experimental-strip-types --experimental-test-coverage --test-coverage-exclude='**/test/**' --test-coverage-exclude='**/node_modules/**' --test-reporter=spec --test-reporter-destination=stdout --test-reporter=lcov --test-reporter-destination=coverage/lcov.info --test 'apps/web/test/*.test.ts' 'packages/*/test/*.test.ts'",
+    "test:coverage": "mkdir -p coverage && node --experimental-strip-types --experimental-test-coverage --test-coverage-exclude='**/test/**' --test-coverage-exclude='**/node_modules/**' --test-reporter=spec --test-reporter-destination=stdout --test-reporter=lcov --test-reporter-destination=coverage/lcov.info --test 'apps/web/test/*.test.ts' 'packages/*/test/*.test.ts'",
     "verify:artifacts": "node scripts/verify/reviewed-artifacts.mjs",
     "verify:build": "node apps/web/scripts/verify-repeated-build.mjs",
     "check": "npm run typecheck && npm run lint && npm test && npm run test:tools && npm run test:characterization && npm run verify:artifacts && npm run build",
