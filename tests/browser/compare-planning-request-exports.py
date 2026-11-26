@@ -1,8 +1,8 @@
 """Compare real, fixed-clock browser downloads from base and candidate servers.
 
-Enforces exact canonical JSON byte equality and strict stage-aware semantic
-scientific completeness on the rendered Chromium PDFs across all six lifecycle
-stages (empty, created, stale, refreshed-unselected, refreshed-selected, removed).
+Enforces canonical JSON byte equality and strict stage-aware semantic scientific
+completeness on rendered Chromium PDFs across all six lifecycle stages. A legacy
+base may lack the new, independently checked evidence freshness field.
 """
 from decimal import Decimal, ROUND_HALF_UP
 import hashlib
@@ -82,6 +82,36 @@ def extract_pdf_text(path: Path) -> str:
 
 def dehyphenated_norm(text: str) -> str:
     return norm(re.sub(r"-\s*\n\s*", "", text))
+
+
+def compare_brief_bytes(old_json: bytes, new_json: bytes, brief: dict) -> bool:
+    if old_json == new_json:
+        return True
+    if "evidence_freshness" in json.loads(old_json) or "evidence_freshness" not in brief:
+        return False
+
+    # For the additive migration, remove only the new final property. The rest
+    # must match exactly, including field order, whitespace and numeric spelling.
+    legacy_bytes, delimiter, metadata = new_json.rpartition(b',\n  "evidence_freshness": ')
+    return (
+        bool(delimiter)
+        and metadata.endswith(b"\n}")
+        and json.loads(metadata[:-2]) == brief["evidence_freshness"]
+        and old_json == legacy_bytes + b"\n}"
+    )
+
+
+def verify_freshness_sources(brief: dict) -> list[str]:
+    if "evidence_freshness" not in brief:
+        return []
+    expected = {(row["source_ref"], row["artifact_version"]) for row in brief["burden_findings"]}
+    expected.update(
+        (row["source_ref"], brief["context"]["local_context_id"]) for row in brief["local_context"]
+    )
+    observed = [(row["source_ref"], row["artifact_version"]) for row in brief["evidence_freshness"]]
+    if len(observed) != len(expected) or set(observed) != expected:
+        return ["Evidence freshness must cover exactly the source and artifact pairs in the Brief"]
+    return []
 
 
 def format_native_estimate(value: float, unit: str) -> list[str]:
@@ -245,10 +275,14 @@ for stage in STAGES:
         )
     brief = json.loads(new_json)
     semantic_errors = verify_semantic_pdf(stage, brief, new_text, page_counts[1])
+    freshness_errors = verify_freshness_sources(brief)
     results.append(
         {
             "stage": stage,
-            "json_byte_equal": old_json == new_json,
+            "json_byte_equal": compare_brief_bytes(old_json, new_json, brief),
+            "freshness_sources_pass": len(freshness_errors) == 0,
+            "freshness_errors": freshness_errors,
+            "freshness_field_added": "evidence_freshness" in brief and "evidence_freshness" not in json.loads(old_json),
             "semantic_pdf_pass": len(semantic_errors) == 0,
             "semantic_errors": semantic_errors,
             "pdf_pages": page_counts,
@@ -259,13 +293,14 @@ for stage in STAGES:
     )
 
 report = {
-    "passed": all(r["json_byte_equal"] and r["semantic_pdf_pass"] for r in results),
+    "passed": all(r["json_byte_equal"] and r["freshness_sources_pass"] and r["semantic_pdf_pass"] for r in results),
     "comparison_mode": "exact_json_bytes_and_stage_aware_semantic_pdf",
-    "ignored_fields": [],
+    "allowed_additions_to_legacy_base": ["evidence_freshness"],
     "clock": "2026-10-25T15:00:00Z",
     "results": results,
     "limits": (
-        "Enforces exact canonical JSON byte parity with production plus strict stage-aware "
+        "Enforces exact JSON byte parity, allowing only the addition of source-bound evidence_freshness "
+        "when the base lacks it, plus strict stage-aware "
         "semantic PDF verification (all 21 national findings, 4 headline CIs, native units, "
         "boundaries, local/ESAQ/PSAQ caveats, provenance locators, Decision trace formatting, "
         "and request lifecycle inclusion/stale states); layout/typography differences alone may pass."
