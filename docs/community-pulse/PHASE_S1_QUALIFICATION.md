@@ -12,6 +12,10 @@ Exit code 0 means the real v0.2.1 validator and intake accept the file. Exit cod
 
 The owner-supplied 38,478-byte `on_demand` report was valid JSON and within the 64 KiB transport cap. The strict validator rejected its 30 items, and the intake returned `invalid_report_schema` with zero candidates. Eleven item texts also exceeded 700 UTF-16 code units, with a maximum of 1,022. An agent's declared validity is informational. For the first live email, use the completed synthetic example from the [agent contract](INSTINCT_AGENT_CONTRACT_v0.2.1.md). Set `report_type` to `on_demand`, assign a unique run ID, and preflight the exact JSON before using it as the email body. For research that exceeds the limits, narrow the assignment before generation or record an honest `partial` result describing omitted coverage. Keep the full unsubmitted research private. Preserve qualifiers and completion status.
 
+## AgentMail staging transport
+
+The owner selected a hosted inbox for the first synthetic email. Follow the [AgentMail operator runbook](AGENTMAIL_STAGING.md). The custom-domain checklist below remains available for direct Cloudflare Email Routing.
+
 ## Domain and access checklist
 
 1. In [Cloudflare Domains](https://dash.cloudflare.com/?to=/:account/domains/overview), identify an active owner-controlled zone that can accept a new unused mail subdomain. In [Email Routing](https://dash.cloudflare.com/?to=/:account/email-service/routing), select the apex, then **Settings → Subdomains**. The documented subdomain flow adds records on the selected subdomain and supports an exact-address rule. If enabling Routing first requires changes to existing apex or production MX, stop that setup and use another eligible zone. Prospective setup must leave existing production MX intact. [Routing subdomains](https://developers.cloudflare.com/email-service/configuration/subdomains/) · [MX onboarding troubleshooting](https://developers.cloudflare.com/email-service/reference/troubleshooting/#onboarding-fails-with-non-cloudflare-mx-records-exist)
