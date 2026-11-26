@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { defined } from "./helpers/typed.ts";
 import { buildDataRequestHandoff } from "../src/data/dataRequestHandoff.ts";
 import { createSensitivityDataRequest } from "../src/data/dataRequestTemplates.ts";
 import { createPlanningScenarioDefaults } from "../src/data/planningScenarioDefaults.ts";
@@ -53,9 +54,9 @@ test("presentation does not change request, scenario, selection or canonical ser
   });
   const before = serializeBriefJson(brief);
   const model = buildDataRequestHandoff(request, scenario)!;
-  model.appliedInputs[0].value = "presentation-only edit";
+  defined(model.appliedInputs[0], "first applied input").value = "presentation-only edit";
   assert.deepEqual({request, scenario}, snapshot);
   assert.equal(serializeBriefJson(brief), before);
   assert.equal(brief.data_requests.length, 1);
-  assert.equal(Object.hasOwn(brief.data_requests[0], "appliedInputs"), false);
+  assert.equal(Object.hasOwn(defined(brief.data_requests[0], "first data request"), "appliedInputs"), false);
 });

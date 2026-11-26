@@ -4,6 +4,7 @@ import { readFileSync } from "node:fs";
 import { calculateScenario } from "@diagnostic-odyssey/scenario-engine";
 import { PILOT_STRATEGY_PRESETS } from "../src/data/planningScenarioDefaults.ts";
 import { createTeaserScenario } from "../src/data/strategyTeaser.ts";
+import { readPilotSource } from "./helpers/pilotSource.ts";
 
 const read = (path: string) => readFileSync(new URL(path, import.meta.url), "utf8");
 
@@ -44,7 +45,7 @@ test("teaser remains independent until explicitly applied; journey precedes lowe
 });
 
 test("decision inspector uses applied scenario and distinct AI state", () => {
-  const pilot = read("../src/pages/PilotPage.tsx");
+  const pilot = readPilotSource();
   const app = read("../src/App.tsx");
   assert.match(pilot, /atlas-decision-inspector/);
   assert.match(pilot, /scenarioResult\.capacity_gap/);

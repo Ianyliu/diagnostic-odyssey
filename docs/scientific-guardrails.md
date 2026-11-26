@@ -63,7 +63,7 @@ Allowed values:
 - `illustrative`
 - `analytical_artifact`
 
-Illustrative Figma values are never promoted to analytical truth.
+Illustrative prototype or fixture values are never promoted to analytical truth.
 
 Unreleased/suppressed values must not appear in:
 - charts;
@@ -120,6 +120,6 @@ An unavailable domain must not block valid domains or the Planning Brief.
 
 ## Privacy and interoperability
 
-The sprint product stores no patient-submitted PHI and needs no authentication for the main read-only policy workflow.
+Diagnostic Odyssey stores no patient-submitted PHI and needs no authentication for the main read-only policy workflow.
 
 Do not claim HIPAA compliance or FHIR conformance. Future interoperability mapping may reference Condition, Encounter, Observation, Coverage, Claim/ExplanationOfBenefit, and Provenance only as a reuse note.

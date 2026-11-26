@@ -1,43 +1,46 @@
 <div align="center">
 
+<img src="apps/web/public/diagnostic-odyssey-horizontal.png" alt="Diagnostic Odyssey — Evidence & Pilot Strategy Workspace" width="420" />
+
 # Diagnostic Odyssey
 
-### Make hidden diagnostic burden visible. Turn reviewed evidence into a defensible plan.
+### See the burden. Find the leverage.
 
 <p>
-  <strong>A statistically grounded decision workspace for service planning around Long COVID, ME/CFS, and other complex conditions.</strong>
+  <strong>Make hidden diagnostic burden visible. Turn reviewed evidence into a defensible plan.</strong><br>
+  A statistically grounded <strong>Strategic Atlas (Edition 01)</strong> decision workspace for service planning around Long COVID, ME/CFS, and other complex conditions.
 </p>
 
 <p>
   <a href="#quick-start">Quick start</a> ·
+  <a href="#design--brand-strategic-atlas">Design &amp; brand</a> ·
   <a href="#the-workflow">The workflow</a> ·
-  <a href="#planning-intelligence-three-distinct-tools">Planning intelligence</a> ·
+  <a href="#planning-intelligence--strategy-ai-studio">Strategy AI Studio</a> ·
   <a href="#scientific-guardrails">Scientific guardrails</a> ·
   <a href="docs/architecture.md">Architecture</a>
 </p>
 
 <br>
 
-![Node.js 22+](https://img.shields.io/badge/Node.js-22%2B-1f2937?style=for-the-badge&logo=node.js&logoColor=white)
-![React + TypeScript](https://img.shields.io/badge/React%20%2B%20TypeScript-0f766e?style=for-the-badge&logo=react&logoColor=white)
-![R pipeline](https://img.shields.io/badge/analysis-R-276DC3?style=for-the-badge&logo=r&logoColor=white)
-![Operation](https://img.shields.io/badge/AI-no%20live%20inference-153552?style=for-the-badge)
+![Node.js 22+](https://img.shields.io/badge/Node.js-22%2B-101B32?style=for-the-badge&logo=node.js&logoColor=white)
+![React + TypeScript](https://img.shields.io/badge/React%20%2B%20TypeScript-3157D5?style=for-the-badge&logo=react&logoColor=white)
+![R pipeline](https://img.shields.io/badge/analysis-R-2457A6?style=for-the-badge&logo=r&logoColor=white)
+![Public AI boundary](https://img.shields.io/badge/public%20build-zero%20live%20AI-7154D8?style=for-the-badge)
 
 </div>
 
 <br>
 
 > [!IMPORTANT]
-> **Current evidence:** **21** reviewed national 2024 MEPS Long COVID estimates across 3 populated domains (13 economic/healthcare, 4 administrative, 4 mental-health; Work & Function stays explicitly missing) · **34** reviewed West Virginia state-level HRSA + ACS indicators (no county-level data) · **2** descriptive Typical Ranges. These are separate evidence layers: local context never rescales national burden, and Typical Ranges are not intervention-effect estimates.
+> **Current evidence (Edition 01):** **21** reviewed national 2024 MEPS Long COVID estimates across 3 populated domains (13 economic/healthcare, 4 administrative, 4 mental-health; Work & Function stays explicitly missing) · **34** reviewed West Virginia state-level HRSA + ACS indicators (no county-level data) · **2** descriptive Typical Ranges · **1** specialized documentation-linked secondary indicator (`Candidate A`, kept strictly separate on `/burden/medical`). These are separate evidence layers: local context never rescales national burden, and Typical Ranges are not intervention-effect estimates.
 
-![Diagnostic Odyssey: evidence roles remain distinct in a traceable planning workspace](docs/audit-2026-10-16/screenshots/after-overview-light.png)
+<div align="center">
 
-<details>
-<summary>See the workspace in dark mode</summary>
+![Diagnostic Odyssey — Strategic Atlas Edition 01 preview: Long COVID goes beyond the bill](apps/web/public/og-image.png)
 
-![Diagnostic Odyssey in dark mode](docs/audit-2026-10-16/screenshots/after-overview-dark.png)
+<p><sub>Strategic Atlas Edition 01 share card rendered deterministically from <a href="scripts/og/render-og-image.mjs">scripts/og/render-og-image.mjs</a>. Historical pre-consolidation screenshots remain archived under <a href="docs/audit-2026-10-16/README.md">docs/audit-2026-10-16</a>.</sub></p>
 
-</details>
+</div>
 
 ## Why this exists
 
@@ -53,6 +56,18 @@ Complex-condition planning often fails at the handoff between evidence and actio
 
 The product is designed to help a team move from **“how large is the problem?”** to **“what could we test next?”** without turning assumptions into facts.
 
+## Design & brand (Strategic Atlas)
+
+The workspace uses the consolidated **Strategic Atlas** design system across light, dark, and print media:
+
+- **Brand identity:** An astrolabe vector mark ([`diagnostic-odyssey-mark.svg`](apps/web/public/diagnostic-odyssey-mark.svg), [`diagnostic-odyssey-icon.png`](apps/web/public/diagnostic-odyssey-icon.png)) paired with the [`diagnostic-odyssey-horizontal.png`](apps/web/public/diagnostic-odyssey-horizontal.png) lockup and deterministic non-numeric [`og-image.png`](apps/web/public/og-image.png).
+- **Cool-neutral & cobalt/violet palette:** Light porcelain canvas (`#F5F7FC`) and midnight navy ink (`#101B32`) paired with cobalt primary actions (`#3157D5`), evidence blue (`#2457A6`), and iris violet journey/assumption accents (`#7154D8`), plus an obsidian dark mode (`#0B1119` canvas, `#131C27` surface, `#91AAFF` accent, `#B8A5FF` journey/focus). Warm earth tones, terracotta, sage, teal, and dark green are excluded; green (`#0B6E38` light / `#4ADE80` dark / `#1ED760` dot) is reserved narrowly for positive statuses.
+- **Self-hosted editorial typography:** `Newsreader Variable` for display headlines, `Plus Jakarta Sans Variable` for body copy and controls, and `IBM Plex Mono` for data/kickers with global `tabular-nums` and zero external font requests under strict CSP ([`vercel.json`](apps/web/vercel.json), [`theme-init.js`](apps/web/public/theme-init.js)).
+- **7-role semantic grammar ("Grammar of Honesty"):** Reviewed evidence (solid evidence blue), local access context (slate-blue double-line border), pilot assumptions (45° diagonal hatching in iris violet), information gaps / optional data requests (dashed neutral border), warnings (plum), errors / capacity gaps (rose + hatching), and Strategy AI Studio (indigo dotted pill) always pair color with explicit labels and WCAG 2.1 AA contrast.
+- **Six-chapter *Atlas Unfolded* landing & Edition 01 shell:** Opens with the porcelain *Care Horizon* artwork, sticky *Evidence Architecture* strata, inset Midnight Navy *From data to action* cartographic pathway, separated National/West Virginia lenses, live deterministic *Strategy Sandbox*, governed AI handoff preview, Planning Brief finale, and the header **Edition 01** Coverage & Roadmap drawer.
+
+See the complete specification in [Design and motion](docs/design-and-motion.md).
+
 ## At a glance
 
 <table>
@@ -61,22 +76,22 @@ The product is designed to help a team move from **“how large is the problem?�
 
 ### Evidence you can inspect
 
-- Reviewed national MEPS burden estimates
-- Comparable confidence intervals where units and universes permit
-- Reviewed West Virginia HRSA + 2024 ACS context
-- Explicit release and admissibility states
-- Provenance-aware planning artifacts
+- Reviewed national MEPS burden estimates across `Focus` and `Overview` modes
+- Comparable confidence intervals and descriptive Typical Ranges where universes permit
+- Filterable 34-indicator statewide West Virginia HRSA + 2024 ACS constraint matrix with split provenance inspector and `DetailDrawer`
+- Explicit release, admissibility, and Edition 01 coverage-roadmap states
+- Provenance-aware planning artifacts and detached JSON/print metadata
 
 </td>
 <td width="50%" valign="top">
 
 ### Decisions you can stress-test
 
-- Deterministic reach and capacity scenarios
-- Person-month exposure and program resources
-- One-way sensitivity for reach, capacity, and recognition window
-- Structured data-request handoff
-- JSON export and browser print / save-PDF
+- Landing *Strategy Sandbox* and `03 Strategy Lab` presets (*Focused Clinic Pilot*, *Regional Navigation Program*, *High-Demand Stress Test*)
+- Synchronized sliders, parameter bounds, deterministic *Compare Strategies* table, and rule-based Decision Inspector
+- One-way sensitivity explorer with a deterministic *Capacity sufficiency threshold* curve
+- Structured data-request handoff with **Known / Assumed / Unknown** framing
+- `Known · Assumed · Unknown` Planning Brief executive memo, canonical JSON export, and browser print / save-PDF
 
 </td>
 </tr>
@@ -85,64 +100,63 @@ The product is designed to help a team move from **“how large is the problem?�
 ## The workflow
 
 ```text
-┌──────────┐     ┌────────┐     ┌───────────────┐     ┌─────────────┐
-│ Overview │ ──▶ │ Burden │ ──▶ │ Local Context │ ──▶ │ Pilot       │
-└──────────┘     └────────┘     └───────────────┘     │ Planner     │
-                                                      └──────┬──────┘
-                                                             │
-                              ┌──────────────────────────────┼────────────────┐
-                              ▼                              ▼                ▼
-                       ┌──────────────┐              ┌──────────────┐  ┌──────────┐
-                       │ Data Requests│ ────────────▶ │ Planning     │  │ Evidence │
-                       │ (opt-in)     │              │ Brief        │  │ review   │
-                       └──────────────┘              └──────────────┘  └──────────┘
+┌──────────┐     ┌───────────┐     ┌──────────────────┐     ┌──────────────────┐     ┌───────────────────┐
+│ Overview │ ──▶ │ 01 Burden │ ──▶ │ 02 Local context │ ──▶ │ 03 Strategy Lab  │ ──▶ │ 04 Planning Brief │
+└──────────┘     └─────┬─────┘     └──────────────────┘     └────────┬─────────┘     └─────────┬─────────┘
+                       │                                             │                           │
+                       ▼                                             ┆ (optional)                ▼
+                 ┌───────────┐                               ┌───────────────┐          ┌────────────────────┐
+                 │ Evidence  │                               │ Data requests │ ────────▶│ Strategy AI Studio │
+                 │  limits   │                               └───────────────┘          │ (optional/manual)  │
+                 └───────────┘                                                          └────────────────────┘
 ```
 
 ### Working vertical slice
 
 **01 Burden → 02 Local context → 03 Strategy Lab → 04 Planning Brief** (with optional **Data requests**)
 
-1. **01 Burden** — inspect domains (economic/healthcare, administrative time, mental/human; Work & Function stays explicitly missing), native units, release state, and reviewed intervals.
-2. **02 Local context** — review the 34 statewide West Virginia HRSA and ACS indicators (no county-level data).
-3. **03 Strategy Lab** — set assumptions, inspect decision visuals, and run one-way sensitivity.
+1. **01 Burden** — inspect domains (economic/healthcare, administrative time, mental/human; Work & Function stays explicitly missing), native units, release state, and reviewed intervals in `Focus` or `Overview` mode with a split/drawer provenance inspector.
+2. **02 Local context** — review the 34 statewide West Virginia HRSA and ACS indicators (no county-level data), filter by category, attach an indicator to Strategy Lab, or include records in the Brief.
+3. **03 Strategy Lab** — choose a preset or set eight planning assumptions, review container-queried decision visuals and the rule-based Decision Inspector, compare scenarios deterministically in *Compare Strategies*, and run one-way sensitivity plus the capacity sufficiency threshold curve.
 4. **Data requests (optional companion)** — turn sensitivity or capacity gaps into a structured request; new requests start included for the Brief (deselectable before export) and export only when current for the applied scenario.
-5. **04 Planning Brief** — review the assembled artifact and export its canonical JSON companion or a PDF.
+5. **04 Planning Brief** — review the **Known · Assumed · Unknown** executive memo, assembled full report, optional deterministic *Planning Insights*, and export the canonical JSON companion or a print/PDF.
 
-Sensitivity testing is assumption testing, not evidence-derived effect estimation.
+Sensitivity testing and scenario comparison are deterministic assumption testing, not evidence-derived effect estimation.
 
-## Planning intelligence: three distinct tools
+## Planning intelligence & Strategy AI Studio
 
-The integrated experience from [#110](https://github.com/Ianyliu/diagnostic-odyssey/pull/110) and [#112](https://github.com/Ianyliu/diagnostic-odyssey/pull/112) preserves the same canonical Brief across all three tools.
+Diagnostic Odyssey separates deterministic summaries, user-operated prompt handoffs, illustrative exploratory views, and isolated Preview-only Gemini operator testing across the same canonical `PlanningBrief`:
 
-| Tool | Implemented behavior | Boundary |
+| Surface | Implemented behavior | Boundary |
 | --- | --- | --- |
-| **Planning Insights** | Deterministic summaries of the current Brief, readiness, gaps and traceable planning implications; an opt-in printed summary | No model inference, forecasts or causal estimates |
-| **Analyze with AI** | Six analysis goals; preview, copy or download a complete Markdown handoff with canonical JSON; changed choices require explicit regeneration | The user transfers it to their own AI tool. The app calls no provider and consumes no tokens |
-| **Future AI concept** | Four interactive demonstrations: explain a Brief, explore interventions, identify gaps and compare strategies | Illustrative, scientifically unadmitted content. Previewed capabilities are not implemented live research or inference |
+| **Planning Insights** | Deterministic summaries of the current Brief, readiness, gaps, and traceable planning implications; opt-in print summary | No model inference, forecasts, or causal estimates |
+| **Prompt Studio & Analyze with AI** | Six analysis goals with complete v1 and opt-in concise goal-focused Markdown previews plus canonical JSON companion download (`Analyze with AI` modal on Brief or inline in Strategy AI Studio); changed inputs require explicit regeneration | User-operated handoff only; public builds call no provider and consume no tokens |
+| **Illustrative exploration** | Four non-admitted interactive lenses inside **Strategy AI Studio** (`/advisor`, `/concept/future-ai`): explain a Brief, explore interventions, identify gaps, and compare strategies | Illustrative, scientifically unadmitted content; never admits evidence or mutates analyst state |
+| **Authenticated preview guidance** | Protected `VERCEL_ENV=preview` operator lane (`POST /api/ai-guidance`) using bearer token, signed HMAC challenge (`AI_CHALLENGE_SECRET`), same-origin `Origin`, and Redis/KV rate & replay guards | Available only on authenticated Vercel Previews when enabled; returns `404` in public production (`/api/ai-preview` is permanently retired `404`) |
 
-When the concept is available, visitors can use **Show future AI concept** on the Brief or **Hide future AI concept** inside it. Hiding it preserves analyst state. Demonstrations never admit evidence or automatically change data requests.
+When Strategy AI Studio is enabled in the build, visitors can toggle **Show Strategy AI Studio** on the Planning Brief or select **Hide studio** inside the studio (preserving analyst state) and access it via the header `AI` pill or `/advisor` (`/concept/future-ai`).
 
 ### Build-time availability
 
-Both optional surfaces are available unless their flag is exactly `off`. The user-operated AI handoff remains available in every combination.
+Optional public surfaces are enabled unless their build flag is set to `off`. On-site Gemini preview guidance never ships in production builds (`VERCEL_ENV=preview` is required alongside `AI_PREVIEW_ENABLED=on` and `AI_GUIDANCE_ENABLED=on`).
 
 | Build variable | Unset / `on` | `off` |
 | --- | --- | --- |
 | `VITE_PLANNING_INSIGHTS_PREVIEW` | Deterministic Insights and opt-in print summary | Insights hidden |
-| `VITE_FUTURE_AI_EXPERIENCE_DEMO` | Concept route and visitor visibility controls | Concept chunk excluded; route returns to Brief |
+| `VITE_FUTURE_AI_EXPERIENCE_DEMO` | Strategy AI Studio routes (`/advisor`, `/concept/future-ai`) and visitor controls | Studio chunk excluded; routes return to Brief |
 
 ```bash
-# Example: build only the core workflow and user-operated handoff
+# Example: build only the core workflow and modal Analyze with AI handoff
 VITE_PLANNING_INSIGHTS_PREVIEW=off VITE_FUTURE_AI_EXPERIENCE_DEMO=off npm run build
 ```
 
-These public Vite flags are baked into the build; they are not secrets or live-AI switches. Building locally does not deploy anything. Hosting configuration and production release require separate review.
+These `VITE_*` flags are public build-time switches baked into static assets; they are not secrets. See [Gemini preview setup](docs/gemini-preview-setup.md) and [Stage 2 Preview operator acceptance](docs/operations/stage2-gemini-reviewed-preview.md) for the Preview-only server configuration.
 
 ## Quick start
 
 ### Run locally
 
-**Runtime:** Node.js **22** is the tested development/CI baseline (`engines` permits newer versions). R and Python are not needed to view the app.
+**Runtime:** Node.js **22.23.3** (pinned in [`.nvmrc`](.nvmrc)) is the tested development/CI baseline (`engines` permits `>=22`). R and Python are not needed to view the app.
 
 ```bash
 npm ci
@@ -153,22 +167,22 @@ Open the local URL printed by Vite, usually [`http://localhost:5173`](http://loc
 
 ### Run the checks
 
-The full unit suite includes Python-backed JSON Schema agreement tests. Install Python 3 and activate a virtual environment so `python3` resolves to it:
+The full unit suite includes Python-backed JSON Schema agreement tests. Install Python 3 and activate a virtual environment so `python3` resolves to it. Test commands never install packages themselves; the pinned dependency lives in [`requirements-test.txt`](requirements-test.txt):
 
 ```bash
 python3 -m venv .venv
 . .venv/bin/activate
-python3 -m pip install jsonschema==4.26.0
+python3 -m pip install -r requirements-test.txt
 ```
 
 ```bash
-npm run typecheck
-npm test
-npm run lint
-npm run build
+npm run check        # fast local gate (see below)
+npm run check:full   # adds Python unit tests, synthetic R tests and repeated-build byte stability
 ```
 
-These commands cover TypeScript, the complete unit suite, ESLint and the production build. Schema subprocesses have a 15-second bound and report executable, timeout, exit and stderr diagnostics; a missing Python dependency is a failure, not a skipped test. Browser acceptance is separate: see [testing instructions](docs/testing.md) and the [audit verification matrix](docs/audit-2026-10-16/verification.md).
+`npm run check` runs `typecheck` (all workspaces, the `apps/web` browser/server/test projects, and repository tooling), `lint` (zero warnings), `test` (all workspace unit tests), `test:tools`, `test:characterization` (exact equivalence with the recorded pre-refactor baseline), `verify:artifacts` (reviewed artifacts against an explicit checksum inventory), `verify:docs` (relative links and anchors in maintained docs) and `build`. `check:full` additionally runs `test:py`, `test:r` (needs R with `haven`, `jsonlite`, `survey`, `testthat`) and `verify:build`. Browser suites, the offline Vercel build check (`scripts/verify/vercel-function-build.sh`) and `npm run test:offline` (suite with outbound networking denied) are separate; see [Contributing](CONTRIBUTING.md#what-npm-run-check-covers) and [Testing](docs/testing.md). `npm run test:coverage` is informational only.
+
+The individual commands are `npm run typecheck`, `npm test`, `npm run lint` and `npm run build`. Together with the above they cover TypeScript, the complete unit suite (including WCAG 2.1 AA token contrast, Strategic Atlas layout/inventory, and CSP header contracts), ESLint, and the production Vite build (which runs `prebuild` to verify/regenerate `apps/web/public/og-image.png`). Schema subprocesses have a 15-second bound and report executable, timeout, exit, and stderr diagnostics; a missing Python dependency is a failure, not a skipped test. Browser acceptance is separate: see [testing instructions](docs/testing.md) and [browser tests](tests/browser/README.md).
 
 ### Use the dev container
 
@@ -197,7 +211,7 @@ Rscript analysis/r/install_dependencies.R
 Rscript analysis/r/meps/run_meps_2024.R --download
 ```
 
-Before running it, read [Data and analytical inputs](#data-and-analytical-inputs), [data/README.md](data/README.md), and [the source manifest](data/manifests/sources.json).
+Before running it, read [Data and working agreements](#data-and-working-agreements), [data/README.md](data/README.md), and [the source manifest](data/manifests/sources.json).
 
 For maintenance or future regeneration, use the manual GitHub Actions workflow:
 
@@ -207,22 +221,17 @@ The workflow generates a **preliminary** candidate and uploads aggregate review 
 
 ## What is working
 
-- Reviewed national 2024 MEPS HC-256 Long COVID artifact with **21 \`reviewed_released\` estimates** across 3 populated domains (13 economic/healthcare, 4 administrative, 4 mental-health; Work & Function stays explicitly missing).
+- Reviewed national 2024 MEPS HC-256 Long COVID artifact with **21 `reviewed_released` estimates** across 3 populated domains (13 economic/healthcare, 4 administrative, 4 mental-health; Work & Function stays explicitly missing) and **2** descriptive Typical Ranges.
 - Survey-aware MEPS analysis with reviewed variable maps, cohort construction, weight-specific survey designs, candidate generation, methods review, and promotion gates.
-- Reviewed West Virginia **state-level** HRSA + 2024 ACS implementation context with fail-closed runtime validation.
-- React + TypeScript + Vite application shell and major product routes.
-- Versioned fixture loading, typed scientific contracts, and runtime validators.
-- Deterministic scenario engine for reach, capacity, person-month exposure, and program-resource calculations.
-- Capacity coverage/gap, recognition-window, and fixed-versus-participant-dependent resource visuals.
-- Deterministic one-way sensitivity explorer with an accessible table alternative.
-- Sensitivity-to-data-request handoff with explicit analyst opt-in and stale-request protection.
-- Decision-state rail, reviewed confidence-interval visualization, and rural-status composition visualization.
-- Planning Brief assembly, JSON companion export, and browser print / save-PDF path.
-- Export filtering that excludes illustrative and unreleased estimates from released findings.
-- Deterministic evidence admissibility gates and a Long COVID reference condition adapter.
-- Coordinated opening/interaction motion, reduced-motion support, light/dark themes, keyboard navigation and responsive layouts.
-- Deterministic Planning Insights, user-operated AI handoff and visitor-controlled Future AI demonstrations.
-- GitHub Actions CI and production-browser regression suites.
+- Reviewed West Virginia **state-level** HRSA + 2024 ACS implementation context (**34** indicators) with fail-closed runtime validation and specialized linked-condition `Candidate A` presentation on `/burden/medical`.
+- Consolidated **Strategic Atlas (Edition 01)** React + TypeScript + Vite shell: astrolabe brand marks, cool porcelain/obsidian & cobalt/violet token system, self-hosted fonts (`Newsreader Variable`, `Plus Jakarta Sans Variable`, `IBM Plex Mono`), strict CSP (`apps/web/vercel.json` + `/theme-init.js`), and WCAG 2.1 AA contrast tests.
+- Six-chapter *Atlas Unfolded* landing experience (`Care Horizon`, sticky *Evidence Architecture* strata, sweeping 1024×380 *From data to action* pathway, separated lenses, live deterministic *Strategy Sandbox*, and governed AI demo) with independent reduced-motion and interruptible choreography.
+- `01 Burden` and `02 Local context` ledgers with `Focus`/`Overview` presentation modes, split provenance inspector, accessible `DetailDrawer`, `EditionDrawer` coverage roadmap, and explicit **Use in Strategy Lab** selection.
+- `03 Strategy Lab` split studio with 3 presets, synchronized sliders, container-queried decision visuals, rule-based contextual Decision Inspector, deterministic *Compare Strategies* table, one-way sensitivity explorer, and *Capacity sufficiency threshold* curve.
+- `Data requests` companion with **Known / Assumed / Unknown** epistemic strip, exact applied inputs, owner confirmation checklist, explicit analyst opt-in, and stale-request protection.
+- `04 Planning Brief` with always-visible **Known · Assumed · Unknown** executive decision memo, opt-in local-context print appendix, canonical JSON companion export, and browser print / save-PDF path.
+- Deterministic *Planning Insights*, user-operated *Prompt Studio / Analyze with AI*, illustrative four-lens exploration in *Strategy AI Studio*, and hardened Preview-only `/api/ai-guidance` (disabled in public production).
+- GitHub Actions CI and production-browser, accessibility, opening-circuit, security-header, and fail-closed PDF/JSON regression suites.
 
 ## What is intentionally incomplete
 
@@ -230,12 +239,11 @@ The following boundaries are explicit rather than silently implied:
 
 - Reviewed county-level context, county HRSA/ACS aggregation, topology, and the Implementation Decision Map.
 - PLACES/CMS local-context ingestion.
-- Reviewed external literature ledger and source extraction workflow.
-- Evidence-backed bounded scenario parameters.
-- Publication-grade, tagged accessible PDFs beyond browser print; richer provenance interaction.
-- ME/CFS analytical estimates.
-- Broader assistive-technology and cross-browser certification.
-- Embedded grounded AI, autonomous literature acquisition, and provider integrations. No live AI service is implemented or required.
+- Reviewed external literature ledger (`narrative-references` and `acquisition-hints` release allowlists remain empty in production) and evidence-backed bounded scenario parameters.
+- Publication-grade, tagged accessible PDFs beyond browser print; saved/versioned multi-scenario comparison storage.
+- ME/CFS analytical estimates (`Partial compatibility` roadmap module only; no Long COVID borrowing).
+- Broader assistive-technology and cross-browser certification beyond Chromium/axe automated suites.
+- Public live AI inference and autonomous literature retrieval (zero live AI runs in public production builds; `/api/ai-guidance` is restricted to isolated authenticated Vercel Previews).
 
 The checked-in artifact under `artifacts/examples/fixture-2026-09-v1/` is **illustrative development/test data only** and is deliberately barred from analytical export.
 
@@ -258,47 +266,59 @@ Diagnostic Odyssey preserves these distinctions:
 
 Read the full [scientific guardrails](docs/scientific-guardrails.md) before interpreting or extending the analytical workflow.
 
-## Visual QA
+## Visual QA & design documentation
 
-See the [current audit and before/after gallery](docs/audit-2026-10-16/README.md) for exact revisions, commands, results and limitations. Earlier QA records apply to their recorded revisions, not every later change.
+- [Design and motion](docs/design-and-motion.md) — Strategic Atlas brand identity, light/dark/print tokens, 7-role semantic grammar, typography, layout conventions, and motion contract.
+- [Testing and validation strategy](docs/testing.md) — unit, WCAG contrast, opening-circuit, guided-workspace, security-header, and Workstream H PDF/JSON verification.
+- [Strategic Atlas consolidation handoff](docs/design-experiments/strategic-atlas-consolidation-20261123.md) — consolidation architecture merged in PR #150.
+- [October 16, 2026 audit & screenshots](docs/audit-2026-10-16/README.md) — historical pre-Strategic Atlas QA archive (applies to its recorded revision only).
 
 ## Repository map
 
 ```text
 apps/
-  web/                       React/Vite product shell and routes
+  web/                       React/Vite Strategic Atlas shell, routes, and brand assets
+    api/                     Vercel serverless handlers (Preview-only ai-guidance; retired 404 ai-preview)
 packages/
   contracts/                 canonical types + runtime validators
   scenario-engine/           pure deterministic scenario calculations
   evidence-core/             reviewer/admissibility gates
   brief-core/                planning brief assembly + export filtering
   condition-adapters/        condition reuse boundary
-  acquisition-hints/         governed acquisition guidance
-  planning-guidance/         deterministic planning contracts
+  acquisition-hints/         governed acquisition guidance contracts
+  planning-guidance/         deterministic planning-guidance contracts
   narrative-references/      reviewed-reference contracts and provenance
-  ui/                        design tokens
+  ui/                        Strategic Atlas design tokens (light/dark/print CSS variables)
+  (each package has its own README with purpose, public API and how to test)
 analysis/
   r/                         offline survey-analysis entry points
   local_context/             HRSA + ACS candidate pipeline/config/tests
 pipelines/
-  data/                       source acquisition helpers/boundaries
-  evidence/                   evidence ingestion/review foundation
+  data/                      source acquisition helpers/boundaries
+  evidence/                  evidence ingestion/review foundation
 conditions/
-  long-covid/                 reference implementation notes
-  mecfs/                      compatibility proof notes
+  long-covid/                Edition 01 reference implementation notes
+  mecfs/                     partial compatibility notes
 data/
   manifests/                 checked-in source inventory
-  raw/                        local only; gitignored
-  intermediate/               local only; gitignored
-  derived/                    local only; gitignored
+  raw/                       local only; gitignored
+  intermediate/              local only; gitignored
+  derived/                   local only; gitignored
 artifacts/
-  reviewed/                   promoted aggregate artifacts used by runtime
-  examples/                   illustrative development/test fixtures only
-docs/
-  architecture.md
-  implementation-plan.md
-  scientific-guardrails.md
-  testing.md
+  reviewed/                  promoted aggregate artifacts used by runtime
+  examples/                  illustrative development/test fixtures only
+docs/                        documentation index, design spec, architecture, methods, and QA archives
+scripts/
+  og/                        deterministic non-numeric og-image.png renderer
+  maintenance/               governed regression snapshot/comparison tools
+  verify/                    reviewed-artifact inventory check, doc link check, offline runner, Vercel build check
+  testing/                   Python validator runner used by workspace tests
+tests/
+  browser/                   Playwright + axe + PDF browser acceptance suites (incl. pilot-parity.mjs)
+  characterization/          exact-equivalence goldens for scientific, API and endpoint behavior
+  unit/                      tests of repository tooling
+.github/
+  workflows/ actions/        CI workflows and the local setup-workspace composite action
 ```
 
 ## Data and working agreements
@@ -313,14 +333,21 @@ Do not commit raw public-use microdata, large intermediate files, or large gener
 
 ## Documentation
 
+Browse the full [documentation index](docs/README.md) or jump directly to:
+
 | Guide | What it covers |
 | --- | --- |
-| [Architecture](docs/architecture.md) | Package boundaries and runtime flow |
-| [Implementation plan](docs/implementation-plan.md) | Planned product and analytical work |
+| [Design and motion](docs/design-and-motion.md) | Strategic Atlas palette, typography, brand assets, semantic grammar, and motion |
+| [Architecture](docs/architecture.md) | Package boundaries, routing, CSP shell, and runtime flow |
 | [Scientific guardrails](docs/scientific-guardrails.md) | Interpretation and release constraints |
-| [Testing](docs/testing.md) | Test strategy and validation boundaries |
+| [Testing](docs/testing.md) | Unit, contrast, browser, PDF, and security validation |
+| [Capability status](docs/capability-status.md) | Production vs Preview-only vs illustrative vs candidate-only vs not implemented |
+| [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md) | Setup, what `npm run check` covers, hard rules; reporting and security scope |
+| [CI workflows](docs/operations/ci-workflows.md) · [ADRs](docs/adr/README.md) | Workflow matrix, pins, required-check compatibility; engineering decisions |
+| [Implementation plan](docs/implementation-plan.md) | Delivery phases and current Edition 01 status |
 | [MEPS Long COVID methods](docs/methods/meps-2024-long-covid.md) | Analytical method notes |
+| [Gemini Preview setup](docs/gemini-preview-setup.md) | Retired `/api/ai-preview` and Preview-only `/api/ai-guidance` overview |
 
 ## AI boundary
 
-There is **no embedded AI inference**, external provider request, API key or model-token consumption. The concept is an illustrative preview; the Markdown handoff is explicitly user-operated. Any future service must preserve deterministic arithmetic, human evidence admission and export eligibility gates. Literature demonstrations are not admitted reviewed evidence.
+Public production builds contain **zero embedded AI inference**, external provider calls, API keys, or token consumption: *Prompt Studio* (`Analyze with AI`) prepares a frozen, user-operated Markdown/JSON handoff locally, and *Illustrative exploration* displays clearly labeled unadmitted concept views. The authenticated `/api/ai-guidance` endpoint is active **only** in protected `VERCEL_ENV=preview` deployments with explicit operator credentials and fails closed (`404`) in public production; `/api/ai-preview` is permanently retired (`404`). Any future production AI capability must preserve deterministic arithmetic, human evidence admission, and export eligibility gates.

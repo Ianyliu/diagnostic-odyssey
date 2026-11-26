@@ -45,7 +45,7 @@ Current dependency: the reviewed runtime intervention-effect evidence ledger is 
 
 Only **explicitly selected local-context records** may enter the trace.
 
-The trace should eventually show:
+The trace shows:
 1. released observed burden;
 2. analyst-selected reviewed local constraint;
 3. target pathway step;
@@ -53,11 +53,11 @@ The trace should eventually show:
 5. measurement/data request needed;
 6. strongest supported claim boundary, when reviewed evidence exists.
 
-Current dependency: PR #10 implements explicit Local Context → Planning Brief selection, but Local Context → Pilot handoff remains a separate product interaction. Do not infer a constraint merely because it is present in the local-context artifact.
+Current status: Local Context → Strategy Lab handoff is implemented via explicit **Use in Strategy Lab** selection (attaches context for interpretation and Decision Trace display without altering numeric scenario arithmetic), separately from **Include in Brief** checkbox selection. Do not infer a constraint merely because it is present in the local-context artifact.
 
 ### Scenario comparison
 
-Keep this deferred until the application has an explicit scenario save/version/restore contract. Comparison should be limited to 2–3 analyst-saved scenarios and remain descriptive; do not rank or declare a “best” scenario.
+Descriptive deterministic comparison across the three Strategy Lab presets and current active inputs is implemented in **Compare Strategies** (`apps/web/src/data/scenarioComparison.ts`) via the canonical engine; saved multi-scenario version/restore remains deferred. Comparison remains strictly descriptive; do not rank or declare a “best” scenario.
 
 ## General admission rule
 

@@ -1,6 +1,8 @@
 # Strategic Atlas — production replacement candidate
 
-**State: IMPLEMENTATION STARTED / NOT RELEASE QUALIFIED.** Owner feedback November 23, 2026: consolidate the seven design experiments; reject terracotta, earth tones, dark green, teal and sage; retain functional behavior; put the animated burden-to-brief journey in the first viewport, not below a scroll. The branch is not a disposable mockup. Do not merge or promote until release acceptance is met.
+> **Merged status:** Strategic Atlas consolidation and production qualification completed and merged into `main` via PR #150 (`5b81f5f`). See [Design and motion](../design-and-motion.md) for the living Strategic Atlas brand, token, and motion specification. The consolidation brief below is preserved as the historical record.
+
+**Historical state at authoring (2026-11-23): IMPLEMENTATION STARTED / NOT RELEASE QUALIFIED.** Owner feedback November 23, 2026: consolidate the seven design experiments; reject terracotta, earth tones, dark green, teal and sage; retain functional behavior; put the animated burden-to-brief journey in the first viewport, not below a scroll. The branch is not a disposable mockup. Do not merge or promote until release acceptance is met.
 
 ## Source pins and integration map
 

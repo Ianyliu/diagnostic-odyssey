@@ -48,7 +48,7 @@ test("sensitivity bar widths stay finite, non-negative, and bounded", () => {
   assert.equal(getSensitivityBarWidth(20, 10), 100);
   for (const [output, maxOutput] of [
     [Number.NaN, 10], [5, Number.NaN], [Infinity, 10], [5, Infinity], [-Infinity, 10]
-  ]) {
+  ] as const) {
     assert.throws(() => getSensitivityBarWidth(output, maxOutput), /non-finite sensitivity result/);
   }
 
@@ -58,7 +58,7 @@ test("sensitivity bar widths stay finite, non-negative, and bounded", () => {
     [0, 10],
     [5, 10],
     [10, 10]
-  ]) {
+  ] as const) {
     const width = getSensitivityBarWidth(output, maxOutput);
     const cssWidth = `${width}%`;
     assert.doesNotMatch(cssWidth, /NaN%|Infinity%|-Infinity%/);

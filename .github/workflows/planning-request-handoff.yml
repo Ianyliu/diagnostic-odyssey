@@ -11,16 +11,25 @@ on:
       - "tests/browser/planning-request-*"
       - "tests/browser/compare-planning-request-exports.py"
       - ".github/workflows/planning-request-handoff.yml"
+      - "package-lock.json"
+      - ".github/actions/setup-workspace/**"
+      - ".nvmrc"
 
 permissions:
   contents: read
+
+concurrency:
+  # Pull requests share one group per PR, so a newer push supersedes older runs. Every other event
+  # (push to main, workflow_dispatch) gets a unique group per run, so no pending run is ever dropped.
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || format('run-{0}', github.run_id) }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   analyst-journey:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
@@ -28,10 +37,7 @@ jobs:
         env:
           EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}
         run: test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
-        with:
-          node-version: 22
-      - run: npm ci --no-audit --no-fund
+      - uses: ./.github/actions/setup-workspace
       - run: npm run build
       - name: Build isolated PR-base application
         env:
@@ -70,7 +76,7 @@ jobs:
           python3 tests/browser/compare-planning-request-exports.py /tmp/planning-request-evidence/base /tmp/planning-request-evidence/head /tmp/planning-request-evidence/export-comparison.json
       - name: Retain screenshots, axe, JSON, PDF and comparison evidence
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: planning-request-handoff-${{ github.event.pull_request.head.sha }}
           path: |

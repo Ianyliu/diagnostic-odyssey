@@ -13,23 +13,28 @@ on:
       - "tests/browser/workspace-helpers.mjs"
       - "tests/browser/verify-guided-pdf.py"
       - ".github/workflows/workspace-interactions.yml"
+      - ".github/actions/setup-workspace/**"
+      - ".nvmrc"
   workflow_dispatch:
 
 permissions:
   contents: read
+
+concurrency:
+  # Pull requests share one group per PR, so a newer push supersedes older runs. Every other event
+  # (push to main, workflow_dispatch) gets a unique group per run, so no pending run is ever dropped.
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || format('run-{0}', github.run_id) }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   workspace:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
-        with:
-          node-version: 22
-      - run: npm ci --no-audit --no-fund
+      - uses: ./.github/actions/setup-workspace
       - run: npm run build
       - name: Install isolated browser runner
         run: npm install --prefix /tmp/workspace-browser --save-exact --no-audit --no-fund playwright@1.64.0
@@ -54,7 +59,7 @@ jobs:
           python3 tests/browser/verify-guided-pdf.py /tmp/workspace-regressions/guided-workspace
       - name: Upload regression evidence
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: workspace-interactions-${{ github.event.pull_request.head.sha || github.sha }}
           path: |

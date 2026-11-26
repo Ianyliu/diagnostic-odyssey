@@ -9,10 +9,20 @@ on:
       - "tests/browser/workstream_h_inventory.py"
       - "tests/browser/test_workstream_h_inventory.py"
       - ".github/workflows/workstream-h-qa.yml"
+      - "packages/**"
+      - "package-lock.json"
+      - ".github/actions/setup-workspace/**"
+      - ".nvmrc"
   workflow_dispatch:
 
 permissions:
   contents: read
+
+concurrency:
+  # Pull requests share one group per PR, so a newer push supersedes older runs. Every other event
+  # (push to main, workflow_dispatch) gets a unique group per run, so no pending run is ever dropped.
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || format('run-{0}', github.run_id) }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   combined-physical:
@@ -36,17 +46,14 @@ jobs:
             concept: "on"
     steps:
       - name: Checkout exact PR source
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - name: Verify exact integrated HEAD
         env:
           EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
-        with:
-          node-version: 22
-      - run: npm ci --no-audit --no-fund
+      - uses: ./.github/actions/setup-workspace
       - name: Build combined feature configuration
         env:
           VITE_PLANNING_INSIGHTS_PREVIEW: ${{ matrix.insights }}
@@ -82,7 +89,7 @@ jobs:
         run: python3 -m unittest discover -s tests/browser -p 'test_workstream_h_inventory.py' -v
       - name: Upload matrix, canonical JSON, native PDF, and page-boundary renders
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: workstream-h-${{ matrix.mode }}-${{ github.event.pull_request.head.sha || github.sha }}
           path: |

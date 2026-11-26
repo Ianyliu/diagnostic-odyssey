@@ -18,7 +18,7 @@ node tests/browser/acceptance.mjs
 
 Alternatively start Vite preview from `apps/web` with the root-installed binary:
 `../../node_modules/.bin/vite preview --host 127.0.0.1 --port 4175`.
-Set `QA_BASE_URL=https://diagnostic-odyssey.pages.dev` for the same live-site checks.
+Set `QA_BASE_URL=https://diagnostic-odyssey-psi.vercel.app` (or a preview URL; legacy static deploys used `https://diagnostic-odyssey.pages.dev`) for the same live-site checks.
 The suite visits pages and downloads client-generated files; it does not mutate
 server data or repository artifacts. Browser and localhost access may require the
 execution environment's normal approval.
@@ -35,11 +35,7 @@ tablet, and mobile layouts in both themes; an overflowing sensitivity range must
 show an error while preserving the valid applied scenario. Resource headlines
 for 1e308 and Number.MAX_VALUE must display their complete scientific tokens on
 one line within the heading bounds, and actual JSON must preserve both costs.
-Scientific numeric tokens in the Pilot result ledger and Brief assumption/output
-rows must also remain intact and within their rows. This includes maximum finite
-reached participants with zero windows and costs, so the applied result remains
-finite. This guards against a visually misleading exponent split even when the
-overall page has no horizontal overflow. Valid zeros,
+Scientific numeric tokens in the Strategy Lab (`/pilot`) result ledger and Brief assumption/output rows must also remain intact and within their rows. This includes maximum finite reached participants with zero windows and costs, so the applied result remains finite. This guards against a visually misleading exponent split even when the overall page has no horizontal overflow. Valid zeros,
 invalid drafts, explicit local-context/request selection, stale exclusion and
 refresh, history, focus, theme persistence, reduced motion, browser API failures,
 and disclosure restoration are exercised in Chrome.
@@ -52,13 +48,19 @@ validation; it does not claim a persistent loading paint or invent network fetch
 Both techniques assert their expected state, so a changed build shape fails
 visibly instead of silently skipping the check.
 
-Axe checks WCAG A/AA rules, including rendered contrast, across all 11 routes and
-both themes. Its `incomplete` results require human judgment. Automated label and
-keyboard checks are useful evidence but do not establish full screen-reader
-usability. The print test saves Chromium's PDF and simulates asynchronous
-`beforeprint`/`afterprint` notifications; review the resulting page images and
-perform a final native print-dialog smoke check before submission. Cold localhost
-navigation timings are diagnostic samples, not a mobile-network performance claim.
+Axe checks WCAG A/AA rules, including rendered contrast, across all core and Strategy AI Studio (`/advisor`, `/concept/future-ai`) routes and both themes. Its `incomplete` results require human judgment. Automated label and keyboard checks are useful evidence but do not establish full screen-reader usability. The print test saves Chromium's PDF and simulates asynchronous `beforeprint`/`afterprint` notifications; review the resulting page images and perform a final native print-dialog smoke check before submission. Cold localhost navigation timings are diagnostic samples, not a mobile-network performance claim.
+
+## Strategic Atlas browser suites
+
+| Suite | Coverage |
+| --- | --- |
+| `opening-circuit.mjs` | Chapter I *Care Horizon*, Chapter IV *From data to action* sweeping pathway geometry, no desktop/tablet label collisions, reduced motion, and interruption behavior |
+| `landing-evidence.mjs` | Live bundle fixture checks (reviewed, missing, preliminary, point-only) on landing strata |
+| `guided-workspace.mjs` | `01 Burden`–`04 Planning Brief` (`Strategy Lab`, `Data requests`, `EditionDrawer`), `Focus`/`Overview` disclosures, `og-image.png` metadata, and PDF verification via `verify-guided-pdf.py` |
+| `motion.mjs` | Opening autoplay, pointer/keyboard/wheel interruption, session suppression, deep links, and reduced motion |
+| `visual-quality.mjs` | Rendered burden topic groups, intact number/unit tokens, and zero horizontal overflow across 320/390/768/1440px in light and dark themes |
+| `security-headers.mjs` | Strict CSP, MIME types, `/theme-init.js`, and zero unintended network egress (behind `csp-preview-proxy.mjs` or on a Preview URL) |
+| `planning-request-handoff.mjs` | Sensitivity-to-data-request loop, stale exclusion, refresh, and mobile focus clearance |
 
 Use `QA_FILTER="accessibility|direct routes"` only for targeted debugging. A final acceptance run must omit the filter.
 

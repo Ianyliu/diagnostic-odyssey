@@ -1,0 +1,10 @@
+# CODEOWNERS is intentionally unpopulated.
+#
+# No code owners are listed because ownership of scientific, security and CI areas has not been decided by
+# the project owner, and identities must not be invented here. See docs/governance/open-items.md.
+#
+# When owners are decided, add rules such as:
+#   /artifacts/reviewed/        @<owner-or-team>
+#   /apps/web/api/              @<owner-or-team>
+#   /.github/                   @<owner-or-team>
+#   /packages/contracts/        @<owner-or-team>

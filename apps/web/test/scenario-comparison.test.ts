@@ -4,6 +4,19 @@ import { calculateScenario } from "@diagnostic-odyssey/scenario-engine";
 import { buildPlanningBrief, serializeBriefJson } from "@diagnostic-odyssey/brief-core";
 import { createPlanningScenarioDefaults, PILOT_STRATEGY_PRESETS } from "../src/data/planningScenarioDefaults.ts";
 import { buildScenarioComparisonRows } from "../src/data/scenarioComparison.ts";
+import type { AnalysisContext } from "@diagnostic-odyssey/contracts";
+
+/** Minimal, fully typed context; only used to compare two serializations of the same Brief. */
+const fixtureContext: AnalysisContext = {
+  condition_id: "long-covid",
+  cohort_id: "fixture-cohort",
+  age_range: "all ages",
+  evidence_year: 2024,
+  geography_scope: "United States",
+  local_context_id: null,
+  severity_filter: null,
+  artifact_version: "v1"
+};
 
 test("scenarioComparison computes canonical engine rows and identifies matching preset", () => {
   const defaults = createPlanningScenarioDefaults();
@@ -41,7 +54,7 @@ test("scenarioComparison fails closed without throwing on overflowing finite inp
   const baseline = createPlanningScenarioDefaults();
   const overflowed = { ...baseline, fixed_cost: Number.MAX_VALUE, per_participant_cost: Number.MAX_VALUE };
   const briefBefore = serializeBriefJson(buildPlanningBrief({
-    context: { national_artifact_version: "v1", local_context_id: null, notes: [] },
+    context: fixtureContext,
     estimates: [],
     localContext: [],
     scenario: { input: baseline, result: calculateScenario(baseline) },
@@ -55,7 +68,7 @@ test("scenarioComparison fails closed without throwing on overflowing finite inp
   assert.ok(rows[0]!.error);
 
   const briefAfter = serializeBriefJson(buildPlanningBrief({
-    context: { national_artifact_version: "v1", local_context_id: null, notes: [] },
+    context: fixtureContext,
     estimates: [],
     localContext: [],
     scenario: { input: baseline, result: calculateScenario(baseline) },

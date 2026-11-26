@@ -1,0 +1,37 @@
+# Dependency update PRs. Nothing here merges automatically: every update needs human review.
+# Minor/patch updates are grouped to limit noise; major updates (including runtimes and frameworks
+# such as React, Vite, TypeScript, Node typings) arrive as individual PRs for explicit review.
+# R packages (analysis/r/DESCRIPTION) are not covered by Dependabot and are reviewed manually.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: "/"            # root package.json + package-lock.json (npm workspaces)
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      npm-minor-and-patch:
+        update-types: ["minor", "patch"]
+    labels: ["dependencies"]
+
+  - package-ecosystem: github-actions
+    directories:
+      - "/"                   # .github/workflows
+      - "/.github/actions/*"  # local composite actions
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      actions-minor-and-patch:
+        update-types: ["minor", "patch"]
+    labels: ["dependencies", "ci"]
+
+  - package-ecosystem: pip
+    directory: "/"            # requirements-test.txt (pinned jsonschema)
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 3
+    labels: ["dependencies"]

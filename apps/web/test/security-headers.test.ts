@@ -88,7 +88,7 @@ test("bootstrap retains storage, system, light/dark and fallback behavior", () =
 test("fail closed on missing headers, policy weakening, and route gaps", () => {
   const mutate = (change: (copy: any, values: Map<string, any>) => void) => {
     const copy = structuredClone(config);
-    const map = new Map(copy.headers[0].headers.map((h: any) => [h.key,h]));
+    const map = new Map<string, any>(copy.headers[0].headers.map((h: any): [string, any] => [h.key,h]));
     change(copy, map);
     assert.throws(() => validate(copy));
   };

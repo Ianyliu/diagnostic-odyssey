@@ -89,15 +89,16 @@ test("offline synthetic planning-guidance binding remains valid without provider
    hints:[]
   }
  };
- const egress=projectEgress(input);
- const bound=bindCandidate(input,undefined,{
+ const authority={narrative:null,hints:null};
+ const egress=projectEgress(input,authority);
+ const bound=bindCandidate(input,authority,{
   schema_version:"pg.v1",
   snapshot_fingerprint:egress.snapshot_fingerprint,
   finding_ids:["finding_synthetic_1"],
   options:[],
   requests:[{template_id:"template_synthetic_1",gap_id:"gap_synthetic_1",hint_id:null}]
  },"synth_1","2026-10-25T15:00:00Z",egress.snapshot_fingerprint);
- assertOutput(bound,input);
+ assertOutput(bound,input,authority);
  assert.equal(bound.supported_findings[0]?.value,10);
  assert.equal(bound.sections.interventions,"insufficient_evidence");
  assert.equal(bound.draft_requests[0]?.disposition,"pending");

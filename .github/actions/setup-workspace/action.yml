@@ -1,0 +1,27 @@
+name: Set up workspace
+description: >-
+  Node.js (exact version from .nvmrc), a clean `npm ci`, and optionally the pinned Python test
+  dependencies from requirements-test.txt. Run it after actions/checkout.
+# Trust boundary: this is a local composite action, so it executes whatever is in the checked-out
+# commit. Use it only in unprivileged `pull_request`, `push` and `workflow_dispatch` workflows that
+# check out their own revision. Never use it from `pull_request_target` or `workflow_run` jobs, and
+# never pass secrets to a job that calls it on untrusted code.
+inputs:
+  python-test-dependencies:
+    description: Install requirements-test.txt (jsonschema) for the workspace tests that run Python validators.
+    required: false
+    default: "false"
+runs:
+  using: composite
+  steps:
+    - name: Set up Node.js from .nvmrc
+      uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+      with:
+        node-version-file: .nvmrc
+    - name: Install JavaScript dependencies
+      shell: bash
+      run: npm ci --no-audit --no-fund
+    - name: Install pinned Python test dependencies
+      if: inputs.python-test-dependencies == 'true'
+      shell: bash
+      run: python3 -m pip install --disable-pip-version-check -r requirements-test.txt

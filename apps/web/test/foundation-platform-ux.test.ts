@@ -7,6 +7,7 @@ import { calculateScenario } from "@diagnostic-odyssey/scenario-engine";
 import { COVERAGE_CATALOG } from "../src/data/coverageCatalog.ts";
 import { PILOT_STRATEGY_PRESETS, createPlanningScenarioDefaults } from "../src/data/planningScenarioDefaults.ts";
 import { workspaceStageForPath, workspaceStages } from "../src/data/workspaceNavigation.ts";
+import { pilotSourcePathsFromTests, readPilotSource } from "./helpers/pilotSource.ts";
 
 const readSource = (path: string) =>
   readFileSync(fileURLToPath(new URL(path, import.meta.url)), "utf8");
@@ -68,7 +69,7 @@ test("standardized navigation, Prompt Studio route, ThemeControl, and CSP-clean 
   assert.match(app, /path="concept\/future-ai"/);
   assert.match(app, /path="advisor"/);
 
-  const pilot = readSource("../src/pages/PilotPage.tsx");
+  const pilot = readPilotSource();
   for (const field of ["reach", "capacity", "alternative_window_months", "per_participant_cost"]) {
     assert.match(pilot, new RegExp(`key:\\s*"${field}"`));
   }
@@ -89,7 +90,7 @@ test("standardized navigation, Prompt Studio route, ThemeControl, and CSP-clean 
     "../src/pages/OverviewPage.tsx",
     "../src/pages/BurdenPage.tsx",
     "../src/pages/LocalContextPage.tsx",
-    "../src/pages/PilotPage.tsx",
+    ...pilotSourcePathsFromTests(),
     "../src/pages/DataRequestsPage.tsx",
     "../src/pages/BriefPage.tsx",
     "../src/concept/FutureAIExperiencePage.tsx"

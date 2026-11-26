@@ -1,5 +1,7 @@
 # Lovable-informed visual-language experiment (2026-11-11)
 
+> **Superseded historical record:** This exploratory design branch was superseded by the consolidated **Strategic Atlas** design merged into `main` via PR #150 (`5b81f5f`). See [Design and motion](../design-and-motion.md) for the current specification; the historical notes below are preserved unchanged.
+
 **Status:** exploratory UI branch, not accepted for production, scientific approval, or release.
 
 **Branch:** `research/lovable-design-language-20261111`  

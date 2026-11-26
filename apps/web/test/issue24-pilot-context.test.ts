@@ -22,6 +22,7 @@ import {
   selectPilotLocalContext
 } from "../src/data/pilotLocalContextSelection.ts";
 import { createPlanningScenarioDefaults } from "../src/data/planningScenarioDefaults.ts";
+import { readPilotSource } from "./helpers/pilotSource.ts";
 
 const reviewedBundlePath = fileURLToPath(new URL("../../../artifacts/reviewed/meps-2024-long-covid-candidate-20260926T011343Z/bundle.json", import.meta.url));
 const localContextPath = fileURLToPath(new URL("../../../artifacts/reviewed/local-context-wv-hrsa-acs-candidate-20260924T052332Z/local-context.json", import.meta.url));
@@ -115,7 +116,7 @@ test("DecisionTrace and page sources preserve independent UI semantics", () => {
   const readSource = (path: string) => readFileSync(fileURLToPath(new URL(path, import.meta.url)), "utf8");
   const traceComponent = readSource("../src/components/DecisionTrace.tsx");
   const localPage = readSource("../src/pages/LocalContextPage.tsx");
-  const pilotPage = readSource("../src/pages/PilotPage.tsx");
+  const pilotPage = readPilotSource();
   const briefPage = readSource("../src/pages/BriefPage.tsx");
   const context = readSource("../src/data/ArtifactContext.tsx");
   assert.match(traceComponent, /not a proven causal chain/);

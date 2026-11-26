@@ -11,6 +11,7 @@ import {
   serializeBriefJson
 } from "@diagnostic-odyssey/brief-core";
 import { formatNativeValue } from "../src/data/formatEstimateValue.ts";
+import { readPilotSource } from "./helpers/pilotSource.ts";
 
 const source = (path: string) =>
   readFileSync(fileURLToPath(new URL(path, import.meta.url)), "utf8");
@@ -116,7 +117,7 @@ test("Planning Brief JSON preserves a released valid DistributionSummary with it
 });
 
 test("Pilot source contains no empirical-range calibration indicator", () => {
-  const pilot = source("../src/pages/PilotPage.tsx");
+  const pilot = readPilotSource();
   assert.doesNotMatch(pilot, /inside (?:the )?(?:typical |empirical )?range/i);
   assert.doesNotMatch(pilot, /outside (?:the )?(?:typical |empirical )?range/i);
   assert.doesNotMatch(pilot, /empirically calibrated/i);

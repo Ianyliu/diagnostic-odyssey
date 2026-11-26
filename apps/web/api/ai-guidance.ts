@@ -576,6 +576,7 @@ function signedChallenge(s:BriefSelection,secret:string) {
 function verifyChallengeSignature(s:BriefSelection,secret:string,value:unknown):boolean{
  if(typeof value!=="string"||!/^\d{13}\.[0-9a-f]{32}\.[0-9a-f]{64}$/.test(value))return false;
  const [time,nonce,mac]=value.split(".");
+ if(time===undefined||nonce===undefined||mac===undefined)return false;
  const t=Number(time);
  if(!Number.isSafeInteger(t)||t>Date.now()+5000||Date.now()-t>challengeMaxAgeMs)return false;
  const expected=createHmac("sha256",secret).update(time+"."+nonce+"."+sha(canonical(s))).digest();

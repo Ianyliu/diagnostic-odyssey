@@ -9,11 +9,20 @@ on:
       - "tests/browser/future-ai-experience.mjs"
       - "tests/browser/verify-ai-handoff-exports.ts"
       - ".github/workflows/future-ai-experience.yml"
+      - ".github/actions/setup-workspace/**"
+      - ".nvmrc"
+      - "requirements-test.txt"
       - "package-lock.json"
   workflow_dispatch:
 
 permissions:
   contents: read
+
+concurrency:
+  # Pull requests share one group per PR, so a newer push supersedes older runs. Every other event
+  # (push to main, workflow_dispatch) gets a unique group per run, so no pending run is ever dropped.
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || format('run-{0}', github.run_id) }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   concept-browser:
@@ -23,30 +32,25 @@ jobs:
       matrix:
         build: [default, demo]
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - name: Verify exact integrated revision
         env:
           EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
         run: test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
-        with:
-          node-version: 22
-      - run: npm ci --no-audit --no-fund
+      - uses: ./.github/actions/setup-workspace
       - name: Complete repository checks on integrated head
         if: matrix.build == 'default'
         run: |
-          python3 -m pip install --disable-pip-version-check jsonschema==4.26.0
+          python3 -m pip install --disable-pip-version-check -r requirements-test.txt
           npm run typecheck
           npm test
           npm run lint
           python3 -m unittest discover -s packages/narrative-references/test -p 'test_provenance.py'
           python3 -m unittest discover -s analysis/local_context/tests -p 'test_*.py'
           bash analysis/local_context/tests/test_candidate_output_verifier.sh
-          for manifest in artifacts/reviewed/*/SHA256SUMS; do
-            (cd "$(dirname "$manifest")" && sha256sum -c SHA256SUMS)
-          done
+          npm run verify:artifacts
       - name: Install isolated browser tools
         run: npm install --prefix /tmp/concept-browser --save-exact --no-audit --no-fund playwright@1.62.1 axe-core@4.11.1
       - name: Build exact concept-enabled or explicitly disabled bundle
@@ -84,7 +88,7 @@ jobs:
           QA_OUTPUT=/tmp/concept-results/gate0 node tests/browser/gate0-accessibility.mjs
       - name: Retain browser evidence
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: future-experience-${{ matrix.build }}-${{ github.event.pull_request.head.sha || github.sha }}
           path: /tmp/concept-results
@@ -93,14 +97,14 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - name: Verify exact integrated revision
         env:
           EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
         run: test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
-      - uses: r-lib/actions/setup-r@f9a764fea8d5c63df6ef9a5c7795bf7deb5d7e05
+      - uses: r-lib/actions/setup-r@f9a764fea8d5c63df6ef9a5c7795bf7deb5d7e05 # v2.14.0
         with:
           use-public-rspm: true
       - run: Rscript analysis/r/install_dependencies.R

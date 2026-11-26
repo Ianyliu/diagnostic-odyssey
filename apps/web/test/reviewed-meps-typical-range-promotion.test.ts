@@ -9,6 +9,7 @@ import {
   type ArtifactBundle,
   type Estimate
 } from "@diagnostic-odyssey/contracts";
+import { readPilotSource } from "./helpers/pilotSource.ts";
 
 const oldBundlePath = fileURLToPath(
   new URL(
@@ -279,10 +280,7 @@ test("runtime activation preserves historical WV binding and does not calibrate 
     fileURLToPath(new URL("../src/data/reviewedLocalContextValidation.ts", import.meta.url)),
     "utf8"
   );
-  const pilot = readFileSync(
-    fileURLToPath(new URL("../src/pages/PilotPage.tsx", import.meta.url)),
-    "utf8"
-  );
+  const pilot = readPilotSource();
 
   assert.match(runtime, /meps-2024-long-covid-candidate-20260926T011343Z/);
   assert.match(

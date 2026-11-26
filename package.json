@@ -2,15 +2,31 @@
   "name": "diagnostic-odyssey",
   "private": true,
   "version": "0.1.0",
-  "workspaces": ["apps/*", "packages/*"],
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
     "dev": "npm run dev --workspace @diagnostic-odyssey/web",
     "build": "npm run build --workspace @diagnostic-odyssey/web",
-    "typecheck": "npm run typecheck --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present && tsc -p tsconfig.tools.json --noEmit",
+    "lint": "eslint . --max-warnings=0",
     "test": "npm run test --workspaces --if-present",
-    "lint": "eslint . --max-warnings=0"
+    "test:tools": "node --test tests/unit/*.test.mjs",
+    "test:characterization": "node --experimental-strip-types --test tests/characterization/*.test.ts",
+    "test:py": "python3 -m unittest discover -s packages/narrative-references/test -p 'test_provenance.py' && python3 -m unittest discover -s analysis/local_context/tests -p 'test_*.py' && bash analysis/local_context/tests/test_candidate_output_verifier.sh",
+    "test:r": "Rscript analysis/r/tests/run_tests.R",
+    "test:offline": "scripts/verify/run-offline.sh npm test",
+    "test:coverage": "mkdir -p coverage && node --experimental-strip-types --experimental-test-coverage --test-coverage-exclude='**/test/**' --test-coverage-exclude='**/node_modules/**' --test-reporter=spec --test-reporter-destination=stdout --test-reporter=lcov --test-reporter-destination=coverage/lcov.info --test 'apps/web/test/*.test.ts' 'packages/*/test/*.test.ts'",
+    "verify:artifacts": "node scripts/verify/reviewed-artifacts.mjs",
+    "verify:docs": "node scripts/verify/doc-links.mjs",
+    "verify:build": "node apps/web/scripts/verify-repeated-build.mjs",
+    "check": "npm run typecheck && npm run lint && npm test && npm run test:tools && npm run test:characterization && npm run verify:artifacts && npm run verify:docs && npm run build",
+    "check:full": "npm run check && npm run test:py && npm run test:r && npm run verify:build"
   },
-  "engines": {"node": ">=22"},
+  "engines": {
+    "node": ">=22"
+  },
   "devDependencies": {
     "@eslint/js": "^9.12.0",
     "@types/node": "^22.10.0",

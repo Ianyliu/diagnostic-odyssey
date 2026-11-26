@@ -9,6 +9,7 @@ import { loadReviewedWvLocalContextArtifact } from "../src/data/reviewedLocalCon
 import { createPlanningScenarioDefaults } from "../src/data/planningScenarioDefaults.ts";
 import { createSensitivityDataRequest } from "../src/data/dataRequestTemplates.ts";
 import type { LocalContextRecord, Scenario } from "@diagnostic-odyssey/contracts";
+import { defined } from "./helpers/typed.ts";
 
 function fixture(scenario: Scenario | null = createPlanningScenarioDefaults(), selected: LocalContextRecord[] = []) {
   const national = structuredClone(loadReviewedMepsArtifact());
@@ -33,9 +34,9 @@ test("insights are deterministic, detached, and leave canonical Brief and truste
   assert.equal(first.national.highlights.length, 3);
   assert.equal(first.interventions.availability, "unavailable");
   assert.equal(first.investigations.prompts.length, 3);
-  first.national.highlights[0].estimate.value = -1;
+  defined(first.national.highlights[0], "first national highlight").estimate.value = -1;
   first.scenario.applied!.input.capacity = -1;
-  first.investigations.prompts[0].request.fields_needed.push("synthetic mutation");
+  defined(first.investigations.prompts[0], "first investigation prompt").request.fields_needed.push("synthetic mutation");
   assert.equal(JSON.stringify({brief, sources}), before);
   assert.equal(serializeBriefJson(brief), exported);
   assert.equal(brief.data_requests.length, 0);
@@ -44,7 +45,7 @@ test("insights are deterministic, detached, and leave canonical Brief and truste
 test("highlights use validated available domains with deterministic fallbacks, never magnitude ranking", () => {
   const {brief, sources} = fixture();
   const withDistributions = buildPlanningInsights(brief, sources);
-  assert.ok(withDistributions.national.highlights[0].estimate.distribution_summary);
+  assert.ok(defined(withDistributions.national.highlights[0], "first national highlight").estimate.distribution_summary);
   const preferredIds = new Set(withDistributions.national.highlights.map(row => row.estimate.estimate_id));
   brief.burden_findings = brief.burden_findings.filter(record => !preferredIds.has(record.estimate_id));
   const fallback = buildPlanningInsights(brief, sources);
@@ -67,7 +68,7 @@ test("Pilot changes copy current deterministic outputs and only modeled capacity
     const model = buildPlanningInsights(brief, sources);
     assert.deepEqual(model.scenario.applied?.result, calculateScenario(input));
     assert.equal(model.investigations.capacitySignal, capacity < 3000);
-    assert.equal(model.investigations.prompts[0].field, "capacity");
+    assert.equal(defined(model.investigations.prompts[0], "first investigation prompt").field, "capacity");
     assert.match(model.investigations.explanation, capacity < 3000 ? /not an empirical priority/ : /not.*priority|No empirically established priority/);
   }
   const {brief, sources} = fixture();
@@ -98,17 +99,17 @@ test("unreleased, suppressed, illustrative, invalid, forged and mismatched findi
   const {brief, sources} = fixture();
   for (const state of ["preliminary", "not_released", "suppressed", "unavailable"] as const) {
     const candidate = structuredClone(brief);
-    candidate.burden_findings = [{...candidate.burden_findings[0], release_status: state, label: "SENTINEL UNRELEASED"}];
+    candidate.burden_findings = [{...defined(candidate.burden_findings[0], "first burden finding"), release_status: state, label: "SENTINEL UNRELEASED"}];
     assert.equal(buildPlanningInsights(candidate, sources).national.highlights.length, 0);
     assert.doesNotMatch(JSON.stringify(buildPlanningInsights(candidate, sources)), /SENTINEL UNRELEASED/);
   }
   for (const changed of [
-    {...brief.burden_findings[0], value: Number.NaN},
-    {...brief.burden_findings[0], value: 1234567},
-    {...brief.burden_findings[0], display_status: "illustrative" as const},
-    {...brief.burden_findings[0], source_ref: "fabricated-source"},
-    {...brief.burden_findings[0], artifact_version: "candidate"},
-    {...brief.burden_findings[0], estimate_id: "u09_linked_service_use_person_share"}
+    {...defined(brief.burden_findings[0], "first burden finding"), value: Number.NaN},
+    {...defined(brief.burden_findings[0], "first burden finding"), value: 1234567},
+    {...defined(brief.burden_findings[0], "first burden finding"), display_status: "illustrative" as const},
+    {...defined(brief.burden_findings[0], "first burden finding"), source_ref: "fabricated-source"},
+    {...defined(brief.burden_findings[0], "first burden finding"), artifact_version: "candidate"},
+    {...defined(brief.burden_findings[0], "first burden finding"), estimate_id: "u09_linked_service_use_person_share"}
   ]) assert.equal(buildPlanningInsights({...brief, burden_findings: [changed]}, sources).national.highlights.length, 0);
   const stale = buildPlanningInsights({...brief, artifact_version: "unknown-main-version"}, sources);
   assert.equal(stale.national.availability, "withheld");
@@ -119,10 +120,10 @@ test("unreleased, suppressed, invalid and changed selected local records are wit
   const selected = loadReviewedWvLocalContextArtifact().indicators.filter(record => record.indicator_id === "wv.acs.uninsured_pct");
   const {brief, sources} = fixture(undefined, selected);
   for (const changed of [
-    {...selected[0], release_status: "preliminary" as const},
-    {...selected[0], state: "suppressed" as const},
-    {...selected[0], value: Number.NaN},
-    {...selected[0], source_ref: "unreleased-source"}
+    {...defined(selected[0], "first selected local record"), release_status: "preliminary" as const},
+    {...defined(selected[0], "first selected local record"), state: "suppressed" as const},
+    {...defined(selected[0], "first selected local record"), value: Number.NaN},
+    {...defined(selected[0], "first selected local record"), source_ref: "unreleased-source"}
   ]) {
     const model = buildPlanningInsights({...brief, local_context: [changed]}, sources);
     assert.equal(model.local.records.length, 0);
@@ -177,7 +178,7 @@ test("existing current and stale request bindings survive inspection without sel
   const before = JSON.stringify(sources.availableDataRequests);
   const model = buildPlanningInsights(brief, sources);
   assert.deepEqual(model.investigations.prompts.map(row => row.status), ["current", "stale", "absent"]);
-  assert.match(model.investigations.prompts[1].href, /^\/data-requests#request-title-/);
+  assert.match(defined(model.investigations.prompts[1], "second investigation prompt").href, /^\/data-requests#request-title-/);
   assert.equal(brief.data_requests.length, 0);
   assert.equal(JSON.stringify(sources.availableDataRequests), before);
 });

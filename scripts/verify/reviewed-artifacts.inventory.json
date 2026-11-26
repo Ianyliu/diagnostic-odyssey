@@ -1,0 +1,52 @@
+{
+  "$comment": "Authoritative inventory of immutable reviewed artifacts. Every directory under artifacts/reviewed must be listed here, and every listed file must appear in that directory's SHA256SUMS. Adding a reviewed release is a deliberate change to this file. sums_sha256 additionally pins each SHA256SUMS file itself.",
+  "artifacts": [
+    {
+      "directory": "local-context-wv-hrsa-acs-candidate-20260924T052332Z",
+      "sums_sha256": "5b6e365983783cc109827f87f5aef6b883f7fc8b8c4960db7453fabcf4bdade0",
+      "files": [
+        "acs-source-metadata.json",
+        "diagnostics.json",
+        "github-actions-run-manifest.json",
+        "hrsa-source-metadata.json",
+        "local-context.json",
+        "review-manifest.json"
+      ]
+    },
+    {
+      "directory": "meps-2024-linked-condition-service-use-reviewed-20260929-v1",
+      "sums_sha256": "b6d686170d17bed76163e145c12292bceb8e1050ff88378ba1c697d40ce54ab4",
+      "files": [
+        "candidate-manifest.json",
+        "github-actions-run-manifest.json",
+        "linked-condition-candidate-estimates.json",
+        "product-policy.json",
+        "review-manifest.json",
+        "reviewed-diagnostics.json",
+        "source-metadata.json"
+      ]
+    },
+    {
+      "directory": "meps-2024-long-covid-candidate-20260923T020607Z",
+      "sums_sha256": "8d6d3b61b57c92cfdbd05661b34f713ece4389059bfe5927b4be73d417f8f5cb",
+      "files": [
+        "bundle.json",
+        "diagnostics.json",
+        "github-actions-run-manifest.json",
+        "hc256-source-metadata.json",
+        "review-manifest.json"
+      ]
+    },
+    {
+      "directory": "meps-2024-long-covid-candidate-20260926T011343Z",
+      "sums_sha256": "2d0bdb6cce0c12606f78ff0686c6c97da6e4d977ce2e8b25f282b953da2d1da3",
+      "files": [
+        "bundle.json",
+        "diagnostics.json",
+        "github-actions-run-manifest.json",
+        "hc256-source-metadata.json",
+        "review-manifest.json"
+      ]
+    }
+  ]
+}

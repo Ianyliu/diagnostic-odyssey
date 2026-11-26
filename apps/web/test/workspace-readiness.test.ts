@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import type { EvidenceRecord, Scenario } from "@diagnostic-odyssey/contracts";
+import { invalidInput } from "./helpers/typed.ts";
 import {
   getEvidenceParameterReadiness,
   getNationalBurdenReadiness
@@ -51,7 +52,7 @@ test("burden status does not claim review when no finding passes the release gat
 
 test("Brief evidence readiness keeps approval and scenario eligibility distinct", () => {
   assert.equal(getEvidenceParameterReadiness([], scenario).tone, "unavailable");
-  assert.equal(getEvidenceParameterReadiness([{ ...evidence, reviewer_status: "pending" }], scenario).tone, "unavailable");
+  assert.equal(getEvidenceParameterReadiness([{ ...evidence, reviewer_status: invalidInput<EvidenceRecord["reviewer_status"]>("pending") }], scenario).tone, "unavailable");
   assert.match(getEvidenceParameterReadiness([evidence], null).status, /scenario not checked/);
   assert.match(getEvidenceParameterReadiness([{ ...evidence, admissibility_status: "limited_use" }], scenario).status, /No eligible/);
   assert.match(getEvidenceParameterReadiness([evidence], { ...scenario, mechanism: "diagnostic-assessment" }).status, /No eligible/);

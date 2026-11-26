@@ -6,6 +6,10 @@ on:
       - "tests/browser/security-headers.mjs"
       - "tests/browser/csp-preview-proxy.mjs"
       - ".github/workflows/workstream-k-qa.yml"
+      - "package-lock.json"
+      - ".github/actions/setup-workspace/**"
+      - ".nvmrc"
+      - "requirements-test.txt"
   workflow_dispatch:
     inputs:
       immutable_preview_url:
@@ -16,22 +20,27 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  # Pull requests share one group per PR, so a newer push supersedes older runs. Every other event
+  # (push to main, workflow_dispatch) gets a unique group per run, so no pending run is ever dropped.
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || format('run-{0}', github.run_id) }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   security-browser:
     runs-on: ubuntu-latest
     timeout-minutes: 35
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - name: Verify exact HEAD
         env:
           EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+      - uses: ./.github/actions/setup-workspace
         with:
-          node-version: 22
-      - run: npm ci --no-audit --no-fund
+          python-test-dependencies: "true"
       - name: Typecheck, unit / negative tests, lint and production build
         run: |
           npm run typecheck
@@ -72,7 +81,7 @@ jobs:
         run: node tests/browser/security-headers.mjs
       - name: Archive evidence including failures
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: workstream-k-security-${{ github.event.pull_request.head.sha || github.sha }}
           path: |
