@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import type { LocalContextRecord } from "@diagnostic-odyssey/contracts";
 import { DetailDrawer } from "../components/DetailDrawer";
+import { EvidenceTiming } from "../components/EvidenceTiming";
 import { LedgerGroup } from "../components/LedgerGroup";
 import { PresentationMode, type Presentation } from "../components/PresentationMode";
 import { WorkspaceDisclosure } from "../components/WorkspaceDisclosure";
@@ -11,6 +12,7 @@ import { HpsaRuralComposition } from "../components/HpsaRuralComposition";
 import { MetricVisual } from "../components/MetricVisual";
 import { useArtifact } from "../data/ArtifactContext";
 import { COVERAGE_CATALOG } from "../data/coverageCatalog";
+import { getLocalEvidenceFreshness } from "../data/evidenceFreshness";
 import { formatLocalContextValue } from "../data/formatLocalContextValue";
 import { isSelectableLocalContextRecord } from "../data/localContextSelection";
 import {
@@ -378,6 +380,8 @@ export function LocalContextPage() {
       <p className="sr-only" role="status" aria-live="polite">
         {selectedCount} {selectedCount === 1 ? "record" : "records"} selected for Planning Brief.
       </p>
+
+      <EvidenceTiming entries={getLocalEvidenceFreshness(localContext)} />
 
       <div className="atlas-local-summary-strip" aria-label="Reviewed West Virginia statewide summary">
         <article className="atlas-local-summary-tile">

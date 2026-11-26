@@ -4,8 +4,10 @@ import {
   evidenceClaimLabel
 } from "@diagnostic-odyssey/evidence-core";
 import { InterventionEvidenceGap } from "../components/PlanningInsights";
+import { EvidenceTiming } from "../components/EvidenceTiming";
 import { planningInsightsEnabled } from "../data/planningInsightsEnabled";
 import { useArtifact } from "../data/ArtifactContext";
+import { getEvidenceFreshness } from "../data/evidenceFreshness";
 import { formatReviewerStatusLabel } from "../data/presentationLabels";
 import {
   formatMechanismLabel,
@@ -14,7 +16,7 @@ import {
 import "./EvidencePage.css";
 
 export function EvidencePage() {
-  const { bundle, scenario } = useArtifact();
+  const { bundle, localContext, scenario } = useArtifact();
   if (!bundle) return null;
   const scenarioEligibleCount = scenario
     ? bundle.evidence.filter(record => canDriveScenarioParameter(record, scenario).allowed).length
@@ -39,6 +41,8 @@ export function EvidencePage() {
         </h2>
         <p className="subtle">Reviewer state, admissibility, and scenario matching are independent checks.</p>
       </section>
+
+      <EvidenceTiming entries={getEvidenceFreshness(bundle, localContext)} />
 
       {planningInsightsEnabled && (
         <>
@@ -67,7 +71,7 @@ export function EvidencePage() {
               <article className="card evidence-record" key={record.evidence_id}>
                 <p className="visual-kicker">EVIDENCE · {record.evidence_id}</p>
                 <h2>{record.allowed_use}</h2>
-                <p className="subtle">{record.source}</p>
+                <p className="subtle">{record.source} · Source year {record.year}</p>
 
                 <div className="evidence-state-grid" role="group" aria-label="Evidence use states">
                   <div>

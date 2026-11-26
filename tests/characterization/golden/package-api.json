@@ -932,6 +932,7 @@
     "dataRequests: DataRequest[]",
     "estimates: Estimate[]",
     "evidence: EvidenceRecord[]",
+    "evidenceFreshness?: readonly EvidenceFreshness[]",
     "generatedAt?: string",
     "localContext: LocalContextRecord[]",
     "scenario?: { input: Scenario; result: ScenarioResult; } | null"
@@ -951,6 +952,23 @@
     "(resolver: AcquisitionResolver) => { readonly buildPlanningBrief: (input: BriefInput) => PlanningBrief; readonly serializeBriefJson: (brief: PlanningBrief) => string; }"
    ]
   },
+  "EvidenceFreshness": {
+   "kind": "interface",
+   "declared": "EvidenceFreshness",
+   "members": [
+    "artifact_version: string",
+    "assessed_on: string | null",
+    "freshness_state: \"fixed_vintage\" | \"snapshot_as_of\" | \"stale_snapshot\" | \"unknown\"",
+    "observation_vintage: string",
+    "retrieved_at: string | null",
+    "reviewed_at: string | null",
+    "source_family: \"meps\" | \"acs\" | \"hrsa_hpsa\"",
+    "source_modified_on: string | null",
+    "source_name: string",
+    "source_ref: string",
+    "source_release: string | null"
+   ]
+  },
   "PlanningBrief": {
    "kind": "interface",
    "declared": "PlanningBrief",
@@ -961,6 +979,7 @@
     "context: AnalysisContext",
     "data_requests: DataRequest[]",
     "evidence: EvidenceRecord[]",
+    "evidence_freshness?: EvidenceFreshness[]",
     "generated_at: string",
     "local_context: LocalContextRecord[]",
     "scenario: { input: Scenario; result: ScenarioResult; } | null",

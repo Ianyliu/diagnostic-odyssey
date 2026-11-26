@@ -2,7 +2,9 @@ import { Link } from "react-router-dom";
 import type { ReactNode } from "react";
 import { canExportEstimate } from "@diagnostic-odyssey/contracts";
 import { BurdenMeasureList } from "../components/BurdenMeasureList";
+import { EvidenceTiming } from "../components/EvidenceTiming";
 import { useArtifact } from "../data/ArtifactContext";
+import { getNationalEvidenceFreshness } from "../data/evidenceFreshness";
 import { formatDataStateLabel } from "../data/presentationLabels";
 import "./Ledger.css";
 
@@ -34,6 +36,7 @@ export function DomainPage({
         <h1>{title}</h1>
         <p>{description}</p>
       </header>
+      <EvidenceTiming entries={getNationalEvidenceFreshness(bundle, domain?.measures ?? [])} />
       {domain ? (
         <article className="card domain-card ledger-panel">
           <div className="card-title-row">

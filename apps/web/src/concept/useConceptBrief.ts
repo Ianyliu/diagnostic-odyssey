@@ -3,6 +3,7 @@ import { buildPlanningBrief } from "@diagnostic-odyssey/brief-core";
 import { validateScenario, validateScenarioResult } from "@diagnostic-odyssey/contracts";
 import { useArtifact } from "../data/ArtifactContext";
 import { mergeBriefLocalContext } from "../data/briefLocalContext";
+import { getEvidenceFreshness } from "../data/evidenceFreshness";
 import { deriveBriefContextWithSelectedLocalContext } from "../data/localContextSelection";
 import { withStaleSelectedDataRequestWarning } from "../data/briefDataRequestWarnings";
 import { createAiHandoffText } from "../data/aiHandoff";
@@ -27,12 +28,16 @@ export function useConceptBrief(liveEnabled = false) {
   const brief = useMemo(() => {
     if (!bundle) return null;
     const selected = mergeBriefLocalContext(selectedLocalContext, pilotLocalContext);
+    const generatedAt = new Date();
     const base = buildPlanningBrief({
       context: deriveBriefContextWithSelectedLocalContext(bundle.context, localContextStatus, localContext, selected),
       estimates: bundle.burden_domains.flatMap(domain => domain.measures),
       localContext: selected,
       scenario: scenario && scenarioResult ? {input: scenario, result: scenarioResult} : null,
-      evidence: bundle.evidence, dataRequests: selectedDataRequests
+      evidence: bundle.evidence,
+      dataRequests: selectedDataRequests,
+      generatedAt: generatedAt.toISOString(),
+      evidenceFreshness: getEvidenceFreshness(bundle, localContext, generatedAt)
     });
     const staleCount = Math.max(0, briefDataRequestIds.length - selectedDataRequests.length);
     return withStaleSelectedDataRequestWarning(base, staleCount);

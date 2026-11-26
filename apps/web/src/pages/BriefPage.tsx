@@ -6,6 +6,7 @@ import { AcquisitionGuidanceCard } from "../components/AcquisitionGuidanceCard";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { PlanningInsights } from "../components/PlanningInsights";
 import { BriefExecutiveSummary } from "../components/BriefExecutiveSummary";
+import { EvidenceTiming } from "../components/EvidenceTiming";
 import { WorkspaceSessionNote } from "../components/WorkspaceSessionNote";
 import {
   buildPlanningInsights,
@@ -22,6 +23,7 @@ import { getEvidenceParameterReadiness, getNationalBurdenReadiness } from "../da
 import { DecisionTrace } from "../components/DecisionTrace";
 import { DistributionSummaryText } from "../components/DistributionSummaryText";
 import { useArtifact } from "../data/ArtifactContext";
+import { getEvidenceFreshness } from "../data/evidenceFreshness";
 import {
   formatEstimateInterval,
   formatEstimateValue
@@ -164,13 +166,16 @@ export function BriefPage({
     );
     const staleSelectedDataRequestCount =
       Math.max(0, briefDataRequestIds.length - selectedDataRequests.length);
+    const generatedAt = new Date();
     const baseBrief = buildPlanningBrief({
       context: briefContext,
       estimates,
       localContext: briefLocalContext,
       scenario: scenario && scenarioResult ? { input: scenario, result: scenarioResult } : null,
       evidence: bundle.evidence,
-      dataRequests: selectedDataRequests
+      dataRequests: selectedDataRequests,
+      generatedAt: generatedAt.toISOString(),
+      evidenceFreshness: getEvidenceFreshness(bundle, localContext, generatedAt)
     });
     return withStaleSelectedDataRequestWarning(baseBrief, staleSelectedDataRequestCount);
   }, [
@@ -314,6 +319,8 @@ export function BriefPage({
         </section>
 
         <article className="card brief-content atlas-memo-body" aria-label="Planning Brief document">
+          <EvidenceTiming entries={brief.evidence_freshness ?? []} />
+
           <section id="brief-pilot-assumptions">
             <h2>Strategy Lab planning assumptions</h2>
             <p className="subtle"><strong>{PLANNING_DEFAULTS_LABEL}.</strong> These inputs are planning assumptions, not observed evidence.</p>

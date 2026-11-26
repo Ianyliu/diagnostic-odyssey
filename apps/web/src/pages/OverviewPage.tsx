@@ -2,6 +2,8 @@ import { useRef } from "react";
 import { Link } from "react-router-dom";
 import { canExportEstimate } from "@diagnostic-odyssey/contracts";
 import { useArtifact } from "../data/ArtifactContext";
+import { EvidenceTiming } from "../components/EvidenceTiming";
+import { getEvidenceFreshness } from "../data/evidenceFreshness";
 import { LandingCareHorizon } from "../components/LandingCareHorizon";
 import { LandingBurdenStrata } from "../components/LandingBurdenStrata";
 import { LandingJourney } from "../components/LandingJourney";
@@ -131,6 +133,7 @@ export function OverviewPage({ advisorAvailable = false }: { advisorAvailable?: 
               <p className="micro-caption atlas-lenses-note">
                 National spending is all-cause and descriptive. State indicators cannot be used to rescale national estimates.
               </p>
+              <EvidenceTiming entries={getEvidenceFreshness(bundle, localContext)} />
             </div>
 
             {/* Beat V-2: Interactive Deterministic Strategy Sandbox */}
