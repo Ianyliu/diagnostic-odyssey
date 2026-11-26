@@ -279,7 +279,8 @@ for stage in STAGES:
     results.append(
         {
             "stage": stage,
-            "json_byte_equal": compare_brief_bytes(old_json, new_json, brief),
+            "json_byte_equal": old_json == new_json,
+            "legacy_json_byte_equal": compare_brief_bytes(old_json, new_json, brief),
             "freshness_sources_pass": len(freshness_errors) == 0,
             "freshness_errors": freshness_errors,
             "freshness_field_added": "evidence_freshness" in brief and "evidence_freshness" not in json.loads(old_json),
@@ -293,8 +294,8 @@ for stage in STAGES:
     )
 
 report = {
-    "passed": all(r["json_byte_equal"] and r["freshness_sources_pass"] and r["semantic_pdf_pass"] for r in results),
-    "comparison_mode": "exact_json_bytes_and_stage_aware_semantic_pdf",
+    "passed": all(r["legacy_json_byte_equal"] and r["freshness_sources_pass"] and r["semantic_pdf_pass"] for r in results),
+    "comparison_mode": "exact_legacy_json_bytes_and_stage_aware_semantic_pdf",
     "allowed_additions_to_legacy_base": ["evidence_freshness"],
     "clock": "2026-10-25T15:00:00Z",
     "results": results,
