@@ -118,7 +118,7 @@ See the complete specification in [Design and motion](docs/design-and-motion.md)
 1. **01 Burden** — inspect domains (economic/healthcare, administrative time, mental/human; Work & Function stays explicitly missing), native units, release state, and reviewed intervals in `Focus` or `Overview` mode with a split/drawer provenance inspector.
 2. **02 Local context** — review the 34 statewide West Virginia HRSA and ACS indicators (no county-level data), filter by category, attach an indicator to Strategy Lab, or include records in the Brief.
 3. **03 Strategy Lab** — choose a preset or set eight planning assumptions, review container-queried decision visuals and the rule-based Decision Inspector, compare scenarios deterministically in *Compare Strategies*, and run one-way sensitivity plus the capacity sufficiency threshold curve.
-4. **04 Data requests (optional)** — turn sensitivity or capacity gaps into a structured request; new requests start included for the Brief (deselectable before export) and export only when current for the applied scenario.
+4. **04 Data requests (optional)** — turn sensitivity or capacity gaps into a structured request. New requests start selected for the Brief and export only when current for the applied scenario. Change the selection before exporting.
 5. **05 Planning Brief** — review the **Known · Assumed · Unknown** executive memo, assembled full report, optional deterministic *Planning Insights*, and export the canonical JSON companion or a print/PDF.
 
 Sensitivity testing and scenario comparison test deterministic assumptions. The full sensitivity results stay in Strategy Lab. A selected, current data request can carry the associated question into the Brief and its exports.

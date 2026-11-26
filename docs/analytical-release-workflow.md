@@ -162,7 +162,7 @@ The workspace reads the measurement period, source release and retrieval date fr
 | Census ACS | The five-year estimate covers the full published period. A corrected profile or a newer compatible five-year profile requires a separately reviewed release before replacement. |
 | HRSA HPSA | HRSA publishes daily snapshots. Treat a prior-UTC-day snapshot as stale for verifying current designations and retain it as dated context. The freshness assessment records its UTC date. The source resource modification date comes from HTTP Last-Modified. |
 
-These rules use the artifacts packaged with the workspace. Fixed vintage describes a period and does not certify the latest upstream release. Review cycles remain source-specific, and trend analysis requires comparable estimates over time.
+The workspace assesses the artifacts packaged with the app. Fixed vintage describes the measurement period. Check the upstream source for newer releases. Review cycles remain source-specific, and trend analysis requires comparable estimates over time.
 
 
 ## Completed reviewed promotion — MEPS Typical Range Phase A
