@@ -17,7 +17,8 @@ async function check(name, body) {
   await writeFile(`${output}/results.json`, JSON.stringify({results, errors}, null, 2));
 }
 async function pageAt(path, width = 390, theme = "light") {
-  const page = await browser.newPage({viewport: {width, height: 900}, colorScheme: theme, reducedMotion: "reduce"});
+  const context = await browser.newContext({viewport: {width, height: 900}, colorScheme: theme, reducedMotion: "reduce"});
+  const page = await context.newPage();
   page.setDefaultTimeout(6000);
   page.on("pageerror", error => errors.push(String(error)));
   await page.goto(base + path); await page.locator("main h1").waitFor();
