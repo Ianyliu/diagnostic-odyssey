@@ -1,0 +1,96 @@
+name: Jules Verdict Gate
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/jules-verdict-gate.yml"
+      - "scripts/ci/jules-verdict-*.mjs"
+      - "scripts/ci/verify-jules-run.mjs"
+      - "tests/ci/jules-verdict*.mjs"
+      - "docs/governance/jules-verdict-gate.md"
+  workflow_run:
+    workflows: ["Jules PR Review"]
+    types: [completed]
+
+# Serialize callbacks on a review HEAD without canceling an evidence capture in progress.
+# Native statuses are still non-authoritative and NOT an enforceable exclusive writer.
+concurrency:
+  group: jules-verdict-audit-${{ github.event.workflow_run.head_sha || github.run_id }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  fixtures:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+      - name: Syntax, adversarial fixtures and simulated API/FS integrations
+        run: |
+          set -o pipefail
+          node --check scripts/ci/jules-verdict-core.mjs
+          node --check scripts/ci/verify-jules-run.mjs
+          node --test tests/ci/jules-verdict*.test.mjs | tee /tmp/jules-stage-a-fixtures.tap
+          sha256sum /tmp/jules-stage-a-fixtures.tap > /tmp/jules-stage-a-fixtures.sha256
+      - name: Preserve simulated fixture output and digest
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: jules-stage-a-fixtures-${{ github.run_id }}
+          path: |
+            /tmp/jules-stage-a-fixtures.tap
+            /tmp/jules-stage-a-fixtures.sha256
+          if-no-files-found: error
+          retention-days: 90
+
+  audit:
+    if: github.event_name == 'workflow_run' && github.event.action == 'completed'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: read
+      pull-requests: read
+      issues: write
+      statuses: write
+    steps:
+      # Never checkout untrusted PR source into a privileged job.
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+      - name: Capture original review and negative verdict evidence
+        id: capture
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/ci/verify-jules-run.mjs collect
+      - name: Upload exact per-attempt evidence BEFORE any accepting status
+        id: archive
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: jules-attempt-${{ github.event.workflow_run.id }}-${{ github.event.workflow_run.run_attempt }}-${{ github.run_id }}
+          path: /tmp/jules-verdict-gate.json
+          if-no-files-found: error
+          retention-days: 90
+      - name: Independently confirm artifact and finalize current-head disposition
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ARCHIVE_OUTCOME: ${{ steps.archive.outcome }}
+          ARCHIVE_ID: ${{ steps.archive.outputs.artifact-id }}
+          ARCHIVE_DIGEST: ${{ steps.archive.outputs.artifact-digest }}
+        run: node scripts/ci/verify-jules-run.mjs finalize
