@@ -54,7 +54,8 @@ function getPolicy(env: AgentMailEnvironment) {
   const signingKey = svixSigningKey(env.PULSE_AGENTMAIL_WEBHOOK_SECRET);
   const syntheticDigest = env.PULSE_AGENTMAIL_SYNTHETIC_REPORT_SHA256;
   if (env.PULSE_STAGING_ENABLED !== "on" || (mode !== "synthetic" && mode !== "qualified") ||
-    !isPrivateRecipient(inbox) || !inbox.endsWith("@agentmail.to") || from !== expected || !from ||
+    !inbox || normalizedMailbox(inbox) !== inbox || !inbox.endsWith("@agentmail.to") ||
+    (mode === "qualified" && !isPrivateRecipient(inbox)) || from !== expected || !from ||
     !key || !/^[\x21-\x7e]{1,512}$/u.test(key) || !signingKey ||
     (mode === "synthetic" && (!syntheticDigest || !HASH.test(syntheticDigest)))) return undefined;
   const fromDomain = from.slice(from.lastIndexOf("@") + 1);
@@ -254,7 +255,7 @@ export async function reconcileAgentMail(
   const counters = { scanned: 0, processed: 0, deferred: 0 };
   if (env.PULSE_AGENTMAIL_RECONCILE !== "on") return counters;
   const policy = getPolicy(env);
-  if (!policy) return counters;
+  if (policy?.mode !== "qualified") return counters;
 
   const bucket = env.PULSE_INTAKE;
   const checkpointKey = "s0/agentmail/reconcile/" + sha(policy.inbox);

@@ -113,6 +113,7 @@ function fixture(options: MockOptions = {}) {
   const calls: URL[] = [];
   const store = createIntakeStore(bucket, options.intakeOptions);
   const defaultRecords = options.records ?? [message()];
+  const scopedMessagesPath = "/v0/inboxes/" + encodeURIComponent(env.PULSE_AGENTMAIL_INBOX_ID ?? inboxId) + "/messages";
   const fetcher: typeof fetch = async (resource, init) => {
     const request = new Request(resource, init);
     const url = new URL(request.url);
@@ -121,11 +122,11 @@ function fixture(options: MockOptions = {}) {
     assert.equal(url.origin, "https://api.agentmail.to");
     assert.equal(request.headers.get("authorization"), "Bearer " + apiKey);
     assert.equal(request.redirect, "error");
-    if (url.pathname === messagesPath) {
+    if (url.pathname === scopedMessagesPath) {
       return options.list?.(url.searchParams) ?? Response.json({ count: defaultRecords.length, messages: defaultRecords });
     }
-    assert.ok(url.pathname.startsWith(messagesPath + "/"), url.pathname);
-    const id = decodeURIComponent(url.pathname.slice(messagesPath.length + 1));
+    assert.ok(url.pathname.startsWith(scopedMessagesPath + "/"), url.pathname);
+    const id = decodeURIComponent(url.pathname.slice(scopedMessagesPath.length + 1));
     const record = defaultRecords.find(item => item.message_id === id);
     return options.get?.(id) ?? (record ? Response.json(record) : new Response(null, { status: 404 }));
   };
@@ -183,6 +184,40 @@ test("signed AgentMail delivery uses the authoritative scoped Get Message API an
   assert.equal(detail.status, 200);
   assert.deepEqual((await detail.json()).report, report);
   assert.equal((await read("view=history&mode=all", { ...stageEnv, VERCEL_ENV: "production" })).status, 404);
+});
+
+test("a named hosted inbox accepts only the pinned synthetic report and cannot run reconciliation", async () => {
+  const named = "project-qualification@agentmail.to";
+  const config = {
+    PULSE_AGENTMAIL_MODE: "synthetic",
+    PULSE_AGENTMAIL_INBOX_ID: named,
+    PULSE_AGENTMAIL_SYNTHETIC_REPORT_SHA256: researchReportDigest(report),
+  };
+  const expectedMessage = { inbox_id: named, message_id: firstMessageId };
+  const records = [message({ inbox_id: named, to: [named] })];
+  const run = fixture({ env: config, records });
+  await run.reconcile();
+  assert.equal(run.calls.length, 0);
+  assert.equal((await run.serve(webhook())).status, 403);
+  assert.equal(run.calls.length, 0);
+  assert.equal((await run.serve(webhook({ message: expectedMessage }))).status, 200);
+  assert.deepEqual((await run.inbox()).inbox[0]?.report, report);
+
+  const changed = fixture({ env: { ...config, PULSE_AGENTMAIL_SYNTHETIC_REPORT_SHA256: "0".repeat(64) }, records });
+  assert.equal((await changed.serve(webhook({ message: expectedMessage }))).status, 200);
+  const entry = (await changed.inbox()).inbox[0];
+  assert.equal(entry?.report, null);
+  assert.equal(entry?.receipt.reason_code, "agentmail_synthetic_report_mismatch");
+
+  for (const env of [
+    { ...config, PULSE_AGENTMAIL_MODE: "qualified" },
+    { ...config, PULSE_AGENTMAIL_INBOX_ID: "project@another.example.invalid" },
+    { ...config, PULSE_AGENTMAIL_INBOX_ID: "Project <" + named + ">" },
+  ]) {
+    const denied = fixture({ env, records });
+    assert.equal((await denied.serve(webhook({ message: expectedMessage }))).status, 404);
+    assert.equal(denied.calls.length, 0);
+  }
 });
 
 test("invalid signatures, tampering, expired and future timestamps do not initialize storage or call AgentMail", async () => {
