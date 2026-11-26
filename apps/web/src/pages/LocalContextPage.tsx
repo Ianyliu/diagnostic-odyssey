@@ -5,6 +5,7 @@ import { DetailDrawer } from "../components/DetailDrawer";
 import { LedgerGroup } from "../components/LedgerGroup";
 import { PresentationMode, type Presentation } from "../components/PresentationMode";
 import { WorkspaceDisclosure } from "../components/WorkspaceDisclosure";
+import { WorkspaceSessionNote } from "../components/WorkspaceSessionNote";
 import { useEditionDrawer } from "../components/EditionDrawerContext";
 import { HpsaRuralComposition } from "../components/HpsaRuralComposition";
 import { MetricVisual } from "../components/MetricVisual";
@@ -341,6 +342,7 @@ export function LocalContextPage() {
           <h1>West Virginia access conditions</h1>
           <p>Reviewed indicators from HRSA and the 2024 Census ACS describe statewide access conditions in West Virginia. They cannot estimate local Long COVID prevalence.</p>
           <p className="ledger-orientation">Open an indicator group to review Brief selections, or attach one indicator as context for your Strategy Lab scenario.</p>
+          <WorkspaceSessionNote />
         </header>
 
         <div className="atlas-selection-bar" id="local-selection-summary">

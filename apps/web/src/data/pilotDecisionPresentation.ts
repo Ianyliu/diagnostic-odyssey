@@ -45,3 +45,16 @@ export function formatRecognitionWindowDifference(
 ): string {
   return formatPlanningNumber(baselineMonths - alternativeMonths, windowDelta);
 }
+
+export function describeProgramResourceRequirement(result: ScenarioResult): string {
+  const reached = formatPlanningNumber(result.reached_participants);
+  const intended = formatPlanningNumber(result.intended_reach);
+  const gap = formatPlanningNumber(result.capacity_gap);
+  const scope = result.intended_reach === 0
+    ? "includes fixed costs with no intended participants."
+    : `covers ${reached} of ${intended} intended participants served within capacity.`;
+  const exclusion = result.capacity_gap > 0
+    ? ` It excludes ${gap} unmet ${result.capacity_gap === 1 ? "participant" : "participants"}.`
+    : "";
+  return `Analyst-modeled expenditure ${scope}${exclusion} Impact and savings are outside the calculation.`;
+}

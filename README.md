@@ -101,27 +101,29 @@ See the complete specification in [Design and motion](docs/design-and-motion.md)
 
 ```text
 ┌──────────┐     ┌───────────┐     ┌──────────────────┐     ┌──────────────────┐     ┌───────────────────┐
-│ Overview │ ──▶ │ 01 Burden │ ──▶ │ 02 Local context │ ──▶ │ 03 Strategy Lab  │ ──▶ │ 04 Planning Brief │
+│ Overview │ ──▶ │ 01 Burden │ ──▶ │ 02 Local context │ ──▶ │ 03 Strategy Lab  │ ──▶ │ 05 Planning Brief │
 └──────────┘     └─────┬─────┘     └──────────────────┘     └────────┬─────────┘     └─────────┬─────────┘
                        │                                             │                           │
-                       ▼                                             ┆ (optional)                ▼
-                 ┌───────────┐                               ┌───────────────┐          ┌────────────────────┐
-                 │ Evidence  │                               │ Data requests │ ────────▶│ Strategy AI Studio │
-                 │  limits   │                               └───────────────┘          │ (optional/manual)  │
+                       ▼                                             ▼ (optional)                ▼
+                 ┌───────────┐                              ┌──────────────────┐        ┌────────────────────┐
+                 │ Evidence  │                              │ 04 Data requests │        │ Strategy AI Studio │
+                 │  limits   │                              └──────────────────┘        │ (optional/manual)  │
                  └───────────┘                                                          └────────────────────┘
 ```
 
 ### Working vertical slice
 
-**01 Burden → 02 Local context → 03 Strategy Lab → 04 Planning Brief** (with optional **Data requests**)
+**01 Burden → 02 Local context → 03 Strategy Lab → 04 Data requests (optional) → 05 Planning Brief**
 
 1. **01 Burden** — inspect domains (economic/healthcare, administrative time, mental/human; Work & Function stays explicitly missing), native units, release state, and reviewed intervals in `Focus` or `Overview` mode with a split/drawer provenance inspector.
 2. **02 Local context** — review the 34 statewide West Virginia HRSA and ACS indicators (no county-level data), filter by category, attach an indicator to Strategy Lab, or include records in the Brief.
 3. **03 Strategy Lab** — choose a preset or set eight planning assumptions, review container-queried decision visuals and the rule-based Decision Inspector, compare scenarios deterministically in *Compare Strategies*, and run one-way sensitivity plus the capacity sufficiency threshold curve.
-4. **Data requests (optional companion)** — turn sensitivity or capacity gaps into a structured request; new requests start included for the Brief (deselectable before export) and export only when current for the applied scenario.
-5. **04 Planning Brief** — review the **Known · Assumed · Unknown** executive memo, assembled full report, optional deterministic *Planning Insights*, and export the canonical JSON companion or a print/PDF.
+4. **04 Data requests (optional)** — turn sensitivity or capacity gaps into a structured request; new requests start included for the Brief (deselectable before export) and export only when current for the applied scenario.
+5. **05 Planning Brief** — review the **Known · Assumed · Unknown** executive memo, assembled full report, optional deterministic *Planning Insights*, and export the canonical JSON companion or a print/PDF.
 
-Sensitivity testing and scenario comparison are deterministic assumption testing, not evidence-derived effect estimation.
+Sensitivity testing and scenario comparison test deterministic assumptions. The full sensitivity results stay in Strategy Lab. A selected, current data request can carry the associated question into the Brief and its exports.
+
+Scenario edits, local context selections, and data requests stay in the current tab until reload or close. Export the Planning Brief for your records and re-enter your settings to resume work in a fresh tab.
 
 ## Planning intelligence & Strategy AI Studio
 
@@ -228,8 +230,8 @@ The workflow generates a **preliminary** candidate and uploads aggregate review 
 - Six-chapter *Atlas Unfolded* landing experience (`Care Horizon`, sticky *Evidence Architecture* strata, sweeping 1024×380 *From data to action* pathway, separated lenses, live deterministic *Strategy Sandbox*, and governed AI demo) with independent reduced-motion and interruptible choreography.
 - `01 Burden` and `02 Local context` ledgers with `Focus`/`Overview` presentation modes, split provenance inspector, accessible `DetailDrawer`, `EditionDrawer` coverage roadmap, and explicit **Use in Strategy Lab** selection.
 - `03 Strategy Lab` split studio with 3 presets, synchronized sliders, container-queried decision visuals, rule-based contextual Decision Inspector, deterministic *Compare Strategies* table, one-way sensitivity explorer, and *Capacity sufficiency threshold* curve.
-- `Data requests` companion with **Known / Assumed / Unknown** epistemic strip, exact applied inputs, owner confirmation checklist, explicit analyst opt-in, and stale-request protection.
-- `04 Planning Brief` with always-visible **Known · Assumed · Unknown** executive decision memo, opt-in local-context print appendix, canonical JSON companion export, and browser print / save-PDF path.
+- `04 Data requests` with **Known / Assumed / Unknown** epistemic strip, exact applied inputs, owner confirmation checklist, analyst-controlled Brief selection, and stale-request protection.
+- `05 Planning Brief` with always-visible **Known · Assumed · Unknown** executive decision memo, opt-in local-context print appendix, canonical JSON companion export, and browser print / save-PDF path.
 - Deterministic *Planning Insights*, user-operated *Prompt Studio / Analyze with AI*, illustrative four-lens exploration in *Strategy AI Studio*, and hardened Preview-only `/api/ai-guidance` (disabled in public production).
 - GitHub Actions CI and production-browser, accessibility, opening-circuit, security-header, and fail-closed PDF/JSON regression suites.
 

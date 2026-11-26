@@ -2,6 +2,7 @@ import "./DataRequestsPage.css";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { WorkspaceDisclosure } from "../components/WorkspaceDisclosure";
+import { WorkspaceSessionNote } from "../components/WorkspaceSessionNote";
 import { useArtifact } from "../data/ArtifactContext";
 import { acquisitionResolver } from "@diagnostic-odyssey/acquisition-hints";
 import { AcquisitionGuidanceStatus } from "../components/AcquisitionGuidanceCard";
@@ -46,7 +47,7 @@ export function DataRequestsPage() {
   return (
     <section className="page page-stack data-requests-page">
       <header className="page-heading">
-        <p className="eyebrow">COMPANION · DATA REQUESTS</p>
+        <p className="eyebrow">04 · DATA REQUESTS</p>
         <h1 id="data-requests-heading" tabIndex={-1}>Turn uncertainty into a concrete request</h1>
         <p>
           Use planning requests to identify what to verify with a local data owner. Review which requests to include before exporting the Brief.
@@ -54,6 +55,7 @@ export function DataRequestsPage() {
         <p className="micro-caption">
           Request status reflects whether it matches the applied scenario. Confirm source availability and reporting periods with the local owner.
         </p>
+        <WorkspaceSessionNote />
       </header>
       <p className="sr-only" role="status" aria-live="polite" aria-atomic="true">{announcement}</p>
 

@@ -6,6 +6,7 @@ import { AcquisitionGuidanceCard } from "../components/AcquisitionGuidanceCard";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { PlanningInsights } from "../components/PlanningInsights";
 import { BriefExecutiveSummary } from "../components/BriefExecutiveSummary";
+import { WorkspaceSessionNote } from "../components/WorkspaceSessionNote";
 import {
   buildPlanningInsights,
   buildVerifiedNationalBriefSection,
@@ -41,6 +42,7 @@ import { formatDataStateLabel } from "../data/presentationLabels";
 import { withStaleSelectedDataRequestWarning } from "../data/briefDataRequestWarnings";
 import { groupBriefBurdenFindings } from "../data/briefBurdenPresentation";
 import { pilotInputFields } from "../data/pilotInputDraft";
+import { describeProgramResourceRequirement } from "../data/pilotDecisionPresentation";
 import { formatAppliedAssumption } from "./briefAssumptions";
 import { createBriefPrintDisclosureState, executeBriefPrint, watchBriefPrintMedia } from "./briefPrint";
 import "./BriefPage.css";
@@ -206,13 +208,14 @@ export function BriefPage({
     >
       <div className="atlas-memo-shell">
         <header className="page-heading atlas-memo-head">
-          <p className="eyebrow">04 · PLANNING BRIEF · {COVERAGE_EDITION_BADGE}</p>
+          <p className="eyebrow">05 · PLANNING BRIEF · {COVERAGE_EDITION_BADGE}</p>
           <h1>Long COVID burden and pilot planning brief</h1>
           <p>Reviewed national evidence, selected local context, and explicit pilot assumptions, with interpretation boundaries and data needs intact.</p>
+          <WorkspaceSessionNote />
         </header>
 
         {/* Sticky Export & AI Command Dock */}
-        <div className="brief-dock brief-export-actions" role="toolbar" aria-label="Brief export and AI actions">
+        <div id="brief-export-actions" className="brief-dock brief-export-actions" role="toolbar" aria-label="Brief export and AI actions">
           <button type="button" className="button" onClick={printBrief}>Print / save PDF</button>
           <BriefJsonExport brief={brief} />
           <AiHandoff
@@ -352,11 +355,14 @@ export function BriefPage({
                     <>
                       <div><dt>Participants within capacity</dt><dd>{isScientificNotationText(reached) ? <span className="brief-scientific-value">{reached}</span> : reached}</dd></div>
                       <div><dt>Person-month planning exposure difference</dt><dd>{isScientificNotationText(diff) ? <span className="brief-scientific-value">{diff}</span> : diff} pm</dd></div>
-                      <div><dt>Program-resource requirement</dt><dd>{isScientificNotationText(res) ? <span className="brief-scientific-value">{res}</span> : res}</dd></div>
+                      <div><dt>Program-resource requirement</dt><dd aria-describedby="brief-resource-scope">{isScientificNotationText(res) ? <span className="brief-scientific-value">{res}</span> : res}</dd></div>
                     </>
                   );
                 })()}
               </dl>
+              <p id="brief-resource-scope" className="micro-caption">
+                {describeProgramResourceRequirement(brief.scenario.result)}
+              </p>
               <section className="brief-decision-trace" aria-labelledby="brief-decision-trace-title">
                 <h3 id="brief-decision-trace-title">Decision trace</h3>
                 <DecisionTrace

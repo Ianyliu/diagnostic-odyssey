@@ -111,7 +111,7 @@ QA_OUTPUT=/tmp/odyssey-workstream-h node tests/browser/workstream-h-qa.mjs
 ```
 
 - `opening-circuit.mjs` & `landing-evidence.mjs`: verify Chapter I *Care Horizon*, Chapter IV *From data to action* sweeping pathway geometry and reduced-motion/interruption semantics across viewports, plus live bundle fixture integrity on the landing strata.
-- `guided-workspace.mjs` & `verify-guided-pdf.py`: exercise `01 Burden`, `02 Local context`, `03 Strategy Lab`, `04 Planning Brief`, `Data requests`, `EditionDrawer`, Focus/Overview disclosures, `og-image.png` metadata, and Brief print pagination.
+- `guided-workspace.mjs` and `verify-guided-pdf.py` cover `01 Burden` through `05 Planning Brief`, the resource requirement and current-tab scope, `EditionDrawer`, Focus/Overview disclosures, `og-image.png` metadata, and Brief print pagination.
 - `security-headers.mjs` (behind `csp-preview-proxy.mjs` locally or against an immutable Vercel Preview URL): validates CSP, MIME types, `/theme-init.js`, and absence of external network egress.
 - `planning-request-handoff.mjs`, `planning-request-exports.mjs`, and `workstream-h-qa.mjs`: verify sensitivity-to-request handoff, exact JSON/PDF export parity, and fail-closed 4-mode PDF/JSON acceptance.
 

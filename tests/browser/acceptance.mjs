@@ -1027,7 +1027,7 @@ await check(
     assert.equal(await request.isChecked(), true);
     await tabTo(
       page,
-      nav.getByRole("link", { name: /^(?:04\s+)?Planning Brief$/, exact: true }),
+      nav.getByRole("link", { name: /^(?:05\s+)?Planning Brief$/, exact: true }),
       true,
     );
     await page.keyboard.press("Enter");

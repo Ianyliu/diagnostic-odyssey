@@ -59,7 +59,7 @@ All fonts are self-hosted via `@fontsource` imports in [`apps/web/src/main.tsx`]
 
 ## Shell, navigation, and workspace patterns
 
-- **Sticky 56px frosted header (`AppShell.tsx`, `workspace.css`):** Brand astrolabe link, four numbered primary stages (`01 Burden`, `02 Local context`, `03 Strategy Lab`, `04 Planning Brief`), vertical divider + dashed optional companion `Data requests`, `AI` studio pill (`/advisor`), **Edition 01** `EditionDrawer` trigger, and `ThemeControl` (`System` / `Light` / `Dark`). Unsticks at short viewport heights (`max-height: 560px`) and collapses cleanly below `980px` with 44px minimum touch targets.
+- **Sticky 56px frosted header (`AppShell.tsx`, `workspace.css`)** has the brand astrolabe link, five numbered primary stages (`01 Burden`, `02 Local context`, `03 Strategy Lab`, `04 Data requests`, `05 Planning Brief`), `AI` studio pill (`/advisor`), **Edition 01** `EditionDrawer` trigger, and `ThemeControl` (`System` / `Light` / `Dark`). Unsticks at short viewport heights (`max-height: 560px`) and collapses into a menu at widths of 980px or less with 44px minimum touch targets.
 - **Six-chapter *Atlas Unfolded* landing (`OverviewPage.tsx`):**
   1. *Chapter I — Light Porcelain Hook:* Editorial question (*"What does chronic illness really cost us?"*) + decorative 3-ribbon [`LandingCareHorizon`](../apps/web/src/components/LandingCareHorizon.tsx) gliding into a folded Brief mark without enclosing the first screen in a heavy box.
   2. *Chapters II–III — Burden Scale & Sticky Evidence Strata:* Three headline national MEPS figures paired with a desktop sticky *Evidence Architecture* strata panel ([`LandingBurdenStrata`](../apps/web/src/components/LandingBurdenStrata.tsx)) that preserves cohort boundaries.

@@ -55,6 +55,7 @@ test("standardized navigation, Prompt Studio route, ThemeControl, and CSP-clean 
     "Burden",
     "Local context",
     "Strategy Lab",
+    "Data requests",
     "Planning Brief"
   ]);
   assert.equal(workspaceStageForPath("/advisor"), null);

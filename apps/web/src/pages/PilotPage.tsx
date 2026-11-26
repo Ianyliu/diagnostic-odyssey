@@ -8,6 +8,7 @@ import { PathwayBoundaryDrawer } from "./pilot/PathwayBoundaryDrawer"; // Detail
 import { QuantitiesPanel } from "./pilot/QuantitiesPanel"; // DecisionTrace
 import { ResultsPanel } from "./pilot/ResultsPanel"; // PilotDecisionVisuals
 import { SensitivityExplorer } from "../components/SensitivityExplorer";
+import { WorkspaceSessionNote } from "../components/WorkspaceSessionNote";
 import { useArtifact } from "../data/ArtifactContext";
 import {
   createSensitivityDataRequest,
@@ -182,6 +183,7 @@ function PilotPlannerWorkspace({
           <p className="eyebrow">03 · STRATEGY LAB</p>
           <h1>Scope a feasible pilot</h1>
           <p>Adjust reach, capacity, and costs to see what the pilot would require under your assumptions. These calculations cannot predict effectiveness or savings.</p>
+          <WorkspaceSessionNote />
         </header>
         <div className="atlas-page-top-actions">
           <button

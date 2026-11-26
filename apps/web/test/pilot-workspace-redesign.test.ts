@@ -78,7 +78,8 @@ test("request creation retains a focusable control and offers a separate review 
   assert.match(sensitivity, /if \(!onUpsertDataRequest \|\| requestStatus === "current"\) return/);
   assert.match(sensitivity, /aria-disabled=\{requestStatus === "current"\}/);
   assert.match(sensitivity, /onClick=\{handleRequest\}/);
-  assert.match(sensitivity, /requestStatus === "current" && <Link className="text-button" to="\/data-requests">Review data request<\/Link>/);
+  assert.match(sensitivity, /<Link className="text-button" to="\/data-requests">\s*\{requestStatus === "current" \? "Review data request" : "Open Data Requests"\}\s*<\/Link>/);
+  assert.match(sensitivity, /aria-describedby="sensitivity-brief-coverage"/);
   assert.match(sensitivity, /aria-live="polite" aria-atomic="true"/);
   assert.match(sensitivity, /New requests start selected in the Brief/);
 });

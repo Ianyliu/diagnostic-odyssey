@@ -147,17 +147,24 @@ export function SensitivityExplorer({
                   ? "Adjust Brief selection in Data Requests."
                   : "Create a structured data request. New requests start selected in the Brief."}
             </span>
+            <span id="sensitivity-brief-coverage">
+              Full sensitivity results stay in Strategy Lab. A selected, current data request can carry the
+              operational question into the Planning Brief, JSON companion, and AI handoff.
+            </span>
           </div>
           <div className="sensitivity-action-controls">
             <button
               className="button secondary"
               type="button"
               aria-disabled={requestStatus === "current"}
+              aria-describedby="sensitivity-brief-coverage"
               onClick={handleRequest}
             >
               {requestStatus === "current" ? "Request current" : requestStatus === "stale" ? "Refresh data request" : "Add to data requests"}
             </button>
-            {requestStatus === "current" && <Link className="text-button" to="/data-requests">Review data request</Link>}
+            <Link className="text-button" to="/data-requests">
+              {requestStatus === "current" ? "Review data request" : "Open Data Requests"}
+            </Link>
           </div>
           <span className="sr-only" aria-live="polite" aria-atomic="true">{requestAnnouncement}</span>
         </div>

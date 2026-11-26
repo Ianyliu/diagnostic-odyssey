@@ -94,7 +94,7 @@ export function BriefExecutiveSummary({
           {scenarioSummary ? (
             <>
               <strong>
-                {formatPlanningNumber(scenarioSummary.result.reached_participants, resultNumber)} served ·{" "}
+                {formatPlanningNumber(scenarioSummary.result.reached_participants, resultNumber)} served within capacity ·{" "}
                 {formatPlanningCurrency(scenarioSummary.result.program_resource_requirement)}
               </strong>
               <p>

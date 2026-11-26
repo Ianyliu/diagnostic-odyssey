@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import type { Scenario, ScenarioResult } from "@diagnostic-odyssey/contracts";
 import { PilotDecisionVisuals } from "../../components/PilotDecisionVisuals";
+import { describeProgramResourceRequirement } from "../../data/pilotDecisionPresentation";
 import { formatPlanningCurrency, formatPlanningNumber } from "../../data/planningNumberFormatting.ts";
 import { renderPlanningText, resultNumber } from "./pilotFormat";
 
@@ -39,9 +40,13 @@ export function ResultsPanel({
         </div>
         <div className="atlas-kpi">
           <dt>Resource requirement</dt>
-          <dd>{renderPlanningText(formatPlanningCurrency(scenarioResult.program_resource_requirement))}</dd>
+          <dd aria-describedby="pilot-resource-scope">{renderPlanningText(formatPlanningCurrency(scenarioResult.program_resource_requirement))}</dd>
         </div>
       </dl>
+
+      <p id="pilot-resource-scope" className="micro-caption">
+        {describeProgramResourceRequirement(scenarioResult)}
+      </p>
 
       <PilotDecisionVisuals scenario={scenario} result={scenarioResult} />
 

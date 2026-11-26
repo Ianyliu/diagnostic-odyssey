@@ -10,7 +10,7 @@ const axe = require("axe-core");
 const base = process.env.QA_BASE_URL ?? "http://127.0.0.1:4198";
 const output = process.env.QA_OUTPUT ?? "/tmp/planning-request-handoff";
 await mkdir(output, {recursive: true});
-const browser = await chromium.launch({channel: "chrome", headless: true});
+const browser = await chromium.launch(process.env.QA_CHROME ? {executablePath: process.env.QA_CHROME} : {channel: "chrome"});
 const results = [], errors = [];
 async function run(name, body) {
   try { results.push({name, status: "PASS", details: await body()}); }
