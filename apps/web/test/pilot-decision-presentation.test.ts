@@ -5,6 +5,7 @@ import test from "node:test";
 import type { Scenario } from "@diagnostic-odyssey/contracts";
 import { calculateScenario } from "@diagnostic-odyssey/scenario-engine";
 import {
+  describeProgramResourceRequirement,
   formatRecognitionWindowDifference,
   getCapacityCoveragePresentation
 } from "../src/data/pilotDecisionPresentation.ts";
@@ -87,4 +88,20 @@ test("PilotDecisionVisuals uses the recognition-window display formatter", () =>
     visualSource,
     /scenario\.baseline_window_months - scenario\.alternative_window_months/
   );
+});
+
+test("modeled expenditure covers served participants and excludes unmet participants", () => {
+  const result = calculateScenario({...baseScenario, reach: 0.4});
+  assert.equal(result.program_resource_requirement, 1200000);
+  assert.match(describeProgramResourceRequirement(result), /3,000 of 4,800 intended participants served within capacity/);
+  assert.match(describeProgramResourceRequirement(result), /1,800 unmet participants/);
+  assert.match(describeProgramResourceRequirement(result), /Impact and savings are outside the calculation/);
+});
+
+test("the expenditure description handles fully covered reach, zero demand and a single unmet participant", () => {
+  const fullyCovered = calculateScenario(baseScenario);
+  assert.match(describeProgramResourceRequirement(fullyCovered), /3,000 of 3,000 intended participants/);
+  assert.doesNotMatch(describeProgramResourceRequirement(fullyCovered), /unmet participant/);
+  assert.match(describeProgramResourceRequirement(calculateScenario({...baseScenario, reach: 0})), /includes fixed costs with no intended participants/);
+  assert.match(describeProgramResourceRequirement(calculateScenario({...baseScenario, capacity: 2999})), /1 unmet participant\./);
 });

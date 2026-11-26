@@ -20,7 +20,7 @@ export async function navigateWorkspace(page, name) {
         : name === "Pilot planner" || name === "Strategy Lab"
           ? /^(?:03\s+)?(?:Strategy Lab|Pilot planner)$/
           : name === "Planning brief" || name === "Planning Brief"
-            ? /^(?:04\s+)?Planning [Bb]rief$/
+            ? /^(?:05\s+)?Planning [Bb]rief$/
             : name === "Evidence" || name === "Intervention evidence & limits"
               ? "Evidence limits"
               : name;

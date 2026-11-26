@@ -1,7 +1,7 @@
 /* global process, document, window, Event, requestAnimationFrame, console */
 import assert from "node:assert/strict";
 import {createRequire} from "node:module";
-import {mkdir, writeFile} from "node:fs/promises";
+import {mkdir, readFile, writeFile} from "node:fs/promises";
 import {navigateWorkspace} from "./workspace-helpers.mjs";
 const require = createRequire(process.env.PLAYWRIGHT_RUNNER ?? import.meta.url);
 const {chromium} = require("playwright");
@@ -17,7 +17,8 @@ async function check(name, body) {
   await writeFile(`${output}/results.json`, JSON.stringify({results, errors}, null, 2));
 }
 async function pageAt(path, width = 390, theme = "light") {
-  const page = await browser.newPage({viewport: {width, height: 900}, colorScheme: theme, reducedMotion: "reduce"});
+  const context = await browser.newContext({viewport: {width, height: 900}, colorScheme: theme, reducedMotion: "reduce"});
+  const page = await context.newPage();
   page.setDefaultTimeout(6000);
   page.on("pageerror", error => errors.push(String(error)));
   await page.goto(base + path); await page.locator("main h1").waitFor();
@@ -76,6 +77,13 @@ for (const width of [320, 360, 390, 768, 1024, 1440]) for (const theme of ["ligh
       const menuToggle = page.getByRole("button", {name: "Menu", exact: true});
       if (await menuToggle.isVisible()) await menuToggle.click();
       assert.equal(await navigation.getByRole("link").count(), 5);
+      assert.deepEqual(await navigation.locator("a").evaluateAll(links => links.map(link => link.getAttribute("href"))),
+        ["/burden", "/local-context", "/pilot", "/data-requests", "/brief"]);
+      if (route === "/data-requests") {
+        const current = navigation.getByRole("link", {name: "Data requests", exact: true});
+        assert.equal(await current.getAttribute("aria-current"), "page");
+        assert.ok(await page.getByRole("navigation", {name: "Supporting navigation"}).getByRole("link", {name: "Data requests", exact: true}).isVisible());
+      }
       assert.equal(await navigation.getByRole("link", {name: /^(?:01\s+)?Burden$/}).getAttribute("href"), "/burden");
       const rect = await navigation.boundingBox();
       assert.ok(rect.x >= 0 && rect.x + rect.width <= width + 1);
@@ -98,6 +106,72 @@ for (const width of [320, 360, 390, 768, 1024, 1440]) for (const theme of ["ligh
       layouts.push({route, navigation: rect, height: await page.evaluate(() => document.documentElement.scrollHeight)});
     }
     return layouts;
+  });
+}
+for (const width of [390, 1440]) for (const theme of ["light", "dark"]) {
+  await check(`applied resource scope and tab-only decision path ${width} ${theme}`, async () => {
+    const page = await pageAt("/pilot", width, theme);
+    const note = page.locator(".workspace-session-note");
+    assert.match(await note.innerText(), /stay in this tab until you reload or close it/);
+    assert.match(await note.innerText(), /fresh tab, re-enter your settings/);
+    await page.locator("#pilot-reach").fill("40");
+    const pilotScope = await page.locator("#pilot-resource-scope").innerText();
+    assert.match(pilotScope, /Analyst-modeled expenditure covers 3,000 of 4,800 intended participants served within capacity/);
+    assert.match(pilotScope, /It excludes 1,800 unmet participants/);
+    const kpi = page.locator(".pilot-headlines dd[aria-describedby='pilot-resource-scope']");
+    assert.equal(await kpi.innerText(), "$1,200,000");
+
+    const create = page.getByRole("button", {name: "Add to data requests", exact: true});
+    assert.equal(await create.getAttribute("aria-describedby"), "sensitivity-brief-coverage");
+    assert.match(await page.locator("#sensitivity-brief-coverage").innerText(),
+      /Full sensitivity results stay in Strategy Lab.*selected, current data request.*Planning Brief, JSON companion, and AI handoff/);
+    await create.press("Enter");
+
+    const navigation = page.getByRole("navigation", {name: "Primary navigation"});
+    const requestLink = navigation.getByRole("link", {name: "Data requests", exact: true});
+    if (await requestLink.isVisible()) {
+      await page.getByRole("link", {name: "Diagnostic Odyssey, Overview"}).focus();
+    } else {
+      await page.getByRole("button", {name: "Menu", exact: true}).press("Enter");
+    }
+    for (const label of ["Burden", "Local context", "Strategy Lab", "Data requests"]) {
+      await page.keyboard.press("Tab");
+      assert.equal(await navigation.getByRole("link", {name: label, exact: true}).evaluate(link => link === document.activeElement), true);
+    }
+    assert.equal(await requestLink.evaluate(link => link === document.activeElement), true);
+    await page.keyboard.press("Enter");
+    await page.waitForURL(base + "/data-requests");
+    await page.waitForFunction(() => document.activeElement?.id === "data-requests-heading");
+    const request = page.locator(".data-request-sheet");
+    await request.waitFor();
+    assert.equal(await request.getByRole("checkbox").isChecked(), true);
+    const exportLink = note.getByRole("link", {name: "Export a copy from the Planning Brief", exact: true});
+    await page.keyboard.press("Tab");
+    assert.equal(await exportLink.evaluate(link => link === document.activeElement), true);
+    await page.keyboard.press("Enter");
+    await page.waitForURL(base + "/brief#brief-export-actions");
+    await page.waitForFunction(() => document.activeElement?.id === "brief-export-actions");
+    const download = page.waitForEvent("download");
+    await page.getByRole("button", {name: "Export JSON companion", exact: true}).click();
+    const companion = JSON.parse(await readFile(await (await download).path(), "utf8"));
+    assert.equal(companion.scenario.result.program_resource_requirement, 1200000);
+    assert.equal(companion.scenario.result.capacity_gap, 1800);
+    assert.equal(companion.data_requests.length, 1);
+    assert.equal(companion.data_requests[0].request_id, "session.sensitivity.capacity");
+    assert.equal(companion.sensitivity, undefined);
+    assert.equal(await page.locator("#brief-resource-scope").textContent(), pilotScope);
+    const briefResource = page.locator("#brief-scenario-outputs dd[aria-describedby='brief-resource-scope']");
+    assert.equal(await briefResource.textContent(), "$1,200,000");
+    await overflow(page);
+
+    const freshTab = await page.context().newPage();
+    await freshTab.goto(base + "/pilot");
+    await freshTab.locator("#pilot-reach").waitFor();
+    assert.equal(await freshTab.locator("#pilot-reach").inputValue(), "25");
+    await freshTab.goto(base + "/data-requests");
+    await freshTab.getByRole("link", {name: "Open sensitivity explorer", exact: true}).waitFor();
+    assert.equal(await freshTab.locator(".data-request-sheet").count(), 0);
+    return {pilotScope, primaryRequestsLink: true, exportFocus: true, exportMatchesAppliedResults: true, freshTabStartsWithDefaults: true};
   });
 }
 await check("bulk local selections default to all, respect individual overrides and remain separate from Pilot", async () => {
@@ -211,7 +285,7 @@ await check("all-reviewed default prints a concise PDF with 34 canonical selecti
 for (const width of [390, 1440]) await check(`cross-route history reveals fragments and preserves ordinary scroll ${width}`, async () => {
   const page = await pageAt("/brief", width);
   const navigate = async name => {
-    const label = name === "Pilot planner" ? /^(?:03\s+)?Strategy Lab$/ : /^(?:04\s+)?Planning Brief$/;
+    const label = name === "Pilot planner" ? /^(?:03\s+)?Strategy Lab$/ : /^(?:05\s+)?Planning Brief$/;
     const link = page.getByRole("navigation", {name: "Primary navigation"}).getByRole("link", {name: label});
     if (!await link.isVisible()) await page.getByRole("button", {name: "Menu", exact: true}).click();
     await link.click();

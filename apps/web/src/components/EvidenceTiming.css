@@ -1,0 +1,52 @@
+.evidence-timing {
+  padding: 0.65rem 0.9rem;
+  border: 1px solid var(--do-border);
+  border-radius: var(--do-radius-card);
+  background: var(--do-surface);
+  color: var(--do-text);
+  font-size: 0.84rem;
+  overflow-wrap: anywhere;
+}
+
+.evidence-timing-summary {
+  display: grid;
+  gap: 0.2rem;
+  margin: 0.35rem 0;
+  padding: 0;
+  list-style: none;
+}
+
+.evidence-timing-summary li {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 0.7rem;
+}
+
+.evidence-timing-summary span,
+.evidence-timing p,
+.evidence-timing-provenance dd {
+  color: var(--do-text-muted);
+}
+
+.evidence-timing p { margin: 0.2rem 0; }
+.evidence-timing summary { width: fit-content; cursor: pointer; }
+.evidence-timing-provenance { margin: 0.4rem 0 0; }
+.evidence-timing-provenance > div + div { margin-top: 0.35rem; }
+.evidence-timing-provenance dt { font-weight: 600; }
+.evidence-timing-provenance dd { margin: 0; }
+
+@media print {
+  .evidence-timing {
+    padding: 4pt 6pt;
+    color: #000;
+    background: #fff;
+    border-color: #aaa;
+    font-size: 8pt;
+    break-inside: avoid;
+  }
+
+  .evidence-timing-summary span,
+  .evidence-timing p,
+  .evidence-timing-provenance dd { color: #262626; }
+  .evidence-timing summary { display: none; }
+}

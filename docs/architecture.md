@@ -95,14 +95,14 @@ Reproducible download/ingestion helpers for sources that permit scripted retriev
 /burden/human        Mental-health/human burden
 /local-context       02 Local context (34-indicator WV constraint matrix + Use in Strategy Lab)
 /pilot               03 Strategy Lab (presets, sliders, visuals, Decision Inspector, Compare Strategies, sensitivity)
-/brief               04 Planning Brief (Known·Assumed·Unknown memo, Insights, JSON/PDF, Analyze with AI)
-/data-requests       Data requests (optional companion; Known/Assumed/Unknown strip, opt-in Brief selection)
+/data-requests       04 Data requests (optional; Known/Assumed/Unknown strip, analyst-controlled Brief selection)
+/brief               05 Planning Brief (Known·Assumed·Unknown memo, Insights, JSON/PDF, Analyze with AI)
 /evidence            Intervention evidence & limits (supporting route)
 /advisor             Strategy AI Studio (Prompt Studio, Illustrative exploration, Preview-gated Gemini)
 /concept/future-ai   Strategy AI Studio alias (redirects to /brief when VITE_FUTURE_AI_EXPERIENCE_DEMO=off or hidden)
 ```
 
-The header also exposes the **Edition 01** `EditionDrawer` (Coverage & Roadmap) without navigating away from the current task. The working vertical slice is `01 Burden → 02 Local context → 03 Strategy Lab → 04 Planning Brief` (with optional `Data requests`).
+The header also exposes the **Edition 01** `EditionDrawer` (Coverage & Roadmap) without navigating away from the current task. The working vertical slice is `01 Burden → 02 Local context → 03 Strategy Lab → 04 Data requests (optional) → 05 Planning Brief`.
 
 ## Data boundaries
 

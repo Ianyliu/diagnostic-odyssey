@@ -56,7 +56,7 @@ Axe checks WCAG A/AA rules, including rendered contrast, across all core and Str
 | --- | --- |
 | `opening-circuit.mjs` | Chapter I *Care Horizon*, Chapter IV *From data to action* sweeping pathway geometry, no desktop/tablet label collisions, reduced motion, and interruption behavior |
 | `landing-evidence.mjs` | Live bundle fixture checks (reviewed, missing, preliminary, point-only) on landing strata |
-| `guided-workspace.mjs` | `01 Burden`–`04 Planning Brief` (`Strategy Lab`, `Data requests`, `EditionDrawer`), `Focus`/`Overview` disclosures, `og-image.png` metadata, and PDF verification via `verify-guided-pdf.py` |
+| `guided-workspace.mjs` | `01 Burden`–`05 Planning Brief` (`Strategy Lab`, `Data requests`, `EditionDrawer`), applied resource scope and tab-only state, `Focus`/`Overview` disclosures, `og-image.png` metadata, and PDF verification via `verify-guided-pdf.py` |
 | `motion.mjs` | Opening autoplay, pointer/keyboard/wheel interruption, session suppression, deep links, and reduced motion |
 | `visual-quality.mjs` | Rendered burden topic groups, intact number/unit tokens, and zero horizontal overflow across 320/390/768/1440px in light and dark themes |
 | `security-headers.mjs` | Strict CSP, MIME types, `/theme-init.js`, and zero unintended network egress (behind `csp-preview-proxy.mjs` or on a Preview URL) |

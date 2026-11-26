@@ -418,20 +418,26 @@
   }
 }
 
-/* Compact accessible navigation with optional Data requests companion. */
+/* Compact workspace navigation. */
 .primary-nav a { display: inline-flex; align-items: center; justify-content: center; gap: 5px; min-height: 44px; white-space: nowrap; padding-inline: 10px; }
 .atlas-stage-number { font-family: var(--do-font-mono); font-size: .66rem; color: var(--do-text-muted); }
 .primary-nav a.active .atlas-stage-number { color: var(--do-accent); }
-.atlas-nav-divider { width: 1px; height: 18px; background: var(--do-border); margin-inline: 4px; flex-shrink: 0; }
-.primary-nav .atlas-requests-link { border: 1px dashed var(--do-control-border); }
-.primary-nav .atlas-requests-link.active { border-color: var(--do-accent); background: var(--do-selection-bg); color: var(--do-selection-text); }
+.page-heading .workspace-session-note {
+  margin-top: 12px;
+  padding: 8px 12px;
+  background: var(--do-surface);
+  border: 1px solid var(--do-border);
+  border-radius: 8px;
+  color: var(--do-text-muted);
+  font-size: 0.82rem;
+}
+.workspace-session-note a { font-weight: 600; text-decoration: underline; }
 .header-ai-pill, .edition-trigger, .menu-toggle, .theme-select-wrap { min-height: 38px; }
 @media (min-width: 981px) and (max-width: 1180px) {
   .header-inner { width: min(100% - 28px, 1240px); gap: 10px; }
   .brand-name { font-size: 0.98rem; }
   .primary-nav { gap: 2px; }
   .primary-nav a { padding-inline: 7px; font-size: 0.79rem; }
-  .atlas-nav-divider { margin-inline: 2px; }
   .header-controls { gap: 6px; }
   .edition-trigger { padding-inline: 9px; font-size: 0.74rem; }
   .theme-select-wrap { padding-inline: 7px; }
@@ -439,7 +445,10 @@
 }
 
 @media (max-width: 980px) {
-  .atlas-nav-divider { display: none; }
-  .primary-nav.open .atlas-requests-link { grid-column: 1 / -1; }
+  .primary-nav.open a:last-child { grid-column: 1 / -1; }
   .primary-nav a, .header-ai-pill, .edition-trigger, .menu-toggle, .theme-select-wrap { min-height: 44px; }
+}
+
+@media print {
+  .workspace-session-note { display: none; }
 }

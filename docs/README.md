@@ -6,7 +6,7 @@
 | --- | --- |
 | [README](../README.md) | Repository overview, Strategic Atlas summary, quick start, workflow, and guardrails |
 | [Design and motion](design-and-motion.md) | Strategic Atlas brand identity, astrolabe assets, light/dark/print tokens, 7-role semantic grammar, typography, layout, and motion contract |
-| [Architecture](architecture.md) | Monorepo package boundaries, runtime flow, routing (`01 Burden`–`04 Planning Brief` + `Strategy AI Studio`), and AI/data boundaries |
+| [Architecture](architecture.md) | Monorepo package boundaries, runtime flow, routing (`01 Burden`–`05 Planning Brief` + `Strategy AI Studio`), and AI/data boundaries |
 | [Scientific guardrails](scientific-guardrails.md) | Mandatory burden, local-context, scenario, release, admissibility, and privacy rules |
 | [Capability status](capability-status.md) | Production vs Preview-only vs illustrative vs candidate-only vs not implemented, and the AI data/security boundary |
 | [Testing and validation strategy](testing.md) | Unit, WCAG contrast, JSON Schema, R synthetic, browser, PDF, and CSP security verification |

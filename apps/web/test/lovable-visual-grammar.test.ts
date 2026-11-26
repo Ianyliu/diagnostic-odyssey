@@ -26,7 +26,7 @@ test("Brief editorial styling avoids hiding content during print", () => {
   assert.doesNotMatch(css, /\.atlas-memo-body\s*\{[^}]*display:\s*none/i);
 });
 
-test("Scroll story landing structure keeps real four-stage routes and zero AI-teal", () => {
+test("Scroll story landing structure keeps real guided routes and zero AI-teal", () => {
   const overview = source("../src/pages/OverviewPage.tsx");
   const journey = source("../src/components/LandingJourney.tsx");
   const journeyCss = source("../src/components/LandingJourney.css");
@@ -38,7 +38,9 @@ test("Scroll story landing structure keeps real four-stage routes and zero AI-te
   for (const path of ["/burden", "/local-context", "/pilot", "/data-requests", "/brief"]) {
     assert.ok(journey.includes(`to: "${path}"`), `Missing real destination: ${path}`);
   }
-  assert.match(journey, /n: "Optional", to: "\/data-requests"/);
+  assert.match(journey, /n: "04", to: "\/data-requests"/);
+  assert.match(journey, /n: "05", to: "\/brief"/);
+  assert.match(journey, /className="is-gap">.*Optional data requests/);
   assert.match(journeyCss, /\.atlas-journey-mobile/);
   assert.doesNotMatch(journey, /style=\{\{/);
   assert.match(journeyCss, /\.atlas-journey-stop-0\s*\{\s*left:/);

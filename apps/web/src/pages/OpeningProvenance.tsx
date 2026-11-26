@@ -166,7 +166,7 @@ export function OpeningProvenance({ playing, runId, reducedMotion, announcement,
         </div>
         <div className="preview-output">
           <div className="preview-output-topline">
-            <span>04 / Planning Brief</span>
+            <span>05 / Planning Brief</span>
             <i aria-hidden="true" />
           </div>
           <strong>One traceable planning workflow.</strong>

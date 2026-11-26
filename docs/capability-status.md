@@ -9,7 +9,7 @@ claims clinical validation, regulatory compliance or production-readiness beyond
 | **Production (public builds)** | `01 Burden`: reviewed national 2024 MEPS HC-256 Long COVID artifact (21 reviewed estimates, 2 descriptive Typical Ranges) | Gross all-cause burden, not attributable cost; Work & Function is explicitly missing |
 | Production | `02 Local context`: 34 reviewed **state-level** West Virginia HRSA + ACS indicators | No county-level data; never rescales national burden |
 | Production | `03 Strategy Lab`: presets, eight assumptions, deterministic comparison, one-way sensitivity, capacity curve | Arithmetic on analyst assumptions; not forecasts, savings or ROI |
-| Production | `Data requests` and `04 Planning Brief` with canonical JSON export and print/PDF | Only reviewed, released estimates are exportable |
+| Production | `04 Data requests` and `05 Planning Brief` with canonical JSON export and print/PDF | Only reviewed, released estimates are exportable |
 | Production (no provider calls) | Deterministic *Planning Insights*; *Prompt Studio / Analyze with AI* (user-operated copy/paste handoff) | Public builds contain no AI inference and consume no tokens |
 | **Illustrative / experimental** | *Strategy AI Studio* illustrative exploration (`/advisor`, `/concept/future-ai`) | Unadmitted content; can be switched off with `VITE_FUTURE_AI_EXPERIENCE_DEMO=off` |
 | **Preview-only** | `POST /api/ai-guidance` reviewed-guidance lane | Only in authenticated `VERCEL_ENV=preview` with explicit operator credentials; `404` in public production |

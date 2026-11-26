@@ -152,6 +152,18 @@ The manual workflow is `.github/workflows/local-context-candidate.yml` (**Local 
 
 Candidate HRSA/ACS indicators use `release_status="preliminary"` and `context_type="contextual_indicator"`. They are not selected by the web runtime, do not populate Local Context, and cannot modify MEPS estimates or scenario arithmetic. Promotion remains an explicit later action after independent review.
 
+### Evidence timing in the workspace and Brief
+
+The workspace reads the measurement period, source release and retrieval date from the reviewed artifacts and their source manifests. The current approval manifests record an approval decision. The review date is unavailable. The Brief preserves source timing for the source references and artifact versions included in that export.
+
+| Source | Freshness rule |
+| --- | --- |
+| AHRQ MEPS | The national survey year is a fixed vintage. A corrected source or a newer comparable survey and cohort requires a separately reviewed release before replacement. |
+| Census ACS | The five-year estimate covers the full published period. A corrected profile or a newer compatible five-year profile requires a separately reviewed release before replacement. |
+| HRSA HPSA | HRSA publishes daily snapshots. Treat a prior-UTC-day snapshot as stale for verifying current designations and retain it as dated context. The freshness assessment records its UTC date. The source resource modification date comes from HTTP Last-Modified. |
+
+The workspace assesses the artifacts packaged with the app. Fixed vintage describes the measurement period. Check the upstream source for newer releases. Review cycles remain source-specific, and trend analysis requires comparable estimates over time.
+
 
 ## Completed reviewed promotion — MEPS Typical Range Phase A
 

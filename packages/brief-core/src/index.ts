@@ -14,6 +14,8 @@ import {
   acquisitionResolver, isDataRequestCurrentForScenario, sanitizeBaseDataRequest,
   type AcquisitionGuidance, type AcquisitionResolver
 } from "@diagnostic-odyssey/acquisition-hints";
+import { selectBriefEvidenceFreshness, type EvidenceFreshness } from "./evidence-freshness.ts";
+export type { EvidenceFreshness } from "./evidence-freshness.ts";
 
 export interface PlanningBrief {
   title: string;
@@ -27,6 +29,7 @@ export interface PlanningBrief {
   artifact_version: string;
   generated_at: string;
   acquisition_guidance?: AcquisitionGuidance[];
+  evidence_freshness?: EvidenceFreshness[];
 }
 
 export interface BriefInput {
@@ -37,7 +40,11 @@ export interface BriefInput {
   evidence: EvidenceRecord[];
   dataRequests: DataRequest[];
   generatedAt?: string;
+  evidenceFreshness?: readonly EvidenceFreshness[];
 }
+
+const canExportLocalContext = (record: LocalContextRecord): boolean =>
+  record.release_status === "reviewed_released" && (record.state === "loaded" || record.state === "partial");
 
 function constructBrief(input: BriefInput, resolver: AcquisitionResolver): PlanningBrief {
   assertValidBriefScenario(input.scenario);
@@ -70,21 +77,21 @@ function constructBrief(input: BriefInput, resolver: AcquisitionResolver): Plann
   if (requests.withheld) warnings.push(acquisitionWithheldWarning);
   const staleWarning = staleSelectedDataRequestExclusionWarning(requests.staleCount);
   if (staleWarning) warnings.push(staleWarning);
+  const localContext = input.localContext.filter(canExportLocalContext);
+  const evidenceFreshness = selectBriefEvidenceFreshness(input.evidenceFreshness, input.context, burdenFindings, localContext);
   return {
     title: "Diagnostic Odyssey planning brief",
     context: input.context,
     burden_findings: burdenFindings,
-    local_context: input.localContext.filter(record =>
-      record.release_status === "reviewed_released" &&
-      (record.state === "loaded" || record.state === "partial")
-    ),
+    local_context: localContext,
     scenario: input.scenario ?? null,
     evidence: input.evidence.filter(record => record.reviewer_status === "approved"),
     data_requests: requests.dataRequests,
     warnings,
     artifact_version: input.context.artifact_version,
     generated_at: input.generatedAt ?? new Date().toISOString(),
-    ...(requests.guidance.length ? {acquisition_guidance: requests.guidance} : {})
+    ...(requests.guidance.length ? {acquisition_guidance: requests.guidance} : {}),
+    ...(evidenceFreshness.length ? {evidence_freshness: evidenceFreshness} : {})
   };
 }
 
@@ -96,11 +103,16 @@ function serializeBrief(brief: PlanningBrief, resolver: AcquisitionResolver): st
   if (requests.withheld && !warnings.includes(acquisitionWithheldWarning)) warnings.push(acquisitionWithheldWarning);
   const staleWarning = staleSelectedDataRequestExclusionWarning(requests.staleCount);
   if (staleWarning && !warnings.includes(staleWarning)) warnings.push(staleWarning);
+  const evidenceFreshness = brief.evidence_freshness?.length ? selectBriefEvidenceFreshness(
+    brief.evidence_freshness, brief.context,
+    brief.burden_findings.filter(canExportEstimate), brief.local_context.filter(canExportLocalContext)
+  ) : [];
   const sanitized: PlanningBrief = {
     title: brief.title, context: brief.context, burden_findings: brief.burden_findings,
     local_context: brief.local_context, scenario: brief.scenario, evidence: brief.evidence,
     data_requests: requests.dataRequests, warnings, artifact_version: brief.artifact_version,
-    generated_at: brief.generated_at, ...(requests.guidance.length ? {acquisition_guidance: requests.guidance} : {})
+    generated_at: brief.generated_at, ...(requests.guidance.length ? {acquisition_guidance: requests.guidance} : {}),
+    ...(evidenceFreshness.length ? {evidence_freshness: evidenceFreshness} : {})
   };
   return JSON.stringify(sanitized, (key: string, value: unknown) => {
     if (typeof value === "number" && !Number.isFinite(value)) {

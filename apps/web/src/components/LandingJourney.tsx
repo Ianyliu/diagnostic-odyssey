@@ -14,8 +14,7 @@ import "./LandingJourney.css";
 
 /**
  * Restored sweeping Bezier cartographic pathway (1024x380 viewBox) inside Chapter IV.
- * Primary spine moves 01 Burden -> 02 Local context -> 03 Strategy Lab -> 04 Planning Brief,
- * with Data requests shown as an explicit dashed optional spur off Strategy Lab.
+ * Data requests are step 04 and remain an optional spur from Strategy Lab to the Planning Brief.
  * Has its own independent viewport-triggered lifecycle so Chapter I completion or scroll
  * inertia never consumes or cancels the Chapter IV reveal.
  */
@@ -23,8 +22,8 @@ const waypoints = [
   { label: "Burden", n: "01", to: "/burden", action: "Explore the burden", x: 96, y: 296, type: "evidence" },
   { label: "Local context", n: "02", to: "/local-context", action: "Check local access", x: 340, y: 178, type: "context" },
   { label: "Strategy Lab", n: "03", to: "/pilot", action: "Test a pilot scenario", x: 602, y: 232, type: "assumption" },
-  { label: "Data requests", n: "Optional", to: "/data-requests", action: "Identify what’s missing", x: 758, y: 316, type: "gap" },
-  { label: "Planning Brief", n: "04", to: "/brief", action: "Prepare a decision brief", x: 916, y: 88, type: "brief" }
+  { label: "Data requests", n: "04", to: "/data-requests", action: "Identify what’s missing", x: 758, y: 316, type: "gap" },
+  { label: "Planning Brief", n: "05", to: "/brief", action: "Prepare a decision brief", x: 916, y: 88, type: "brief" }
 ] as const;
 
 const route =

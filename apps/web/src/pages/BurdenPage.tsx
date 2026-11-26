@@ -5,7 +5,9 @@ import { BurdenMeasureList } from "../components/BurdenMeasureList";
 import { LedgerGroup } from "../components/LedgerGroup";
 import { PresentationMode, type Presentation } from "../components/PresentationMode";
 import { DetailDrawer } from "../components/DetailDrawer";
+import { EvidenceTiming } from "../components/EvidenceTiming";
 import { useArtifact } from "../data/ArtifactContext";
+import { getNationalEvidenceFreshness } from "../data/evidenceFreshness";
 import { formatEstimateInterval, formatEstimateValue } from "../data/formatEstimateValue";
 import { selectHeadlineFindings } from "../data/headlineFindings";
 import { formatDataStateLabel } from "../data/presentationLabels";
@@ -91,6 +93,8 @@ export function BurdenPage() {
           Methods &amp; Limits
         </button>
       </div>
+
+      <EvidenceTiming entries={getNationalEvidenceFreshness(bundle, allMeasures)} />
 
       {headlines.length > 0 && (
         <div className="atlas-hero-bento is-four-col" aria-label="Headline national burden figures">

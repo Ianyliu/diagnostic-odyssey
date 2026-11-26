@@ -126,6 +126,17 @@ export function AppShell({ advisorAvailable = false }: { advisorAvailable?: bool
             <strong className="brand-name">Diagnostic Odyssey</strong>
           </Link>
 
+          <button
+            ref={menuToggle}
+            className="menu-toggle"
+            type="button"
+            aria-expanded={menuOpen}
+            aria-controls="primary-navigation workspace-tools"
+            onClick={() => setMenuOpen(open => !open)}
+          >
+            {menuOpen ? "Close" : "Menu"}
+          </button>
+
           <nav
             id="primary-navigation"
             aria-label="Primary navigation"
@@ -141,15 +152,6 @@ export function AppShell({ advisorAvailable = false }: { advisorAvailable?: bool
                 <span className="atlas-stage-number" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span> {label}
               </NavLink>
             ))}
-            <span className="atlas-nav-divider" aria-hidden="true" />
-            <NavLink
-              to="/data-requests"
-              end
-              className="atlas-requests-link"
-              onClick={() => setMenuOpen(false)}
-            >
-              Data requests
-            </NavLink>
           </nav>
 
           <div id="workspace-tools" className={"header-controls" + (menuOpen ? " open" : "")}>
@@ -170,17 +172,6 @@ export function AppShell({ advisorAvailable = false }: { advisorAvailable?: bool
             </button>
             <ThemeControl />
           </div>
-
-          <button
-            ref={menuToggle}
-            className="menu-toggle"
-            type="button"
-            aria-expanded={menuOpen}
-            aria-controls="primary-navigation workspace-tools"
-            onClick={() => setMenuOpen(open => !open)}
-          >
-            {menuOpen ? "Close" : "Menu"}
-          </button>
         </div>
       </header>
 
